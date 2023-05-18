@@ -1,9 +1,8 @@
-
-
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { useState } from 'react';
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { Card } from './components/Card';
 import { countries2023 } from './data/Countries';
+import { StrictModeDroppable } from './components/StrictModeDroppable';
 
 function App() {
 
@@ -18,12 +17,13 @@ function App() {
     setItems(itemsArray);
   }
 
+  
   return (
     <div className="bg-[#040241] min-h-screen">
 
       <DragDropContext onDragEnd={handleOnDragEnd}>
-        <Droppable droppableId="items">
-          {(provided) => (
+        <StrictModeDroppable droppableId="items">
+          {(provided: any) => (
             <ul 
               {...provided.droppableProps} 
               ref={provided.innerRef}
@@ -32,12 +32,13 @@ function App() {
               {items.map(({ id, content }, index) => (
                 <Draggable key={id.toString()} draggableId={id.toString()} index={index}>
                 {(provided: any) => (
-                  <li 
+                  <li key={id.toString()}
                     ref={provided.innerRef} 
                     {...provided.draggableProps} 
                     {...provided.dragHandleProps}
                   >
                     <Card 
+                    key={id.toString()}
                       id={id} 
                       className="w-60 m-auto text-slate-400 bg-black"
                       name={content}
@@ -49,7 +50,7 @@ function App() {
               {provided.placeholder}
             </ul>
           )}
-        </Droppable>
+        </StrictModeDroppable>
       </DragDropContext>
 
     </div>
@@ -57,8 +58,5 @@ function App() {
 
   )
 }
-
-// const rootElement = document.getElementById('root')
-// render(<App />, rootElement)
 
 export default App;

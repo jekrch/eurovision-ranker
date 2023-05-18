@@ -46,7 +46,7 @@ export const Container: FC = () => {
       },
       {
         id: 7,
-        text: 'PROFIT',
+        text: 'Spain',
       },
     ])
 
@@ -67,6 +67,7 @@ export const Container: FC = () => {
           <Card
             key={card.id}
             index={index}
+            className={"text-white"}
             id={card.id}
             text={card.text}
             moveCard={moveCard}
@@ -78,7 +79,12 @@ export const Container: FC = () => {
 
     return (
       <>
-        <div style={style}>{cards.map((card, i) => renderCard(card, i))}</div>
+        <div 
+          className="m-auto pt-10" 
+          style={style}
+        >
+            {cards.map((card, i) => renderCard(card, i))}
+        </div>
       </>
     )
   }

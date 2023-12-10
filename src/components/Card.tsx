@@ -10,7 +10,7 @@ const style = {
 }
 
 export interface CardProps {
-  id: any
+  id: string
   name: string
   className: string
 }

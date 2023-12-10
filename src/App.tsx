@@ -1,62 +1,116 @@
-import { useState } from 'react';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import React, { useState } from 'react';
+import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
 import { Card } from './components/Card';
-import { countries2023 } from './data/Countries';
+import { countries2023 } from './data/Countries'; // Ensure this data matches the CountryItem type
+import { CountryItem } from './data/CountryItem';
 import { StrictModeDroppable } from './components/StrictModeDroppable';
 
-function App() {
+const App: React.FC = () => {
+  const [unrankedItems, setUnrankedItems] = useState<CountryItem[]>(countries2023);
+  const [rankedItems, setRankedItems] = useState<CountryItem[]>([]);
 
-  const [items, setItems] = useState(countries2023);
+  const handleOnDragEnd = (result: DropResult) => {
+    const { source, destination } = result;
 
-  function handleOnDragEnd(result: any) {
-    console.log(result)
-    if (!result.destination) return;
-    const itemsArray = Array.from(items);
-    const [reorderedItem] = itemsArray.splice(result.source.index, 1);
-    itemsArray.splice(result.destination.index, 0, reorderedItem);
-    setItems(itemsArray);
-  }
+    if (!destination) return;
 
-  
+    let activeList, setActiveList, otherList, setOtherList;
+
+    if (source.droppableId === 'unrankedItems') {
+      activeList = unrankedItems;
+      setActiveList = setUnrankedItems;
+      otherList = rankedItems;
+      setOtherList = setRankedItems;
+    } else {
+      activeList = rankedItems;
+      setActiveList = setRankedItems;
+      otherList = unrankedItems;
+      setOtherList = setUnrankedItems;
+    }
+
+    const items = Array.from(activeList);
+    const [reorderedItem] = items.splice(source.index, 1);
+
+    if (destination.droppableId !== source.droppableId) {
+      const destinationItems = Array.from(otherList);
+      destinationItems.splice(destination.index, 0, reorderedItem);
+      setOtherList(destinationItems);
+    } else {
+      items.splice(destination.index, 0, reorderedItem);
+    }
+
+    setActiveList(items);
+  };
+
   return (
-    <div className="bg-[#040241] min-h-screen">
-
+    <div className="bg-[#040241] min-h-screen flex">
       <DragDropContext onDragEnd={handleOnDragEnd}>
-        <StrictModeDroppable droppableId="items">
-          {(provided: any) => (
+        {/* Unranked Countries List */}
+        <StrictModeDroppable droppableId="unrankedItems">
+          {(provided) => (
             <ul 
               {...provided.droppableProps} 
               ref={provided.innerRef}
-              className="m-auto pt-10"
+              className="w-1/2"
             >
-              {items.map(({ id, content }, index) => (
-                <Draggable key={id.toString()} draggableId={id.toString()} index={index}>
-                {(provided: any) => (
-                  <li key={id.toString()}
-                    ref={provided.innerRef} 
-                    {...provided.draggableProps} 
-                    {...provided.dragHandleProps}
-                  >
-                    <Card 
-                    key={id.toString()}
-                      id={id} 
-                      className="w-60 m-auto text-slate-400 bg-black"
-                      name={content}
-                    />
-                  </li>
-                )}
-              </Draggable>
+              {unrankedItems.map((item, index) => (
+                <Draggable key={item.id.toString()} draggableId={item.id.toString()} index={index}>
+                  {(provided) => (
+                    <li 
+                      key={item.id.toString()} 
+                      ref={provided.innerRef} 
+                      {...provided.draggableProps} 
+                      {...provided.dragHandleProps}
+                      className="no-select"
+                    >
+                      <Card 
+                        key={item.id.toString()} 
+                        id={item.id.toString()} 
+                        className="w-60 m-auto text-slate-400 bg-'blue'"
+                        name={item.content}
+                      />
+                    </li>
+                  )}
+                </Draggable>
+              ))}
+              {provided.placeholder}
+            </ul>
+          )}
+        </StrictModeDroppable>
+
+        {/* Ranked Countries List */}
+        <StrictModeDroppable droppableId="rankedItems">
+          {(provided) => (
+            <ul 
+              {...provided.droppableProps} 
+              ref={provided.innerRef}
+              className="w-1/2"
+            >
+              {rankedItems.map((item, index) => (
+                <Draggable key={item.id.toString()} draggableId={item.id.toString()} index={index}>
+                  {(provided) => (
+                    <li 
+                      ref={provided.innerRef} 
+                      {...provided.draggableProps} 
+                      {...provided.dragHandleProps}
+                      className="no-select"
+                    >
+                      <Card 
+                        id={item.id.toString()} 
+                        className="w-60 m-auto text-slate-400 bg-black"
+                        name={item.content}
+                      />
+                    </li>
+                  )}
+                </Draggable>
               ))}
               {provided.placeholder}
             </ul>
           )}
         </StrictModeDroppable>
       </DragDropContext>
-
     </div>
-
-
-  )
-}
+  );
+};
 
 export default App;

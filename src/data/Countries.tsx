@@ -1,4 +1,6 @@
-export const countries2023 = [
+import { CountryItem } from "./CountryItem";
+
+export const countries2023: CountryItem[] = [
     { id: '1', content: 'Albania', artist: 'Albina & Familja Kelmendi', song: 'Duje' },
     { id: '2', content: 'Armenia', artist: 'Brunette', song: 'Future Lover' },
     { id: '3', content: 'Australia', artist: 'Voyager', song: 'Promise' },

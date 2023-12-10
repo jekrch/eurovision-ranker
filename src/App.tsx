@@ -9,6 +9,7 @@ const App: React.FC = () => {
   const [unrankedItems, setUnrankedItems] = useState<CountryItem[]>(countries2023);
   const [rankedItems, setRankedItems] = useState<CountryItem[]>([]);
 
+
   const handleOnDragEnd = (result: DropResult) => {
     const { source, destination } = result;
 
@@ -42,35 +43,59 @@ const App: React.FC = () => {
     setActiveList(items);
   };
 
+
+  function handleTransitionEnd(provided: any) {
+    //return;
+    if (typeof provided.draggableProps.onTransitionEnd === 'function') {
+      console.log("test1")
+      try {
+        queueMicrotask(() => provided.draggableProps.onTransitionEnd?.({
+          propertyName: 'transform',
+        } as any)
+        );
+      } catch (ex) {
+      }
+      console.log("test1")
+    }
+  }
+
+
   return (
     <div className="bg-[#040241] min-h-screen flex">
       <DragDropContext onDragEnd={handleOnDragEnd}>
         {/* Unranked Countries List */}
         <StrictModeDroppable droppableId="unrankedItems">
           {(provided) => (
-            <ul 
-              {...provided.droppableProps} 
+            <ul
+              {...provided.droppableProps}
               ref={provided.innerRef}
               className="w-1/2"
             >
               {unrankedItems.map((item, index) => (
                 <Draggable key={item.id.toString()} draggableId={item.id.toString()} index={index}>
-                  {(provided) => (
-                    <li 
-                      key={item.id.toString()} 
-                      ref={provided.innerRef} 
-                      {...provided.draggableProps} 
-                      {...provided.dragHandleProps}
-                      className="no-select"
-                    >
-                      <Card 
-                        key={item.id.toString()} 
-                        id={item.id.toString()} 
-                        className="w-60 m-auto text-slate-400 bg-'blue'"
-                        name={item.content}
-                      />
-                    </li>
-                  )}
+
+                  {(provided) => {
+
+                    //handleTransitionEnd(provided); 
+
+                    return (
+
+                      <li
+                        key={item.id.toString()}
+                        ref={provided.innerRef}
+                        {...provided.draggableProps}
+                        {...provided.dragHandleProps}
+                        className="no-select"
+                      >
+                        <Card
+                          key={item.id.toString()}
+                          id={item.id.toString()}
+                          className="w-60 m-auto text-slate-400 bg-'blue'"
+                          name={item.content}
+                        />
+                      </li>
+                    )
+                  }}
                 </Draggable>
               ))}
               {provided.placeholder}
@@ -81,27 +106,32 @@ const App: React.FC = () => {
         {/* Ranked Countries List */}
         <StrictModeDroppable droppableId="rankedItems">
           {(provided) => (
-            <ul 
-              {...provided.droppableProps} 
+            <ul
+              {...provided.droppableProps}
               ref={provided.innerRef}
               className="w-1/2"
             >
               {rankedItems.map((item, index) => (
                 <Draggable key={item.id.toString()} draggableId={item.id.toString()} index={index}>
-                  {(provided) => (
-                    <li 
-                      ref={provided.innerRef} 
-                      {...provided.draggableProps} 
-                      {...provided.dragHandleProps}
-                      className="no-select"
-                    >
-                      <Card 
-                        id={item.id.toString()} 
-                        className="w-60 m-auto text-slate-400 bg-black"
-                        name={item.content}
-                      />
-                    </li>
-                  )}
+                  {(provided) => {
+                    
+                    //handleTransitionEnd(provided);
+
+                    return (
+                      <li
+                        ref={provided.innerRef}
+                        {...provided.draggableProps}
+                        {...provided.dragHandleProps}
+                        className="no-select"
+                      >
+                        <Card
+                          id={item.id.toString()}
+                          className="w-60 m-auto text-slate-400 bg-black"
+                          name={item.content}
+                        />
+                      </li>
+                    )
+                  }}
                 </Draggable>
               ))}
               {provided.placeholder}

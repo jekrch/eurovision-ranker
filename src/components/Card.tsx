@@ -1,3 +1,4 @@
+import classNames from 'classnames'
 import type { FC } from 'react'
 
 const style = {
@@ -22,7 +23,7 @@ export const Card: FC<CardProps> = (props) => {
     <div 
       key={props.id}
       //ref={ref} 
-      className={props.className} 
+      className={classNames(props.className, "!cursor-pointer")}
       style={{ ...style }} 
     >
       {props.name}

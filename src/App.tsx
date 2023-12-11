@@ -45,7 +45,6 @@ const App: React.FC = () => {
 
 
   function handleTransitionEnd(provided: any) {
-    //return;
     if (typeof provided.draggableProps.onTransitionEnd === 'function') {
       console.log("test1")
       try {
@@ -61,7 +60,7 @@ const App: React.FC = () => {
 
 
   return (
-    <div className="bg-[#040241] min-h-screen flex">
+    <div className="bg-[#040241] min-h-screen flex no-select">
       <DragDropContext onDragEnd={handleOnDragEnd}>
         {/* Unranked Countries List */}
         <StrictModeDroppable droppableId="unrankedItems">
@@ -75,11 +74,8 @@ const App: React.FC = () => {
                 <Draggable key={item.id.toString()} draggableId={item.id.toString()} index={index}>
 
                   {(provided) => {
-
                     //handleTransitionEnd(provided); 
-
                     return (
-
                       <li
                         key={item.id.toString()}
                         ref={provided.innerRef}
@@ -90,7 +86,7 @@ const App: React.FC = () => {
                         <Card
                           key={item.id.toString()}
                           id={item.id.toString()}
-                          className="w-60 m-auto text-slate-400 bg-'blue'"
+                          className="w-60 m-auto text-slate-400 bg-'blue' no-select"
                           name={item.content}
                         />
                       </li>
@@ -126,7 +122,7 @@ const App: React.FC = () => {
                       >
                         <Card
                           id={item.id.toString()}
-                          className="w-60 m-auto text-slate-400 bg-black"
+                          className="w-60 m-auto text-slate-400 bg-black no-select"
                           name={item.content}
                         />
                       </li>

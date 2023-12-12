@@ -95,7 +95,8 @@ const App: React.FC = () => {
     <div className="flex flex-col min-h-screen">
       <nav className="bg-gray-800 text-white p-4 sticky top-0 z-50">
         <div className="container mx-auto flex justify-between items-center">
-          <div className="text-lg font-semibold">Eurovision Rankr
+          <div className="text-xl tracking-wider text-xl tracking-wider gradient-text">
+            Eurovision Rankr
           </div>
           <ul className="flex space-x-4">
             <li><div className="flex items-center">

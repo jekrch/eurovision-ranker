@@ -15,3 +15,22 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+
+/* Styling the scrollbar track (the background) */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+/* Styling the scrollbar handle */
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 5px;
+}
+
+/* Handle hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+

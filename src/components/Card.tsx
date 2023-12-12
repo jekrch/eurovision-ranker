@@ -12,21 +12,20 @@ const style = {
 
 export interface CardProps {
   id: string
+  rank?: number | undefined
   name: string
   className: string
 }
 
 export const Card: FC<CardProps> = (props) => {
 
-  //const ref = useRef<HTMLDivElement>(null);
   return (
     <div 
       key={props.id}
-      //ref={ref} 
       className={classNames(props.className, "!cursor-pointer")}
       style={{ ...style }} 
     >
-      {props.name}
+      {props.rank ? (<span className="text-bold mr-5">{props.rank}.</span> ) : null} {props.name}
     </div>
   )
 }

@@ -11,6 +11,7 @@ const App: React.FC = () => {
   const [rankedItems, setRankedItems] = useState<CountryItem[]>([]);
   const [showUnranked, setShowUnranked] = useState(false);
   const [refreshUrl, setRefreshUrl] = useState(0);
+  const [refreshDnD, setRefreshDnD] = useState(0);
 
   const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setShowUnranked(event.target.checked);
@@ -56,7 +57,7 @@ const App: React.FC = () => {
     decodeRankingsFromURL();
     if (!rankedItems?.length) {
       setShowUnranked(true)
-    } { 
+    } {
       setShowUnranked(false)
     }
   }, []);
@@ -64,6 +65,10 @@ const App: React.FC = () => {
   useEffect(() => {
     window.history.pushState(null, '', `?rankings=${encodeRankingsToURL(rankedItems)}`);
   }, [rankedItems]);
+
+  useEffect(() => {
+    setRefreshDnD(Math.random());
+  }, [showUnranked]);
 
   const handleOnDragEnd = (result: DropResult) => {
     const { source, destination } = result;
@@ -127,46 +132,50 @@ const App: React.FC = () => {
         </nav>
 
         <div className="flex-grow overflow-auto bg-[#040241] flex justify-center">
-          <DragDropContext onDragEnd={handleOnDragEnd}>
-          
-          <div className="flex flex-row justify-center gap-4 p-4" style={{ gap: '4px' }}>
-              {/* Unranked Countries List */}
-              <div className="max-w-[50vw] overflow-y-auto flex-grow mr-1" >
-                <StrictModeDroppable droppableId="unrankedItems">
-                  {(provided) => (
-                    <ul
-                      {...provided.droppableProps}
-                      ref={provided.innerRef}
-                      className={classNames("pt-3", !showUnranked ? "hidden" : null)}
-                    >
-                      {unrankedItems.map((item, index) => (
-                        <Draggable key={item.id.toString()} draggableId={item.id.toString()} index={index}>
+          <DragDropContext onDragEnd={handleOnDragEnd} key={`drag-drop-context-${refreshDnD}`}>
 
-                          {(provided) => {
-                            return (
-                              <li
-                                key={item.id.toString()}
-                                ref={provided.innerRef}
-                                {...provided.draggableProps}
-                                {...provided.dragHandleProps}
-                                className="no-select m-2"
-                              >
-                                <Card
+            <div className="flex flex-row justify-center gap-4 p-4" style={{ gap: '4px' }}>
+              {/* Unranked Countries List */}
+              {showUnranked && (
+                <div className="max-w-[50vw] overflow-y-auto flex-grow mr-1" >
+                  <StrictModeDroppable droppableId="unrankedItems" key={`strict-${refreshDnD}`}>
+                    {(provided) => (
+                      <ul
+                        {...provided.droppableProps}
+                        ref={provided.innerRef}
+                        className={classNames("pt-3", "")}
+                      //className={classNames("pt-3", !showUnranked ? "hidden" : null)}
+                      >
+                        {unrankedItems.map((item, index) => (
+                          <Draggable key={item.id.toString()} draggableId={item.id.toString()} index={index}>
+
+                            {(provided) => {
+                              return (
+                                <li
                                   key={item.id.toString()}
-                                  id={item.id.toString()}
-                                  className="m-auto text-slate-400 bg-'blue' no-select"
-                                  name={item.content}
-                                />
-                              </li>
-                            )
-                          }}
-                        </Draggable>
-                      ))}
-                      {provided.placeholder}
-                    </ul>
-                  )}
-                </StrictModeDroppable>
-              </div>
+                                  ref={provided.innerRef}
+                                  {...provided.draggableProps}
+                                  {...provided.dragHandleProps}
+                                  className="no-select m-2"
+                                >
+                                  <Card
+                                    key={item.id.toString()}
+                                    id={item.id.toString()}
+                                    className="m-auto text-slate-400 bg-'blue' no-select"
+                                    name={item.content}
+                                  />
+                                </li>
+                              )
+                            }}
+                          </Draggable>
+                        ))}
+                        {provided.placeholder}
+                      </ul>
+                    )}
+                  </StrictModeDroppable>
+
+                </div>
+              )}
               {/* Ranked Countries List */}
               <div>
                 <StrictModeDroppable droppableId="rankedItems">
@@ -177,16 +186,18 @@ const App: React.FC = () => {
                       className={classNames("h-full min-w-[10em] overflow-y-auto overflow-x-hidden pt-3 bg-[#1d1b54]", showUnranked ? "max-w-[50vw]" : "max-w-[300em]")}
                     >
                       {rankedItems.map((item, index) => (
-                        <Draggable key={item.id.toString()} draggableId={item.id.toString()} index={index}>
+                        <Draggable key={`draggable-${item.id.toString()}`} draggableId={item.id.toString()} index={index}>
                           {(provided) => {
                             return (
                               <li
+                                key={`li-${item.id.toString()}`}
                                 ref={provided.innerRef}
                                 {...provided.draggableProps}
                                 {...provided.dragHandleProps}
                                 className="no-select m-2"
                               >
                                 <Card
+                                  key={`card-${item.id.toString()}`}
                                   id={item.id.toString()}
                                   className="m-auto text-slate-400 bg-black no-select"
                                   rank={index + 1}

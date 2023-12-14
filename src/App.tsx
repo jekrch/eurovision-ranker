@@ -10,6 +10,7 @@ const App: React.FC = () => {
   const [unrankedItems, setUnrankedItems] = useState<CountryItem[]>(countries2023);
   const [rankedItems, setRankedItems] = useState<CountryItem[]>([]);
   const [showUnranked, setShowUnranked] = useState(false);
+  const [refreshUrl, setRefreshUrl] = useState(0);
 
   const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setShowUnranked(event.target.checked);
@@ -28,7 +29,7 @@ const App: React.FC = () => {
   /**
    * Decode rankings from URL 
    */
-  const decodeRankingsFromURL = (): void => {
+  const decodeRankingsFromURL = (): number | undefined => {
     const params = new URLSearchParams(window.location.search);
     const rankings = params.get('rankings');
     if (rankings) {
@@ -47,14 +48,22 @@ const App: React.FC = () => {
     } else {
       setUnrankedItems(countries2023);
     }
+
+    return rankings?.length
   };
 
   useEffect(() => {
     decodeRankingsFromURL();
     if (!rankedItems?.length) {
       setShowUnranked(true)
+    } { 
+      setShowUnranked(false)
     }
   }, []);
+
+  useEffect(() => {
+    window.history.pushState(null, '', `?rankings=${encodeRankingsToURL(rankedItems)}`);
+  }, [rankedItems]);
 
   const handleOnDragEnd = (result: DropResult) => {
     const { source, destination } = result;
@@ -83,20 +92,18 @@ const App: React.FC = () => {
       const destinationItems = Array.from(otherList);
       destinationItems.splice(destination.index, 0, reorderedItem);
       setOtherList(destinationItems);
-      window.history.pushState(null, '', `?rankings=${encodeRankingsToURL(rankedItems)}`);
-
     } else {
       items.splice(destination.index, 0, reorderedItem);
       setActiveList(items);
-      window.history.pushState(null, '', `?rankings=${encodeRankingsToURL(rankedItems)}`);
     }
 
     setActiveList(items);
+    setRefreshUrl(Math.random())
   };
 
   return (
     <>
-      <div className="flex flex-col min-h-screen">
+      <div className="flex flex-col h-screen">
         <nav className="bg-gray-800 text-white p-4 sticky top-0 z-50">
           <div className="container mx-auto flex justify-between items-center">
             <div className="text-xl tracking-wider text-xl tracking-wider gradient-text">
@@ -119,19 +126,18 @@ const App: React.FC = () => {
           </div>
         </nav>
 
-        <div className="bg-[#040241] flex-grow flex justify-center no-select overflow-x-hidden">
+        <div className="flex-grow overflow-auto bg-[#040241] flex justify-center">
           <DragDropContext onDragEnd={handleOnDragEnd}>
           
-            <div className="flex flex-row justify-center gap-4 p-4" style={{ gap: '4px' }}>
+          <div className="flex flex-row justify-center gap-4 p-4" style={{ gap: '4px' }}>
               {/* Unranked Countries List */}
-              <div className="max-w-50%">
+              <div className="max-w-[50vw] overflow-y-auto flex-grow mr-1" >
                 <StrictModeDroppable droppableId="unrankedItems">
                   {(provided) => (
                     <ul
                       {...provided.droppableProps}
                       ref={provided.innerRef}
-                      className={classNames("overflow-auto pt-3", !showUnranked ? "hidden" : null)}
-                      style={{ maxHeight: `calc(100vh - 4rem)` }}
+                      className={classNames("pt-3", !showUnranked ? "hidden" : null)}
                     >
                       {unrankedItems.map((item, index) => (
                         <Draggable key={item.id.toString()} draggableId={item.id.toString()} index={index}>
@@ -143,7 +149,7 @@ const App: React.FC = () => {
                                 ref={provided.innerRef}
                                 {...provided.draggableProps}
                                 {...provided.dragHandleProps}
-                                className="no-select w-[40vh]"
+                                className="no-select m-2"
                               >
                                 <Card
                                   key={item.id.toString()}
@@ -162,14 +168,13 @@ const App: React.FC = () => {
                 </StrictModeDroppable>
               </div>
               {/* Ranked Countries List */}
-              <div className={classNames("max-w-50%", showUnranked ? "min-w-90%" : null )}>
+              <div>
                 <StrictModeDroppable droppableId="rankedItems">
                   {(provided) => (
                     <ul
                       {...provided.droppableProps}
                       ref={provided.innerRef}
-                     className={classNames("min-w-[40vw] max-w-[30em] h-full overflow-auto pt-3 bg-[#1d1b54]", !showUnranked ? "max-w-[90vw]" : null )}
-                      style={{ maxHeight: `calc(100vh - 6rem)`, height: `calc(100vh - 6rem)` }}
+                      className={classNames("h-full min-w-[10em] overflow-y-auto overflow-x-hidden pt-3 bg-[#1d1b54]", showUnranked ? "max-w-[50vw]" : "max-w-[300em]")}
                     >
                       {rankedItems.map((item, index) => (
                         <Draggable key={item.id.toString()} draggableId={item.id.toString()} index={index}>
@@ -179,11 +184,11 @@ const App: React.FC = () => {
                                 ref={provided.innerRef}
                                 {...provided.draggableProps}
                                 {...provided.dragHandleProps}
-                                className="no-select"
+                                className="no-select m-2"
                               >
                                 <Card
                                   id={item.id.toString()}
-                                  className="w-60 m-auto text-slate-400 bg-black no-select"
+                                  className="m-auto text-slate-400 bg-black no-select"
                                   rank={index + 1}
                                   name={item.content}
                                 />

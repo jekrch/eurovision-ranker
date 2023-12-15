@@ -19,14 +19,17 @@ export interface CardProps {
   rank?: number;
   name: string;
   className: string;
+  isDragging: boolean;
 }
 
 export const Card: FC<CardProps> = (props) => {
   return (
     <div 
       key={props.id}
-      className={classNames(props.className, "!cursor-pointer whitespace-normal text-sm overflow-hidden shadow rounded")}
-      style={style}
+      className={classNames(
+        props.className, "!cursor-pointer whitespace-normal text-sm overflow-hidden shadow rounded",
+        props.isDragging ? "shadow-amber-100 shadow-white" : "")}
+        style={style}
     >
       {props.rank && (
         <div className="flex-shrink-0 mr-2 font-bold">{props.rank}.</div>

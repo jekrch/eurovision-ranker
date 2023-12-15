@@ -111,8 +111,12 @@ const App: React.FC = () => {
       <div className="flex flex-col h-screen">
         <nav className="bg-gray-800 text-white p-4 sticky top-0 z-50">
           <div className="container mx-auto flex justify-between items-center">
-            <div className="text-xl tracking-wider text-xl tracking-wider gradient-text">
+            <div className="text-xl tracking-wider gradient-text flex items-center">
               Eurovision Ranker
+              <img
+                src={`${process.env.PUBLIC_URL}/eurovision-heart.svg`}
+                alt="Heart"
+                className="w-4 h-4 ml-2" />
             </div>
             <ul className="flex space-x-4">
               <li><div className="flex items-center">
@@ -132,9 +136,17 @@ const App: React.FC = () => {
         </nav>
 
         <div className="flex-grow overflow-auto bg-[#040241] flex justify-center">
-          <DragDropContext onDragEnd={handleOnDragEnd} key={`drag-drop-context-${refreshDnD}`}>
+          <DragDropContext
+            onDragEnd={handleOnDragEnd}
+            key={`drag-drop-context-${refreshDnD}`}
+            onDragStart={() => {
+              if (window.navigator.vibrate) {
+                window.navigator.vibrate(100);
+              }
+            }}
+          >
 
-            <div className="flex flex-row justify-center gap-4 p-4" style={{ gap: '4px' }}>
+            <div className="flex flex-row justify-center gap-4 p-4">
               {/* Unranked Countries List */}
               {showUnranked && (
                 <div className="max-w-[50vw] overflow-y-auto flex-grow mr-1" >
@@ -143,13 +155,16 @@ const App: React.FC = () => {
                       <ul
                         {...provided.droppableProps}
                         ref={provided.innerRef}
-                        className={classNames("pt-3", "")}
-                      //className={classNames("pt-3", !showUnranked ? "hidden" : null)}
+                        className={classNames("pt-3 min-w-[10em]", "")}
                       >
                         {unrankedItems.map((item, index) => (
-                          <Draggable key={item.id.toString()} draggableId={item.id.toString()} index={index}>
+                          <Draggable
+                            key={item.id.toString()}
+                            draggableId={item.id.toString()}
+                            index={index}
+                          >
 
-                            {(provided) => {
+                            {(provided, snapshot) => {
                               return (
                                 <li
                                   key={item.id.toString()}
@@ -163,6 +178,7 @@ const App: React.FC = () => {
                                     id={item.id.toString()}
                                     className="m-auto text-slate-400 bg-'blue' no-select"
                                     name={item.content}
+                                    isDragging={snapshot.isDragging}
                                   />
                                 </li>
                               )
@@ -187,7 +203,7 @@ const App: React.FC = () => {
                     >
                       {rankedItems.map((item, index) => (
                         <Draggable key={`draggable-${item.id.toString()}`} draggableId={item.id.toString()} index={index}>
-                          {(provided) => {
+                          {(provided, snapshot) => {
                             return (
                               <li
                                 key={`li-${item.id.toString()}`}
@@ -202,6 +218,7 @@ const App: React.FC = () => {
                                   className="m-auto text-slate-400 bg-black no-select"
                                   rank={index + 1}
                                   name={item.content}
+                                  isDragging={snapshot.isDragging}
                                 />
                               </li>
                             )

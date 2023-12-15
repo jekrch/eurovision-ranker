@@ -41,3 +41,11 @@ code {
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
+
+.eurovision-heart::after {
+  content: '♥';
+  color: #fefb01; 
+  font-size: 17px; 
+  margin-left: 4px;
+}
+

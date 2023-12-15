@@ -199,7 +199,7 @@ const App: React.FC = () => {
                     <ul
                       {...provided.droppableProps}
                       ref={provided.innerRef}
-                      className={classNames("h-full min-w-[10em] overflow-y-auto overflow-x-hidden pt-3 bg-[#1d1b54]", showUnranked ? "max-w-[50vw]" : "max-w-[300em]")}
+                      className={classNames("h-full w-full min-w-[10em] overflow-y-auto overflow-x-hidden pt-3 bg-[#1d1b54]", showUnranked ? "max-w-[50vw]" : "max-w-[300em]")}
                     >
                       {rankedItems.map((item, index) => (
                         <Draggable key={`draggable-${item.id.toString()}`} draggableId={item.id.toString()} index={index}>

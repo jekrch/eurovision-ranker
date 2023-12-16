@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+html {
+  padding: env(safe-area-inset);
+}
+
 html, body {
   width: 100%;
   margin: 0;

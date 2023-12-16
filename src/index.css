@@ -62,3 +62,16 @@ code {
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
+
+@keyframes glow {
+  0%, 100% {
+    box-shadow: 0 0 15px #132b28, 0 0 30px #694fd1, 0 0 45px #a84fd1, 0 0 60px #4fd1c5;
+  }
+  50% {
+    box-shadow: 0 0 30px #32193d, 0 0 60px #7c37c1, 0 0 90px #9f46b4, 0 0 120px #4fd1c5;
+  }
+}
+
+.first-card-glow {
+  animation: glow 10s ease-in-out infinite;
+}

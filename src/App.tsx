@@ -135,7 +135,7 @@ const App: React.FC = () => {
           </div>
         </nav>
 
-        <div className="flex-grow overflow-auto bg-[#040241] flex justify-center">
+        <div className="flex-grow overflow-auto bg-[#040241] flex justify-center pixelated-background">
           <DragDropContext
             onDragEnd={handleOnDragEnd}
             key={`drag-drop-context-${refreshDnD}`}
@@ -215,7 +215,7 @@ const App: React.FC = () => {
                                 <Card
                                   key={`card-${item.id.toString()}`}
                                   id={item.id.toString()}
-                                  className="m-auto text-slate-400 bg-black no-select"
+                                  className="m-auto text-slate-400 bg- bg-[#03022d] no-select"
                                   rank={index + 1}
                                   name={item.content}
                                   isDragging={snapshot.isDragging}

@@ -28,7 +28,10 @@ export const Card: FC<CardProps> = (props) => {
       key={props.id}
       className={classNames(
         props.className, "!cursor-pointer whitespace-normal text-sm overflow-hidden shadow rounded",
-        props.isDragging ? "shadow-slate-400 shadow-sm" : "")}
+        props.isDragging ? "shadow-slate-400 shadow-sm border-solid" : "",
+        !props.isDragging && props.rank === 1 ? "first-card-glow" : ""
+      )}
+        
         style={style}
     >
       {props.rank && (

@@ -55,13 +55,11 @@ const App: React.FC = () => {
   };
 
   useEffect(() => {
-    decodeRankingsFromURL();
-    if (!rankedItems?.length) {
-      setShowUnranked(true)
-    } else {
-      setShowUnranked(false)
-    }
-  }, []);
+    const rankingsExist = decodeRankingsFromURL();
+  
+    // Set showUnranked based on whether rankings exist
+    setShowUnranked(!rankingsExist);
+  }, [])
 
   useEffect(() => {
     window.history.pushState(null, '', `?r=${encodeRankingsToURL(rankedItems)}`);

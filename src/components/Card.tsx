@@ -28,7 +28,7 @@ export const Card: FC<CardProps> = (props) => {
       key={props.id}
       className={classNames(
         props.className, "!cursor-pointer whitespace-normal text-sm overflow-hidden shadow rounded",
-        props.isDragging ? "shadow-yellow-200 shadow-sm" : "")}
+        props.isDragging ? "shadow-slate-400 shadow-sm" : "")}
         style={style}
     >
       {props.rank && (

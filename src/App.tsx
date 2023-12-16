@@ -135,7 +135,7 @@ const App: React.FC = () => {
           </div>
         </nav>
 
-        <div className="flex-grow overflow-auto bg-[#040241] flex justify-center pixelated-background">
+        <div className="flex-grow overflow-auto overflow-x-hidden bg-[#040241] flex justify-center pixelated-background">
           <DragDropContext
             onDragEnd={handleOnDragEnd}
             key={`drag-drop-context-${refreshDnD}`}
@@ -199,7 +199,7 @@ const App: React.FC = () => {
                     <ul
                       {...provided.droppableProps}
                       ref={provided.innerRef}
-                      className={classNames("h-full w-full min-w-[10em] overflow-y-auto overflow-x-hidden pt-3 bg-[#1d1b54]", showUnranked ? "max-w-[50vw]" : "max-w-[300em]")}
+                      className={classNames("h-full min-w-[10em] overflow-y-auto overflow-x-hidden pt-3 bg-[#1d1b54]", showUnranked ? "max-w-[50vw]" : "w-[80vw] max-w-[30em]")}
                     >
                       {rankedItems.map((item, index) => (
                         <Draggable key={`draggable-${item.id.toString()}`} draggableId={item.id.toString()} index={index}>

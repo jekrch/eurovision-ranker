@@ -30,7 +30,7 @@ export const countries2023: CountryItem[] = [
   { id: 'P', name: 'Poland', icon: 'flag-icon-pl', artist: 'Blanka', song: 'Solo' },
   { id: 'p', name: 'Portugal', icon: 'flag-icon-pt', artist: 'Mimicat', song: 'Ai Coração' },
   { id: 'O', name: 'Romania', icon: 'flag-icon-ro', artist: 'Theodor Andrei', song: 'D.G.T. (Off and On)' },
-  { id: 'S', name: 'San Marino', icon: 'flag-icon-sm', artist: 'Piqued Jacks', song: 'Like An Animal' },
+  { id: 'o', name: 'San Marino', icon: 'flag-icon-sm', artist: 'Piqued Jacks', song: 'Like An Animal' },
   { id: 's', name: 'Serbia', icon: 'flag-icon-rs', artist: 'Luke Black', song: 'Samo Mi Se Spava' },
   { id: 'V', name: 'Slovenia', icon: 'flag-icon-si', artist: 'Joker Out', song: 'Carpe Diem' },
   { id: 'e', name: 'Spain', icon: 'flag-icon-es', artist: 'Blanca Paloma', song: 'Eaea' },

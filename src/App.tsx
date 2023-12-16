@@ -33,9 +33,10 @@ const App: React.FC = () => {
   const decodeRankingsFromURL = (): number | undefined => {
     const params = new URLSearchParams(window.location.search);
     const rankings = params.get('r');
-    if (rankings) {
-      const rankedIds = rankings.split('').map(String);
 
+    if (rankings) {
+
+      const rankedIds = rankings.split('').map(String);
       const rankedCountries = rankedIds
         .map(id => countries2023.find(country => country.id === id))
         .filter(Boolean) as CountryItem[];
@@ -57,7 +58,7 @@ const App: React.FC = () => {
     decodeRankingsFromURL();
     if (!rankedItems?.length) {
       setShowUnranked(true)
-    } {
+    } else {
       setShowUnranked(false)
     }
   }, []);

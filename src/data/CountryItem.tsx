@@ -1,6 +1,7 @@
 export type CountryItem = {
     id: string;
-    content: string;
+    name: string;
+    icon: string;
     artist: string;
     song: string;
   };

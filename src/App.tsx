@@ -24,7 +24,7 @@ const App: React.FC = () => {
    */
   const encodeRankingsToURL = (rankedCountries: CountryItem[]): string => {
     const ids = rankedCountries.map(item => item.id);
-    return ids.join(',');
+    return ids.join('');
   };
 
   /**
@@ -32,9 +32,9 @@ const App: React.FC = () => {
    */
   const decodeRankingsFromURL = (): number | undefined => {
     const params = new URLSearchParams(window.location.search);
-    const rankings = params.get('rankings');
+    const rankings = params.get('r');
     if (rankings) {
-      const rankedIds = rankings.split(',').map(String);
+      const rankedIds = rankings.split('').map(String);
 
       const rankedCountries = rankedIds
         .map(id => countries2023.find(country => country.id === id))
@@ -63,7 +63,7 @@ const App: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    window.history.pushState(null, '', `?rankings=${encodeRankingsToURL(rankedItems)}`);
+    window.history.pushState(null, '', `?r=${encodeRankingsToURL(rankedItems)}`);
   }, [rankedItems]);
 
   useEffect(() => {
@@ -175,9 +175,8 @@ const App: React.FC = () => {
                                 >
                                   <Card
                                     key={item.id.toString()}
-                                    id={item.id.toString()}
                                     className="m-auto text-slate-400 bg-'blue' no-select"
-                                    name={item.content}
+                                    country={item}
                                     isDragging={snapshot.isDragging}
                                   />
                                 </li>
@@ -214,10 +213,10 @@ const App: React.FC = () => {
                               >
                                 <Card
                                   key={`card-${item.id.toString()}`}
-                                  id={item.id.toString()}
                                   className="m-auto text-slate-400 bg- bg-[#03022d] no-select"
                                   rank={index + 1}
-                                  name={item.content}
+                                  country={item}
+                                  isLargeView={!showUnranked}
                                   isDragging={snapshot.isDragging}
                                 />
                               </li>

@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/eurovision-rankr/static/css/main.60cd4472.css",
-    "main.js": "/eurovision-rankr/static/js/main.ae28b0c1.js",
+    "main.js": "/eurovision-rankr/static/js/main.3e03ae6f.js",
     "static/js/787.2a57a386.chunk.js": "/eurovision-rankr/static/js/787.2a57a386.chunk.js",
     "index.html": "/eurovision-rankr/index.html",
     "main.60cd4472.css.map": "/eurovision-rankr/static/css/main.60cd4472.css.map",
-    "main.ae28b0c1.js.map": "/eurovision-rankr/static/js/main.ae28b0c1.js.map",
+    "main.3e03ae6f.js.map": "/eurovision-rankr/static/js/main.3e03ae6f.js.map",
     "787.2a57a386.chunk.js.map": "/eurovision-rankr/static/js/787.2a57a386.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.60cd4472.css",
-    "static/js/main.ae28b0c1.js"
+    "static/js/main.3e03ae6f.js"
   ]
 }

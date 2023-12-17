@@ -10,8 +10,8 @@ import { faCog } from '@fortawesome/free-solid-svg-icons';
 import ConfigModal from './components/ConfigModal';
 
 const App: React.FC = () => {
-  const [contestants, setContestants] = useState<CountryContestant[]>(fetchCountryContestantsByYear('2023'));
-  const [unrankedItems, setUnrankedItems] = useState<CountryContestant[]>(contestants);
+  const [contestants, setContestants] = useState<CountryContestant[]>([]);
+  const [unrankedItems, setUnrankedItems] = useState<CountryContestant[]>([]);
   const [rankedItems, setRankedItems] = useState<CountryContestant[]>([]);
   const [showUnranked, setShowUnranked] = useState(false);
   const [configModalShow, setConfigModalShow] = useState(false);
@@ -42,34 +42,34 @@ const App: React.FC = () => {
     const rankings = params.get('r');
 
     let contestYear = params.get('y') || '2023';
-
-    setYear(contestYear);
-
-    console.log(contestYear)
-    const contestants = fetchCountryContestantsByYear(contestYear);
+    if (contestYear !== year) {
+      setYear(contestYear);
+    }
+    
+    const yearContestants = fetchCountryContestantsByYear(contestYear);
 
     if (rankings) {
       const rankedIds = rankings.split('').map(String);
       const rankedCountries = rankedIds
-        .map(id => contestants.find(country => country.id === id))
+        .map(id => yearContestants.find(country => country.id === id))
         .filter(Boolean) as CountryContestant[];
 
-      const unrankedCountries = contestants.filter(
+      const unrankedCountries = yearContestants.filter(
         countryContestant => !rankedIds.includes(countryContestant.id)
       );
 
       setRankedItems(rankedCountries);
       setUnrankedItems(unrankedCountries);
-    } else {
-      setUnrankedItems(contestants);
-    }
 
+      console.log(rankedCountries)
+    } else {
+      setUnrankedItems(yearContestants);
+    }
     return rankings?.length
   };
 
   useEffect(() => {
     const rankingsExist = decodeRankingsFromURL();
-
     // Set showUnranked based on whether rankings exist
     setShowUnranked(!rankingsExist);
   }, [])
@@ -81,19 +81,18 @@ const App: React.FC = () => {
   }, [rankedItems]);
 
   useEffect(() => {
+
     if (!year?.length) {
       return;
     }
-    updateQueryParams({ y: year });
-    setRankedItems([]);
+
     let yearContestants = fetchCountryContestantsByYear(year);
+
+    updateQueryParams({ y: year });
     setContestants(yearContestants);
     setUnrankedItems(yearContestants)
+    decodeRankingsFromURL();
   }, [year]);
-
-  // useEffect(() => {
-  //   setRefreshDnD(Math.random());
-  // }, [showUnranked]);
 
   /**
    * Function to update the query parameters

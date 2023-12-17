@@ -68,7 +68,7 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
                 <div className="pt-4">
                     {activeTab === 'about' &&
                         <div>
-                            Thanks for using my app. I'm just getting started, so expect a lot of changes here in the coming months.
+                            Thanks for using my app! I'm just getting started, so expect a lot of changes here in the coming months.
                         </div>}
                     {activeTab === 'settings' &&
                         <div className="flex flex-col items-start">
@@ -82,7 +82,7 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
                           </div>
                           <div>
                             Set the contest year
-                            <div className="text-red-400 text-xs">(Warning: this will clear all current rankings)</div>
+                            <div className="text-red-400 text-xs">(Warning: any currently ranked countries that did not participate will be removed)</div>
                           </div>
                         </div>
                       </div>}

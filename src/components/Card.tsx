@@ -45,7 +45,7 @@ export const Card: FC<CardProps> = (props) => {
         {props.country.name} 
         {props.isLargeView &&
           <>
-            <i className={`float-right ml-3 flag-icon ${props.country.icon}`}/>
+            <i className={`z-1 float-right ml-3 flag-icon ${props.country.icon}`}/>
             {props.contestant.youtube && 
             <a 
               href={props.contestant.youtube} target="_blank" rel="noopener noreferrer"

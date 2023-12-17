@@ -56,7 +56,7 @@ const App: React.FC = () => {
 
   useEffect(() => {
     const rankingsExist = decodeRankingsFromURL();
-  
+
     // Set showUnranked based on whether rankings exist
     setShowUnranked(!rankingsExist);
   }, [])
@@ -110,7 +110,7 @@ const App: React.FC = () => {
       <div className="flex flex-col h-screen">
         <nav className="bg-gray-800 text-white p-4 sticky top-0 z-50">
           <div className="container mx-auto flex justify-between items-center">
-            <div className="text-xl tracking-wider gradient-text flex items-center">
+            <div className="text-lg tracking-wider gradient-text font-bold flex items-center">
               Eurovision Ranker
               <img
                 src={`${process.env.PUBLIC_URL}/eurovision-heart.svg`}
@@ -199,6 +199,11 @@ const App: React.FC = () => {
                       ref={provided.innerRef}
                       className={classNames("h-full min-w-[10em] overflow-y-auto overflow-x-hidden pt-3 bg-[#1d1b54]", showUnranked ? "max-w-[50vw]" : "w-[80vw] max-w-[30em]")}
                     >
+                      {rankedItems.length === 0 && (
+                          <div className="flex justify-center items-center h-full">
+                            <span className="text-gray-400 font-thin font-mono text-italic text-center m-4 text-xs whitespace-normal max-w-[10em]">Drag over a country to rank</span>
+                          </div>
+                      )}
                       {rankedItems.map((item, index) => (
                         <Draggable key={`draggable-${item.id.toString()}`} draggableId={item.id.toString()} index={index}>
                           {(provided, snapshot) => {

@@ -75,3 +75,9 @@ code {
 .first-card-glow {
   animation: glow 10s ease-in-out infinite;
 }
+
+.nav-diagonal-split-bg {
+  background: linear-gradient(
+    135deg, #13172b 60%, #2c345f 40%
+  );
+} 

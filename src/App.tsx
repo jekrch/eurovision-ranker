@@ -108,9 +108,9 @@ const App: React.FC = () => {
   return (
     <>
       <div className="flex flex-col h-screen">
-        <nav className="bg-gray-800 text-white p-4 sticky top-0 z-50">
+        <nav className="nav-diagonal-split-bg bg-gray-800 text-white p-4 sticky top-0 z-50 ">
           <div className="container mx-auto flex justify-between items-center">
-            <div className="text-lg tracking-wider gradient-text font-bold flex items-center">
+            <div className="text-lg tracking-tighter gradient-text font-bold flex items-center">
               Eurovision Ranker
               <img
                 src={`${process.env.PUBLIC_URL}/eurovision-heart.svg`}

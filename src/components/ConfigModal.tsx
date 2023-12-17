@@ -1,20 +1,33 @@
-import React, { useState } from 'react';
+import classNames from 'classnames';
+import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { Fragment } from 'react'
+import { Menu, Transition } from '@headlessui/react'
+import { ChevronDownIcon } from '@heroicons/react/20/solid'
+import Dropdown from './Dropdown';
 
 type ConfigModalProps = {
     isOpen: boolean;
+    tab: string;
     onClose: () => void;
+    setYear: Dispatch<SetStateAction<string>>;
+    year: string;
 };
 
-const ConfigModal: React.FC<ConfigModalProps> = ({ isOpen, onClose }) => {
-    const [activeTab, setActiveTab] = useState('about');
+const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
+    const [activeTab, setActiveTab] = useState(props.tab);
 
-    if (!isOpen) return null;
+    useEffect(() => {
+        setActiveTab(props.tab)
+    }, [props.tab, props.isOpen]);
+
+
+    if (!props.isOpen) return null;
 
     return (
         <div className="fixed z-200 inset-0 bg-black bg-opacity-50 flex justify-center items-center">
             <div className="relative bg-[#272557] opacity-95 m-4 h-[90vh] text-slate-400 z-200 p-6 rounded-lg shadow-lg max-w-lg w-full">
                 <button
-                    onClick={onClose}
+                    onClick={props.onClose}
                     className="absolute top-0 right-0 mt-4 mr-4 text-gray-300 text-lg leading-none hover:text-gray-400"
                 >
                     &#x2715;
@@ -53,8 +66,26 @@ const ConfigModal: React.FC<ConfigModalProps> = ({ isOpen, onClose }) => {
                 </div>
 
                 <div className="pt-4">
-                    {activeTab === 'about' && <div>Content for About</div>}
-                    {activeTab === 'settings' && <div>Content for Settings</div>}
+                    {activeTab === 'about' &&
+                        <div>
+                            Thanks for using my app. I'm just getting started, so expect a lot of changes here in the coming months.
+                        </div>}
+                    {activeTab === 'settings' &&
+                        <div className="flex flex-col items-start">
+                        <div className="flex items-center">
+                          <div className="mr-4">
+                            <Dropdown
+                              value={props.year}
+                              onChange={props.setYear}
+                              options={['2023', '2022', '2021']}
+                            />
+                          </div>
+                          <div>
+                            Set the contest year
+                            <div className="text-red-400 text-xs">(Warning: this will clear all current rankings)</div>
+                          </div>
+                        </div>
+                      </div>}
                     {/* Additional tab contents */}
                 </div>
             </div>

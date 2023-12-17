@@ -17,6 +17,8 @@ const App: React.FC = () => {
   const [configModalShow, setConfigModalShow] = useState(false);
   const [refreshUrl, setRefreshUrl] = useState(0);
   const [refreshDnD, setRefreshDnD] = useState(0);
+  const [modalTab, setModalTab] = useState('about')
+  const [year, setYear] = useState<string>('');
 
   const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setShowUnranked(event.target.checked);
@@ -39,19 +41,23 @@ const App: React.FC = () => {
     const params = new URLSearchParams(window.location.search);
     const rankings = params.get('r');
 
-    if (rankings) {
+    let contestYear = params.get('y') || '2023';
 
+    setYear(contestYear);
+
+    console.log(contestYear)
+    const contestants = fetchCountryContestantsByYear(contestYear);
+
+    if (rankings) {
       const rankedIds = rankings.split('').map(String);
       const rankedCountries = rankedIds
         .map(id => contestants.find(country => country.id === id))
         .filter(Boolean) as CountryContestant[];
 
-        console.log(rankedIds)
-        console.log(contestants)
       const unrankedCountries = contestants.filter(
         countryContestant => !rankedIds.includes(countryContestant.id)
       );
-      console.log(unrankedCountries)
+
       setRankedItems(rankedCountries);
       setUnrankedItems(unrankedCountries);
     } else {
@@ -71,12 +77,23 @@ const App: React.FC = () => {
   useEffect(() => {
     //window.history.pushState(null, '', `?r=${encodeRankingsToURL(rankedItems)}`);
     updateQueryParams({ r: encodeRankingsToURL(rankedItems) });
-    updateQueryParams({ y: '23' });
+    updateQueryParams({ y: year });
   }, [rankedItems]);
 
   useEffect(() => {
-    setRefreshDnD(Math.random());
-  }, [showUnranked]);
+    if (!year?.length) {
+      return;
+    }
+    updateQueryParams({ y: year });
+    setRankedItems([]);
+    let yearContestants = fetchCountryContestantsByYear(year);
+    setContestants(yearContestants);
+    setUnrankedItems(yearContestants)
+  }, [year]);
+
+  // useEffect(() => {
+  //   setRefreshDnD(Math.random());
+  // }, [showUnranked]);
 
   /**
    * Function to update the query parameters
@@ -129,6 +146,11 @@ const App: React.FC = () => {
     setRefreshUrl(Math.random())
   };
 
+  function openModal(tabName: string): void {
+    setModalTab(tabName);
+    setConfigModalShow(true)
+  }
+
   return (
     <>
       <div className="flex flex-col h-screen">
@@ -153,7 +175,7 @@ const App: React.FC = () => {
                   <FontAwesomeIcon
                     className="configCog mr-1 ml-4 text-xl"
                     icon={faCog}
-                    onClick={() => setConfigModalShow(true)}
+                    onClick={() => openModal('settings')}
                   />
                 </div>
               </li>
@@ -228,7 +250,7 @@ const App: React.FC = () => {
                       className={classNames("h-full min-w-[10em] overflow-y-auto overflow-x-hidden pt-3 bg-[#1d1b54]", showUnranked ? "max-w-[50vw]" : "w-[80vw] max-w-[30em]")}
                     >
                       <div className="w-full text-center font-bold bg-blue-900 text-slate-300 py-1 -mt-3 text-md tracking-tighter">
-                        2023
+                        {year}
                       </div>
                       {rankedItems.length === 0 && (
                         <div className="flex justify-center items-center h-full">
@@ -270,7 +292,10 @@ const App: React.FC = () => {
         </div>
       </div>
       <ConfigModal 
+          tab={modalTab}
           isOpen={configModalShow} 
+          setYear={setYear}
+          year={year}
           onClose={() => setConfigModalShow(false)}
         />
     </>

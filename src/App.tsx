@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
 import { Card } from './components/Card';
-import { countries2023 } from './data/Countries';
-import { CountryItem } from './data/CountryItem';
 import { StrictModeDroppable } from './components/StrictModeDroppable';
 import classNames from 'classnames';
+import { CountryContestant } from './data/CountryContestant';
+import { fetchCountryContestantsByYear } from './utilities/ContestantFactory';
 
 const App: React.FC = () => {
-  const [unrankedItems, setUnrankedItems] = useState<CountryItem[]>(countries2023);
-  const [rankedItems, setRankedItems] = useState<CountryItem[]>([]);
+  const [contestants, setContestants] = useState<CountryContestant[]>(fetchCountryContestantsByYear('2023'));
+  const [unrankedItems, setUnrankedItems] = useState<CountryContestant[]>(contestants);
+  const [rankedItems, setRankedItems] = useState<CountryContestant[]>([]);
   const [showUnranked, setShowUnranked] = useState(false);
   const [refreshUrl, setRefreshUrl] = useState(0);
   const [refreshDnD, setRefreshDnD] = useState(0);
@@ -22,7 +23,7 @@ const App: React.FC = () => {
    * @param rankedCountries 
    * @returns 
    */
-  const encodeRankingsToURL = (rankedCountries: CountryItem[]): string => {
+  const encodeRankingsToURL = (rankedCountries: CountryContestant[]): string => {
     const ids = rankedCountries.map(item => item.id);
     return ids.join('');
   };
@@ -38,17 +39,17 @@ const App: React.FC = () => {
 
       const rankedIds = rankings.split('').map(String);
       const rankedCountries = rankedIds
-        .map(id => countries2023.find(country => country.id === id))
-        .filter(Boolean) as CountryItem[];
+        .map(id => contestants.find(country => country.id === id))
+        .filter(Boolean) as CountryContestant[];
 
-      const unrankedCountries = countries2023.filter(
+      const unrankedCountries = contestants.filter(
         country => !rankedIds.includes(country.id)
       );
 
       setRankedItems(rankedCountries);
       setUnrankedItems(unrankedCountries);
     } else {
-      setUnrankedItems(countries2023);
+      setUnrankedItems(contestants);
     }
 
     return rankings?.length
@@ -175,7 +176,8 @@ const App: React.FC = () => {
                                   <Card
                                     key={item.id.toString()}
                                     className="m-auto text-slate-400 bg-'blue' no-select"
-                                    country={item}
+                                    country={item.country}
+                                    contestant={item.contestant}
                                     isDragging={snapshot.isDragging}
                                   />
                                 </li>
@@ -219,7 +221,8 @@ const App: React.FC = () => {
                                   key={`card-${item.id.toString()}`}
                                   className="m-auto text-slate-400 bg- bg-[#03022d] no-select"
                                   rank={index + 1}
-                                  country={item}
+                                  country={item.country}
+                                  contestant={item.contestant}
                                   isLargeView={!showUnranked}
                                   isDragging={snapshot.isDragging}
                                 />

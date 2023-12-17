@@ -1,3 +1,4 @@
+import { Country } from "./Country";
 import { CountryItem } from "./CountryItem";
 
 export const countries2023: CountryItem[] = [
@@ -38,4 +39,45 @@ export const countries2023: CountryItem[] = [
   { id: 't', name: 'Switzerland', icon: 'flag-icon-ch', artist: 'Remo Forrer', song: 'Watergun', youtube: "https://www.youtube.com/watch?v=_8-Sbc_GZMc"},
   { id: 'u', name: 'Ukraine', icon: 'flag-icon-ua', artist: 'TVORCHI', song: 'Heart Of Steel', youtube: "https://www.youtube.com/watch?v=neIscK1hNxs"},
   { id: 'k', name: 'United Kingdom', icon: 'flag-icon-gb', artist: 'Mae Muller', song: 'I Wrote a Song', youtube: "https://www.youtube.com/watch?v=tJ21grjN6wU" }
+];
+
+
+export const countries: Country[] = [
+  { id: 'A', name: 'Albania', key: 'al', icon: 'flag-icon-al' },
+  { id: 'a', name: 'Armenia', key: 'am', icon: 'flag-icon-am' },
+  { id: 'U', name: 'Australia', key: 'au', icon: 'flag-icon-au' },
+  { id: 'S', name: 'Austria', key: 'at', icon: 'flag-icon-at' },
+  { id: 'Z', name: 'Azerbaijan', key: 'az', icon: 'flag-icon-az' },
+  { id: 'B', name: 'Belgium', key: 'be', icon: 'flag-icon-be' },
+  { id: 'C', name: 'Croatia', key: 'hr', icon: 'flag-icon-hr' },
+  { id: 'c', name: 'Cyprus', key: 'cy', icon: 'flag-icon-cy' },
+  { id: 'z', name: 'Czechia', key: 'cz', icon: 'flag-icon-cz' },
+  { id: 'D', name: 'Denmark', key: 'dk', icon: 'flag-icon-dk' },
+  { id: 'E', name: 'Estonia', key: 'ee', icon: 'flag-icon-ee' },
+  { id: 'F', name: 'Finland', key: 'fi', icon: 'flag-icon-fi' },
+  { id: 'f', name: 'France', key: 'fr', icon: 'flag-icon-fr' },
+  { id: 'G', name: 'Georgia', key: 'ge', icon: 'flag-icon-ge' },
+  { id: 'g', name: 'Germany', key: 'de', icon: 'flag-icon-de' },
+  { id: 'R', name: 'Greece', key: 'gr', icon: 'flag-icon-gr' },
+  { id: 'I', name: 'Iceland', key: 'is', icon: 'flag-icon-is' },
+  { id: 'i', name: 'Ireland', key: 'ie', icon: 'flag-icon-ie' },
+  { id: 'r', name: 'Israel', key: 'il', icon: 'flag-icon-il' },
+  { id: 'T', name: 'Italy', key: 'it', icon: 'flag-icon-it' },
+  { id: 'L', name: 'Latvia', key: 'lv', icon: 'flag-icon-lv' },
+  { id: 'l', name: 'Lithuania', key: 'lt', icon: 'flag-icon-lt' },
+  { id: 'M', name: 'Malta', key: 'mt', icon: 'flag-icon-mt' },
+  { id: 'm', name: 'Moldova', key: 'md', icon: 'flag-icon-md' },
+  { id: 'N', name: 'Netherlands', key: 'nl', icon: 'flag-icon-nl' },
+  { id: 'n', name: 'Norway', key: 'no', icon: 'flag-icon-no' },
+  { id: 'P', name: 'Poland', key: 'pl', icon: 'flag-icon-pl' },
+  { id: 'p', name: 'Portugal', key: 'pt', icon: 'flag-icon-pt' },
+  { id: 'O', name: 'Romania', key: 'ro', icon: 'flag-icon-ro' },
+  { id: 'o', name: 'San Marino', key: 'sm', icon: 'flag-icon-sm' },
+  { id: 's', name: 'Serbia', key: 'rs', icon: 'flag-icon-rs' },
+  { id: 'V', name: 'Slovenia', key: 'si', icon: 'flag-icon-si' },
+  { id: 'e', name: 'Spain', key: 'es', icon: 'flag-icon-es' },
+  { id: 'W', name: 'Sweden', key: 'se', icon: 'flag-icon-se' },
+  { id: 't', name: 'Switzerland', key: 'ch', icon: 'flag-icon-ch' },
+  { id: 'u', name: 'Ukraine', key: 'ua', icon: 'flag-icon-ua' },
+  { id: 'k', name: 'United Kingdom', key: 'gb', icon: 'flag-icon-gb' }
 ];

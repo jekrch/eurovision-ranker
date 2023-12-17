@@ -1,8 +1,8 @@
 import classNames from 'classnames';
 import type { FC } from 'react';
-import { CountryItem } from '../data/CountryItem';
-import { FaYoutube } from 'react-icons/fa';
 import { FaExternalLinkAlt } from 'react-icons/fa';
+import { Contestant } from '../data/Contestant';
+import { Country } from '../data/Country';
 
 const style = {
   padding: '0.5rem 1rem',
@@ -18,7 +18,8 @@ const style = {
 
 export interface CardProps {
   rank?: number;
-  country: CountryItem;
+  country: Country;
+  contestant: Contestant
   className: string;
   isDragging: boolean;
   isLargeView?: boolean;
@@ -45,9 +46,9 @@ export const Card: FC<CardProps> = (props) => {
         {props.isLargeView &&
           <>
             <i className={`float-right ml-3 flag-icon ${props.country.icon}`}/>
-            {props.country.youtube && 
+            {props.contestant.youtube && 
             <a 
-              href={props.country.youtube} target="_blank" rel="noopener noreferrer"
+              href={props.contestant.youtube} target="_blank" rel="noopener noreferrer"
               className='float-right rounded text-slate-500 ml-1 hover:text-slate-100 mt-[1px]'
             >
                 <FaExternalLinkAlt className='text-xs'/>
@@ -55,10 +56,10 @@ export const Card: FC<CardProps> = (props) => {
             }
             <div className="flex items-center">
               <span className="font-xs text-xs text-gray-500">
-                {props.country.artist}
+                {props.contestant.artist}
               </span>
               <span className="ml-2 font-xs text-xs text-gray-500">
-                {`"${props.country.song}"`}
+                {`"${props.contestant.song}"`}
               </span>
             </div>
           </>

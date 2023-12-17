@@ -1,7 +1,7 @@
 import { Contestant } from "../data/Contestant";
 import { CountryContestant } from "../data/CountryContestant";
 import { countries } from '../data/Countries';
-import { contestants2023 } from '../data/Contestants';
+import { contestants2021, contestants2022, contestants2023 } from '../data/Contestants';
 
 
 export function fetchCountryContestantsByYear(year: string): CountryContestant[] {
@@ -22,15 +22,15 @@ export function fetchCountryContestantsByYear(year: string): CountryContestant[]
 }
 
 function getContestantsByYear(year: string) {
-    let contestants: Contestant[];
-
     switch (year) {
         case '2023':
-            contestants = contestants2023;
-            break;
+            return contestants2023;
+        case `2022`:
+            return contestants2022; 
+        case `2021`:
+            return contestants2021; 
         default:
             throw new Error(`No contestants found for year: ${year}`);
     }
-    return contestants;
 }
   

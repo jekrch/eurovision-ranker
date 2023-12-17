@@ -5,12 +5,16 @@ import { StrictModeDroppable } from './components/StrictModeDroppable';
 import classNames from 'classnames';
 import { CountryContestant } from './data/CountryContestant';
 import { fetchCountryContestantsByYear } from './utilities/ContestantFactory';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCog } from '@fortawesome/free-solid-svg-icons';
+import ConfigModal from './components/ConfigModal';
 
 const App: React.FC = () => {
   const [contestants, setContestants] = useState<CountryContestant[]>(fetchCountryContestantsByYear('2023'));
   const [unrankedItems, setUnrankedItems] = useState<CountryContestant[]>(contestants);
   const [rankedItems, setRankedItems] = useState<CountryContestant[]>([]);
   const [showUnranked, setShowUnranked] = useState(false);
+  const [configModalShow, setConfigModalShow] = useState(false);
   const [refreshUrl, setRefreshUrl] = useState(0);
   const [refreshDnD, setRefreshDnD] = useState(0);
 
@@ -42,10 +46,12 @@ const App: React.FC = () => {
         .map(id => contestants.find(country => country.id === id))
         .filter(Boolean) as CountryContestant[];
 
+        console.log(rankedIds)
+        console.log(contestants)
       const unrankedCountries = contestants.filter(
-        country => !rankedIds.includes(country.id)
+        countryContestant => !rankedIds.includes(countryContestant.id)
       );
-
+      console.log(unrankedCountries)
       setRankedItems(rankedCountries);
       setUnrankedItems(unrankedCountries);
     } else {
@@ -63,12 +69,29 @@ const App: React.FC = () => {
   }, [])
 
   useEffect(() => {
-    window.history.pushState(null, '', `?r=${encodeRankingsToURL(rankedItems)}`);
+    //window.history.pushState(null, '', `?r=${encodeRankingsToURL(rankedItems)}`);
+    updateQueryParams({ r: encodeRankingsToURL(rankedItems) });
+    updateQueryParams({ y: '23' });
   }, [rankedItems]);
 
   useEffect(() => {
     setRefreshDnD(Math.random());
   }, [showUnranked]);
+
+  /**
+   * Function to update the query parameters
+   */
+  function updateQueryParams(params: { [key: string]: string }) {
+    const searchParams = new URLSearchParams(window.location.search);
+
+    // Set new or update existing parameters
+    Object.keys(params).forEach(key => {
+      searchParams.set(key, params[key]);
+    });
+
+    // Update the URL without reloading the page
+    window.history.pushState(null, '', '?' + searchParams.toString());
+  }
 
   const handleOnDragEnd = (result: DropResult) => {
     const { source, destination } = result;
@@ -109,7 +132,7 @@ const App: React.FC = () => {
   return (
     <>
       <div className="flex flex-col h-screen">
-        <nav className="nav-diagonal-split-bg bg-gray-800 text-white p-4 sticky top-0 z-50 ">
+        <nav className="nav-diagonal-split-bg bg-gray-800 text-white p-4 sticky top-0 z-100">
           <div className="container mx-auto flex justify-between items-center">
             <div className="text-lg tracking-tighter gradient-text font-bold flex items-center">
               Eurovision Ranker
@@ -118,19 +141,22 @@ const App: React.FC = () => {
                 alt="Heart"
                 className="w-4 h-4 ml-2" />
             </div>
-            <ul className="flex space-x-4">
-              <li><div className="flex items-center">
-                <input
-                  type="checkbox"
-                  id="navbarCheckbox"
-                  checked={showUnranked}
-                  onChange={handleCheckboxChange}
-                  className="form-checkbox h-4 w-4 text-blue-600"
-                />
-                <label htmlFor="navbarCheckbox" className="ml-2 text-xs">
-                  show unranked
-                </label>
-              </div></li>
+            <ul className="flex space-x-2">
+              <li>
+                <div className="flex items-center">
+                  <button
+                    className="bg-blue-500 hover:bg-blue-700 text-white font-normal py-1 px-3 rounded-full text-xs mr-0 w-[5em]"
+                    onClick={() => { setShowUnranked(!showUnranked) }}
+                  >
+                    {showUnranked ? 'details' : `select`}
+                  </button>
+                  <FontAwesomeIcon
+                    className="configCog mr-1 ml-4 text-xl"
+                    icon={faCog}
+                    onClick={() => setConfigModalShow(true)}
+                  />
+                </div>
+              </li>
             </ul>
           </div>
         </nav>
@@ -201,10 +227,13 @@ const App: React.FC = () => {
                       ref={provided.innerRef}
                       className={classNames("h-full min-w-[10em] overflow-y-auto overflow-x-hidden pt-3 bg-[#1d1b54]", showUnranked ? "max-w-[50vw]" : "w-[80vw] max-w-[30em]")}
                     >
+                      <div className="w-full text-center font-bold bg-blue-900 text-slate-300 py-1 -mt-3 text-md tracking-tighter">
+                        2023
+                      </div>
                       {rankedItems.length === 0 && (
-                          <div className="flex justify-center items-center h-full">
-                            <span className="text-gray-400 font-thin font-mono text-italic text-center m-4 text-xs whitespace-normal max-w-[10em]">Drag over a country to rank</span>
-                          </div>
+                        <div className="flex justify-center items-center h-full">
+                          <span className="text-gray-400 font-thin font-mono text-italic text-center m-4 text-xs whitespace-normal max-w-[10em]">Drag over a country to rank</span>
+                        </div>
                       )}
                       {rankedItems.map((item, index) => (
                         <Draggable key={`draggable-${item.id.toString()}`} draggableId={item.id.toString()} index={index}>
@@ -240,6 +269,10 @@ const App: React.FC = () => {
           </DragDropContext>
         </div>
       </div>
+      <ConfigModal 
+          isOpen={configModalShow} 
+          onClose={() => setConfigModalShow(false)}
+        />
     </>
   );
 };

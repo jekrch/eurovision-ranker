@@ -18,11 +18,6 @@ html, body {
   max-width: 100%; /* to prevent horizontal scroll */
 }
 
-@media only screen and (orientation: landscape) {
-  .container {
-    /* Adjustments for landscape mode */
-  }
-}
 
 body {
   margin: 0;
@@ -81,3 +76,41 @@ code {
     135deg, #13172b 60%, #2c345f 40%
   );
 } 
+
+.configCog {
+	margin-top: 0.15em;
+	height: 1em;
+	color: grey;
+}
+
+.configCog:hover {
+	opacity: 0.5 !important;
+	cursor: pointer;
+}
+
+
+.configCog:hover {
+    -webkit-animation: spin 900ms none normal;
+    animation: spin 900ms none normal;
+}
+
+@-webkit-keyframes spin {
+    0% {
+        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+    100% {
+        -webkit-transform: rotate(59deg);
+        transform: rotate(59deg);
+    }
+}
+@keyframes spin {
+    0% {
+        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+    100% {
+        -webkit-transform: rotate(59deg);
+        transform: rotate(59deg);
+    }
+}

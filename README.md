@@ -1,4 +1,4 @@
-A simple app for ranking Eurovision countries.
+An app for ranking Eurovision countries.
 
 # Getting Started 
 

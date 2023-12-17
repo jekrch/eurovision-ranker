@@ -1,6 +1,6 @@
 {
   "name": "ev-ranker",
-  "homepage": "https://jekrch.github.io/eurovision-rankr",
+  "homepage": "https://www.eurovision-ranker.com",
   "version": "0.1.0",
   "private": true,
   "dependencies": {

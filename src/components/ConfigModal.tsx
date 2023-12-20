@@ -14,11 +14,11 @@ type ConfigModalProps = {
 };
 
 const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
-    const [activeTab, setActiveTab] = useState(props.tab);
+    const [activeTab, setActiveTab] = useState('donate'); //props.tab
 
-    useEffect(() => {
-        setActiveTab(props.tab)
-    }, [props.tab, props.isOpen]);
+    // useEffect(() => {
+    //     setActiveTab(props.tab)
+    // }, [props.tab, props.isOpen]);
 
 
     if (!props.isOpen) return null;
@@ -61,32 +61,78 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
                                 Settings
                             </button>
                         </li>
-                        {/* Additional tabs as needed */}
+
+                        <li className="mr-2">
+                            <button
+                                onClick={() => setActiveTab('donate')}
+                                className={`inline-flex items-center justify-center p-4 ${activeTab === 'donate' ? 'text-blue-500 border-blue-500 border-b-2' : 'hover:text-gray-500 hover:border-gray-300'}`}
+                            >
+                                <svg fill="currentColor" height="14px" width="14px" id="heart" className="mr-2 "
+                                    viewBox="0 0 471.701 471.701">
+                                    <g>
+                                        <path d="M433.601,67.001c-24.7-24.7-57.4-38.2-92.3-38.2s-67.7,13.6-92.4,38.3l-12.9,12.9l-13.1-13.1
+		c-24.7-24.7-57.6-38.4-92.5-38.4c-34.8,0-67.6,13.6-92.2,38.2c-24.7,24.7-38.3,57.5-38.2,92.4c0,34.9,13.7,67.6,38.4,92.3
+		l187.8,187.8c2.6,2.6,6.1,4,9.5,4c3.4,0,6.9-1.3,9.5-3.9l188.2-187.5c24.7-24.7,38.3-57.5,38.3-92.4
+		C471.801,124.501,458.301,91.701,433.601,67.001z M414.401,232.701l-178.7,178l-178.3-178.3c-19.6-19.6-30.4-45.6-30.4-73.3
+		s10.7-53.7,30.3-73.2c19.5-19.5,45.5-30.3,73.1-30.3c27.7,0,53.8,10.8,73.4,30.4l22.6,22.6c5.3,5.3,13.8,5.3,19.1,0l22.4-22.4
+		c19.6-19.6,45.7-30.4,73.3-30.4c27.6,0,53.6,10.8,73.2,30.3c19.6,19.6,30.3,45.6,30.3,73.3
+		C444.801,187.101,434.001,213.101,414.401,232.701z"/>
+                                    </g>
+                                </svg>
+                                Donate
+                            </button>
+                        </li>
+
                     </ul>
                 </div>
 
                 <div className="pt-4">
                     {activeTab === 'about' &&
                         <div>
-                            Thanks for using my app! I'm just getting started, so expect a lot of changes here in the coming months.
+                            Thanks for using my app! I'm just getting started, so expect a lot of changes here in the coming months.                  
+{/* 
+                            <iframe
+                                className="donate-widget border-0 m-0 h-[30em]"
+                                src="https://www.givemn.org/forms/Jddsdf?id=nmng3g&embed=donation_widget"
+                                title="Donation Widget"
+                            ></iframe> */}
+
                         </div>}
                     {activeTab === 'settings' &&
                         <div className="flex flex-col items-start">
-                        <div className="flex items-center">
-                          <div className="mr-4">
-                            <Dropdown
-                              value={props.year}
-                              onChange={props.setYear}
-                              options={['2023', '2022', '2021']}
-                            />
-                          </div>
-                          <div>
-                            Set the contest year
-                            <div className="text-red-400 text-xs">(Warning: any currently ranked countries that did not participate will be removed)</div>
-                          </div>
-                        </div>
-                      </div>}
-                    {/* Additional tab contents */}
+                            <div className="flex items-center">
+                                <div className="mr-4">
+                                    <Dropdown
+                                        value={props.year}
+                                        onChange={props.setYear}
+                                        options={['2023', '2022', '2021']}
+                                    />
+                                </div>
+                                <div>
+                                    Set the contest year
+                                    <div className="text-red-400 text-xs">(Warning: any currently ranked countries that did not participate will be removed)</div>
+                                </div>
+                            </div>
+                        </div>}
+
+                        {activeTab === 'donate' &&
+    <div className="">
+        <div className="float-left w-1/2 mr-5">
+            <img
+                src={`${process.env.PUBLIC_URL}/mnay.png`}
+                alt="Heart"
+                className="w-full shadow-lg rounded mb-5" />
+            <button
+                className="w-full bg-blue-500 hover:bg-blue-700 text-white font-normal py-1 px-3 rounded-full text-md mb-5"
+                onClick={() => window.open('https://www.givemn.org/story/Jddsdf', '_blank')}
+            >
+                {'Donate'}
+            </button>
+        </div>
+        <div className="item-body">
+            <div><p>OK, full disclosure, I'm not from a participating nation. I live in the US: Minneapolis, MN. But I love much of the values and spirit (and maybe a little of the gossip and drama) surrounding the Eurovision Song Contest.
+             Minnesota Alliance With Youth is a youth development organization that empowers young people who need support in my community. If you enjoy this app and want to say thanks (and maybe motivate me to continue adding neat features in the future) please consider donating to the Alliance.</p></div>
+                            </div></div>}
                 </div>
             </div>
         </div>

@@ -114,3 +114,8 @@ code {
         transform: rotate(59deg);
     }
 }
+
+.donate-widget {
+  transform: scale(0.6); /* Adjust the scale value as needed */
+  transform-origin: top left;
+}

@@ -11,12 +11,12 @@ type ConfigModalProps = {
 };
 
 const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
-    const [activeTab, setActiveTab] = useState('about'); //props.tab
+    const [activeTab, setActiveTab] = useState(props.tab); 
     const modalRef = useRef<HTMLDivElement>(null);
-    // useEffect(() => {
-    //     setActiveTab(props.tab)
-    // }, [props.tab, props.isOpen]);
 
+    useEffect(() => {
+        setActiveTab(props.tab)
+    }, [props.tab, props.isOpen]);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {

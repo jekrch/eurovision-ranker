@@ -13,7 +13,7 @@ const Dropdown: React.FC<DropdownProps> = ({ value, onChange, options }) => {
   return (
     <Menu as="div" className="relative inline-block text-left w-[5em]">
       <div>
-        <Menu.Button className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-slate-200 px-3 py-2 text-sm font-bold text-gray-500 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-slate-100">
+        <Menu.Button className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-slate-200 bg-opacity-10 px-3 py-2 text-sm font-bold text-gray-400 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-opacity-30">
           {value}
           <ChevronDownIcon className="-mr-1 h-5 w-5 text-gray-400" aria-hidden="true" />
         </Menu.Button>
@@ -29,14 +29,14 @@ const Dropdown: React.FC<DropdownProps> = ({ value, onChange, options }) => {
         leaveTo="transform opacity-0 scale-95"
       >
         <Menu.Items className="absolute left-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-          <div className="py-1 bg-slate-100">
+          <div className="py-1 bg-slate-600">
             {options.map((option, index) => (
               <Menu.Item key={index}>
                 {({ active }) => (
                   <button
                     onClick={() => onChange(option)}
                     className={classNames(
-                      active ? 'bg-slate-200 text-gray-900' : 'text-slate-700',
+                      active ? 'bg-slate-400 text-blue-100' : 'text-slate-400',
                       'block w-full px-4 py-2 text-left text-sm'
                     )}
                   >

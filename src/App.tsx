@@ -251,9 +251,14 @@ const App: React.FC = () => {
                       <div className="w-full text-center font-bold bg-blue-900 text-slate-300 py-1 -mt-3 text-md tracking-tighter">
                         {year}
                       </div>
-                      {rankedItems.length === 0 && (
-                        <div className="flex justify-center items-center h-full">
-                          <span className="text-gray-400 font-thin font-mono text-italic text-center m-4 text-xs whitespace-normal max-w-[10em]">Drag over a country to rank</span>
+                      {(rankedItems.length === 0 && showUnranked) && (
+                        <div className="flex justify-left items-center">
+                          <div className="text-gray-400 font-thin font-mono text-italic text-left ml-8 m-4 text-xs whitespace-normal max-w-[10em] mt-10">
+                            <ol className="list-disc">
+                              <li className="mb-4">Drag countries to the right to rank</li>
+                              <li className="mb-2">Rankings are saved to the URL for you to save or share with friends</li>
+                            </ol>
+                          </div>
                         </div>
                       )}
                       {rankedItems.map((item, index) => (

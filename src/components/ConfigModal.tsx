@@ -1,8 +1,5 @@
 import classNames from 'classnames';
-import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
-import { Fragment } from 'react'
-import { Menu, Transition } from '@headlessui/react'
-import { ChevronDownIcon } from '@heroicons/react/20/solid'
+import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import Dropdown from './Dropdown';
 
 type ConfigModalProps = {
@@ -14,18 +11,33 @@ type ConfigModalProps = {
 };
 
 const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
-    const [activeTab, setActiveTab] = useState('donate'); //props.tab
-
+    const [activeTab, setActiveTab] = useState('about'); //props.tab
+    const modalRef = useRef<HTMLDivElement>(null);
     // useEffect(() => {
     //     setActiveTab(props.tab)
     // }, [props.tab, props.isOpen]);
+
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
+                props.onClose();
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, [modalRef, props]);
 
 
     if (!props.isOpen) return null;
 
     return (
         <div className="fixed z-200 inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-            <div className="relative bg-[#272557] opacity-95 m-4 h-[90vh] text-slate-400 z-200 p-6 rounded-lg shadow-lg max-w-lg w-full">
+            <div
+                ref={modalRef}
+                className="relative bg-[#272557] opacity-95 m-4 h-auto text-slate-400 z-200 p-6 rounded-lg shadow-lg max-w-lg w-full">
                 <button
                     onClick={props.onClose}
                     className="absolute top-0 right-0 mt-4 mr-4 text-gray-300 text-lg leading-none hover:text-gray-400"
@@ -86,11 +98,13 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
                     </ul>
                 </div>
 
-                <div className="pt-4">
+                <div className="pt-4 select-text pb-3">
                     {activeTab === 'about' &&
-                        <div>
-                            Thanks for using my app! I'm just getting started, so expect a lot of changes here in the coming months.                  
-{/* 
+                        <div className="">
+                            <p>Thanks for using my app! I'm just getting started, so expect a lot of changes here in the coming months.</p>
+                            <p className="mt-4">This is an open-source project that I'm doing in my spare time. If you have any feedback, suggestions, or want to report a bug, you can do so at my <a href="https://github.com/jekrch/eurovision-ranker/issues" className="font-medium text-blue-600 dark:text-blue-500 hover:underline">github repository</a> or send me an email at <a href="mailto:eurovision.ranker@gmail.com" className="font-medium text-blue-600 dark:text-blue-500 hover:underline">eurovision.ranker@gmail.com</a>. </p>
+                            <p className="mt-4">In the meantime, if you're enjoying the app, please consider clicking the donate link above and making a small donation to a nonprofit youth development org in my hometown.</p>
+                            {/* 
                             <iframe
                                 className="donate-widget border-0 m-0 h-[30em]"
                                 src="https://www.givemn.org/forms/Jddsdf?id=nmng3g&embed=donation_widget"
@@ -115,23 +129,23 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
                             </div>
                         </div>}
 
-                        {activeTab === 'donate' &&
-    <div className="">
-        <div className="float-left w-1/2 mr-5">
-            <img
-                src={`${process.env.PUBLIC_URL}/mnay.png`}
-                alt="Heart"
-                className="w-full shadow-lg rounded mb-5" />
-            <button
-                className="w-full bg-blue-500 hover:bg-blue-700 text-white font-normal py-1 px-3 rounded-full text-md mb-5"
-                onClick={() => window.open('https://www.givemn.org/story/Jddsdf', '_blank')}
-            >
-                {'Donate'}
-            </button>
-        </div>
-        <div className="item-body">
-            <div><p>OK, full disclosure, I'm not from a participating nation. I live in the US: Minneapolis, MN. But I love much of the values and spirit (and maybe a little of the gossip and drama) surrounding the Eurovision Song Contest.
-             Minnesota Alliance With Youth is a youth development organization that empowers young people who need support in my community. If you enjoy this app and want to say thanks (and maybe motivate me to continue adding neat features in the future) please consider donating to the Alliance.</p></div>
+                    {activeTab === 'donate' &&
+                        <div className="">
+                            <div className="float-left w-1/2 mr-5">
+                                <img
+                                    src={`${process.env.PUBLIC_URL}/mnay.png`}
+                                    alt="Heart"
+                                    className="w-full shadow-lg rounded mb-5" />
+                                <button
+                                    className="w-full bg-blue-500 hover:bg-blue-700 text-white font-normal py-1 px-3 rounded-full text-md mb-5"
+                                    onClick={() => window.open('https://www.givemn.org/story/Jddsdf', '_blank')}
+                                >
+                                    {'Donate'}
+                                </button>
+                            </div>
+                            <div className="item-body">
+                                <div><p>OK, full disclosure, I'm not from a participating nation. I live in the US: Minneapolis, MN. But I love much of the values and spirit (and maybe a little of the gossip and drama) surrounding the Eurovision Song Contest.
+                                    Minnesota Alliance With Youth is a youth development organization that empowers young people who need support in my community. If you enjoy this app and want to say thanks (and maybe motivate me to continue adding neat features in the future) please consider donating to the Alliance.</p></div>
                             </div></div>}
                 </div>
             </div>

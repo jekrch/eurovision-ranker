@@ -8,6 +8,7 @@ import { fetchCountryContestantsByYear } from './utilities/ContestantFactory';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCog } from '@fortawesome/free-solid-svg-icons';
 import ConfigModal from './components/ConfigModal';
+import { countries } from './data/Countries';
 
 const App: React.FC = () => {
   const [contestants, setContestants] = useState<CountryContestant[]>([]);
@@ -51,8 +52,12 @@ const App: React.FC = () => {
     if (rankings) {
       const rankedIds = rankings.split('').map(String);
       const rankedCountries = rankedIds
-        .map(id => yearContestants.find(country => country.id === id))
-        .filter(Boolean) as CountryContestant[];
+        .map(id => {
+            let countryContestant = yearContestants.find(country => country.id === id)
+            return countryContestant || new CountryContestant(
+              countries.find(c => c.id === id)!
+            )
+        }).filter(Boolean) as CountryContestant[];
 
       const unrankedCountries = yearContestants.filter(
         countryContestant => !rankedIds.includes(countryContestant.id)
@@ -277,7 +282,7 @@ const App: React.FC = () => {
                                   className="m-auto text-slate-400 bg- bg-[#03022d] no-select"
                                   rank={index + 1}
                                   country={item.country}
-                                  contestant={item.contestant}
+                                  contestant={item.contestant!}
                                   isLargeView={!showUnranked}
                                   isDragging={snapshot.isDragging}
                                 />

@@ -1,9 +1,14 @@
 import { Contestant } from "./Contestant";
 import { Country } from "./Country";
 
-export type CountryContestant = {
-    id: string;
+export class CountryContestant {
+    id: string = 'N/A';
     country: Country;
-    contestant: Contestant;
+    contestant?: Contestant;
+
+    constructor(country: Country) {
+      this.id = country.id;
+      this.country = country;
+    }
   };
   

@@ -178,7 +178,7 @@ const App: React.FC = () => {
                     {showUnranked ? 'details' : `select`}
                   </button>
                   <FontAwesomeIcon
-                    className="houseUser mr-1 ml-4 text-xl"
+                    className="houseUser mr-1 mb-1 ml-4 text-xl"
                     icon={faHouseUser}
                     onClick={() => openModal('about')}
                   />
@@ -259,7 +259,7 @@ const App: React.FC = () => {
                           <div className="w-full m-auto flex">
 
                             <Dropdown
-                              className="-mt-1 mx-auto relative w-[5em]"
+                              className="mx-auto relative w-[5em]"
                               value={year}
                               onChange={setYear}
                               options={['2023', '2022', '2021']}

@@ -14,7 +14,7 @@ const Dropdown: React.FC<DropdownProps> = ({ value, onChange, options, className
   return (
     <Menu as="div" className={classNames("inline-block text-left w-[5em]", className)}>
       <div>
-        <Menu.Button className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-slate-200 bg-opacity-10 px-3 py-1 text-sm font-bold text-gray-400 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-opacity-30">
+        <Menu.Button className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-slate-700 bg-opacity-10 px-3 py-[0.2em] h-6 text-sm font-bold text-gray-400 shadow-sm ring-1 ring-inset ring-gray-400 hover:bg-opacity-30">
           {value}
           <ChevronDownIcon className="-mr-1 h-5 w-5 text-gray-400" aria-hidden="true" />
         </Menu.Button>

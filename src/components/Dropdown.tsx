@@ -29,14 +29,14 @@ const Dropdown: React.FC<DropdownProps> = ({ value, onChange, options }) => {
         leaveTo="transform opacity-0 scale-95"
       >
         <Menu.Items className="absolute left-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-          <div className="py-1 bg-slate-600">
+          <div className="py-1 bg-slate-600 bg-opacity-80">
             {options.map((option, index) => (
               <Menu.Item key={index}>
                 {({ active }) => (
                   <button
                     onClick={() => onChange(option)}
                     className={classNames(
-                      active ? 'bg-slate-400 text-blue-100' : 'text-slate-400',
+                      active ? 'bg-slate-400 text-blue-100' : 'text-slate-300',
                       'block w-full px-4 py-2 text-left text-sm'
                     )}
                   >

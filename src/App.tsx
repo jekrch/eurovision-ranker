@@ -253,7 +253,7 @@ const App: React.FC = () => {
                       </div>
                       {(rankedItems.length === 0 && showUnranked) && (
                         <div className="flex justify-left items-center">
-                          <div className="text-gray-400 font-thin font-mono text-italic text-left ml-8 m-4 text-xs whitespace-normal max-w-[10em] mt-10">
+                          <div className="text-gray-400 font-thin font-mono text-italic text-left ml-7 m-4 text-xs whitespace-normal max-w-[10em] mt-10">
                             <ol className="list-disc">
                               <li className="mb-4">Drag countries to the right to rank</li>
                               <li className="mb-2">Rankings are saved to the URL for you to save or share with friends</li>

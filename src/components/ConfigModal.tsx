@@ -60,7 +60,7 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
                             </button>
                         </li>
 
-                        <li className="mr-2">
+                        {/* <li className="mr-2">
                             <button
                                 onClick={() => setActiveTab('settings')}
                                 className={`inline-flex items-center justify-center p-4 ${activeTab === 'settings' ? 'text-blue-500 border-blue-500 border-b-2' : 'hover:text-gray-500 hover:border-gray-300'}`}
@@ -72,7 +72,7 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
                                 </svg>
                                 Settings
                             </button>
-                        </li>
+                        </li> */}
 
                         <li className="mr-2">
                             <button

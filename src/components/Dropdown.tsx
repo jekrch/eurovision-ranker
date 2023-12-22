@@ -4,16 +4,17 @@ import { ChevronDownIcon } from '@heroicons/react/20/solid'
 import classNames from 'classnames';
 
 type DropdownProps = {
+  className?: string;
   value: string;
   onChange: (value: string) => void;
   options: string[];
 };
 
-const Dropdown: React.FC<DropdownProps> = ({ value, onChange, options }) => {
+const Dropdown: React.FC<DropdownProps> = ({ value, onChange, options, className }) => {
   return (
-    <Menu as="div" className="relative inline-block text-left w-[5em]">
+    <Menu as="div" className={classNames("inline-block text-left w-[5em]", className)}>
       <div>
-        <Menu.Button className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-slate-200 bg-opacity-10 px-3 py-2 text-sm font-bold text-gray-400 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-opacity-30">
+        <Menu.Button className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-slate-200 bg-opacity-10 px-3 py-1 text-sm font-bold text-gray-400 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-opacity-30">
           {value}
           <ChevronDownIcon className="-mr-1 h-5 w-5 text-gray-400" aria-hidden="true" />
         </Menu.Button>
@@ -28,7 +29,7 @@ const Dropdown: React.FC<DropdownProps> = ({ value, onChange, options }) => {
         leaveFrom="transform opacity-100 scale-100"
         leaveTo="transform opacity-0 scale-95"
       >
-        <Menu.Items className="absolute left-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+        <Menu.Items className="absolute left-0 z-50 mt-2 w-[6em] origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
           <div className="py-1 bg-slate-600 bg-opacity-80">
             {options.map((option, index) => (
               <Menu.Item key={index}>

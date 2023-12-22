@@ -77,6 +77,17 @@ code {
   );
 } 
 
+.houseUser {
+	margin-top: 0.15em;
+	height: 1em;
+	color: grey;
+}
+
+.houseUser:hover {
+	opacity: 0.5 !important;
+	cursor: pointer;
+}
+
 .configCog {
 	margin-top: 0.15em;
 	height: 1em;

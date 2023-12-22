@@ -6,9 +6,10 @@ import classNames from 'classnames';
 import { CountryContestant } from './data/CountryContestant';
 import { fetchCountryContestantsByYear } from './utilities/ContestantFactory';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCog } from '@fortawesome/free-solid-svg-icons';
+import { faHouseUser, faCog } from '@fortawesome/free-solid-svg-icons';
 import ConfigModal from './components/ConfigModal';
 import { countries } from './data/Countries';
+import Dropdown from './components/Dropdown';
 
 const App: React.FC = () => {
   const [contestants, setContestants] = useState<CountryContestant[]>([]);
@@ -46,17 +47,17 @@ const App: React.FC = () => {
     if (contestYear !== year) {
       setYear(contestYear);
     }
-    
+
     const yearContestants = fetchCountryContestantsByYear(contestYear);
 
     if (rankings) {
       const rankedIds = rankings.split('').map(String);
       const rankedCountries = rankedIds
         .map(id => {
-            let countryContestant = yearContestants.find(country => country.id === id)
-            return countryContestant || new CountryContestant(
-              countries.find(c => c.id === id)!
-            )
+          let countryContestant = yearContestants.find(country => country.id === id)
+          return countryContestant || new CountryContestant(
+            countries.find(c => c.id === id)!
+          )
         }).filter(Boolean) as CountryContestant[];
 
       const unrankedCountries = yearContestants.filter(
@@ -177,9 +178,9 @@ const App: React.FC = () => {
                     {showUnranked ? 'details' : `select`}
                   </button>
                   <FontAwesomeIcon
-                    className="configCog mr-1 ml-4 text-xl"
-                    icon={faCog}
-                    onClick={() => openModal('settings')}
+                    className="houseUser mr-1 ml-4 text-xl"
+                    icon={faHouseUser}
+                    onClick={() => openModal('about')}
                   />
                 </div>
               </li>
@@ -253,8 +254,19 @@ const App: React.FC = () => {
                       ref={provided.innerRef}
                       className={classNames("h-full min-w-[10em] overflow-y-auto overflow-x-hidden pt-3 bg-[#1d1b54]", showUnranked ? "max-w-[50vw]" : "w-[80vw] max-w-[30em]")}
                     >
-                      <div className="w-full text-center font-bold bg-blue-900 text-slate-300 py-1 -mt-3 text-md tracking-tighter">
-                        {year}
+                      <div className="z-50 w-full text-center font-bold bg-blue-900 text-slate-300 py-1 -mt-3 text-md tracking-tighter">
+                        {showUnranked ? (
+                          <div className="w-full m-auto flex">
+
+                            <Dropdown
+                              className="-mt-1 mx-auto relative w-[5em]"
+                              value={year}
+                              onChange={setYear}
+                              options={['2023', '2022', '2021']}
+                            />
+     
+                          </div>
+                        ) : year}
                       </div>
                       {(rankedItems.length === 0 && showUnranked) && (
                         <div className="flex justify-left items-center">
@@ -300,13 +312,13 @@ const App: React.FC = () => {
           </DragDropContext>
         </div>
       </div>
-      <ConfigModal 
-          tab={modalTab}
-          isOpen={configModalShow} 
-          setYear={setYear}
-          year={year}
-          onClose={() => setConfigModalShow(false)}
-        />
+      <ConfigModal
+        tab={modalTab}
+        isOpen={configModalShow}
+        setYear={setYear}
+        year={year}
+        onClose={() => setConfigModalShow(false)}
+      />
     </>
   );
 };

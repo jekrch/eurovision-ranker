@@ -1,7 +1,6 @@
 import classNames from 'classnames';
 import type { FC } from 'react';
-import { FaTv as FaExternalLinkAlt } from 'react-icons/fa';
-import { Bars3BottomLeftIcon } from '@heroicons/react/20/solid';
+import { FaTv } from 'react-icons/fa';
 import { Contestant } from '../data/Contestant';
 import { Country } from '../data/Country';
 
@@ -51,7 +50,7 @@ export const Card: FC<CardProps> = (props) => {
                 href={props.contestant?.youtube} target="_blank" rel="noopener noreferrer"
                 className='float-right rounded text-slate-500 ml-1 hover:text-slate-100 mt-[1px]'
               >
-                <FaExternalLinkAlt className='text-md -mt-[0.5px]' />
+                <FaTv className='text-md -mt-[0.5px]' />
               </a>
             }
             <div className="flex items-center justify-between">

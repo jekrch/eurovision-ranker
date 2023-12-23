@@ -29,7 +29,7 @@ const Dropdown: React.FC<DropdownProps> = ({ value, onChange, options, className
         leaveFrom="transform opacity-100 scale-100"
         leaveTo="transform opacity-0 scale-95"
       >
-        <Menu.Items className="absolute left-0 z-50 mt-2 w-[6em] origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+        <Menu.Items className="absolute left-0 mt-2 w-[6em] origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
           <div className="py-1 bg-slate-600 bg-opacity-80">
             {options.map((option, index) => (
               <Menu.Item key={index}>

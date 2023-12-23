@@ -21,6 +21,8 @@ export interface CardProps {
   contestant?: Contestant
   className: string;
   isDragging: boolean;
+  isDeleteMode?: boolean;
+  deleteCallBack?: (id:string) => void;
   isLargeView?: boolean;
 }
 
@@ -64,9 +66,9 @@ export const Card: FC<CardProps> = (props) => {
                       {`"${props.contestant?.song}"`}
                     </span>
                   </>
-                ) : 
+                ) :
                   <span className="font-xs text-xs text-gray-500 strong">
-                        Did not participate this year
+                    Did not participate this year
                   </span>
                 }
               </div>
@@ -76,7 +78,20 @@ export const Card: FC<CardProps> = (props) => {
             </div>
           </>
         }
+      
       </div>
+      {props.isDeleteMode &&
+          <>
+            <button
+
+              className={classNames(
+                "ml-2 -mt-[2px] -mb-[2px] -mr-[12px] float-right text-white font-normal py-1 px-2 text-xs",
+                "bg-red-800 opacity-70 hover:bg-red-600 active:bg-red-700"
+              )}
+            onClick={() => { props?.deleteCallBack?.(props.country.id); }}
+            >&#x2715;</button>
+          </>
+        }
     </div>
   );
 };

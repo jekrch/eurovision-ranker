@@ -34,7 +34,7 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
     if (!props.isOpen) return null;
 
     return (
-        <div className="fixed z-200 inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+        <div className="fixed z-50 inset-0 bg-black bg-opacity-50 flex justify-center items-center">
             <div
                 ref={modalRef}
                 className="relative bg-[#272557] opacity-95 m-4 h-auto text-slate-400 z-200 p-6 rounded-lg shadow-lg max-w-lg w-full">

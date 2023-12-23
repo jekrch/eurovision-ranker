@@ -353,8 +353,9 @@ const App: React.FC = () => {
                         <div className="flex justify-left items-center">
                           <div className="text-gray-400 font-thin font-mono text-italic text-left ml-7 m-4 text-xs whitespace-normal max-w-[10em] mt-6">
                             <ol className="list-disc mb-7">
-                              <li className="mb-4">Drag countries to the right to rank</li>
-                              <li className="mb-2">Rankings are saved to the URL for you to save or share with friends</li>
+                              <li className="mb-3">Drag countries to the right to rank</li>
+                              <li className="mb-3">Rankings are saved to the URL for you to save or share with friends</li>
+                              <li className="mb-2">Click details above to see more info on your ranked countries</li>
                             </ol>
 
                             <div className="">
@@ -384,7 +385,7 @@ const App: React.FC = () => {
 
                               <div
                                 className={'houseUser flex items-center'}
-                                onClick={() => openModal('donate')}
+                                onClick={() => openModal('rankings')}
                               >
                                 <FontAwesomeIcon
                                   className="mr-1 ml-0 text-xl"

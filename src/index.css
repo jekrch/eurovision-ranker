@@ -130,3 +130,13 @@ code {
   transform: scale(0.6); /* Adjust the scale value as needed */
   transform-origin: top left;
 }
+
+.text-link {
+  font-weight: 500; 
+  color: #3c72e7;
+}
+
+.text-link:hover {
+  color: #4a8df8; 
+  text-decoration: underline; 
+}

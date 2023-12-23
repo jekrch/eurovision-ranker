@@ -12,6 +12,13 @@ type NameModalProps = {
 const NameModal: React.FC<NameModalProps> = (props: NameModalProps) => {
     const [inputValue, setInputValue] = useState(props.name); 
     const modalRef = useRef<HTMLDivElement>(null);
+    const inputRef = useRef<HTMLInputElement>(null);
+
+    useEffect(() => {
+        if (props.isOpen && inputRef.current) {
+            inputRef.current.focus(); // Set focus on the input element when the modal is open
+        }
+    }, [props.isOpen]); 
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -51,6 +58,7 @@ const NameModal: React.FC<NameModalProps> = (props: NameModalProps) => {
                 <div className="mb-4">
                     <input 
                         id="name" 
+                        ref={inputRef} 
                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
                         placeholder="Ranking name"
                         value={inputValue}

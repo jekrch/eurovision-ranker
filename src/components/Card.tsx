@@ -85,7 +85,7 @@ export const Card: FC<CardProps> = (props) => {
             <button
 
               className={classNames(
-                "ml-2 -mt-[2px] -mb-[2px] -mr-[12px] float-right text-white font-normal py-1 px-2 text-xs",
+                "rounded-tr-md rounded-br-md ml-2 -mt-[2px] -mb-[2px] -mr-[12px] float-right text-white font-normal py-1 px-2 text-xs",
                 "bg-red-800 opacity-70 hover:bg-red-600 active:bg-red-700"
               )}
             onClick={() => { props?.deleteCallBack?.(props.country.id); }}

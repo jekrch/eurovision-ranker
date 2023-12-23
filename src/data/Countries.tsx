@@ -25,6 +25,7 @@ export const countries: Country[] = [
   { id: 'T', name: 'Italy', key: 'it', icon: 'flag-icon-it' },
   { id: 'L', name: 'Latvia', key: 'lv', icon: 'flag-icon-lv' },
   { id: 'l', name: 'Lithuania', key: 'lt', icon: 'flag-icon-lt' },
+  { id: 'x', name: 'Luxembourg', key: 'lu', icon: 'flag-icon-lu'},
   { id: 'M', name: 'Malta', key: 'mt', icon: 'flag-icon-mt' },
   { id: 'm', name: 'Moldova', key: 'md', icon: 'flag-icon-md' },
   { id: '2', name: 'Montenegro', key: 'me', icon: 'flag-icon-me' },

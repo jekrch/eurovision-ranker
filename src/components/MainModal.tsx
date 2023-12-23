@@ -2,7 +2,7 @@ import classNames from 'classnames';
 import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import Dropdown from './Dropdown';
 
-type ConfigModalProps = {
+type MainModalProps = {
     isOpen: boolean;
     tab: string;
     onClose: () => void;
@@ -10,7 +10,7 @@ type ConfigModalProps = {
     year: string;
 };
 
-const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
+const MainModal: React.FC<MainModalProps> = (props: MainModalProps) => {
     const [activeTab, setActiveTab] = useState(props.tab);
     const modalRef = useRef<HTMLDivElement>(null);
 
@@ -158,5 +158,5 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
     );
 };
 
-export default ConfigModal;
+export default MainModal;
 

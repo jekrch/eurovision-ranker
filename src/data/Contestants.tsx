@@ -1,6 +1,47 @@
 import { Contestant } from "./Contestant";
 
-export const supportedYears = ["2021","2022", "2023"];
+export const supportedYears = ["2021","2022", "2023", "2024"];
+
+export const contestants2024: Contestant[] = [
+  { countryKey: 'al', artist: 'Besa Kokëdhima', song: 'Zemrën n\'dorë', youtube: 'https://www.youtube.com/watch?v=7rEDP1lSoDQ' },
+  { countryKey: 'am', artist: 'TBD', song: '' }, // Armenia
+  { countryKey: 'au', artist: 'TBD', song: '' }, // Australia
+  { countryKey: 'at', artist: 'TBD Dec 23', song: '' }, // Austria
+  { countryKey: 'az', artist: 'TBD', song: '' }, // Azerbaijan
+  { countryKey: 'be', artist: 'Mustii', song: 'TBD Feb 24' }, // Belgium
+  { countryKey: 'hr', artist: 'TBD Feb 24', song: '' }, // Croatia
+  { countryKey: 'cy', artist: 'Silia Kapsis', song: '' }, // Cyprus
+  { countryKey: 'cz', artist: 'Aiko', song: 'Pedestal', youtube: 'https://www.youtube.com/watch?v=5DbRldMKFUU' }, // Czechia
+  { countryKey: 'dk', artist: 'TBD Feb 24', song: '' }, // Denmark
+  { countryKey: 'ee', artist: 'TBD Feb 24', song: '' }, // Estonia
+  { countryKey: 'fi', artist: 'TBD Feb 24', song: '' }, // Finland
+  { countryKey: 'fr', artist: 'Slimane', song: 'Mon amour', youtube: 'https://www.youtube.com/watch?v=bal8oESDH7s' }, // France
+  { countryKey: 'ge', artist: 'TBD', song: 'TBD' }, // Georgia
+  { countryKey: 'de', artist: 'TBD Feb 24', song: 'TBD' }, // Germany
+  { countryKey: 'gr', artist: 'Marina Satti', song: 'TBD' }, // Greece
+  { countryKey: 'is', artist: 'TBD Mar 24', song: '' }, // Iceland
+  { countryKey: 'ie', artist: 'TBD', song: '' }, // Ireland
+  { countryKey: 'il', artist: 'TBD', song: '' }, // Israel
+  { countryKey: 'it', artist: 'TBD Feb 24', song: '' }, // Italy
+  { countryKey: 'lv', artist: 'TBD Feb 24', song: '' }, // Latvia
+  { countryKey: 'lt', artist: 'TBD Feb 24', song: '' }, // Lithuania
+  { countryKey: 'lu', artist: 'TBD Jan 24', song: '' }, // Luxembourg
+  { countryKey: 'mt', artist: 'TBD Jan 24', song: '' }, // Malta
+  { countryKey: 'md', artist: 'TBD Feb 24', song: '' }, // Moldova
+  { countryKey: 'nl', artist: 'Joost Klein', song: 'TBD Mar 24' }, // Netherlands
+  { countryKey: 'no', artist: 'TBD Feb 24', song: '' }, // Norway
+  { countryKey: 'pl', artist: 'TBD', song: '' }, // Poland
+  { countryKey: 'pt', artist: 'TBD Mar 24', song: '' }, // Portugal
+  { countryKey: 'sm', artist: 'TBD Feb 24', song: '' }, // San Marino
+  { countryKey: 'rs', artist: 'TBD Mar 24', song: '' }, // Serbia
+  { countryKey: 'si', artist: 'Raiven', song: 'Veronika' }, // Slovenia
+  { countryKey: 'es', artist: 'TBD Feb 24', song: '' }, // Spain
+  { countryKey: 'se', artist: 'TBD Mar 24', song: '' }, // Sweden
+  { countryKey: 'ch', artist: 'TBD Mar 24', song: '' }, // Switzerland
+  { countryKey: 'ua', artist: 'TBD Feb 24', song: '' }, // Ukraine
+  { countryKey: 'gb', artist: 'Olly Alexander', song: 'TBD' }, // United Kingdom
+  // Add other countries here...
+];
 
 {/*2023 rank ?r=WFrTnuBEUzlcCaSfemPtVApskg&y=23 */}
 export const contestants2023: Contestant[] = [
@@ -87,8 +128,6 @@ export const contestants2023: Contestant[] = [
     { countryKey: 'gb', artist: 'Sam Ryder', song: 'SPACE MAN', youtube: "https://www.youtube.com/watch?v=udsMTb2NIak" }
   ];
   
-  
-  
   export const contestants2021: Contestant[] = [
   
     { countryKey: 'al', artist: 'Anxhela Peristeri', song: 'Karma', youtube: "https://www.youtube.com/watch?v=Q4D_RfEFwd4" },
@@ -131,4 +170,3 @@ export const contestants2023: Contestant[] = [
     { countryKey: 'ua', artist: 'Go_A', song: 'Shum', youtube: "https://www.youtube.com/watch?v=U7-dxzp6Jvs" },
     { countryKey: 'gb', artist: 'James Newman', song: 'Embers', youtube: "https://www.youtube.com/watch?v=BMDGTsa_Qq0" }
   ];
-

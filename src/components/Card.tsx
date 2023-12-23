@@ -57,7 +57,7 @@ export const Card: FC<CardProps> = (props) => {
         )
       }
       {/* <i className={`z-0 float-right text-3xl ml-2 flag-icon -mr-2 ${props.country?.icon}`} /> */}
-      <div className={classNames("flex-grow text-slate-400", props.isLargeView ? "font-bold" : "font-normal")}>
+      <div className={classNames("flex-grow text-slate-400", props.isLargeView ? "font-bold" : "font-normal my-auto")}>
         {props.country?.name}
         {props.isLargeView &&
           <>
@@ -78,7 +78,7 @@ export const Card: FC<CardProps> = (props) => {
                       {props.contestant?.artist}
                     </span>
                     <span className="ml-2 font-xs text-xs text-gray-500">
-                      {`"${props.contestant?.song}"`}
+                      { props.contestant.song?.length && !props.contestant.song?.includes("TBD") ? `"${props.contestant.song}"` : `${props.contestant.song}`}
                     </span>
                   </>
                 ) :
@@ -102,7 +102,7 @@ export const Card: FC<CardProps> = (props) => {
           <button
 
             className={classNames(
-              "rounded-sm h-10 ml-2 -mt-[2px] -mb-[2px] -mr-[12px] float-right text-white font-normal py-1 px-2 text-xs",
+              "rounded-sm ml-2 -mt-[2px] -mb-[2px] -mr-[12px] float-right text-white font-normal py-1 px-2 text-xs",
               "bg-red-800 opacity-70 hover:bg-red-600 active:bg-red-700"
             )}
             onClick={() => { props?.deleteCallBack?.(props.country.id); }}

@@ -1,7 +1,7 @@
 import { Contestant } from "../data/Contestant";
 import { CountryContestant } from "../data/CountryContestant";
 import { countries } from '../data/Countries';
-import { contestants2021, contestants2022, contestants2023 } from '../data/Contestants';
+import { contestants2021, contestants2022, contestants2023, contestants2024 } from '../data/Contestants';
 
 
 export function fetchCountryContestantsByYear(year: string): CountryContestant[] {
@@ -23,6 +23,8 @@ export function fetchCountryContestantsByYear(year: string): CountryContestant[]
 
 function getContestantsByYear(year: string) {
     switch (year) {
+        case '2024': 
+            return contestants2024;
         case '2023':
             return contestants2023;
         case `2022`:

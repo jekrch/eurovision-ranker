@@ -6,23 +6,26 @@ import classNames from 'classnames';
 import { CountryContestant } from './data/CountryContestant';
 import { fetchCountryContestantsByYear } from './utilities/ContestantFactory';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHouseUser, faCog, faArrowRight, faTrashAlt, faTrashRestoreAlt, faCheckSquare, faSquare } from '@fortawesome/free-solid-svg-icons';
-import ConfigModal from './components/ConfigModal';
+import { faPenSquare, faHouseUser, faCog, faArrowRight, faTrashAlt, faTrashRestoreAlt, faCheckSquare, faSquare, faHeart, faList, faPenAlt } from '@fortawesome/free-solid-svg-icons';
+import MainModal from './components/MainModal';
 import { countries } from './data/Countries';
 import Dropdown from './components/Dropdown';
 import { supportedYears } from './data/Contestants';
 import { Country } from './data/Country';
+import NameModal from './components/NameModal';
 
 const App: React.FC = () => {
   const [contestants, setContestants] = useState<CountryContestant[]>([]);
   const [unrankedItems, setUnrankedItems] = useState<CountryContestant[]>([]);
   const [rankedItems, setRankedItems] = useState<CountryContestant[]>([]);
   const [showUnranked, setShowUnranked] = useState(false);
-  const [configModalShow, setConfigModalShow] = useState(false);
+  const [mainModalShow, setMainModalShow] = useState(false);
+  const [nameModalShow, setNameModalShow] = useState(false);
   const [refreshUrl, setRefreshUrl] = useState(0);
   const [refreshDnD, setRefreshDnD] = useState(0);
   const [modalTab, setModalTab] = useState('about')
   const [year, setYear] = useState<string>('');
+  const [name, setName] = useState<string>('');
   const [deleteMode, setDeleteMode] = useState(false);
 
   /**
@@ -40,6 +43,13 @@ const App: React.FC = () => {
    */
   const decodeRankingsFromURL = (): number | undefined => {
     const params = new URLSearchParams(window.location.search);
+
+    const rankingName = params.get('n');
+    console.log(rankingName)
+    if (rankingName && name !== rankingName) {
+      setName(rankingName);
+    }
+
     const rankings = params.get('r');
 
     let contestYear = getYearFromUrl(params);
@@ -112,6 +122,10 @@ const App: React.FC = () => {
     setUnrankedItems(yearContestants)
     decodeRankingsFromURL();
   }, [year]);
+
+  useEffect(() => {
+    updateQueryParams({ n: name });
+  }, [name]);
 
   /**
    * Clear rankedItems and fill unrankedItems with the relevant year's contestants
@@ -197,7 +211,7 @@ const App: React.FC = () => {
    * @param countryId 
    */
   function deleteRankedCountry(countryId: string) {
-    
+
     const index = rankedItems.findIndex(obj => obj.country.id === countryId);
     const [objectToMove] = rankedItems.splice(index, 1);
 
@@ -215,7 +229,7 @@ const App: React.FC = () => {
 
   function openModal(tabName: string): void {
     setModalTab(tabName);
-    setConfigModalShow(true)
+    setMainModalShow(true)
   }
 
   return (
@@ -319,24 +333,68 @@ const App: React.FC = () => {
                       <div className="z-40 w-full text-center font-bold bg-blue-900 text-slate-300 py-1 -mt-3 text-md tracking-tighter">
                         {showUnranked ? (
                           <div className="w-full m-auto flex">
-
                             <Dropdown
                               className="mx-auto relative w-[5em]"
                               value={year}
                               onChange={setYear}
-                              options={['2023', '2022', '2021']}
+                              options={supportedYears}
                             />
-     
                           </div>
-                        ) : year}
+                        ) : (
+                          <div className="mx-2">
+                            {year}
+                            {name?.length > 0 && (
+                              <span className="font-normal text-slate-400 text-md"> - {name}</span>
+                            )}
+                          </div>
+                        )}
                       </div>
                       {(rankedItems.length === 0 && showUnranked) && (
                         <div className="flex justify-left items-center">
                           <div className="text-gray-400 font-thin font-mono text-italic text-left ml-7 m-4 text-xs whitespace-normal max-w-[10em] mt-6">
-                            <ol className="list-disc">
+                            <ol className="list-disc mb-7">
                               <li className="mb-4">Drag countries to the right to rank</li>
                               <li className="mb-2">Rankings are saved to the URL for you to save or share with friends</li>
                             </ol>
+
+                            <div className="">
+                              <div
+                                className={'flex items-center houseUser mb-7'}
+                                onClick={() => openModal('about')}
+                              >
+                                <FontAwesomeIcon
+                                  className="mr-1 ml-0 text-xl"
+                                  icon={faHouseUser}
+
+                                />
+                                <span className="ml-[0.2em] mt-[0.2em] font-bold">About</span>
+                              </div>
+
+                              <div
+                                className={'houseUser flex items-center mb-7'}
+                                onClick={() => openModal('donate')}
+                              >
+                                <FontAwesomeIcon
+                                  className="mr-1 ml-0 text-xl"
+                                  icon={faHeart}
+
+                                />
+                                <span className="ml-[0.2em] mt-[0.2em] font-bold">Donate</span>
+                              </div>
+
+                              <div
+                                className={'houseUser flex items-center'}
+                                onClick={() => openModal('donate')}
+                              >
+                                <FontAwesomeIcon
+                                  className="mr-1 ml-0 text-xl"
+                                  icon={faList}
+
+                                />
+                                <span className="ml-[0.2em] mt-[0.2em] font-bold">Rankings</span>
+                              </div>
+
+                            </div>
                           </div>
                         </div>
                       )}
@@ -376,70 +434,89 @@ const App: React.FC = () => {
           </DragDropContext>
         </div>
 
-      { showUnranked &&
-        <nav className="nav-diagonal-split-bg bg-gray-800 text-white p-3 sticky bottom-0 z-50">
-          <div className="container mx-auto flex justify-between items-center z-50">
-            <ul className="flex space-x-2">
-              <li>
-                <div className="flex items-center">
-                <button
-                    disabled={!unrankedItems?.length}
-                    className={classNames(
-                      "ml-0 text-white font-normal py-1 px-3 rounded-full text-xs mr-0",
-                      unrankedItems?.length ? "bg-blue-500 hover:bg-blue-700" : "bg-slate-500"
-                    )}
-                    onClick={() => {addAllUnranked() }}
-                  >
-                    <FontAwesomeIcon
-                    className="mr-2 ml-0 text-xs"
-                    icon={faArrowRight}                    
-                  /> 
-                    add all
-                  </button>
+        {showUnranked &&
+          <nav className="nav-diagonal-split-bg bg-gray-800 text-white p-3 sticky bottom-0 z-50">
+            <div className="container mx-auto flex justify-between items-center z-50">
+              <ul className="flex space-x-2">
+                <li>
+                  <div className="flex items-center">
+                    <button
+                      disabled={!unrankedItems?.length}
+                      className={classNames(
+                        "ml-0 text-white font-normal py-1 px-3 rounded-full text-xs mr-0",
+                        unrankedItems?.length ? "bg-blue-500 hover:bg-blue-700" : "bg-slate-500"
+                      )}
+                      onClick={() => { addAllUnranked() }}
+                    >
+                      <FontAwesomeIcon
+                        className="mr-2 ml-0 text-xs"
+                        icon={faArrowRight}
+                      />
+                      add all
+                    </button>
 
-                  <button
-                    disabled={!rankedItems?.length}
-                    className={classNames(
-                      "ml-4 text-white font-normal py-1 px-3 rounded-full text-xs mr-0",
-                      rankedItems?.length ? "bg-blue-500 hover:bg-blue-700" : "bg-slate-500"
-                    )}
-                    onClick={() => {resetRanking() }}
-                  >
-                    
-                    <FontAwesomeIcon
-                    className="mr-1 ml-0 text-xs"
-                    icon={faTrashAlt}
-                  /> clear
-                  </button>
+                    <button
+                      disabled={!rankedItems?.length}
+                      className={classNames(
+                        "ml-4 text-white font-normal py-1 px-3 rounded-full text-xs mr-0",
+                        rankedItems?.length ? "bg-blue-500 hover:bg-blue-700" : "bg-slate-500"
+                      )}
+                      onClick={() => { resetRanking() }}
+                    >
 
-                  <button
-                    disabled={!rankedItems?.length}
-                    className={classNames(
-                      "ml-4 text-white font-normal py-1 px-3 rounded-full text-xs mr-0",
-                      rankedItems?.length ? "bg-blue-500 hover:bg-blue-700" : "bg-slate-500",
-                      rankedItems?.length && deleteMode ? "bg-red-800 border-red-100 hover:bg-red-700" : null
-                    )}
-                    onClick={() => {setDeleteMode(!deleteMode) }}
-                  >
-                    <FontAwesomeIcon
-                    className="mr-1 ml-0 text-xs"
-                    icon={rankedItems?.length && deleteMode ? faCheckSquare : faSquare}
-                  /> delete
-                  </button>  
+                      <FontAwesomeIcon
+                        className="mr-1 ml-0 text-xs"
+                        icon={faTrashAlt}
+                      /> clear
+                    </button>
 
-                </div>
-              </li>
-            </ul>
-          </div>
-        </nav>
-      }
+                    <button
+                      disabled={!rankedItems?.length}
+                      className={classNames(
+                        "ml-4 text-white font-normal py-1 px-3 rounded-full text-xs mr-0",
+                        rankedItems?.length ? "bg-blue-500 hover:bg-blue-700" : "bg-slate-500",
+                        rankedItems?.length && deleteMode ? "bg-red-800 border-red-100 hover:bg-red-700" : null
+                      )}
+                      onClick={() => { setDeleteMode(!deleteMode) }}
+                    >
+                      <FontAwesomeIcon
+                        className="mr-1 ml-0 text-xs"
+                        icon={rankedItems?.length && deleteMode ? faCheckSquare : faSquare}
+                      /> delete
+                    </button>
+
+                    <button
+                      className={classNames(
+                        "ml-4 text-white font-normal py-1 px-3 rounded-full text-xs mr-0",
+                        "bg-blue-500 hover:bg-blue-700"
+                      )}
+                      onClick={() => { setNameModalShow(true) }}
+                    >
+                      <FontAwesomeIcon
+                        className="mr-2 ml-0 text-xs"
+                        icon={faPenAlt}
+                      />
+                      name
+                    </button>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </nav>
+        }
       </div>
-      <ConfigModal
+      <MainModal
         tab={modalTab}
-        isOpen={configModalShow}
+        isOpen={mainModalShow}
         setYear={setYear}
         year={year}
-        onClose={() => setConfigModalShow(false)}
+        onClose={() => setMainModalShow(false)}
+      />
+      <NameModal
+        isOpen={nameModalShow}
+        setName={setName}
+        name={name}
+        onClose={() => setNameModalShow(false)}
       />
     </>
   );

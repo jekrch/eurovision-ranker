@@ -13,7 +13,7 @@ const style = {
   textColor: "white",
   backgroundColor: 'gray-dark',
   display: 'flex', // Enable Flexbox
-  alignItems: 'center', // Align items vertically
+  alignItems: 'stretch', // Align items vertically
 };
 
 export interface CardProps {
@@ -44,10 +44,10 @@ export const Card: FC<CardProps> = (props) => {
         props.rank && (
           props.isLargeView ? (
             <>
-              <div className="pr-[3px] pb-[1px] flex-shrink-0 mr-3 font-bold w-8 border-2 border-indigo-800 bg-indigo-800 bg-opacity-80 text-white font-bold tracking-tighter h-10 items-center justify-center flex text-xl -ml-[9px] rounded-sm">
+              <div className="-my-2 flex-shrink-0 pb-[1px] mr-3 font-bold w-8 border-r-2 border-indigo-800 bg-indigo-800 bg-opacity-80 text-slate-300 font-bold tracking-tighter items-center justify-center flex text-xl -ml-[0.8em] rounded-sm -ml-4">
                 {props.rank}
               </div>
-              <Flag code={props.country.key} className="w-12 mr-5 opacity-80" />
+              <Flag code={props.country.key} className="w-12 mr-3 opacity-80" />
             </>
           ) : (
             <div className="flex-shrink-0 mr-2 tracking-tighter mr-0 items-center justify-center flex text-md -ml-[7px] rounded">
@@ -57,7 +57,7 @@ export const Card: FC<CardProps> = (props) => {
         )
       }
       {/* <i className={`z-0 float-right text-3xl ml-2 flag-icon -mr-2 ${props.country?.icon}`} /> */}
-      <div className={classNames("flex-grow text-slate-400 font-bold")}>
+      <div className={classNames("flex-grow text-slate-400", props.isLargeView ? "font-bold" : "font-normal")}>
         {props.country?.name}
         {props.isLargeView &&
           <>
@@ -67,14 +67,14 @@ export const Card: FC<CardProps> = (props) => {
                 href={props.contestant?.youtube} target="_blank" rel="noopener noreferrer"
                 className='float-right rounded text-slate-500 ml-1 hover:text-slate-100 mt-[1px]'
               >
-                <FaTv className='text-xl inline-block -mr-2 -mt-2 ' />
+                <FaTv className='text-xl -mr-2 -mt-1' />
               </a>
             }
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between font-normal">
               <div>
                 {props.contestant ? (
                   <>
-                    <span className="font-xs text-xs text-gray-500">
+                    <span className="font-xs text-sm text-gray-500">
                       {props.contestant?.artist}
                     </span>
                     <span className="ml-2 font-xs text-xs text-gray-500">
@@ -82,12 +82,14 @@ export const Card: FC<CardProps> = (props) => {
                     </span>
                   </>
                 ) :
-                  <span className="font-xs text-xs text-gray-500 strong">
-                    Did not participate this year
-                  </span>
+                  <>
+                    <span className="font-xs text-xs text-gray-500 strong">
+                      Did not participate
+                    </span>
+                  </>
                 }
               </div>
-              <div className="float-right flex ml-2 -mr-6 -mt-1 flex text-xl text-slate-500 tracking-tighter h-5 rounded-r">
+              <div className="float-right flex ml-2 -mr-3 -mt-1 flex text-xl text-slate-500 tracking-tighter h-5 rounded-r">
                 <span className="pb-1 pr-[1.5px]">&#8942;&#8942;</span>
               </div>
             </div>

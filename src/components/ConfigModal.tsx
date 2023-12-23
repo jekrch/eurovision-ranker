@@ -11,7 +11,7 @@ type ConfigModalProps = {
 };
 
 const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
-    const [activeTab, setActiveTab] = useState(props.tab); 
+    const [activeTab, setActiveTab] = useState(props.tab);
     const modalRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -132,10 +132,12 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
                     {activeTab === 'donate' &&
                         <div className="mb-0">
                             <div className="float-left w-1/2 mr-5 mt-2">
+
                                 <img
                                     src={`${process.env.PUBLIC_URL}/mnay.png`}
                                     alt="Heart"
                                     className="w-full shadow-lg rounded mb-5" />
+
                                 <button
                                     className="w-full bg-blue-500 hover:bg-blue-700 text-white font-normal py-1 px-3 rounded-full text-md mb-1"
                                     onClick={() => window.open('https://www.givemn.org/story/Jddsdf', '_blank')}
@@ -147,8 +149,9 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
                                 <div>
                                     <p>OK, full disclosure, I'm not from a participating nation. I live in the US: Minneapolis, MN. But I love much of Eurovision's values and spirit (and maybe a little of its drama too).</p>
                                     <p className="mt-3">Minnesota Alliance With Youth is a youth development organization that empowers young people who need support in my community. If you enjoy this app and want to say thanks (and maybe motivate me to continue adding neat features in the future) please consider donating to the Alliance.</p>
-                                   </div>
-                            </div></div>}
+                                </div>
+                            </div>
+                        </div>}
                 </div>
             </div>
         </div>

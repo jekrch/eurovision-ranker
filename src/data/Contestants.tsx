@@ -1,5 +1,8 @@
 import { Contestant } from "./Contestant";
 
+export const supportedYears = ["2021","2022", "2023"];
+
+{/*2023 rank ?r=WFrTnuBEUzlcCaSfemPtVApskg&y=23 */}
 export const contestants2023: Contestant[] = [
     { countryKey: 'al', artist: 'Albina & Familja Kelmendi', song: 'Duje', youtube: "https://www.youtube.com/watch?v=mp8OG4ApocI"},
     { countryKey: 'am', artist: 'Brunette', song: 'Future Lover', youtube: "https://www.youtube.com/watch?v=Co8ZJIejXBA"},

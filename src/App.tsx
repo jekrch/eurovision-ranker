@@ -10,6 +10,8 @@ import { faHouseUser, faCog, faArrowRight, faTrashAlt, faTrashRestoreAlt, faChec
 import ConfigModal from './components/ConfigModal';
 import { countries } from './data/Countries';
 import Dropdown from './components/Dropdown';
+import { supportedYears } from './data/Contestants';
+import { Country } from './data/Country';
 
 const App: React.FC = () => {
   const [contestants, setContestants] = useState<CountryContestant[]>([]);
@@ -40,7 +42,8 @@ const App: React.FC = () => {
     const params = new URLSearchParams(window.location.search);
     const rankings = params.get('r');
 
-    let contestYear = '20' + (params.get('y') || '23');
+    let contestYear = getYearFromUrl(params);
+
     if (contestYear !== year) {
       setYear(contestYear);
     }
@@ -48,13 +51,26 @@ const App: React.FC = () => {
     const yearContestants = fetchCountryContestantsByYear(contestYear);
 
     if (rankings) {
-      const rankedIds = rankings.split('').map(String);
+      let rankedIds = rankings.split('').map(String);
+
+      // remove duplicates 
+      let uniqueSet = new Set(rankedIds);
+      rankedIds = Array.from(uniqueSet);
+
       const rankedCountries = rankedIds
         .map(id => {
           let countryContestant = yearContestants.find(country => country.id === id)
-          return countryContestant || new CountryContestant(
-            countries.find(c => c.id === id)!
-          )
+
+          if (countryContestant) {
+            return countryContestant;
+          } else {
+            const country = countries.find(c => c.id === id);
+            if (country) {
+              return new CountryContestant(country);
+            } else {
+              return;
+            }
+          }
         }).filter(Boolean) as CountryContestant[];
 
       const unrankedCountries = yearContestants.filter(
@@ -83,12 +99,12 @@ const App: React.FC = () => {
     updateQueryParams({ y: year.slice(-2) });
   }, [rankedItems]);
 
+
   useEffect(() => {
 
     if (!year?.length) {
       return;
     }
-
     let yearContestants = fetchCountryContestantsByYear(year);
 
     updateQueryParams({ y: year.slice(-2) });
@@ -97,6 +113,9 @@ const App: React.FC = () => {
     decodeRankingsFromURL();
   }, [year]);
 
+  /**
+   * Clear rankedItems and fill unrankedItems with the relevant year's contestants
+   */
   function resetRanking() {
     let yearContestants = fetchCountryContestantsByYear(year);
 
@@ -105,8 +124,10 @@ const App: React.FC = () => {
     setRankedItems([])
   }
 
+  /**
+   * Add all remaining unranked items to the ranked array
+   */
   function addAllUnranked() {
- 
     setUnrankedItems([])
     setRankedItems(rankedItems.concat(unrankedItems));
   }
@@ -126,6 +147,13 @@ const App: React.FC = () => {
     window.history.pushState(null, '', '?' + searchParams.toString());
   }
 
+  /**
+   * Handler for the drop event. Either reposition an item within 
+   * its source array or move it to the other array 
+   * 
+   * @param result 
+   * @returns 
+   */
   const handleOnDragEnd = (result: DropResult) => {
     const { source, destination } = result;
 
@@ -162,6 +190,12 @@ const App: React.FC = () => {
     setRefreshUrl(Math.random())
   };
 
+  /**
+   * Identify country with the provided Id in the rankedItems array, and 
+   * move them back into the unrankedItems array, alphabetically 
+   * 
+   * @param countryId 
+   */
   function deleteRankedCountry(countryId: string) {
     
     const index = rankedItems.findIndex(obj => obj.country.id === countryId);
@@ -412,3 +446,12 @@ const App: React.FC = () => {
 };
 
 export default App;
+function getYearFromUrl(params: URLSearchParams) {
+  let contestYear = '20' + (params.get('y') || '23');
+
+  if (!supportedYears.includes(contestYear)) {
+    contestYear = '2023';
+  }
+  return contestYear;
+}
+

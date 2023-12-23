@@ -44,7 +44,7 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
                 >
                     &#x2715;
                 </button>
-                <div className="border-b border-gray-200 dark:border-gray-700">
+                <div className="border-b border-gray-200 dark:border-gray-700 -mt-4">
                     <ul className="flex flex-wrap -mb-px text-sm font-medium text-center text-gray-500 dark:text-gray-400">
                         <li className="mr-2">
                             <button

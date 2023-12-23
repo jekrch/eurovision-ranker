@@ -3,6 +3,7 @@ import type { FC } from 'react';
 import { FaTv } from 'react-icons/fa';
 import { Contestant } from '../data/Contestant';
 import { Country } from '../data/Country';
+import Flag from "react-world-flags"
 
 const style = {
   padding: '0.5rem 1rem',
@@ -22,7 +23,7 @@ export interface CardProps {
   className: string;
   isDragging: boolean;
   isDeleteMode?: boolean;
-  deleteCallBack?: (id:string) => void;
+  deleteCallBack?: (id: string) => void;
   isLargeView?: boolean;
 }
 
@@ -39,20 +40,34 @@ export const Card: FC<CardProps> = (props) => {
 
       style={style}
     >
-      {props.rank && (
-        <div className="flex-shrink-0 mr-2 font-bold">{props.rank}.</div>
-      )}
-      <div className="flex-grow">
+      {
+        props.rank && (
+          props.isLargeView ? (
+            <>
+              <div className="pr-[3px] pb-[1px] flex-shrink-0 mr-3 font-bold w-8 border-2 border-indigo-800 bg-indigo-800 bg-opacity-80 text-white font-bold tracking-tighter h-10 items-center justify-center flex text-xl -ml-[9px] rounded-sm">
+                {props.rank}
+              </div>
+              <Flag code={props.country.key} className="w-12 mr-5 opacity-80" />
+            </>
+          ) : (
+            <div className="flex-shrink-0 mr-2 tracking-tighter mr-0 items-center justify-center flex text-md -ml-[7px] rounded">
+              {props.rank}.
+            </div>
+          )
+        )
+      }
+      {/* <i className={`z-0 float-right text-3xl ml-2 flag-icon -mr-2 ${props.country?.icon}`} /> */}
+      <div className={classNames("flex-grow text-slate-400 font-bold")}>
         {props.country?.name}
         {props.isLargeView &&
           <>
-            <i className={`z-1 float-right ml-3 flag-icon -mr-2 ${props.country?.icon}`} />
+            {/* <i className={`z-1 float-right ml-3 flag-icon -mr-2 ${props.country?.icon}`} /> */}
             {props.contestant?.youtube &&
               <a
                 href={props.contestant?.youtube} target="_blank" rel="noopener noreferrer"
                 className='float-right rounded text-slate-500 ml-1 hover:text-slate-100 mt-[1px]'
               >
-                <FaTv className='text-md -mt-[0.5px]' />
+                <FaTv className='text-xl inline-block -mr-2 -mt-2 ' />
               </a>
             }
             <div className="flex items-center justify-between">
@@ -72,26 +87,26 @@ export const Card: FC<CardProps> = (props) => {
                   </span>
                 }
               </div>
-              <div className="float-right flex ml-2 -mr-3 -mt-1 flex text-xl text-slate-500 tracking-tighter h-5 rounded-r">
+              <div className="float-right flex ml-2 -mr-6 -mt-1 flex text-xl text-slate-500 tracking-tighter h-5 rounded-r">
                 <span className="pb-1 pr-[1.5px]">&#8942;&#8942;</span>
               </div>
             </div>
           </>
         }
-      
+
       </div>
       {props.isDeleteMode &&
-          <>
-            <button
+        <>
+          <button
 
-              className={classNames(
-                "rounded-tr-md rounded-br-md ml-2 -mt-[2px] -mb-[2px] -mr-[12px] float-right text-white font-normal py-1 px-2 text-xs",
-                "bg-red-800 opacity-70 hover:bg-red-600 active:bg-red-700"
-              )}
+            className={classNames(
+              "rounded-sm h-10 ml-2 -mt-[2px] -mb-[2px] -mr-[12px] float-right text-white font-normal py-1 px-2 text-xs",
+              "bg-red-800 opacity-70 hover:bg-red-600 active:bg-red-700"
+            )}
             onClick={() => { props?.deleteCallBack?.(props.country.id); }}
-            >&#x2715;</button>
-          </>
-        }
+          >&#x2715;</button>
+        </>
+      }
     </div>
   );
 };

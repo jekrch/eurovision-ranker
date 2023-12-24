@@ -4,6 +4,7 @@ import { fetchCountryContestantsByYear } from './ContestantFactory';
 import { CountryContestant } from '../data/CountryContestant';
 import { countries } from '../data/Countries';
 import { defaultYear } from '../data/Contestants';
+import { getRankingComparison } from './RankAnalyzer';
 
 /**
  * Updates states based on extracted parameters using Redux.
@@ -51,13 +52,13 @@ export const processAndUpdateRankings = (
     );
 
     if (rankings) {
-        const rankedIds = convertRankingsStrToArray2(rankings);
 
-        // let string = '';
-        // rankedIds.forEach(id => {
-        //     let country = countries.find(c => c.key === id);
-        //     string += country?.id;
-        // });
+        // let compare = getRankingComparison(
+        //     contestYear, rankings, "envw4g.gmckyjib.dod16f.ca7.bhq" // 2023 finals
+        // );
+        // console.log(compare);
+
+        const rankedIds = convertRankingsStrToArray(rankings);
 
         const rankedCountries = rankedIds.map(
             (id: string) => {
@@ -115,21 +116,7 @@ export const decodeRankingsFromURL = (
     );
 };
 
-function convertRankingsStrToArray(rankings: string) {
-    let rankedIds: string[] = [];
-
-    for (let i = 0; i < rankings.length; i += 2) {
-        rankedIds.push(rankings.substring(i, i + 2));
-    }
-
-    // remove duplicates 
-    let uniqueSet = new Set(rankedIds);
-    rankedIds = Array.from(uniqueSet);
-
-    return rankedIds;
-}
-
-function convertRankingsStrToArray2(rankings: string): string[] {
+export function convertRankingsStrToArray(rankings: string): string[] {
     let rankedIds: string[] = [];
     let i = 0;
 
@@ -158,4 +145,3 @@ export const extractParams = (params: URLSearchParams) => {
         rankings: params.get('r')     // 'r' for rankings
     };
 };
-

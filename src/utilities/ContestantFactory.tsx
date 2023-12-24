@@ -8,7 +8,7 @@ import { setYear } from "../redux/actions";
 
 export function fetchCountryContestantsByYear(
     year: string, 
-    dispatch: Dispatch<any>
+    dispatch?: Dispatch<any>
 ): CountryContestant[] {
     
     let contestants: Contestant[] = getContestantsByYear(
@@ -30,7 +30,7 @@ export function fetchCountryContestantsByYear(
 
 function getContestantsByYear(
     year: string, 
-    dispatch: Dispatch<any>
+    dispatch?: Dispatch<any>
 ): Contestant[] {
     if (year?.length == 2) {
         year = '20' + year;
@@ -47,11 +47,19 @@ function getContestantsByYear(
         case `2019`:
             return contestants2019; 
         default:
-            console.error(`No contestants found for year: ${year}, loading default ${defaultYear}`);
-            dispatch(
-                setYear(defaultYear)
-            );
-            return getContestantsByYear(defaultYear, dispatch);
+            let errorMsg = `No contestants found for year: ${year}, loading default ${defaultYear}`;
+            
+            if (dispatch) {
+                
+                console.log(errorMsg);
+                dispatch(
+                    setYear(defaultYear)
+                );
+                return getContestantsByYear(defaultYear);
+
+            } else {
+                throw new Error(errorMsg)
+            }
     }
 }
   

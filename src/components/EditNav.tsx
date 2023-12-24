@@ -1,20 +1,53 @@
-import React, { Dispatch, SetStateAction } from 'react';
+import React, { SetStateAction } from 'react';
 import { faArrowRight, faTrashAlt, faSquare, faCheckSquare, faPenAlt } from '@fortawesome/free-solid-svg-icons';
 import classNames from 'classnames';
 import { CountryContestant } from '../data/CountryContestant';
 import IconButton from './IconButton';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppState, SetContestantsAction } from '../redux/types';
+import { SetIsDeleteMode, setContestants, setRankedItems, setUnrankedItems } from '../redux/actions';
+import { fetchCountryContestantsByYear } from '../utilities/ContestantFactory';
+import { Dispatch } from 'redux';
 
 type EditNavProps = {
-    unrankedItems: CountryContestant[]; 
-    rankedItems: CountryContestant[];
-    addAllUnranked: () => void;
-    resetRanking: () => void;
-    setDeleteMode: Dispatch<SetStateAction<boolean>>;
-    deleteMode: boolean;
-    setNameModalShow: Dispatch<SetStateAction<boolean>>;
+    setNameModalShow: React.Dispatch<SetStateAction<boolean>>;
 };
 
-const EditNav: React.FC<EditNavProps> = ({ unrankedItems, rankedItems, addAllUnranked, resetRanking, setDeleteMode, deleteMode, setNameModalShow }) => {
+const EditNav: React.FC<EditNavProps> = ({ setNameModalShow }) => {
+    const dispatch: Dispatch<any> = useDispatch();
+    const { year, rankedItems, unrankedItems, isDeleteMode } = useSelector((state: AppState) => state);
+
+    /**
+   * Clear rankedItems and fill unrankedItems with the relevant year's contestants
+   */
+    function resetRanking() {
+        let yearContestants: CountryContestant[] = fetchCountryContestantsByYear(year);
+
+        dispatch(
+            setContestants(yearContestants)
+        );
+
+        dispatch(
+            setUnrankedItems(yearContestants)
+        );
+
+        dispatch(
+            setRankedItems([])
+        );
+    }
+
+    /**
+     * Add all remaining unranked items to the ranked array
+     */
+    function addAllUnranked() {
+        dispatch(
+            setUnrankedItems([])
+        );
+        dispatch(
+            setRankedItems(rankedItems.concat(unrankedItems))
+        );
+    }
+
     return (
         <nav className="nav-diagonal-split-bg bg-gray-800 text-white p-3 sticky bottom-0 z-50">
             <div className="container mx-auto flex justify-between items-center">
@@ -38,13 +71,17 @@ const EditNav: React.FC<EditNavProps> = ({ unrankedItems, rankedItems, addAllUnr
                             />
 
                             <IconButton
-                                icon={deleteMode ? faCheckSquare : faSquare}
+                                icon={isDeleteMode ? faCheckSquare : faSquare}
                                 disabled={!rankedItems.length}
                                 className={classNames(
                                     "ml-4",
-                                    rankedItems.length && deleteMode ? "bg-red-800 border-red-100 hover:bg-red-700" : null
+                                    rankedItems.length && isDeleteMode ? "bg-red-800 border-red-100 hover:bg-red-700" : null
                                 )}
-                                onClick={() => setDeleteMode(!deleteMode)}
+                                onClick={() => {
+                                    dispatch(
+                                        SetIsDeleteMode(!isDeleteMode)
+                                    );
+                                }}
                                 title="Delete"
                             />
 
@@ -54,7 +91,7 @@ const EditNav: React.FC<EditNavProps> = ({ unrankedItems, rankedItems, addAllUnr
                                 onClick={() => setNameModalShow(true)}
                                 title="Name"
                             />
-                            
+
                         </div>
                     </li>
                 </ul>

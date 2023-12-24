@@ -1,95 +1,93 @@
-import { CountryContestant } from "../data/CountryContestant";
-import { fetchCountryContestantsByYear } from "./ContestantFactory";
+import { Dispatch } from 'redux';
+import { setName, setYear, setRankedItems, setUnrankedItems } from '../redux/actions';
+import { fetchCountryContestantsByYear } from './ContestantFactory';
+import { CountryContestant } from '../data/CountryContestant';
+import { countries } from '../data/Countries';
 
 /**
- * Extracts parameters from URLSearchParams.
+ * Updates states based on extracted parameters using Redux.
  */
-export const extractParams = (params: URLSearchParams) => {
-    return {
-        rankingName: params.get('n'), // 'name' for name
-        contestYear: params.get('y'), // 'y' for year 
-        rankings: params.get('r')     // 'r' for rankings
-    };
-};
-
-/**
- * Updates states based on extracted parameters.
- */
-export const updateStatesFromParams = (
+export const updateStates = (
     params: {
         rankingName: string | null,
         contestYear: string | null
     },
-    setName: (name: string) => void,
-    setYear: (year: string) => void
+    dispatch: Dispatch<any>
 ) => {
-
     let { rankingName, contestYear } = params;
 
     if (rankingName) {
-        setName(rankingName);
+        dispatch(setName(rankingName));
     }
 
     if (contestYear) {
         if (contestYear.length === 2) {
             contestYear = '20' + contestYear;
         }
-        setYear(contestYear);
+        dispatch(setYear(contestYear));
     }
 };
 
 /**
- * Fetches and processes rankings, then updates contestant states.
+ * Fetches and processes rankings, then updates contestant states using Redux.
  */
 export const processAndUpdateRankings = (
     contestYear: string,
     rankings: string | null,
-    setRankedItems: (items: CountryContestant[]) => void,
-    setUnrankedItems: (items: CountryContestant[]) => void
+    dispatch: Dispatch<any>
 ): string[] | undefined => {
     const yearContestants = fetchCountryContestantsByYear(contestYear);
 
     if (rankings) {
         const rankedIds = convertRankingsStrToArray(rankings);
+
         const rankedCountries = rankedIds.map(
-            id => yearContestants.find(
-                country => country.country.key === id
-                )
-            ).filter(Boolean) as CountryContestant[];
+            (id: string) => {
+                let countryContestant: CountryContestant | undefined = yearContestants.find(
+                    c => c.country.key === id
+                );
+                if (countryContestant) {
+                    return countryContestant;
+                } else {
+                    const country = countries.find(c => c.key === id);
+                    if (country) {
+                        return new CountryContestant(country);
+                    } else {
+                        return;
+                    }
+                }
+            }
+    ).filter(Boolean) as CountryContestant[];
 
         const unrankedCountries = yearContestants.filter(
             countryContestant => !rankedIds.includes(countryContestant.country.key)
         );
 
-        setRankedItems(rankedCountries);
-        setUnrankedItems(unrankedCountries);
+        dispatch(setRankedItems(rankedCountries));
+        dispatch(setUnrankedItems(unrankedCountries));
 
         return rankedIds;
     } else {
-        setUnrankedItems(yearContestants);
+        dispatch(setUnrankedItems(yearContestants));
     }
 };
 
 /**
- * Decodes rankings from URL and updates states accordingly.
+ * Decodes rankings from URL and updates Redux store accordingly.
  */
 export const decodeRankingsFromURL = (
-    setName: (name: string) => void,
-    setYear: (year: string) => void,
-    setRankedItems: (items: CountryContestant[]) => void,
-    setUnrankedItems: (items: CountryContestant[]) => void
+    dispatch: Dispatch<any>
 ): string[] | undefined => {
 
     const params = new URLSearchParams(window.location.search);
-    const extractedParams = extractParams(params);
 
-    updateStatesFromParams(extractedParams, setName, setYear);
+    const extractedParams = extractParams(params);
+    updateStates(extractedParams, dispatch);
 
     return processAndUpdateRankings(
-        extractedParams.contestYear || '23',
+        extractedParams.contestYear || '2023', // Default to '2023' if year is not specified
         extractedParams.rankings,
-        setRankedItems,
-        setUnrankedItems
+        dispatch
     );
 };
 
@@ -106,3 +104,12 @@ function convertRankingsStrToArray(rankings: string) {
 
     return rankedIds;
 }
+
+export const extractParams = (params: URLSearchParams) => {
+    return {
+        rankingName: params.get('n'), // 'name' for name
+        contestYear: params.get('y'), // 'y' for year 
+        rankings: params.get('r')     // 'r' for rankings
+    };
+};
+

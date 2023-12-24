@@ -1,17 +1,21 @@
 import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppState } from '../redux/types';
+import { setName } from '../redux/actions';
 
 type NameModalProps = {
     isOpen: boolean;
     onClose: () => void;
-    setName: Dispatch<SetStateAction<string>>;
-    name: string;
 };
 
 const NameModal: React.FC<NameModalProps> = (props: NameModalProps) => {
-    const [inputValue, setInputValue] = useState(props.name); 
+    const dispatch: Dispatch<any> = useDispatch();
+    const  { name } = useSelector((state: AppState) => state);
+
+    const [inputValue, setInputValue] = useState(name); 
     const modalRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
-
+    
     useEffect(() => {
         if (props.isOpen && inputRef.current) {
             inputRef.current.focus(); // Set focus on the input element when the modal is open
@@ -31,11 +35,11 @@ const NameModal: React.FC<NameModalProps> = (props: NameModalProps) => {
     }, [modalRef, props]);
 
     useEffect(() => {
-        setInputValue(props.name)
-    }, [props.name]);
+        setInputValue(name)
+    }, [name]);
 
     const handleSave = () => {
-        props.setName(inputValue); 
+        dispatch(setName(inputValue)); 
         props.onClose(); 
     };
 

@@ -17,21 +17,23 @@ import Navbar from './components/NavBar';
 import EditNav from './components/EditNav';
 import IntroColumn from './components/IntroColumn';
 import { generateYoutubePlaylistUrl, rankedHasAnyYoutubeLinks } from './utilities/YoutubeUtil';
+import { AppState } from './redux/types';
+import { useDispatch, useSelector } from 'react-redux';
+import { setName, setYear, setRankedItems, setUnrankedItems, setShowUnranked, setContestants } from './redux/actions';
 import { decodeRankingsFromURL } from './utilities/UrlUtil';
+import { Dispatch } from 'redux';
 
 const App: React.FC = () => {
-  const [contestants, setContestants] = useState<CountryContestant[]>([]);
-  const [unrankedItems, setUnrankedItems] = useState<CountryContestant[]>([]);
-  const [rankedItems, setRankedItems] = useState<CountryContestant[]>([]);
-  const [showUnranked, setShowUnranked] = useState(false);
   const [mainModalShow, setMainModalShow] = useState(false);
   const [nameModalShow, setNameModalShow] = useState(false);
   const [refreshUrl, setRefreshUrl] = useState(0);
   const [refreshDnD, setRefreshDnD] = useState(0);
   const [modalTab, setModalTab] = useState('about')
-  const [year, setYear] = useState<string>('');
-  const [name, setName] = useState<string>('');
-  const [deleteMode, setDeleteMode] = useState(false);
+  const dispatch: Dispatch<any> = useDispatch();
+  const { 
+    year, name, rankedItems, unrankedItems, showUnranked, isDeleteMode
+  } = useSelector((state: AppState) => state);
+
 
   /**
    * Encode rankings to csv for URL
@@ -42,60 +44,6 @@ const App: React.FC = () => {
     const ids = rankedCountries.map(item => item.country.key);
     return ids.join('');
   };
-
-  // /**
-  //  * Decode rankings from URL 
-  //  */
-  // const decodeRankingsFromURL = (): number | undefined => {
-  //   const params = new URLSearchParams(window.location.search);
-
-  //   const rankingName = params.get('n');
-
-  //   if (rankingName && name !== rankingName) {
-  //     setName(rankingName);
-  //   }
-
-  //   let contestYear = getYearFromUrl(params);
-
-  //   if (contestYear !== year) {
-  //     setYear(contestYear);
-  //   }
-
-  //   const yearContestants = fetchCountryContestantsByYear(contestYear);
-
-  //   const rankings = params.get('r');
-
-  //   if (rankings) {
-  //     let rankedIds: string[] = convertRankingsStrToArray(rankings);
-
-  //     const rankedCountries = rankedIds
-  //       .map(id => {
-  //         let countryContestant = yearContestants.find(country => country.country.key === id)
-
-  //         if (countryContestant) {
-  //           return countryContestant;
-  //         } else {
-  //           const country = countries.find(c => c.key === id);
-  //           if (country) {
-  //             return new CountryContestant(country);
-  //           } else {
-  //             return;
-  //           }
-  //         }
-  //       }).filter(Boolean) as CountryContestant[];
-
-  //     const unrankedCountries = yearContestants.filter(
-  //       countryContestant => !rankedIds.includes(countryContestant.id)
-  //     );
-
-  //     setRankedItems(rankedCountries);
-  //     setUnrankedItems(unrankedCountries);
-
-  //   } else {
-  //     setUnrankedItems(yearContestants);
-  //   }
-  //   return rankings?.length
-  // };
 
   /**
    * Extract the year from the url y param
@@ -114,17 +62,19 @@ const App: React.FC = () => {
 
   useEffect(() => {
     const rankingsExist = decodeRankingsFromURL(
-      setName, setYear, setRankedItems, setUnrankedItems
+      dispatch
     );
     // Set showUnranked based on whether rankings exist
-    setShowUnranked(!rankingsExist);
+    dispatch(
+      setShowUnranked(!rankingsExist)
+    );
   }, [])
 
   useEffect(() => {
     updateQueryParams({ r: encodeRankingsToURL(rankedItems) });
     updateQueryParams({ y: year.slice(-2) });
-  }, [rankedItems]);
-
+    updateQueryParams({ n: name });
+  }, [rankedItems, refreshUrl]);
 
   useEffect(() => {
 
@@ -134,35 +84,21 @@ const App: React.FC = () => {
     let yearContestants = fetchCountryContestantsByYear(year);
 
     updateQueryParams({ y: year.slice(-2) });
-    setContestants(yearContestants);
-    setUnrankedItems(yearContestants)
+    
+    dispatch(
+      setContestants(yearContestants)
+    );
+    dispatch(
+      setUnrankedItems(yearContestants)
+    );
     decodeRankingsFromURL(
-      setName, setYear, setRankedItems, setUnrankedItems
+      dispatch
     );
   }, [year]);
 
   useEffect(() => {
     updateQueryParams({ n: name });
   }, [name]);
-
-  /**
-   * Clear rankedItems and fill unrankedItems with the relevant year's contestants
-   */
-  function resetRanking() {
-    let yearContestants = fetchCountryContestantsByYear(year);
-
-    setContestants(yearContestants);
-    setUnrankedItems(yearContestants)
-    setRankedItems([])
-  }
-
-  /**
-   * Add all remaining unranked items to the ranked array
-   */
-  function addAllUnranked() {
-    setUnrankedItems([])
-    setRankedItems(rankedItems.concat(unrankedItems));
-  }
 
   /**
    * Function to update the query parameters
@@ -212,13 +148,13 @@ const App: React.FC = () => {
     if (destination.droppableId !== source.droppableId) {
       const destinationItems = Array.from(otherList);
       destinationItems.splice(destination.index, 0, reorderedItem);
-      setOtherList(destinationItems);
+      dispatch(setOtherList(destinationItems));
     } else {
       items.splice(destination.index, 0, reorderedItem);
-      setActiveList(items);
+      dispatch(setActiveList(items));
     }
 
-    setActiveList(items);
+    dispatch(setActiveList(items));
     setRefreshUrl(Math.random())
   };
 
@@ -229,19 +165,23 @@ const App: React.FC = () => {
    * @param countryId 
    */
   function deleteRankedCountry(countryId: string) {
-
     const index = rankedItems.findIndex(obj => obj.country.key === countryId);
     const [objectToMove] = rankedItems.splice(index, 1);
-
-    const insertionIndex = unrankedItems.findIndex(obj => obj.country.name > objectToMove.country.name);
+    const insertionIndex = unrankedItems.findIndex(
+      i => i.country.name > objectToMove.country.name
+    );
     if (insertionIndex === -1) {
       unrankedItems.push(objectToMove); // If no country is found with a name greater than our object, append it at the end.
     } else {
       unrankedItems.splice(insertionIndex, 0, objectToMove); // Insert at the found index
     }
 
-    setRankedItems(rankedItems);
-    setUnrankedItems(unrankedItems);
+    dispatch(
+      setRankedItems(rankedItems)
+    );
+    dispatch(
+      setUnrankedItems(unrankedItems)
+    );
     setRefreshUrl(Math.random())
   }
 
@@ -255,8 +195,6 @@ const App: React.FC = () => {
       <div className="flex flex-col h-screen">
 
         <Navbar
-          showUnranked={showUnranked}
-          setShowUnranked={setShowUnranked}
           openModal={openModal}
         />
         <div className="flex-grow overflow-auto overflow-x-hidden bg-[#040241] flex justify-center pixelated-background">
@@ -331,7 +269,7 @@ const App: React.FC = () => {
                             <Dropdown
                               className="mx-auto relative w-[5em]"
                               value={year}
-                              onChange={setYear}
+                              onChange={y => { dispatch(setYear(y)); }}
                               options={supportedYears}
                             />
                           </div>
@@ -378,7 +316,7 @@ const App: React.FC = () => {
                                   country={item.country}
                                   contestant={item.contestant!}
                                   isLargeView={!showUnranked}
-                                  isDeleteMode={showUnranked && deleteMode}
+                                  isDeleteMode={showUnranked && isDeleteMode}
                                   deleteCallBack={deleteRankedCountry}
                                   isDragging={snapshot.isDragging}
                                 />
@@ -398,12 +336,6 @@ const App: React.FC = () => {
 
         {showUnranked &&
           <EditNav
-            unrankedItems={unrankedItems}
-            rankedItems={rankedItems}
-            addAllUnranked={addAllUnranked}
-            resetRanking={resetRanking}
-            setDeleteMode={setDeleteMode}
-            deleteMode={deleteMode}
             setNameModalShow={setNameModalShow}
           />
         }
@@ -411,14 +343,10 @@ const App: React.FC = () => {
       <MainModal
         tab={modalTab}
         isOpen={mainModalShow}
-        setYear={setYear}
-        year={year}
         onClose={() => setMainModalShow(false)}
       />
       <NameModal
         isOpen={nameModalShow}
-        setName={setName}
-        name={name}
         onClose={() => {
           setNameModalShow(false);
         }}

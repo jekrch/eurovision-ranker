@@ -1,14 +1,18 @@
 import React, { Dispatch, SetStateAction } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHouseUser } from '@fortawesome/free-solid-svg-icons';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppState } from '../redux/types';
+import { setShowUnranked } from '../redux/actions';
 
 type NavbarProps = {
-    showUnranked: boolean;
-    setShowUnranked: Dispatch<SetStateAction<boolean>>;
     openModal: (tabName: string) => void;
 };
 
-const Navbar: React.FC<NavbarProps> = ({ showUnranked, setShowUnranked, openModal }) => {
+const Navbar: React.FC<NavbarProps> = ({ openModal }) => {
+    const dispatch: Dispatch<any> = useDispatch();
+    const  { showUnranked } = useSelector((state: AppState) => state);
+  
     return (
         <nav className="nav-diagonal-split-bg bg-gray-800 text-white p-2 px-4 sticky top-0 z-50">
             <div className="container mx-auto flex justify-between items-center z-50">
@@ -25,7 +29,7 @@ const Navbar: React.FC<NavbarProps> = ({ showUnranked, setShowUnranked, openModa
                             
                             <button
                                 className="bg-blue-500 hover:bg-blue-700 text-white font-normal py-1 px-3 rounded-full text-xs mr-0 w-[5em]"
-                                onClick={() => setShowUnranked(!showUnranked)}
+                                onClick={() => dispatch(setShowUnranked(!showUnranked))}
                             >
                                 {showUnranked ? 'Details' : 'Select'}
                             </button>

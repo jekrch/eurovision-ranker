@@ -8,8 +8,6 @@ type MainModalProps = {
     isOpen: boolean;
     tab: string;
     onClose: () => void;
-    setYear: Dispatch<SetStateAction<string>>;
-    year: string;
 };
 
 const MainModal: React.FC<MainModalProps> = (props: MainModalProps) => {
@@ -104,22 +102,6 @@ const MainModal: React.FC<MainModalProps> = (props: MainModalProps) => {
                             <p>Thanks for using my app! I'm just getting started, so expect a lot of changes here in the coming months.</p>
                             <p className="mt-4">This is an <a className="text-link" href="https://github.com/jekrch/eurovision-ranker">open-source project</a> that I'm doing in my spare time. If you have any feedback, suggestions, or want to report a bug, you can do so at my <a href="https://github.com/jekrch/eurovision-ranker/issues" className="text-link">github repository</a> or send me an email at <a href="mailto:eurovision.ranker@gmail.com" className="text-link">eurovision.ranker@gmail.com</a>. </p>
                             <p className="mt-4">In the meantime, if you're enjoying the app, please consider clicking the donate link above and making a small donation to a nonprofit youth development org in my hometown.</p>
-                        </div>}
-                    {activeTab === 'settings' &&
-                        <div className="flex flex-col items-start">
-                            <div className="flex items-center">
-                                <div className="mr-4">
-                                    <Dropdown
-                                        value={props.year}
-                                        onChange={props.setYear}
-                                        options={['2023', '2022', '2021']}
-                                    />
-                                </div>
-                                <div>
-                                    Set the contest year
-                                    <div className="text-slate-500 text-xs">(Warning: any currently ranked countries that did not participate will be removed)</div>
-                                </div>
-                            </div>
                         </div>}
 
                     {activeTab === 'donate' &&

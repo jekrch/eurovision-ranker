@@ -13,6 +13,8 @@ import Dropdown from './components/Dropdown';
 import { supportedYears } from './data/Contestants';
 import { Country } from './data/Country';
 import NameModal from './components/NameModal';
+import { isMobile } from 'react-device-detect';
+import { FaTv } from 'react-icons/fa';
 
 const App: React.FC = () => {
   const [contestants, setContestants] = useState<CountryContestant[]>([]);
@@ -50,8 +52,6 @@ const App: React.FC = () => {
       setName(rankingName);
     }
 
-    const rankings = params.get('r');
-
     let contestYear = getYearFromUrl(params);
 
     if (contestYear !== year) {
@@ -60,16 +60,10 @@ const App: React.FC = () => {
 
     const yearContestants = fetchCountryContestantsByYear(contestYear);
 
+    const rankings = params.get('r');
+
     if (rankings) {
-      let rankedIds: string[] = [];
-
-      for (let i = 0; i < rankings.length; i += 2) {
-          rankedIds.push(rankings.substring(i, i + 2));
-      }
-
-      // remove duplicates 
-      let uniqueSet = new Set(rankedIds);
-      rankedIds = Array.from(uniqueSet);
+      let rankedIds: string[] = convertRankingsStrToArray(rankings);
 
       const rankedCountries = rankedIds
         .map(id => {
@@ -99,6 +93,57 @@ const App: React.FC = () => {
     }
     return rankings?.length
   };
+
+  function rankedHasAnyYoutubeLinks(){
+    return rankedItems.some(item => item?.contestant?.youtube?.length);
+  }
+
+  function generateYoutubePlaylistUrl() {
+
+    const baseYouTubeURL = "https://www.youtube.com/watch_videos?video_ids=";
+    const videoIds = rankedItems.map(item => {
+        if (!item?.contestant?.youtube?.length) {
+          return;
+        }
+        let youtubeURL: URL = new URL(item?.contestant?.youtube);
+        const urlParams = new URLSearchParams(
+          youtubeURL.search
+        );
+        return urlParams.get('v');
+    }).filter(
+      id => id?.length
+    ).join(',');
+
+    return baseYouTubeURL + videoIds;
+};
+
+  function convertRankingsStrToArray(rankings: string) {
+    let rankedIds: string[] = [];
+  
+    for (let i = 0; i < rankings.length; i += 2) {
+      rankedIds.push(rankings.substring(i, i + 2));
+    }
+  
+    // remove duplicates 
+    let uniqueSet = new Set(rankedIds);
+    rankedIds = Array.from(uniqueSet);
+    return rankedIds;
+  }
+
+  /**
+   * Extract the year from the url y param
+   * 
+   * @param params 
+   * @returns 
+   */
+  function getYearFromUrl(params: URLSearchParams) {
+    let contestYear = '20' + (params.get('y') || '23');
+  
+    if (!supportedYears.includes(contestYear)) {
+      contestYear = '2023';
+    }
+    return contestYear;
+  }
 
   useEffect(() => {
     const rankingsExist = decodeRankingsFromURL();
@@ -344,12 +389,25 @@ const App: React.FC = () => {
                             />
                           </div>
                         ) : (
-                          <div className="mx-2">
-                            {year}
-                            {name?.length > 0 && (
-                              <span className="font-bold text-slate-400 text-md"> - {name}</span>
-                            )}
-                          </div>
+                          <div className="mx-2 flex justify-between items-center">
+  <div className="justify-center w-full ml-2">
+    {year}
+    {name?.length > 0 && (
+      <span className="font-bold text-slate-400 text-md"> - {name}</span>
+    )}
+  </div>
+  {rankedHasAnyYoutubeLinks() && (
+    <a
+      href={generateYoutubePlaylistUrl()} 
+      target="_blank" 
+      rel="noopener noreferrer" 
+      title="generate youtube playlist"
+      className='text-slate-500 hover:text-slate-100'
+    >
+      <FaTv className='text-xl' />
+    </a>
+  )}
+</div>
                         )}
                       </div>
                       {(rankedItems.length === 0 && showUnranked) && (
@@ -367,7 +425,7 @@ const App: React.FC = () => {
                                 onClick={() => openModal('about')}
                               >
                                 <FontAwesomeIcon
-                                  className="mr-1 ml-0 text-xl"
+                                  className="mr-2 ml-0 text-xl"
                                   icon={faHouseUser}
 
                                 />
@@ -379,7 +437,7 @@ const App: React.FC = () => {
                                 onClick={() => openModal('donate')}
                               >
                                 <FontAwesomeIcon
-                                  className="mr-1 ml-0 text-xl"
+                                  className="mr-2 ml-0 text-xl"
                                   icon={faHeart}
 
                                 />
@@ -391,7 +449,7 @@ const App: React.FC = () => {
                                 onClick={() => openModal('rankings')}
                               >
                                 <FontAwesomeIcon
-                                  className="mr-1 ml-0 text-xl"
+                                  className="mr-2 ml-0 text-xl"
                                   icon={faList}
 
                                 />
@@ -520,19 +578,13 @@ const App: React.FC = () => {
         isOpen={nameModalShow}
         setName={setName}
         name={name}
-        onClose={() => setNameModalShow(false)}
+        onClose={() => {
+          setNameModalShow(false);
+        }}
       />
     </>
   );
 };
 
 export default App;
-function getYearFromUrl(params: URLSearchParams) {
-  let contestYear = '20' + (params.get('y') || '23');
-
-  if (!supportedYears.includes(contestYear)) {
-    contestYear = '2023';
-  }
-  return contestYear;
-}
 

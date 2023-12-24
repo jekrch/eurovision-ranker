@@ -1,6 +1,7 @@
 import classNames from 'classnames';
 import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import Dropdown from './Dropdown';
+import { isMobile } from 'react-device-detect';
 
 type NameModalProps = {
     isOpen: boolean;

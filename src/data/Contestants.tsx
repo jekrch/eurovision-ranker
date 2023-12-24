@@ -16,7 +16,7 @@ export const contestants2024: Contestant[] = [
   { countryKey: 'ee', artist: 'TBD Feb 24', song: '' }, // Estonia
   { countryKey: 'fi', artist: 'TBD Feb 24', song: '' }, // Finland
   { countryKey: 'fr', artist: 'Slimane', song: 'Mon amour', youtube: 'https://www.youtube.com/watch?v=bal8oESDH7s' }, // France
-  { countryKey: 'ge', artist: 'TBD', song: 'TBD' }, // Georgia
+  { countryKey: 'ge', artist: 'TBD', song: '' }, // Georgia
   { countryKey: 'de', artist: 'TBD Feb 24', song: 'TBD' }, // Germany
   { countryKey: 'gr', artist: 'Marina Satti', song: 'TBD' }, // Greece
   { countryKey: 'is', artist: 'TBD Mar 24', song: '' }, // Iceland
@@ -40,7 +40,6 @@ export const contestants2024: Contestant[] = [
   { countryKey: 'ch', artist: 'TBD Mar 24', song: '' }, // Switzerland
   { countryKey: 'ua', artist: 'TBD Feb 24', song: '' }, // Ukraine
   { countryKey: 'gb', artist: 'Olly Alexander', song: 'TBD' }, // United Kingdom
-  // Add other countries here...
 ];
 
 {/*2023 rank ?r=WFrTnuBEUzlcCaSfemPtVApskg&y=23 */}

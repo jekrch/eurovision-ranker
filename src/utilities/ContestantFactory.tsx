@@ -1,7 +1,7 @@
 import { Contestant } from "../data/Contestant";
 import { CountryContestant } from "../data/CountryContestant";
 import { countries } from '../data/Countries';
-import { contestants2021, contestants2022, contestants2023, contestants2024 } from '../data/Contestants';
+import { contestants2019, contestants2021, contestants2022, contestants2023, contestants2024 } from '../data/Contestants';
 
 
 export function fetchCountryContestantsByYear(year: string): CountryContestant[] {
@@ -31,6 +31,8 @@ function getContestantsByYear(year: string) {
             return contestants2022; 
         case `2021`:
             return contestants2021; 
+        case `2019`:
+            return contestants2019; 
         default:
             throw new Error(`No contestants found for year: ${year}`);
     }

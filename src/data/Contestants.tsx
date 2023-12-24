@@ -1,6 +1,6 @@
 import { Contestant } from "./Contestant";
 
-export const supportedYears = ["2021","2022", "2023", "2024"];
+export const supportedYears = ["2019", "2021","2022", "2023", "2024"];
 
 export const contestants2024: Contestant[] = [
   { countryKey: 'al', artist: 'Besa Kokëdhima', song: 'Zemrën n\'dorë', youtube: 'https://www.youtube.com/watch?v=7rEDP1lSoDQ' },
@@ -42,7 +42,6 @@ export const contestants2024: Contestant[] = [
   { countryKey: 'gb', artist: 'Olly Alexander', song: 'TBD' }, // United Kingdom
 ];
 
-{/*2023 rank ?r=WFrTnuBEUzlcCaSfemPtVApskg&y=23 */}
 export const contestants2023: Contestant[] = [
     { countryKey: 'al', artist: 'Albina & Familja Kelmendi', song: 'Duje', youtube: "https://www.youtube.com/watch?v=mp8OG4ApocI"},
     { countryKey: 'am', artist: 'Brunette', song: 'Future Lover', youtube: "https://www.youtube.com/watch?v=Co8ZJIejXBA"},
@@ -84,7 +83,6 @@ export const contestants2023: Contestant[] = [
   ];
 
   export const contestants2022: Contestant[] = [
-
     { countryKey: 'al', artist: 'Ronela Hajati', song: 'Sekret', youtube: "https://www.youtube.com/watch?v=iMu47raqbcc" },
     { countryKey: 'am', artist: 'Rosa Linn', song: 'Snap', youtube: "https://www.youtube.com/watch?v=DIKIgjLGf98" },
     { countryKey: 'au', artist: 'Sheldon Riley', song: 'Not The Same', youtube: "https://www.youtube.com/watch?v=ByUD4d89_is" },
@@ -128,7 +126,6 @@ export const contestants2023: Contestant[] = [
   ];
   
   export const contestants2021: Contestant[] = [
-  
     { countryKey: 'al', artist: 'Anxhela Peristeri', song: 'Karma', youtube: "https://www.youtube.com/watch?v=Q4D_RfEFwd4" },
     { countryKey: 'au', artist: 'Montaigne', song: 'Technicolour', youtube: "https://www.youtube.com/watch?v=bX_y759_F_U" },
     { countryKey: 'at', artist: 'Vincent Bueno', song: 'Amen', youtube: "https://www.youtube.com/watch?v=1sY76L68rfs" },
@@ -169,3 +166,47 @@ export const contestants2023: Contestant[] = [
     { countryKey: 'ua', artist: 'Go_A', song: 'Shum', youtube: "https://www.youtube.com/watch?v=U7-dxzp6Jvs" },
     { countryKey: 'gb', artist: 'James Newman', song: 'Embers', youtube: "https://www.youtube.com/watch?v=BMDGTsa_Qq0" }
   ];
+
+  export const contestants2019: Contestant[] = [
+    { countryKey: 'al', artist: 'Jonida Maliqi', song: 'Ktheju tokës', youtube: "https://www.youtube.com/watch?v=eo4aFzAkQkA"},
+    { countryKey: 'am', artist: 'Srbuk', song: 'Walking Out', youtube: "https://www.youtube.com/watch?v=q_46dy4yJwg"},
+    { countryKey: 'au', artist: 'Kate Miller-Heidke', song: 'Zero Gravity', youtube: "https://www.youtube.com/watch?v=VlpBPO9_L4E"},
+    { countryKey: 'at', artist: 'Paenda', song: 'Limits', youtube: "https://www.youtube.com/watch?v=S2HFBexHDXk"},
+    { countryKey: 'az', artist: 'Chingiz', song: 'Truth', youtube: "https://www.youtube.com/watch?v=iyZJ_aMw5hY"},
+    { countryKey: 'by', artist: 'Zena', song: 'Like It', youtube: "https://www.youtube.com/watch?v=Ao93RTN90Xs"},
+    { countryKey: 'be', artist: 'Eliot', song: 'Wake Up', youtube: "https://www.youtube.com/watch?v=17QXkQEckE4"},
+    { countryKey: 'hr', artist: 'Roko', song: 'The Dream', youtube: "https://www.youtube.com/watch?v=-mYYWSEAa9s"},
+    { countryKey: 'cy', artist: 'Tamta', song: 'Replay', youtube: "https://www.youtube.com/watch?v=ESkhPXfl4A0"},
+    { countryKey: 'cz', artist: 'Lake Malawi', song: 'Friend of a Friend', youtube: "https://www.youtube.com/watch?v=yH1-uy9FYKE"},
+    { countryKey: 'dk', artist: 'Leonora', song: 'Love Is Forever', youtube: "https://www.youtube.com/watch?v=fAdSQxaXsSk"},
+    { countryKey: 'ee', artist: 'Victor Crone', song: 'Storm', youtube: "https://www.youtube.com/watch?v=CkdXzuDigNM"},
+    { countryKey: 'fi', artist: 'Darude feat. Sebastian Rejman', song: 'Look Away', youtube: "https://www.youtube.com/watch?v=d4DPGAJhSac"},
+    { countryKey: 'fr', artist: 'Bilal Hassani', song: 'Roi', youtube: "https://www.youtube.com/watch?v=VydsMYa9lyI"},
+    { countryKey: 'ge', artist: 'Oto Nemsadze', song: 'Keep On Going', youtube: "https://www.youtube.com/watch?v=Blvo_Ol4Bzc"},
+    { countryKey: 'de', artist: 'Sisters', song: 'Sister', youtube: "https://www.youtube.com/watch?v=t6ATkb0Gllk"},
+    { countryKey: 'gr', artist: 'Katerine Duska', song: 'Better Love', youtube: "https://www.youtube.com/watch?v=ulQoRPcQVDc"},
+    { countryKey: 'hu', artist: 'Joci Pápai', song: 'Az én apám', youtube: "https://www.youtube.com/watch?v=WVW_vZHYnkk"},
+    { countryKey: 'is', artist: 'Hatari', song: 'Hatrið mun sigra', youtube: "https://www.youtube.com/watch?v=UGrRhIj4FRw"},
+    { countryKey: 'ie', artist: 'Sarah McTernan', song: '22', youtube: "https://www.youtube.com/watch?v=LXBIDYh_UE4"},
+    { countryKey: 'il', artist: 'Kobi Marimi', song: 'Home', youtube: "https://www.youtube.com/watch?v=7d__XXiVJkE"},
+    { countryKey: 'it', artist: 'Mahmood', song: 'Soldi', youtube: "https://www.youtube.com/watch?v=22lISUXgSUw"},
+    { countryKey: 'lv', artist: 'Carousel', song: 'That Night', youtube: "https://www.youtube.com/watch?v=6j61TWsjcJY"},
+    { countryKey: 'lt', artist: 'Jurij Veklenko', song: 'Run with the Lions', youtube: "https://www.youtube.com/watch?v=ut-0TaybLRE"},
+    { countryKey: 'mt', artist: 'Michela', song: 'Chameleon', youtube: "https://www.youtube.com/watch?v=tdyQ-ebzFgk"},
+    { countryKey: 'md', artist: 'Anna Odobescu', song: 'Stay', youtube: "https://www.youtube.com/watch?v=p3OC8qhZBWQ"},
+    { countryKey: 'me', artist: 'D mol', song: 'Heaven', youtube: "https://www.youtube.com/watch?v=EXmXfHhLBoQ"},
+    { countryKey: 'nl', artist: 'Duncan Laurence', song: 'Arcade', youtube: "https://www.youtube.com/watch?v=51u5fnyrGj4"},
+    { countryKey: 'mk', artist: 'Tamara Todevska', song: 'Proud', youtube: "https://www.youtube.com/watch?v=Sw-NQ1a1zZ0"},
+    { countryKey: 'no', artist: 'Keiino', song: 'Spirit in the Sky', youtube: "https://www.youtube.com/watch?v=Ud7mYAI4Vtk"},
+    { countryKey: 'pl', artist: 'Tulia', song: 'Fire of Love (Pali się)', youtube: "https://www.youtube.com/watch?v=hVkyOjwpUCQ"},
+    { countryKey: 'pt', artist: 'Conan Osíris', song: 'Telemóveis', youtube: "https://www.youtube.com/watch?v=9t5_yUNp0bg"},
+    { countryKey: 'ro', artist: 'Ester Peony', song: 'On a Sunday', youtube: "https://www.youtube.com/watch?v=T1dhF0_QyH0"},
+    { countryKey: 'ru', artist: 'Sergey Lazarev', song: 'Scream', youtube: "https://www.youtube.com/watch?v=gEpUgRtXBss"},
+    { countryKey: 'sm', artist: 'Serhat', song: 'Say Na Na Na', youtube: "https://www.youtube.com/watch?v=l5arNtTYK1s"},
+    { countryKey: 'rs', artist: 'Nevena Božović', song: 'Kruna', youtube: "https://www.youtube.com/watch?v=osFxa9jfH04"},
+    { countryKey: 'si', artist: 'Zala Kralj and Gašper Šantl', song: 'Sebi', youtube: "https://www.youtube.com/watch?v=2C9W7MbDivU"},
+    { countryKey: 'es', artist: 'Miki', song: 'La venda', youtube: "https://www.youtube.com/watch?v=pEaS6atxFgc"},
+    { countryKey: 'se', artist: 'John Lundvik', song: 'Too Late for Love', youtube: "https://www.youtube.com/watch?v=iEEuG5XML-A"},
+    { countryKey: 'ch', artist: 'Luca Hänni', song: 'She Got Me', youtube: "https://www.youtube.com/watch?v=6PxoMWtAC7M"},
+    { countryKey: 'gb', artist: 'Michael Rice', song: 'Bigger than Us', youtube: "https://www.youtube.com/watch?v=WOBhTgSrXJQ"}  
+];

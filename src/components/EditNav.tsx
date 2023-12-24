@@ -21,7 +21,9 @@ const EditNav: React.FC<EditNavProps> = ({ setNameModalShow }) => {
    * Clear rankedItems and fill unrankedItems with the relevant year's contestants
    */
     function resetRanking() {
-        let yearContestants: CountryContestant[] = fetchCountryContestantsByYear(year);
+        let yearContestants: CountryContestant[] = fetchCountryContestantsByYear(
+            year, dispatch
+        );
 
         dispatch(
             setContestants(yearContestants)

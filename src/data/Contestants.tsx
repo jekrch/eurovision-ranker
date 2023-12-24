@@ -1,6 +1,7 @@
 import { Contestant } from "./Contestant";
 
 export const supportedYears = ["2019", "2021","2022", "2023", "2024"];
+export const defaultYear = '2023';
 
 export const contestants2024: Contestant[] = [
   { countryKey: 'al', artist: 'Besa Kokëdhima', song: 'Zemrën n\'dorë', youtube: 'https://www.youtube.com/watch?v=7rEDP1lSoDQ' },

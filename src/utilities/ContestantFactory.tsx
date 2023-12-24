@@ -1,12 +1,19 @@
 import { Contestant } from "../data/Contestant";
 import { CountryContestant } from "../data/CountryContestant";
 import { countries } from '../data/Countries';
-import { contestants2019, contestants2021, contestants2022, contestants2023, contestants2024 } from '../data/Contestants';
+import { contestants2019, contestants2021, contestants2022, contestants2023, contestants2024, defaultYear } from '../data/Contestants';
+import { Dispatch } from 'redux';
+import { setYear } from "../redux/actions";
 
 
-export function fetchCountryContestantsByYear(year: string): CountryContestant[] {
-
-    let contestants: Contestant[] = getContestantsByYear(year);
+export function fetchCountryContestantsByYear(
+    year: string, 
+    dispatch: Dispatch<any>
+): CountryContestant[] {
+    
+    let contestants: Contestant[] = getContestantsByYear(
+        year, dispatch
+    );
 
     return contestants.map(contestant => {
         const country = countries.find(country => country.key === contestant.countryKey);
@@ -21,7 +28,10 @@ export function fetchCountryContestantsByYear(year: string): CountryContestant[]
     });
 }
 
-function getContestantsByYear(year: string) {
+function getContestantsByYear(
+    year: string, 
+    dispatch: Dispatch<any>
+): Contestant[] {
     if (year?.length == 2) {
         year = '20' + year;
     }
@@ -37,7 +47,11 @@ function getContestantsByYear(year: string) {
         case `2019`:
             return contestants2019; 
         default:
-            throw new Error(`No contestants found for year: ${year}`);
+            console.error(`No contestants found for year: ${year}, loading default ${defaultYear}`);
+            dispatch(
+                setYear(defaultYear)
+            );
+            return getContestantsByYear(defaultYear, dispatch);
     }
 }
   

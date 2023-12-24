@@ -3,6 +3,7 @@ import { setName, setYear, setRankedItems, setUnrankedItems } from '../redux/act
 import { fetchCountryContestantsByYear } from './ContestantFactory';
 import { CountryContestant } from '../data/CountryContestant';
 import { countries } from '../data/Countries';
+import { defaultYear } from '../data/Contestants';
 
 /**
  * Updates states based on extracted parameters using Redux.
@@ -22,12 +23,17 @@ export const updateStates = (
         );
     }
 
-    if (contestYear) {
+    if (contestYear?.length) {
         if (contestYear.length === 2) {
             contestYear = '20' + contestYear;
         }
         dispatch(
             setYear(contestYear)
+        );
+    } else {
+        // set default
+        dispatch(
+            setYear(defaultYear)
         );
     }
 };
@@ -40,7 +46,9 @@ export const processAndUpdateRankings = (
     rankings: string | null,
     dispatch: Dispatch<any>
 ): string[] | undefined => {
-    const yearContestants = fetchCountryContestantsByYear(contestYear);
+    const yearContestants = fetchCountryContestantsByYear(
+        contestYear, dispatch
+    );
 
     if (rankings) {
         const rankedIds = convertRankingsStrToArray2(rankings);
@@ -101,7 +109,7 @@ export const decodeRankingsFromURL = (
     updateStates(extractedParams, dispatch);
 
     return processAndUpdateRankings(
-        extractedParams.contestYear || '2023', // Default to '2023' if year is not specified
+        extractedParams.contestYear || defaultYear, 
         extractedParams.rankings,
         dispatch
     );

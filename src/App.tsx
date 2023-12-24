@@ -63,7 +63,9 @@ const App: React.FC = () => {
     if (!year?.length) {
       return;
     }
-    let yearContestants = fetchCountryContestantsByYear(year);
+    let yearContestants = fetchCountryContestantsByYear(
+      year, dispatch
+    );
 
     updateQueryParams({ y: year.slice(-2) });
     

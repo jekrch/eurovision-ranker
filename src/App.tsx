@@ -6,13 +6,17 @@ import classNames from 'classnames';
 import { CountryContestant } from './data/CountryContestant';
 import { fetchCountryContestantsByYear } from './utilities/ContestantFactory';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPenSquare, faHouseUser, faCog, faArrowRight, faTrashAlt, faTrashRestoreAlt, faCheckSquare, faSquare, faHeart, faList, faPenAlt } from '@fortawesome/free-solid-svg-icons';
+import { faHouseUser, faCog, faArrowRight, faTrashAlt, faCheckSquare, faSquare, faHeart, faList, faPenAlt } from '@fortawesome/free-solid-svg-icons';
 import MainModal from './components/MainModal';
 import { countries } from './data/Countries';
 import Dropdown from './components/Dropdown';
 import { supportedYears } from './data/Contestants';
 import NameModal from './components/NameModal';
 import { FaTv } from 'react-icons/fa';
+import Navbar from './components/NavBar';
+import EditNav from './components/EditNav';
+import IntroColumn from './components/IntroColumn';
+import { generateYoutubePlaylistUrl, rankedHasAnyYoutubeLinks } from './utilities/YoutubeUtil';
 
 const App: React.FC = () => {
   const [contestants, setContestants] = useState<CountryContestant[]>([]);
@@ -92,36 +96,13 @@ const App: React.FC = () => {
     return rankings?.length
   };
 
-  function rankedHasAnyYoutubeLinks(){
-    return rankedItems.some(item => item?.contestant?.youtube?.length);
-  }
-
-  function generateYoutubePlaylistUrl() {
-
-    const baseYouTubeURL = "https://www.youtube.com/watch_videos?video_ids=";
-    const videoIds = rankedItems.map(item => {
-        if (!item?.contestant?.youtube?.length) {
-          return;
-        }
-        let youtubeURL: URL = new URL(item?.contestant?.youtube);
-        const urlParams = new URLSearchParams(
-          youtubeURL.search
-        );
-        return urlParams.get('v');
-    }).filter(
-      id => id?.length
-    ).join(',');
-
-    return baseYouTubeURL + videoIds;
-};
-
   function convertRankingsStrToArray(rankings: string) {
     let rankedIds: string[] = [];
-  
+
     for (let i = 0; i < rankings.length; i += 2) {
       rankedIds.push(rankings.substring(i, i + 2));
     }
-  
+
     // remove duplicates 
     let uniqueSet = new Set(rankedIds);
     rankedIds = Array.from(uniqueSet);
@@ -136,7 +117,7 @@ const App: React.FC = () => {
    */
   function getYearFromUrl(params: URLSearchParams) {
     let contestYear = '20' + (params.get('y') || '23');
-  
+
     if (!supportedYears.includes(contestYear)) {
       contestYear = '2023';
     }
@@ -150,7 +131,6 @@ const App: React.FC = () => {
   }, [])
 
   useEffect(() => {
-    //window.history.pushState(null, '', `?r=${encodeRankingsToURL(rankedItems)}`);
     updateQueryParams({ r: encodeRankingsToURL(rankedItems) });
     updateQueryParams({ y: year.slice(-2) });
   }, [rankedItems]);
@@ -281,35 +261,12 @@ const App: React.FC = () => {
   return (
     <>
       <div className="flex flex-col h-screen">
-        <nav className="nav-diagonal-split-bg bg-gray-800 text-white p-2 px-4 sticky top-0 z-50">
-          <div className="container mx-auto flex justify-between items-center z-50">
-            <div className="text-lg tracking-tighter gradient-text font-bold flex items-center">
-              Eurovision Ranker
-              <img
-                src={`${process.env.PUBLIC_URL}/eurovision-heart.svg`}
-                alt="Heart"
-                className="w-4 h-4 ml-2" />
-            </div>
-            <ul className="flex space-x-2">
-              <li>
-                <div className="flex items-center">
-                  <button
-                    className="bg-blue-500 hover:bg-blue-700 text-white font-normal py-1 px-3 rounded-full text-xs mr-0 w-[5em]"
-                    onClick={() => { setShowUnranked(!showUnranked) }}
-                  >
-                    {showUnranked ? 'details' : `select`}
-                  </button>
-                  <FontAwesomeIcon
-                    className="houseUser mr-1 mb-1 ml-4 text-xl"
-                    icon={faHouseUser}
-                    onClick={() => openModal('about')}
-                  />
-                </div>
-              </li>
-            </ul>
-          </div>
-        </nav>
 
+        <Navbar
+          showUnranked={showUnranked}
+          setShowUnranked={setShowUnranked}
+          openModal={openModal}
+        />
         <div className="flex-grow overflow-auto overflow-x-hidden bg-[#040241] flex justify-center pixelated-background">
           <DragDropContext
             onDragEnd={handleOnDragEnd}
@@ -388,75 +345,28 @@ const App: React.FC = () => {
                           </div>
                         ) : (
                           <div className="mx-2 flex justify-between items-center">
-  <div className="justify-center w-full ml-2">
-    {year}
-    {name?.length > 0 && (
-      <span className="font-bold text-slate-400 text-md"> - {name}</span>
-    )}
-  </div>
-  {rankedHasAnyYoutubeLinks() && (
-    <a
-      href={generateYoutubePlaylistUrl()} 
-      target="_blank" 
-      rel="noopener noreferrer" 
-      title="generate youtube playlist"
-      className='text-slate-500 hover:text-slate-100'
-    >
-      <FaTv className='text-xl' />
-    </a>
-  )}
-</div>
+                            <div className="justify-center w-full ml-2">
+                              {year}
+                              {name?.length > 0 && (
+                                <span className="font-bold text-slate-400 text-md"> - {name}</span>
+                              )}
+                            </div>
+                            {rankedHasAnyYoutubeLinks(rankedItems) && (
+                              <a
+                                href={generateYoutubePlaylistUrl(rankedItems)}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                title="generate youtube playlist"
+                                className='text-slate-500 hover:text-slate-100'
+                              >
+                                <FaTv className='text-xl' />
+                              </a>
+                            )}
+                          </div>
                         )}
                       </div>
                       {(rankedItems.length === 0 && showUnranked) && (
-                        <div className="flex justify-left items-center">
-                          <div className="text-gray-400 font-thin font-mono text-italic text-left ml-7 m-4 text-xs whitespace-normal max-w-[10em] mt-6">
-                            <ol className="list-disc mb-7">
-                              <li className="mb-3">Drag countries into this column to rank</li>
-                              <li className="mb-3">Rankings are saved to the URL for you to save or share with friends</li>
-                              <li className="mb-2">Click 'details' above to see more info on your ranked countries</li>
-                            </ol>
-
-                            <div className="">
-                              <div
-                                className={'flex items-center houseUser mb-7'}
-                                onClick={() => openModal('about')}
-                              >
-                                <FontAwesomeIcon
-                                  className="mr-2 ml-0 text-xl"
-                                  icon={faHouseUser}
-
-                                />
-                                <span className="ml-[0.2em] mt-[0.2em] font-bold">About</span>
-                              </div>
-
-                              <div
-                                className={'houseUser flex items-center mb-7'}
-                                onClick={() => openModal('donate')}
-                              >
-                                <FontAwesomeIcon
-                                  className="mr-2 ml-0 text-xl"
-                                  icon={faHeart}
-
-                                />
-                                <span className="ml-[0.2em] mt-[0.2em] font-bold">Donate</span>
-                              </div>
-
-                              <div
-                                className={'houseUser flex items-center'}
-                                onClick={() => openModal('rankings')}
-                              >
-                                <FontAwesomeIcon
-                                  className="mr-2 ml-0 text-xl"
-                                  icon={faList}
-
-                                />
-                                <span className="ml-[0.2em] mt-[0.2em] font-bold">Rankings</span>
-                              </div>
-
-                            </div>
-                          </div>
-                        </div>
+                        <IntroColumn openModal={openModal} />
                       )}
                       {rankedItems.map((item, index) => (
                         <Draggable key={`draggable-${item.id.toString()}`} draggableId={item.id.toString()} index={index}>
@@ -495,74 +405,15 @@ const App: React.FC = () => {
         </div>
 
         {showUnranked &&
-          <nav className="nav-diagonal-split-bg bg-gray-800 text-white p-3 sticky bottom-0 z-50">
-            <div className="container mx-auto flex justify-between items-center z-50">
-              <ul className="flex space-x-2">
-                <li>
-                  <div className="flex items-center">
-                    <button
-                      disabled={!unrankedItems?.length}
-                      className={classNames(
-                        "ml-0 text-white font-normal py-1 px-3 rounded-full text-xs mr-0",
-                        unrankedItems?.length ? "bg-blue-500 hover:bg-blue-700" : "bg-slate-500"
-                      )}
-                      onClick={() => { addAllUnranked() }}
-                    >
-                      <FontAwesomeIcon
-                        className="mr-2 ml-0 text-xs"
-                        icon={faArrowRight}
-                      />
-                      add all
-                    </button>
-
-                    <button
-                      disabled={!rankedItems?.length}
-                      className={classNames(
-                        "ml-4 text-white font-normal py-1 px-3 rounded-full text-xs mr-0",
-                        rankedItems?.length ? "bg-blue-500 hover:bg-blue-700" : "bg-slate-500"
-                      )}
-                      onClick={() => { resetRanking() }}
-                    >
-
-                      <FontAwesomeIcon
-                        className="mr-1 ml-0 text-xs"
-                        icon={faTrashAlt}
-                      /> clear
-                    </button>
-
-                    <button
-                      disabled={!rankedItems?.length}
-                      className={classNames(
-                        "ml-4 text-white font-normal py-1 px-3 rounded-full text-xs mr-0",
-                        rankedItems?.length ? "bg-blue-500 hover:bg-blue-700" : "bg-slate-500",
-                        rankedItems?.length && deleteMode ? "bg-red-800 border-red-100 hover:bg-red-700" : null
-                      )}
-                      onClick={() => { setDeleteMode(!deleteMode) }}
-                    >
-                      <FontAwesomeIcon
-                        className="mr-1 ml-0 text-xs"
-                        icon={rankedItems?.length && deleteMode ? faCheckSquare : faSquare}
-                      /> delete
-                    </button>
-
-                    <button
-                      className={classNames(
-                        "ml-4 text-white font-normal py-1 px-3 rounded-full text-xs mr-0",
-                        "bg-blue-500 hover:bg-blue-700"
-                      )}
-                      onClick={() => { setNameModalShow(true) }}
-                    >
-                      <FontAwesomeIcon
-                        className="mr-2 ml-0 text-xs"
-                        icon={faPenAlt}
-                      />
-                      name
-                    </button>
-                  </div>
-                </li>
-              </ul>
-            </div>
-          </nav>
+          <EditNav
+            unrankedItems={unrankedItems}
+            rankedItems={rankedItems}
+            addAllUnranked={addAllUnranked}
+            resetRanking={resetRanking}
+            setDeleteMode={setDeleteMode}
+            deleteMode={deleteMode}
+            setNameModalShow={setNameModalShow}
+          />
         }
       </div>
       <MainModal

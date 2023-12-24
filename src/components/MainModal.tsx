@@ -20,7 +20,7 @@ const MainModal: React.FC<MainModalProps> = (props: MainModalProps) => {
     const currentPath = window.location.pathname; // Get the current path
 
     function getUrl(queryString: string) {
-        return `${currentDomain}${currentPath}${queryString}`; 
+        return `${currentDomain}${currentPath}${queryString}`;
     }
 
     useEffect(() => {
@@ -61,35 +61,21 @@ const MainModal: React.FC<MainModalProps> = (props: MainModalProps) => {
                                 className={`inline-flex items-center justify-center p-4 ${activeTab === 'about' ? 'text-blue-500 border-blue-500 border-b-2' : 'hover:text-gray-500 hover:border-gray-300'}`}
                             >
                                 <FontAwesomeIcon
-                                  className="mr-2 text-md"
-                                  icon={faHouseUser}
+                                    className="mr-2 text-md"
+                                    icon={faHouseUser}
                                 />
                                 About
                             </button>
                         </li>
                         
-                        {/* <li className="mr-2">
-                            <button
-                                onClick={() => setActiveTab('settings')}
-                                className={`inline-flex items-center justify-center p-4 ${activeTab === 'settings' ? 'text-blue-500 border-blue-500 border-b-2' : 'hover:text-gray-500 hover:border-gray-300'}`}
-                            >
-                                <svg
-                                    className={`w-4 h-4 me-2 text-gray-400 group-hover:text-gray-500 dark:text-gray-500 dark:group-hover:text-gray-300 ${activeTab === 'settings' ? '!text-blue-500' : ''}`}
-                                    aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                                    <path d="M5 11.424V1a1 1 0 1 0-2 0v10.424a3.228 3.228 0 0 0 0 6.152V19a1 1 0 1 0 2 0v-1.424a3.228 3.228 0 0 0 0-6.152ZM19.25 14.5A3.243 3.243 0 0 0 17 11.424V1a1 1 0 0 0-2 0v10.424a3.227 3.227 0 0 0 0 6.152V19a1 1 0 1 0 2 0v-1.424a3.243 3.243 0 0 0 2.25-3.076Zm-6-9A3.243 3.243 0 0 0 11 2.424V1a1 1 0 0 0-2 0v1.424a3.228 3.228 0 0 0 0 6.152V19a1 1 0 1 0 2 0V8.576A3.243 3.243 0 0 0 13.25 5.5Z" />
-                                </svg>
-                                Settings
-                            </button>
-                        </li> */}
-
                         <li className="mr-2">
                             <button
                                 onClick={() => setActiveTab('donate')}
                                 className={`inline-flex items-center justify-center p-4 ${activeTab === 'donate' ? 'text-blue-500 border-blue-500 border-b-2' : 'hover:text-gray-500 hover:border-gray-300'}`}
                             >
                                 <FontAwesomeIcon
-                                  className="mr-2 text-md"
-                                  icon={faHeart}
+                                    className="mr-2 text-md"
+                                    icon={faHeart}
                                 />
                                 Donate
                             </button>
@@ -101,8 +87,8 @@ const MainModal: React.FC<MainModalProps> = (props: MainModalProps) => {
                                 className={`inline-flex items-center justify-center p-4 ${activeTab === 'settings' ? 'text-blue-500 border-blue-500 border-b-2' : 'hover:text-gray-500 hover:border-gray-300'}`}
                             >
                                 <FontAwesomeIcon
-                                  className="mr-2 text-md"
-                                  icon={faList}
+                                    className="mr-2 text-md"
+                                    icon={faList}
 
                                 />
                                 Rankings
@@ -118,13 +104,6 @@ const MainModal: React.FC<MainModalProps> = (props: MainModalProps) => {
                             <p>Thanks for using my app! I'm just getting started, so expect a lot of changes here in the coming months.</p>
                             <p className="mt-4">This is an <a className="text-link" href="https://github.com/jekrch/eurovision-ranker">open-source project</a> that I'm doing in my spare time. If you have any feedback, suggestions, or want to report a bug, you can do so at my <a href="https://github.com/jekrch/eurovision-ranker/issues" className="text-link">github repository</a> or send me an email at <a href="mailto:eurovision.ranker@gmail.com" className="text-link">eurovision.ranker@gmail.com</a>. </p>
                             <p className="mt-4">In the meantime, if you're enjoying the app, please consider clicking the donate link above and making a small donation to a nonprofit youth development org in my hometown.</p>
-                            {/* 
-                            <iframe
-                                className="donate-widget border-0 m-0 h-[30em]"
-                                src="https://www.givemn.org/forms/Jddsdf?id=nmng3g&embed=donation_widget"
-                                title="Donation Widget"
-                            ></iframe> */}
-
                         </div>}
                     {activeTab === 'settings' &&
                         <div className="flex flex-col items-start">
@@ -167,15 +146,15 @@ const MainModal: React.FC<MainModalProps> = (props: MainModalProps) => {
                             </div>
                         </div>}
 
-                        {activeTab === 'rankings' &&
+                    {activeTab === 'rankings' &&
                         <div className="mb-0">
                             <p className="mb-2">Click the links to see different rankings </p>
-                            <div className="space-y-1">
-                            <p><a className="text-link" href={getUrl("?r=hrczesbeisnofrfi&y=23&n=Your+Dev%27s+Personal+Favs")}>My personal favs from 2023 :-)</a></p>
-                            <p><a className="text-link" href={getUrl("?r=sefiilitnouabeeeauczltcyhramatfresmdplchsialptrsgbde&y=23&n=finals")}>2023 ESC finals</a></p>
-                            <p><a className="text-link" href={getUrl("?r=uagbessersitmdgrptnonlpleeltauazchrobeamficzisfrde&y=22&n=finals")}>2022 ESC finals</a></p>
-                            <p><a className="text-link" href={getUrl("?r=itfrchisuafimtltrugrbgptmdserscyilnobeazalsmnlesdegb&y=21&n=finals")}>2021 ESC finals</a></p>
-                            <p><a className="text-link" href={getUrl("?r=nlitruchsenomkazauisczdkcymtsifralrssmeegresilbydegb&y=19&n=finals")}>2019 ESC finals</a></p>
+                            <p><a className="text-link mb-2" href={getUrl("?r=hrczesbeisnofrfi&y=23&n=Your+Dev%27s+Personal+Favs")}>My personal favs from 2023 :-)</a></p>
+                            <div className="space-y-1 mt-2">
+                                <p><a className="text-link" href={getUrl("?r=sefiilitnouabeeeauczltcyhramatfresmdplchsialptrsgbde&y=23&n=finals")}>2023 ESC finals</a></p>
+                                <p><a className="text-link" href={getUrl("?r=uagbessersitmdgrptnonlpleeltauazchrobeamficzisfrde&y=22&n=finals")}>2022 ESC finals</a></p>
+                                <p><a className="text-link" href={getUrl("?r=itfrchisuafimtltrugrbgptmdserscyilnobeazalsmnlesdegb&y=21&n=finals")}>2021 ESC finals</a></p>
+                                <p><a className="text-link" href={getUrl("?r=nlitruchsenomkazauisczdkcymtsifralrssmeegresilbydegb&y=19&n=finals")}>2019 ESC finals</a></p>
                             </div>
                         </div>}
                 </div>

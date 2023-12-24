@@ -131,12 +131,12 @@ const MainModal: React.FC<MainModalProps> = (props: MainModalProps) => {
                     {activeTab === 'rankings' &&
                         <div className="mb-0">
                             <p className="mb-2">Click the links to see different rankings </p>
-                            <p><a className="text-link mb-2" href={getUrl("?r=hrczesbeisnofrfi&y=23&n=Your+Dev%27s+Personal+Favs")}>My personal favs from 2023 :-)</a></p>
+                            <p><a className="text-link mb-2" href={getUrl("?r=ikd.gt4on&y=23&n=Your+Dev%27s+Personal+Favs")}>My personal favs from 2023 :-)</a></p>
                             <div className="space-y-1 mt-2">
-                                <p><a className="text-link" href={getUrl("?r=sefiilitnouabeeeauczltcyhramatfresmdplchsialptrsgbde&y=23&n=finals")}>2023 ESC finals</a></p>
-                                <p><a className="text-link" href={getUrl("?r=uagbessersitmdgrptnonlpleeltauazchrobeamficzisfrde&y=22&n=finals")}>2022 ESC finals</a></p>
-                                <p><a className="text-link" href={getUrl("?r=itfrchisuafimtltrugrbgptmdserscyilnobeazalsmnlesdegb&y=21&n=finals")}>2021 ESC finals</a></p>
-                                <p><a className="text-link" href={getUrl("?r=nlitruchsenomkazauisczdkcymtsifralrssmeegresilbydegb&y=19&n=finals")}>2019 ESC finals</a></p>
+                                <p><a className="text-link" href={getUrl("?r=envw4g.gmckyjib.dod16f.ca7.bhq&y=23&n=finals")}>2023 ESC finals</a></p>
+                                <p><a className="text-link" href={getUrl("?r=ghde.bw1r7436myc.ef8.gbnktoq&y=22&n=finals")}>2022 ESC finals</a></p>
+                                <p><a className="text-link" href={getUrl("?r=woftgn0y9r.h71e.bjv4.g.ea.a3dqh&y=21&n=finals")}>2021 ESC finals</a></p>
+                                <p><a className="text-link" href={getUrl("?r=3w9fe45.ectklj0.coa.b.amrdv.fqh&y=19&n=finals")}>2019 ESC finals</a></p>
                             </div>
                         </div>}
                 </div>

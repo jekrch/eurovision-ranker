@@ -7,7 +7,7 @@ export class CountryContestant {
     contestant?: Contestant;
 
     constructor(country: Country) {
-      this.id = country.key;
+      this.id = country.id;
       this.country = country;
     }
   };

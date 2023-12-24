@@ -5,10 +5,7 @@ import { StrictModeDroppable } from './components/StrictModeDroppable';
 import classNames from 'classnames';
 import { CountryContestant } from './data/CountryContestant';
 import { fetchCountryContestantsByYear } from './utilities/ContestantFactory';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHouseUser, faCog, faArrowRight, faTrashAlt, faCheckSquare, faSquare, faHeart, faList, faPenAlt } from '@fortawesome/free-solid-svg-icons';
 import MainModal from './components/MainModal';
-import { countries } from './data/Countries';
 import Dropdown from './components/Dropdown';
 import { supportedYears } from './data/Contestants';
 import NameModal from './components/NameModal';
@@ -41,24 +38,9 @@ const App: React.FC = () => {
    * @returns 
    */
   const encodeRankingsToURL = (rankedCountries: CountryContestant[]): string => {
-    const ids = rankedCountries.map(item => item.country.key);
+    const ids = rankedCountries.map(item => item.id);
     return ids.join('');
   };
-
-  /**
-   * Extract the year from the url y param
-   * 
-   * @param params 
-   * @returns 
-   */
-  function getYearFromUrl(params: URLSearchParams) {
-    let contestYear = '20' + (params.get('y') || '23');
-
-    if (!supportedYears.includes(contestYear)) {
-      contestYear = '2023';
-    }
-    return contestYear;
-  }
 
   useEffect(() => {
     const rankingsExist = decodeRankingsFromURL(
@@ -148,10 +130,16 @@ const App: React.FC = () => {
     if (destination.droppableId !== source.droppableId) {
       const destinationItems = Array.from(otherList);
       destinationItems.splice(destination.index, 0, reorderedItem);
-      dispatch(setOtherList(destinationItems));
+      dispatch(
+        setOtherList(destinationItems)
+        );
     } else {
-      items.splice(destination.index, 0, reorderedItem);
-      dispatch(setActiveList(items));
+      items.splice(
+        destination.index, 0, reorderedItem
+      );
+      dispatch(
+        setActiveList(items)
+      );
     }
 
     dispatch(setActiveList(items));
@@ -165,7 +153,7 @@ const App: React.FC = () => {
    * @param countryId 
    */
   function deleteRankedCountry(countryId: string) {
-    const index = rankedItems.findIndex(obj => obj.country.key === countryId);
+    const index = rankedItems.findIndex(i => i.id === countryId);
     const [objectToMove] = rankedItems.splice(index, 1);
     const insertionIndex = unrankedItems.findIndex(
       i => i.country.name > objectToMove.country.name

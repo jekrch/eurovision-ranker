@@ -17,14 +17,18 @@ export const updateStates = (
     let { rankingName, contestYear } = params;
 
     if (rankingName) {
-        dispatch(setName(rankingName));
+        dispatch(
+            setName(rankingName)
+        );
     }
 
     if (contestYear) {
         if (contestYear.length === 2) {
             contestYear = '20' + contestYear;
         }
-        dispatch(setYear(contestYear));
+        dispatch(
+            setYear(contestYear)
+        );
     }
 };
 
@@ -39,17 +43,23 @@ export const processAndUpdateRankings = (
     const yearContestants = fetchCountryContestantsByYear(contestYear);
 
     if (rankings) {
-        const rankedIds = convertRankingsStrToArray(rankings);
+        const rankedIds = convertRankingsStrToArray2(rankings);
+
+        // let string = '';
+        // rankedIds.forEach(id => {
+        //     let country = countries.find(c => c.key === id);
+        //     string += country?.id;
+        // });
 
         const rankedCountries = rankedIds.map(
             (id: string) => {
                 let countryContestant: CountryContestant | undefined = yearContestants.find(
-                    c => c.country.key === id
+                    c => c.id === id
                 );
                 if (countryContestant) {
                     return countryContestant;
                 } else {
-                    const country = countries.find(c => c.key === id);
+                    const country = countries.find(c => c.id === id);
                     if (country) {
                         return new CountryContestant(country);
                     } else {
@@ -60,15 +70,21 @@ export const processAndUpdateRankings = (
     ).filter(Boolean) as CountryContestant[];
 
         const unrankedCountries = yearContestants.filter(
-            countryContestant => !rankedIds.includes(countryContestant.country.key)
+            countryContestant => !rankedIds.includes(countryContestant.id)
         );
 
-        dispatch(setRankedItems(rankedCountries));
-        dispatch(setUnrankedItems(unrankedCountries));
+        dispatch(
+            setRankedItems(rankedCountries)
+        );
+        dispatch(
+            setUnrankedItems(unrankedCountries)
+        );
 
         return rankedIds;
     } else {
-        dispatch(setUnrankedItems(yearContestants));
+        dispatch(
+            setUnrankedItems(yearContestants)
+        );
     }
 };
 
@@ -99,6 +115,28 @@ function convertRankingsStrToArray(rankings: string) {
     }
 
     // remove duplicates 
+    let uniqueSet = new Set(rankedIds);
+    rankedIds = Array.from(uniqueSet);
+
+    return rankedIds;
+}
+
+function convertRankingsStrToArray2(rankings: string): string[] {
+    let rankedIds: string[] = [];
+    let i = 0;
+
+    while (i < rankings.length) {
+        // Check for the period and the next character
+        if (rankings[i] === '.' && i + 1 < rankings.length) {
+            rankedIds.push(rankings.substring(i, i + 2));
+            i += 2;
+        } else {
+            rankedIds.push(rankings[i]);
+            i += 1;
+        }
+    }
+
+    // Remove duplicates
     let uniqueSet = new Set(rankedIds);
     rankedIds = Array.from(uniqueSet);
 

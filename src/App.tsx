@@ -45,14 +45,13 @@ const App: React.FC = () => {
     const params = new URLSearchParams(window.location.search);
 
     const rankingName = params.get('n');
-    console.log(rankingName)
+
     if (rankingName && name !== rankingName) {
       setName(rankingName);
     }
 
     const rankings = params.get('r');
 
-    console.log(rankings);
     let contestYear = getYearFromUrl(params);
 
     if (contestYear !== year) {
@@ -72,7 +71,6 @@ const App: React.FC = () => {
       let uniqueSet = new Set(rankedIds);
       rankedIds = Array.from(uniqueSet);
 
-      console.log(rankedIds);
       const rankedCountries = rankedIds
         .map(id => {
           let countryContestant = yearContestants.find(country => country.country.key === id)
@@ -96,7 +94,6 @@ const App: React.FC = () => {
       setRankedItems(rankedCountries);
       setUnrankedItems(unrankedCountries);
 
-      console.log(rankedCountries)
     } else {
       setUnrankedItems(yearContestants);
     }

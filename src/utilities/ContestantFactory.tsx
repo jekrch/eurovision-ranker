@@ -6,6 +6,10 @@ import { contestants2019, contestants2021, contestants2022, contestants2023, con
 
 export function fetchCountryContestantsByYear(year: string): CountryContestant[] {
 
+    if (year.length === 2) {
+        year = '20' + year;
+    }
+    
     let contestants: Contestant[] = getContestantsByYear(year);
 
     return contestants.map(contestant => {

@@ -17,6 +17,7 @@ import Navbar from './components/NavBar';
 import EditNav from './components/EditNav';
 import IntroColumn from './components/IntroColumn';
 import { generateYoutubePlaylistUrl, rankedHasAnyYoutubeLinks } from './utilities/YoutubeUtil';
+import { decodeRankingsFromURL } from './utilities/UrlUtil';
 
 const App: React.FC = () => {
   const [contestants, setContestants] = useState<CountryContestant[]>([]);
@@ -42,72 +43,59 @@ const App: React.FC = () => {
     return ids.join('');
   };
 
-  /**
-   * Decode rankings from URL 
-   */
-  const decodeRankingsFromURL = (): number | undefined => {
-    const params = new URLSearchParams(window.location.search);
+  // /**
+  //  * Decode rankings from URL 
+  //  */
+  // const decodeRankingsFromURL = (): number | undefined => {
+  //   const params = new URLSearchParams(window.location.search);
 
-    const rankingName = params.get('n');
+  //   const rankingName = params.get('n');
 
-    if (rankingName && name !== rankingName) {
-      setName(rankingName);
-    }
+  //   if (rankingName && name !== rankingName) {
+  //     setName(rankingName);
+  //   }
 
-    let contestYear = getYearFromUrl(params);
+  //   let contestYear = getYearFromUrl(params);
 
-    if (contestYear !== year) {
-      setYear(contestYear);
-    }
+  //   if (contestYear !== year) {
+  //     setYear(contestYear);
+  //   }
 
-    const yearContestants = fetchCountryContestantsByYear(contestYear);
+  //   const yearContestants = fetchCountryContestantsByYear(contestYear);
 
-    const rankings = params.get('r');
+  //   const rankings = params.get('r');
 
-    if (rankings) {
-      let rankedIds: string[] = convertRankingsStrToArray(rankings);
+  //   if (rankings) {
+  //     let rankedIds: string[] = convertRankingsStrToArray(rankings);
 
-      const rankedCountries = rankedIds
-        .map(id => {
-          let countryContestant = yearContestants.find(country => country.country.key === id)
+  //     const rankedCountries = rankedIds
+  //       .map(id => {
+  //         let countryContestant = yearContestants.find(country => country.country.key === id)
 
-          if (countryContestant) {
-            return countryContestant;
-          } else {
-            const country = countries.find(c => c.key === id);
-            if (country) {
-              return new CountryContestant(country);
-            } else {
-              return;
-            }
-          }
-        }).filter(Boolean) as CountryContestant[];
+  //         if (countryContestant) {
+  //           return countryContestant;
+  //         } else {
+  //           const country = countries.find(c => c.key === id);
+  //           if (country) {
+  //             return new CountryContestant(country);
+  //           } else {
+  //             return;
+  //           }
+  //         }
+  //       }).filter(Boolean) as CountryContestant[];
 
-      const unrankedCountries = yearContestants.filter(
-        countryContestant => !rankedIds.includes(countryContestant.id)
-      );
+  //     const unrankedCountries = yearContestants.filter(
+  //       countryContestant => !rankedIds.includes(countryContestant.id)
+  //     );
 
-      setRankedItems(rankedCountries);
-      setUnrankedItems(unrankedCountries);
+  //     setRankedItems(rankedCountries);
+  //     setUnrankedItems(unrankedCountries);
 
-    } else {
-      setUnrankedItems(yearContestants);
-    }
-    return rankings?.length
-  };
-
-  function convertRankingsStrToArray(rankings: string) {
-    let rankedIds: string[] = [];
-
-    for (let i = 0; i < rankings.length; i += 2) {
-      rankedIds.push(rankings.substring(i, i + 2));
-    }
-
-    // remove duplicates 
-    let uniqueSet = new Set(rankedIds);
-    rankedIds = Array.from(uniqueSet);
-    return rankedIds;
-  }
+  //   } else {
+  //     setUnrankedItems(yearContestants);
+  //   }
+  //   return rankings?.length
+  // };
 
   /**
    * Extract the year from the url y param
@@ -125,7 +113,9 @@ const App: React.FC = () => {
   }
 
   useEffect(() => {
-    const rankingsExist = decodeRankingsFromURL();
+    const rankingsExist = decodeRankingsFromURL(
+      setName, setYear, setRankedItems, setUnrankedItems
+    );
     // Set showUnranked based on whether rankings exist
     setShowUnranked(!rankingsExist);
   }, [])
@@ -146,7 +136,9 @@ const App: React.FC = () => {
     updateQueryParams({ y: year.slice(-2) });
     setContestants(yearContestants);
     setUnrankedItems(yearContestants)
-    decodeRankingsFromURL();
+    decodeRankingsFromURL(
+      setName, setYear, setRankedItems, setUnrankedItems
+    );
   }, [year]);
 
   useEffect(() => {

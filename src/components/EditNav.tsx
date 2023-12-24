@@ -1,8 +1,8 @@
 import React, { Dispatch, SetStateAction } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRight, faTrashAlt, faSquare, faCheckSquare, faPenAlt } from '@fortawesome/free-solid-svg-icons';
 import classNames from 'classnames';
 import { CountryContestant } from '../data/CountryContestant';
+import IconButton from './IconButton';
 
 type EditNavProps = {
     unrankedItems: CountryContestant[]; 
@@ -21,62 +21,40 @@ const EditNav: React.FC<EditNavProps> = ({ unrankedItems, rankedItems, addAllUnr
                 <ul className="flex space-x-2">
                     <li>
                         <div className="flex items-center">
-                            <button
+
+                            <IconButton
+                                icon={faArrowRight}
                                 disabled={!unrankedItems.length}
-                                className={classNames(
-                                    "text-white font-normal py-1 px-3 rounded-full text-xs",
-                                    unrankedItems.length ? "bg-blue-500 hover:bg-blue-700" : "bg-slate-500"
-                                )}
                                 onClick={addAllUnranked}
-                            >
-                                <FontAwesomeIcon
-                                    className="mr-2 text-xs"
-                                    icon={faArrowRight}
-                                />
-                                Add All
-                            </button>
+                                title="Add All"
+                            />
 
-                            <button
+                            <IconButton
+                                icon={faTrashAlt}
                                 disabled={!rankedItems.length}
-                                className={classNames(
-                                    "ml-4 text-white font-normal py-1 px-3 rounded-full text-xs",
-                                    rankedItems.length ? "bg-blue-500 hover:bg-blue-700" : "bg-slate-500"
-                                )}
+                                className="ml-4"
                                 onClick={resetRanking}
-                            >
-                                <FontAwesomeIcon
-                                    className="mr-1 text-xs"
-                                    icon={faTrashAlt}
-                                />
-                                Clear
-                            </button>
+                                title="Clear"
+                            />
 
-                            <button
+                            <IconButton
+                                icon={deleteMode ? faCheckSquare : faSquare}
                                 disabled={!rankedItems.length}
                                 className={classNames(
-                                    "ml-4 text-white font-normal py-1 px-3 rounded-full text-xs",
-                                    rankedItems.length ? "bg-blue-500 hover:bg-blue-700" : "bg-slate-500",
+                                    "ml-4",
                                     rankedItems.length && deleteMode ? "bg-red-800 border-red-100 hover:bg-red-700" : null
                                 )}
                                 onClick={() => setDeleteMode(!deleteMode)}
-                            >
-                                <FontAwesomeIcon
-                                    className="mr-1 text-xs"
-                                    icon={deleteMode ? faCheckSquare : faSquare}
-                                />
-                                Delete
-                            </button>
+                                title="Delete"
+                            />
 
-                            <button
-                                className="ml-4 bg-blue-500 hover:bg-blue-700 text-white font-normal py-1 px-3 rounded-full text-xs"
+                            <IconButton
+                                icon={faPenAlt}
+                                className="ml-4"
                                 onClick={() => setNameModalShow(true)}
-                            >
-                                <FontAwesomeIcon
-                                    className="mr-2 text-xs"
-                                    icon={faPenAlt}
-                                />
-                                Name
-                            </button>
+                                title="Name"
+                            />
+                            
                         </div>
                     </li>
                 </ul>

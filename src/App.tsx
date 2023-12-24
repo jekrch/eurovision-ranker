@@ -11,9 +11,7 @@ import MainModal from './components/MainModal';
 import { countries } from './data/Countries';
 import Dropdown from './components/Dropdown';
 import { supportedYears } from './data/Contestants';
-import { Country } from './data/Country';
 import NameModal from './components/NameModal';
-import { isMobile } from 'react-device-detect';
 import { FaTv } from 'react-icons/fa';
 
 const App: React.FC = () => {

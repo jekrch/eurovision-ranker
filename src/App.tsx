@@ -347,7 +347,7 @@ const App: React.FC = () => {
                           <div className="mx-2">
                             {year}
                             {name?.length > 0 && (
-                              <span className="font-normal text-slate-400 text-md"> - {name}</span>
+                              <span className="font-bold text-slate-400 text-md"> - {name}</span>
                             )}
                           </div>
                         )}

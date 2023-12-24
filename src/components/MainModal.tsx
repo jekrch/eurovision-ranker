@@ -171,7 +171,7 @@ const MainModal: React.FC<MainModalProps> = (props: MainModalProps) => {
                         <div className="mb-0">
                             <p className="mb-2">Click the links to see different rankings </p>
                             <div className="space-y-1">
-                            <p><a className="text-link" href={getUrl("?r=hrczbeisfresfi&y=23&n=Your+Dev%27s+Personal+Favs")}>2023 ESC my personal favs :-)</a></p>
+                            <p><a className="text-link" href={getUrl("?r=hrczbeisfresfi&y=23&n=Your+Dev%27s+Personal+Favs")}>My personal favs from 2023 :-)</a></p>
                             <p><a className="text-link" href={getUrl("?r=sefiilitnouabeeeauczltcyhramatfresmdplchsialptrsgbde&y=23&n=finals&y=23&n=finals")}>2023 ESC finals</a></p>
                             <p><a className="text-link" href={getUrl("?r=uagbessersitmdgrptnonlpleeltauazchrobeamficzisfrde&y=22&n=finals")}>2022 ESC finals</a></p>
                             <p><a className="text-link" href={getUrl("?r=itfrchisuafimtltrugrbgptmdserscyilnobeazalsmnlesdegb&y=21&n=finals")}>2021 ESC finals</a></p>

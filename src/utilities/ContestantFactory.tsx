@@ -14,7 +14,7 @@ export function fetchCountryContestantsByYear(year: string): CountryContestant[]
             throw new Error(`No matching country found for contestant with countryKey: ${contestant.countryKey}`);
         }
         return {
-            id: country.id,
+            id: country.key,
             country: country,
             contestant: contestant
         };

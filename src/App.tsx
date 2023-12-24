@@ -34,7 +34,7 @@ const App: React.FC = () => {
    * @returns 
    */
   const encodeRankingsToURL = (rankedCountries: CountryContestant[]): string => {
-    const ids = rankedCountries.map(item => item.id);
+    const ids = rankedCountries.map(item => item.country.key);
     return ids.join('');
   };
 
@@ -52,6 +52,7 @@ const App: React.FC = () => {
 
     const rankings = params.get('r');
 
+    console.log(rankings);
     let contestYear = getYearFromUrl(params);
 
     if (contestYear !== year) {
@@ -61,20 +62,25 @@ const App: React.FC = () => {
     const yearContestants = fetchCountryContestantsByYear(contestYear);
 
     if (rankings) {
-      let rankedIds = rankings.split('').map(String);
+      let rankedIds: string[] = [];
+
+      for (let i = 0; i < rankings.length; i += 2) {
+          rankedIds.push(rankings.substring(i, i + 2));
+      }
 
       // remove duplicates 
       let uniqueSet = new Set(rankedIds);
       rankedIds = Array.from(uniqueSet);
 
+      console.log(rankedIds);
       const rankedCountries = rankedIds
         .map(id => {
-          let countryContestant = yearContestants.find(country => country.id === id)
+          let countryContestant = yearContestants.find(country => country.country.key === id)
 
           if (countryContestant) {
             return countryContestant;
           } else {
-            const country = countries.find(c => c.id === id);
+            const country = countries.find(c => c.key === id);
             if (country) {
               return new CountryContestant(country);
             } else {
@@ -212,7 +218,7 @@ const App: React.FC = () => {
    */
   function deleteRankedCountry(countryId: string) {
 
-    const index = rankedItems.findIndex(obj => obj.country.id === countryId);
+    const index = rankedItems.findIndex(obj => obj.country.key === countryId);
     const [objectToMove] = rankedItems.splice(index, 1);
 
     const insertionIndex = unrankedItems.findIndex(obj => obj.country.name > objectToMove.country.name);
@@ -353,9 +359,9 @@ const App: React.FC = () => {
                         <div className="flex justify-left items-center">
                           <div className="text-gray-400 font-thin font-mono text-italic text-left ml-7 m-4 text-xs whitespace-normal max-w-[10em] mt-6">
                             <ol className="list-disc mb-7">
-                              <li className="mb-3">Drag countries to the right to rank</li>
+                              <li className="mb-3">Drag countries into this column to rank</li>
                               <li className="mb-3">Rankings are saved to the URL for you to save or share with friends</li>
-                              <li className="mb-2">Click details above to see more info on your ranked countries</li>
+                              <li className="mb-2">Click 'details' above to see more info on your ranked countries</li>
                             </ol>
 
                             <div className="">

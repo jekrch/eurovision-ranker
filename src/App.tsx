@@ -24,6 +24,7 @@ import MapModal from './components/MapModal';
 const App: React.FC = () => {
   const [mainModalShow, setMainModalShow] = useState(false);
   const [nameModalShow, setNameModalShow] = useState(false);
+  const [mapModalShow, setMapModalShow] = useState(false);
   const [refreshUrl, setRefreshUrl] = useState(0);
   const [refreshDnD, setRefreshDnD] = useState(0);
   const [modalTab, setModalTab] = useState('about')
@@ -328,6 +329,7 @@ const App: React.FC = () => {
         {showUnranked &&
           <EditNav
             setNameModalShow={setNameModalShow}
+            setMapModalShow={setMapModalShow}
           />
         }
       </div>
@@ -342,7 +344,7 @@ const App: React.FC = () => {
           setNameModalShow(false);
         }}
       />
-      <MapModal isOpen={true} onClose={()=> {}}/>
+      <MapModal isOpen={mapModalShow} onClose={()=> {setMapModalShow(false)}}/>
     </>
   );
 };

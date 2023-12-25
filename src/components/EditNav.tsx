@@ -11,9 +11,10 @@ import { Dispatch } from 'redux';
 
 type EditNavProps = {
     setNameModalShow: React.Dispatch<SetStateAction<boolean>>;
+    setMapModalShow: React.Dispatch<SetStateAction<boolean>>;
 };
 
-const EditNav: React.FC<EditNavProps> = ({ setNameModalShow }) => {
+const EditNav: React.FC<EditNavProps> = ({ setNameModalShow, setMapModalShow }) => {
     const dispatch: Dispatch<any> = useDispatch();
     const { year, rankedItems, unrankedItems, isDeleteMode } = useSelector((state: AppState) => state);
 
@@ -94,6 +95,12 @@ const EditNav: React.FC<EditNavProps> = ({ setNameModalShow }) => {
                                 title="Name"
                             />
 
+                            <IconButton
+                                icon={faPenAlt}
+                                className="ml-4"
+                                onClick={() => setMapModalShow(true)}
+                                title="Map"
+                            />
                         </div>
                     </li>
                 </ul>

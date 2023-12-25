@@ -69,7 +69,7 @@ const MapModal: React.FC<MapModalProps> = ({ isOpen, onClose }) => {
 
                         <ComposableMap
                             projectionConfig={{
-                                scale: 800,
+                                scale: 500,
                                 center: [15, 50]
                             }}
                             style={{ width: "auto", height: "auto" }}>

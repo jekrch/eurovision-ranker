@@ -29,6 +29,7 @@
     "react-icons": "^4.12.0",
     "react-redux": "^9.0.4",
     "react-scripts": "5.0.1",
+    "react-simple-maps": "^3.0.0",
     "react-world-flags": "^1.6.0",
     "redux-logger": "^3.0.6",
     "redux-thunk": "^3.1.0",
@@ -62,6 +63,7 @@
     ]
   },
   "devDependencies": {
+    "@types/react-simple-maps": "^3.0.4",
     "@types/react-world-flags": "^1.4.5",
     "gh-pages": "^3.2.3",
     "tailwindcss": "^3.3.2"

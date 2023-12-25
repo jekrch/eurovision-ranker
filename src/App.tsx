@@ -19,6 +19,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setName, setYear, setRankedItems, setUnrankedItems, setShowUnranked, setContestants } from './redux/actions';
 import { decodeRankingsFromURL } from './utilities/UrlUtil';
 import { Dispatch } from 'redux';
+import MapModal from './components/MapModal';
 
 const App: React.FC = () => {
   const [mainModalShow, setMainModalShow] = useState(false);
@@ -341,6 +342,7 @@ const App: React.FC = () => {
           setNameModalShow(false);
         }}
       />
+      <MapModal isOpen={true} onClose={()=> {}}/>
     </>
   );
 };

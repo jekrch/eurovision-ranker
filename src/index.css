@@ -52,7 +52,7 @@ code {
 }
 
 .gradient-text {
-  background: linear-gradient(45deg, #a6bcdf, #3b82f6, #9333ea);
+  background: linear-gradient(45deg, #729fe8, #3b82f6, #9333ea);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;

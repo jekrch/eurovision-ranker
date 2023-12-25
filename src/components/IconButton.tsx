@@ -16,7 +16,7 @@ export const IconButton: React.FC<IconButtonProps> = ({ icon, onClick, className
     return (
         <button
             className={classNames(
-                "text-white font-normal py-1 px-3 pr-4 rounded-full text-xs",
+                "text-white font-normal py-1 pl-2 pr-3 rounded-full text-xs",
                 disabled ? "bg-slate-500" : "bg-blue-500 hover:bg-blue-700", 
                 className
             )}

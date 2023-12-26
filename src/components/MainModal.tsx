@@ -145,8 +145,11 @@ const MainModal: React.FC<MainModalProps> = (props: MainModalProps) => {
                                     value={rankingYear ?? year}
                                     onChange={y => { setRankingYear(y); }}
                                     options={supportedYears.filter(i => i !== '2024')}
-                                /> <span onClick={openEscFinals} className="text-link cursor-pointer no-select ml-2"> ESC finals</span>
-
+                                /> <span 
+                                    onClick={openEscFinals} 
+                                    className="text-link cursor-pointer no-select ml-2"> 
+                                    ESC finals
+                                </span>
                             </p>
                             <p className="relative mb-[7em] mt-2 text-sm">(Select a year and click the link to see the final ranking in that year's finals)</p>
                             {/* <p><a className="text-link" href={getUrl("?r=envw4g.gmckyjib.dod16f.ca7.bhq&y=23&n=finals")}>2023 ESC finals</a></p>

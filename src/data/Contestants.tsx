@@ -1,6 +1,21 @@
 import { Contestant } from "./Contestant";
 
-export const supportedYears = ["2019", "2021","2022", "2023", "2024"];
+//export const supportedYears = ["1967","2019", "2021","2022", "2023", "2024"];
+export const supportedYears = Array.from({ length: 2024 - 1956 + 1 }, (v, i) => ((1956 + i).toString())).reverse();
+
+export function sanitizeYear(contestYear: string | null): string {
+  if (contestYear?.length === 2) {
+      if ((parseInt(contestYear) < 40)) {
+          return '20' + contestYear;
+      } else {
+          return '19' + contestYear;
+      }
+  } else if (contestYear?.length === 4) {
+    return contestYear;
+  }
+  return defaultYear;
+}
+
 export const defaultYear = '2023';
 
 export const contestants2024: Contestant[] = [

@@ -19,6 +19,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setName, setYear, setRankedItems, setUnrankedItems, setShowUnranked, setContestants } from './redux/actions';
 import { decodeRankingsFromURL } from './utilities/UrlUtil';
 import { Dispatch } from 'redux';
+import DatePicker from 'react-datepicker';
 
 const App: React.FC = () => {
   const [mainModalShow, setMainModalShow] = useState(false);
@@ -27,7 +28,7 @@ const App: React.FC = () => {
   const [refreshDnD, setRefreshDnD] = useState(0);
   const [modalTab, setModalTab] = useState('about')
   const dispatch: Dispatch<any> = useDispatch();
-  const { 
+  const {
     year, name, rankedItems, unrankedItems, showUnranked, isDeleteMode
   } = useSelector((state: AppState) => state);
 
@@ -43,41 +44,42 @@ const App: React.FC = () => {
   };
 
   useEffect(() => {
-    const rankingsExist = decodeRankingsFromURL(
-      dispatch
-    );
-    // Set showUnranked based on whether rankings exist
-    dispatch(
-      setShowUnranked(!rankingsExist)
-    );
+    const decodeFromUrl = async () => {
+      const rankingsExist = await decodeRankingsFromURL(
+        dispatch
+      );
+      // Set showUnranked based on whether rankings exist
+      dispatch(
+        setShowUnranked(!rankingsExist)
+      );
+    }
+    decodeFromUrl();
   }, [])
 
   useEffect(() => {
+    if (refreshUrl == 0) {
+      return;
+    }
     updateQueryParams({ r: encodeRankingsToURL(rankedItems) });
     updateQueryParams({ y: year.slice(-2) });
     updateQueryParams({ n: name });
   }, [rankedItems, refreshUrl]);
 
   useEffect(() => {
-
-    if (!year?.length) {
-      return;
+    const handleYearUpdate = async () => {
+      if (!year?.length) {
+        return;
+      }
+      // if (year.substring(2,4) === params.get('y')) {
+      //   console.log('already set');
+      //   return;
+      // }
+      updateQueryParams({ y: year.slice(-2) });
+      await decodeRankingsFromURL(
+        dispatch
+      );
     }
-    let yearContestants = fetchCountryContestantsByYear(
-      year, dispatch
-    );
-
-    updateQueryParams({ y: year.slice(-2) });
-    
-    dispatch(
-      setContestants(yearContestants)
-    );
-    dispatch(
-      setUnrankedItems(yearContestants)
-    );
-    decodeRankingsFromURL(
-      dispatch
-    );
+    handleYearUpdate();
   }, [year]);
 
   useEffect(() => {
@@ -125,16 +127,16 @@ const App: React.FC = () => {
       setOtherList = setUnrankedItems;
     }
 
-    const items = Array.from(activeList);
+    let items = Array.from(activeList);
     const [reorderedItem] = items.splice(source.index, 1);
 
     // moving between lists
     if (destination.droppableId !== source.droppableId) {
-      const destinationItems = Array.from(otherList);
+      let destinationItems = Array.from(otherList);
       destinationItems.splice(destination.index, 0, reorderedItem);
       dispatch(
         setOtherList(destinationItems)
-        );
+      );
     } else {
       items.splice(
         destination.index, 0, reorderedItem

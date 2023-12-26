@@ -30,7 +30,7 @@ export interface CardProps {
 export const Card: FC<CardProps> = (props) => {
   return (
     <div
-      key={props.rank ? 'ranked-' : 'unranked-' + 'card-' + props.country.name}
+    key={props.rank ? 'ranked-' : 'unranked-' + 'card-' + props.country.name}
       className={classNames(
         props.className, "!cursor-grabber whitespace-normal text-sm overflow-hidden shadow rounded border border-0.5 border-gray-400",
         props.isDragging ? "shadow-slate-400 shadow-sm border-solid" : "",

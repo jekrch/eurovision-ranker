@@ -2,6 +2,7 @@ import { Country } from "./Country";
 
 export const countries: Country[] = [
   { id: 'a', name: 'Albania', key: 'al', icon: 'flag-icon-al' },
+  { id: '.p', name: 'Andorra', key: 'ad', icon: 'flag-icon-ad' },
   { id: 'b', name: 'Armenia', key: 'am', icon: 'flag-icon-am' },
   { id: 'c', name: 'Australia', key: 'au', icon: 'flag-icon-au' },
   { id: '.d', name: 'Austria', key: 'at', icon: 'flag-icon-at' },
@@ -9,6 +10,7 @@ export const countries: Country[] = [
   { id: '.f', name: 'Belarus', key: 'by', icon: 'flag-icon-by' },
   { id: '.g', name: 'Belgium', key: 'be', icon: 'flag-icon-be' },
   { id: '.h', name: 'Bulgaria', key: 'bg', icon: 'flag-icon-bg' },
+  { id: '.m', name: 'Bosnia & Herzegovina', key: 'ba', icon: 'flag-icon-ba' },
   { id: 'i', name: 'Croatia', key: 'hr', icon: 'flag-icon-hr' },
   { id: 'j', name: 'Cyprus', key: 'cy', icon: 'flag-icon-cy' },
   { id: 'k', name: 'Czechia', key: 'cz', icon: 'flag-icon-cz' },
@@ -30,6 +32,8 @@ export const countries: Country[] = [
   { id: '0', name: 'Malta', key: 'mt', icon: 'flag-icon-mt' },
   { id: '1', name: 'Moldova', key: 'md', icon: 'flag-icon-md' },
   { id: '2', name: 'Montenegro', key: 'me', icon: 'flag-icon-me' },
+  { id: '.i', name: 'Monaco', key: 'mc', icon: 'flag-icon-mc' },
+  { id: '.l', name: 'Morocco', key: 'ma', icon: 'flag-icon-ma' },
   { id: '3', name: 'Netherlands', key: 'nl', icon: 'flag-icon-nl' },
   { id: '4', name: 'Norway', key: 'no', icon: 'flag-icon-no' },
   { id: '5', name: 'North Macedonia', key: 'mk', icon: 'flag-icon-mk' },
@@ -39,10 +43,14 @@ export const countries: Country[] = [
   { id: '9', name: 'Russia', key: 'ru', icon: 'flag-icon-ru' },
   { id: '.a', name: 'San Marino', key: 'sm', icon: 'flag-icon-sm' },
   { id: '.b', name: 'Serbia', key: 'rs', icon: 'flag-icon-rs' },
+  { id: '.o', name: 'Serbia & Montenegro', key: 'cs', icon: 'flag-icon-cs' },
   { id: '.c', name: 'Slovenia', key: 'si', icon: 'flag-icon-si' },
+  { id: '.n', name: 'Slovakia', key: 'sk', icon: 'flag-icon-sk' },
   { id: 'd', name: 'Spain', key: 'es', icon: 'flag-icon-es' },
   { id: 'e', name: 'Sweden', key: 'se', icon: 'flag-icon-se' },
   { id: 'f', name: 'Switzerland', key: 'ch', icon: 'flag-icon-ch' },
+  { id: '.k', name: 'Turkey', key: 'tr', icon: 'flag-icon-tr' },
   { id: 'g', name: 'Ukraine', key: 'ua', icon: 'flag-icon-ua' },
-  { id: 'h', name: 'United Kingdom', key: 'gb', icon: 'flag-icon-gb' }
+  { id: 'h', name: 'United Kingdom', key: 'gb', icon: 'flag-icon-gb' },
+  { id: '.j', name: 'Yugoslavia', key: 'yu', icon: 'flag-icon-yu' }
 ];

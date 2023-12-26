@@ -1,9 +1,9 @@
 import { Dispatch } from 'redux';
-import { setName, setYear, setRankedItems, setUnrankedItems } from '../redux/actions';
+import { setName, setYear, setRankedItems, setUnrankedItems, setContestants } from '../redux/actions';
 import { fetchCountryContestantsByYear } from './ContestantFactory';
 import { CountryContestant } from '../data/CountryContestant';
 import { countries } from '../data/Countries';
-import { defaultYear } from '../data/Contestants';
+import { defaultYear, sanitizeYear } from '../data/Contestants';
 import { getRankingComparison } from './RankAnalyzer';
 
 /**
@@ -25,9 +25,7 @@ export const updateStates = (
     }
 
     if (contestYear?.length) {
-        if (contestYear.length === 2) {
-            contestYear = '20' + contestYear;
-        }
+        contestYear = sanitizeYear(contestYear);
         dispatch(
             setYear(contestYear)
         );
@@ -42,13 +40,18 @@ export const updateStates = (
 /**
  * Fetches and processes rankings, then updates contestant states using Redux.
  */
-export const processAndUpdateRankings = (
+export async function processAndUpdateRankings(
     contestYear: string,
     rankings: string | null,
     dispatch: Dispatch<any>
-): string[] | undefined => {
-    const yearContestants = fetchCountryContestantsByYear(
+): Promise<string[] | undefined> {
+
+    const yearContestants = await fetchCountryContestantsByYear(
         contestYear, dispatch
+    );
+
+    dispatch(
+        setContestants(yearContestants)
     );
 
     if (rankings) {
@@ -62,35 +65,39 @@ export const processAndUpdateRankings = (
 
         const rankedCountries = rankedIds.map(
             (id: string) => {
-                let countryContestant: CountryContestant | undefined = yearContestants.find(
-                    c => c.id === id
-                );
-                if (countryContestant) {
-                    return countryContestant;
-                } else {
-                    const country = countries.find(c => c.id === id);
-                    if (country) {
-                        return new CountryContestant(country);
+                    let countryContestant: CountryContestant | undefined = yearContestants.find(
+                        c => c.id === id
+                    );
+                    if (countryContestant) {
+                        return countryContestant;
                     } else {
-                        return;
+                        const country = countries.find(c => c.id === id);
+                        if (country) {
+                            return new CountryContestant(country);
+                        } else {
+                            return;
+                        }
                     }
                 }
-            }
-    ).filter(Boolean) as CountryContestant[];
+            ).filter(Boolean) as CountryContestant[];
 
-        const unrankedCountries = yearContestants.filter(
-            countryContestant => !rankedIds.includes(countryContestant.id)
-        );
+            const unrankedCountries = yearContestants.filter(
+                countryContestant => !rankedIds.includes(countryContestant.id)
+            );
 
-        dispatch(
-            setRankedItems(rankedCountries)
-        );
-        dispatch(
-            setUnrankedItems(unrankedCountries)
-        );
+            dispatch(
+                setRankedItems(rankedCountries)
+            );
+
+            dispatch(
+                setUnrankedItems(unrankedCountries)
+            );
 
         return rankedIds;
     } else {
+        dispatch(
+            setRankedItems([])
+        );
         dispatch(
             setUnrankedItems(yearContestants)
         );
@@ -100,16 +107,16 @@ export const processAndUpdateRankings = (
 /**
  * Decodes rankings from URL and updates Redux store accordingly.
  */
-export const decodeRankingsFromURL = (
+export async function decodeRankingsFromURL(
     dispatch: Dispatch<any>
-): string[] | undefined => {
+): Promise<string[] | undefined> {
 
     const params = new URLSearchParams(window.location.search);
 
     const extractedParams = extractParams(params);
     updateStates(extractedParams, dispatch);
 
-    return processAndUpdateRankings(
+    return await processAndUpdateRankings(
         extractedParams.contestYear || defaultYear, 
         extractedParams.rankings,
         dispatch

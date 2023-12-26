@@ -466,7 +466,12 @@ const App: React.FC = () => {
         tab={modalTab}
         isOpen={mainModalShow}
         onClose={() => setMainModalShow(false)}
-        startTour={() => setRunTour(true)}
+        startTour={() => {
+          dispatch(
+            setShowUnranked(true)
+          );
+          setRunTour(true);
+        }}
       />
       </div>
       <NameModal

@@ -183,13 +183,12 @@ const App: React.FC = () => {
   }
 
   return (
-    <>
-      <div className="flex flex-col h-screen">
-
+    <> 
+      <div className="site-content flex flex-col h-screen">
         <Navbar
           openModal={openModal}
         />
-        <div className="flex-grow overflow-auto overflow-x-hidden bg-[#040241] flex justify-center pixelated-background">
+        <div className="flex-grow overflow-auto overflow-x-hidden bg-[#040241] flex justify-center bg-opacity-0">
           <DragDropContext
             onDragEnd={handleOnDragEnd}
             key={`drag-drop-context-${refreshDnD}`}

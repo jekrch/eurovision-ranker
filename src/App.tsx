@@ -63,7 +63,7 @@ const App: React.FC = () => {
     updateQueryParams({ r: encodeRankingsToURL(rankedItems) });
     updateQueryParams({ y: year.slice(-2) });
     updateQueryParams({ n: name });
-  }, [rankedItems, refreshUrl]);
+  }, [refreshUrl]);
 
   useEffect(() => {
     const handleYearUpdate = async () => {
@@ -329,6 +329,7 @@ const App: React.FC = () => {
         {showUnranked &&
           <EditNav
             setNameModalShow={setNameModalShow}
+            setRefreshUrl={setRefreshUrl}
           />
         }
       </div>

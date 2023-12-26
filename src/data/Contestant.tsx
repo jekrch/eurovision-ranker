@@ -3,5 +3,7 @@ export type Contestant = {
     artist: string;
     song: string;
     youtube?: string;
+    finalsRank?: number;
+    semiFinalsRank?: number;
   };
   

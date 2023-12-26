@@ -28,7 +28,7 @@ const Navbar: React.FC<NavbarProps> = ({ openModal }) => {
                         <div className="flex items-center">
                             
                             <button
-                                className="bg-blue-500 hover:bg-blue-700 text-white font-normal py-1 px-3 rounded-full text-xs mr-0 w-[5em]"
+                                className="bg-blue-500 hover:bg-blue-700 text-white font-normal py-1 pl-[0.7em] pr-[0.9em] rounded-full text-xs mr-0 w-[5em]"
                                 onClick={() => dispatch(setShowUnranked(!showUnranked))}
                             >
                                 {showUnranked ? 'Details' : 'Select'}

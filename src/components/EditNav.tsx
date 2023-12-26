@@ -12,17 +12,18 @@ import { Dispatch } from 'redux';
 type EditNavProps = {
     setNameModalShow: React.Dispatch<SetStateAction<boolean>>;
     setMapModalShow: React.Dispatch<SetStateAction<boolean>>;
+    setRefreshUrl: React.Dispatch<SetStateAction<number>>;
 };
 
-const EditNav: React.FC<EditNavProps> = ({ setNameModalShow, setMapModalShow }) => {
+const EditNav: React.FC<EditNavProps> = ({ setNameModalShow, setMapModalShow, setRefreshUrl }) => {
     const dispatch: Dispatch<any> = useDispatch();
     const { year, rankedItems, unrankedItems, isDeleteMode } = useSelector((state: AppState) => state);
 
     /**
    * Clear rankedItems and fill unrankedItems with the relevant year's contestants
    */
-    function resetRanking() {
-        let yearContestants: CountryContestant[] = fetchCountryContestantsByYear(
+    async function resetRanking() {
+        let yearContestants: CountryContestant[] = await fetchCountryContestantsByYear(
             year, dispatch
         );
 
@@ -37,6 +38,8 @@ const EditNav: React.FC<EditNavProps> = ({ setNameModalShow, setMapModalShow }) 
         dispatch(
             setRankedItems([])
         );
+        
+        setRefreshUrl(Math.random());
     }
 
     /**
@@ -49,6 +52,7 @@ const EditNav: React.FC<EditNavProps> = ({ setNameModalShow, setMapModalShow }) 
         dispatch(
             setRankedItems(rankedItems.concat(unrankedItems))
         );
+        setRefreshUrl(Math.random());
     }
 
     return (

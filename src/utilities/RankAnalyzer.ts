@@ -35,13 +35,13 @@ export class CountryComparison {
     }
 };
 
-export function getRankingComparison(
+export async function getRankingComparison(
     year: string,
     list1Code: string,
     list2Code: string
-): RankingComparison {
+): Promise<RankingComparison> {
 
-    let contestants: CountryContestant[] = fetchCountryContestantsByYear(year);
+    let contestants: CountryContestant[] = await fetchCountryContestantsByYear(year);
 
     let rankingComparison: RankingComparison = {} as RankingComparison;
     rankingComparison.list1Code = list1Code;

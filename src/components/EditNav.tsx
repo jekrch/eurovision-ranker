@@ -59,7 +59,7 @@ const EditNav: React.FC<EditNavProps> = ({ setNameModalShow, setRefreshUrl }) =>
             <div className="container mx-auto flex justify-between items-center">
                 <ul className="flex space-x-2">
                     <li>
-                        <div className="flex items-center">
+                        <div className="tour-step-3 flex items-center">
 
                             <IconButton
                                 icon={faArrowRight}

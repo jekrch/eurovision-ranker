@@ -28,13 +28,13 @@ const Navbar: React.FC<NavbarProps> = ({ openModal }) => {
                         <div className="flex items-center">
                             
                             <button
-                                className="bg-blue-500 hover:bg-blue-700 text-white font-normal py-1 pl-[0.7em] pr-[0.9em] rounded-full text-xs mr-0 w-[5em]"
+                                className="tour-step-4 tour-step-8 bg-blue-500 hover:bg-blue-700 text-white font-normal py-1 pl-[0.7em] pr-[0.9em] rounded-full text-xs mr-0 w-[5em]"
                                 onClick={() => dispatch(setShowUnranked(!showUnranked))}
                             >
                                 {showUnranked ? 'Details' : 'Select'}
                             </button>
                             <FontAwesomeIcon
-                                className="houseUser mr-1 mb-1 ml-4 text-xl"
+                                className="houseUser mr-1 mb-1 ml-4 text-xl tour-step-9"
                                 icon={faHouseUser}
                                 onClick={() => openModal('about')}
                             />

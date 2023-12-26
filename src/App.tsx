@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { SetStateAction, useCallback, useEffect, useState } from 'react';
 import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
 import { Card } from './components/Card';
 import { StrictModeDroppable } from './components/StrictModeDroppable';
 import classNames from 'classnames';
 import { CountryContestant } from './data/CountryContestant';
-import { fetchCountryContestantsByYear } from './utilities/ContestantFactory';
 import MainModal from './components/MainModal';
 import Dropdown from './components/Dropdown';
 import { supportedYears } from './data/Contestants';
@@ -20,6 +19,9 @@ import { setName, setYear, setRankedItems, setUnrankedItems, setShowUnranked, se
 import { decodeRankingsFromURL } from './utilities/UrlUtil';
 import { Dispatch } from 'redux';
 import MapModal from './components/MapModal';
+import Joyride, { ACTIONS, CallBackProps, EVENTS, STATUS } from 'react-joyride';
+import { fetchCountryContestantsByYear } from './utilities/ContestantFactory';
+import { tourSteps } from './tour/steps';
 
 const App: React.FC = () => {
   const [mainModalShow, setMainModalShow] = useState(false);
@@ -33,6 +35,106 @@ const App: React.FC = () => {
     year, name, rankedItems, unrankedItems, showUnranked, isDeleteMode
   } = useSelector((state: AppState) => state);
 
+
+  const [runTour, setRunTour] = useState(false);
+  const [joyrideStepIndex, setJoyrideStepIndex] = useState(0);
+
+  const handleJoyrideCallback = useCallback((data: CallBackProps) => {
+    const { action, index, status, type } = data;
+
+    if ([STATUS.FINISHED, STATUS.SKIPPED].includes(status as any) || (action === ACTIONS.CLOSE && type === EVENTS.STEP_AFTER)) {
+      setRunTour(false); // End the tour
+      setJoyrideStepIndex(0);
+    } else if (type === EVENTS.STEP_AFTER || type === EVENTS.TARGET_NOT_FOUND) {
+      setJoyrideStepIndex(index + (action === ACTIONS.PREV ? -1 : 1));
+    }
+  }, []);
+
+
+  useEffect(() => {
+    const decodeFromUrl = async () => {
+      await executeTourStepActions(joyrideStepIndex);
+    }
+    decodeFromUrl();
+  }, [joyrideStepIndex])
+
+
+  /**
+   * Each case statement corresponds to a step in the tour
+   * @param index 
+   */
+  async function executeTourStepActions(
+    index: number
+  ) {
+    switch (index) {
+      case 1:
+        if (year !== '2023') {
+          dispatch(setYear('2023'));
+          setRefreshUrl(Math.random());
+        }
+
+        await clearRanking(year);        
+        dispatch(
+          setShowUnranked(true)
+        );
+
+        break;
+      case 2:
+        const specificCountryCodes = ['fi', 'hr', 'es', 'cz', 'no', 'is'];
+
+        // Filter out the specific items based on country codes
+        const specificItems = unrankedItems.filter(
+          item => specificCountryCodes.includes(item.country.key.toLowerCase())
+        );
+
+        // Remove these items from unrankedItems
+        const remainingUnrankedItems = unrankedItems.filter(
+          item => !specificCountryCodes.includes(item.country.key.toLowerCase())
+        );
+
+        // Sort the specific items in the desired order
+        const sortedSpecificItems = specificCountryCodes.map(code =>
+          specificItems.find(
+            item => item.country.key.toLowerCase() === code
+          )
+        ).filter(item => item !== undefined) as CountryContestant[];
+
+        const newRankedItems = [...sortedSpecificItems, ...rankedItems];
+
+        dispatch(setRankedItems(newRankedItems));
+        dispatch(setUnrankedItems(remainingUnrankedItems));
+        dispatch(setName("Sigrit's Top Picks"));
+        setRefreshUrl(Math.random())
+
+        break;
+
+      case 4:
+        dispatch(
+          setShowUnranked(false)
+        );
+        break;
+
+      case 8:
+        dispatch(
+          setShowUnranked(true)
+        ); 
+        //openModal('rankings');
+        break;   
+      
+      case 10:
+        openModal('rankings');
+        break;
+
+      case 13:
+        setMainModalShow(false);
+        dispatch(setName(""));
+        await clearRanking(year);
+        dispatch(
+          setShowUnranked(true)
+        );
+        break;
+    }
+  }
 
   /**
    * Encode rankings to csv for URL
@@ -151,6 +253,15 @@ const App: React.FC = () => {
     setRefreshUrl(Math.random())
   };
 
+  async function clearRanking(year: string) {
+    let yearContestants = await fetchCountryContestantsByYear(year, dispatch);
+  
+    dispatch(setContestants(yearContestants));
+    dispatch(setUnrankedItems(yearContestants));
+    dispatch(setRankedItems([]));
+    setRefreshUrl(Math.random());
+  }
+
   /**
    * Identify country with the provided Id in the rankedItems array, and 
    * move them back into the unrankedItems array, alphabetically 
@@ -164,7 +275,8 @@ const App: React.FC = () => {
       i => i.country.name > objectToMove.country.name
     );
     if (insertionIndex === -1) {
-      unrankedItems.push(objectToMove); // If no country is found with a name greater than our object, append it at the end.
+      // If no country is found with a name greater than our object, append it at the end.
+      unrankedItems.push(objectToMove);
     } else {
       unrankedItems.splice(insertionIndex, 0, objectToMove); // Insert at the found index
     }
@@ -184,8 +296,8 @@ const App: React.FC = () => {
   }
 
   return (
-    <> 
-      <div className="site-content flex flex-col h-screen">
+    <>
+      <div className="site-content flex flex-col h-screen tour-step-12 tour-step-13 tour-step-14">
         <Navbar
           openModal={openModal}
         />
@@ -209,7 +321,7 @@ const App: React.FC = () => {
                       <ul
                         {...provided.droppableProps}
                         ref={provided.innerRef}
-                        className={classNames("pt-3 min-w-[10em]", "")}
+                        className={classNames("pt-3 min-w-[10em] tour-step-2", "")}
                       >
                         {unrankedItems.map((item, index) => (
                           <Draggable
@@ -247,7 +359,7 @@ const App: React.FC = () => {
                 </div>
               )}
               {/* Ranked Countries List */}
-              <div>
+              <div className="tour-step-5">
                 <StrictModeDroppable droppableId="rankedItems">
                   {(provided) => (
                     <ul
@@ -259,7 +371,7 @@ const App: React.FC = () => {
                         {showUnranked ? (
                           <div className="w-full m-auto flex">
                             <Dropdown
-                              className="mx-auto relative w-[5em]"
+                              className="tour-step-1 mx-auto relative w-[5em]"
                               value={year}
                               onChange={y => { dispatch(setYear(y)); }}
                               options={supportedYears}
@@ -267,15 +379,15 @@ const App: React.FC = () => {
                           </div>
                         ) : (
                           <div className="mx-2 flex justify-between items-center">
-                            {rankedItems?.length > 0 && 
-                                <a
+                            {rankedItems?.length > 0 &&
+                              <a
                                 onClick={() => setMapModalShow(true)}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 title="display geographical heat map"
                                 className='text-slate-500 hover:text-slate-100 cursor-pointer'
                               >
-                                <FaGlobe className='text-xl' />
+                                <FaGlobe className='text-xl tour-step-7' />
                               </a>
                             }
                             <div className="justify-center w-full ml-2">
@@ -292,14 +404,17 @@ const App: React.FC = () => {
                                 title="generate youtube playlist"
                                 className='text-slate-500 hover:text-slate-100'
                               >
-                                <FaTv className='text-xl' />
+                                <FaTv className='text-xl tour-step-6' />
                               </a>
-                            )}        
+                            )}
                           </div>
                         )}
                       </div>
                       {(rankedItems.length === 0 && showUnranked) && (
-                        <IntroColumn openModal={openModal} />
+                        <IntroColumn
+                          openModal={openModal}
+                          setRunTour={setRunTour}
+                        />
                       )}
                       {rankedItems.map((item, index) => (
                         <Draggable key={`draggable-${item.id.toString()}`} draggableId={item.id.toString()} index={index}>
@@ -343,25 +458,59 @@ const App: React.FC = () => {
             setRefreshUrl={setRefreshUrl}
           />
         }
+
+
       </div>
+      <div className="tour-step-11">
       <MainModal
         tab={modalTab}
         isOpen={mainModalShow}
         onClose={() => setMainModalShow(false)}
+        startTour={() => setRunTour(true)}
       />
+      </div>
       <NameModal
         isOpen={nameModalShow}
         onClose={() => {
           setNameModalShow(false);
         }}
       />
-      <MapModal 
-        isOpen={mapModalShow} 
-        onClose={()=> {setMapModalShow(false)}}
+      <MapModal
+        isOpen={mapModalShow}
+        onClose={() => { setMapModalShow(false) }}
       />
+
+      <Joyride
+        disableScrolling={true}
+        disableScrollParentFix={true}
+        continuous
+        run={runTour}
+        steps={tourSteps}
+        stepIndex={joyrideStepIndex}
+        callback={handleJoyrideCallback}
+        showProgress={true}
+        disableOverlay={false}
+        styles={{
+          overlay: { height: '100vh' },
+          buttonNext: {
+            backgroundColor: '#3c82f6'
+          },
+          buttonBack: {
+            color: '#fff',
+          },
+          options: {
+            zIndex: 10000,
+            arrowColor: '#333',
+            backgroundColor: '#333',
+            primaryColor: '#f04',
+            textColor: '#fff',
+            // ...other style adjustments based on theme
+          }
+        }}
+      />
+
     </>
   );
 };
 
 export default App;
-

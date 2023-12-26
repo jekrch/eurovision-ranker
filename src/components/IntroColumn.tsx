@@ -1,12 +1,13 @@
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHouseUser, faHeart, faList } from '@fortawesome/free-solid-svg-icons';
+import { faHouseUser, faHeart, faList, faGlasses } from '@fortawesome/free-solid-svg-icons';
 
 type IntroColumnProps = {
     openModal: (tabName: string) => void;
+    setRunTour:  (runTour: boolean) => void;
 };
 
-const IntroColumn: React.FC<IntroColumnProps> = ({ openModal }) => {
+const IntroColumn: React.FC<IntroColumnProps> = ({ openModal, setRunTour }) => {
     return (
         <div className="flex justify-left items-center">
             <div className="text-gray-400 font-thin font-mono text-italic text-left ml-7 m-4 text-xs whitespace-normal max-w-[10em] mt-6">
@@ -40,7 +41,7 @@ const IntroColumn: React.FC<IntroColumnProps> = ({ openModal }) => {
                     </div>
 
                     <div
-                        className="houseUser flex items-center"
+                        className="houseUser flex items-center mb-7"
                         onClick={() => openModal('rankings')}
                     >
                         <FontAwesomeIcon
@@ -49,6 +50,18 @@ const IntroColumn: React.FC<IntroColumnProps> = ({ openModal }) => {
                         />
                         <span className="ml-[0.2em] mt-[0.2em] font-bold">Rankings</span>
                     </div>
+
+                    <div
+                        className="houseUser flex items-center mb-2"
+                        onClick={() => setRunTour(true)}
+                    >
+                        <FontAwesomeIcon
+                            className="mr-2 ml-0 text-xl"
+                            icon={faGlasses}
+                        />
+                        <span className="ml-[0.2em] mt-[0.2em] font-bold">Tour</span>
+                    </div>
+                    
                 </div>
             </div>
         </div>

@@ -267,7 +267,7 @@ const App: React.FC = () => {
                           </div>
                         ) : (
                           <div className="mx-2 flex justify-between items-center">
-                            {rankedItems?.length && 
+                            {rankedItems?.length > 0 && 
                                 <a
                                 onClick={() => setMapModalShow(true)}
                                 target="_blank"

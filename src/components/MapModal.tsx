@@ -59,7 +59,7 @@ const MapModal: React.FC<MapModalProps> = ({ isOpen, onClose }) => {
             className="fixed inset-0 z-10 overflow-y-auto pb-2 pt-5 px-2 min-w-[80vw]" 
             isOpen={isOpen} onClose={onClose}
         >
-            <div className="mb-1 -mt-2 w-full font-strong text-center bg-slate-800 rounded-md ">Ranking heat map</div>
+            <div className="mb-1 -mt-2 w-full font-strong text-center rounded-md ">Ranking heat map</div>
             <div className="min-h-full">
                 <ComposableMap
                     className="bg-black rounded-md w-full h-full"

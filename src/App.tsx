@@ -340,7 +340,6 @@ const App: React.FC = () => {
         {showUnranked &&
           <EditNav
             setNameModalShow={setNameModalShow}
-            setMapModalShow={setMapModalShow}
             setRefreshUrl={setRefreshUrl}
           />
         }

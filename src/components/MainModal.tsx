@@ -23,7 +23,6 @@ const MainModal: React.FC<MainModalProps> = (props: MainModalProps) => {
     const { year } = useSelector((state: AppState) => state);
 
     const [activeTab, setActiveTab] = useState(props.tab);
-    const modalRef = useRef<HTMLDivElement>(null);
     const [rankingYear, setRankingYear] = useState(year);
     const currentDomain = window.location.origin; // Get the current domain
     const currentPath = window.location.pathname; // Get the current path
@@ -45,18 +44,6 @@ const MainModal: React.FC<MainModalProps> = (props: MainModalProps) => {
     useEffect(() => {
         setRankingYear(year);
     }, [year]);
-
-    useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
-                props.onClose();
-            }
-        };
-        document.addEventListener("mousedown", handleClickOutside);
-        return () => {
-            document.removeEventListener("mousedown", handleClickOutside);
-        };
-    }, [modalRef, props]);
 
     async function openEscFinals() {
         const finalsYear = rankingYear ?? year;

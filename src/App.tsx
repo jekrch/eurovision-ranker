@@ -9,7 +9,7 @@ import MainModal from './components/MainModal';
 import Dropdown from './components/Dropdown';
 import { supportedYears } from './data/Contestants';
 import NameModal from './components/NameModal';
-import { FaTv } from 'react-icons/fa';
+import { FaGlobe, FaGlobeEurope, FaTv } from 'react-icons/fa';
 import Navbar from './components/NavBar';
 import EditNav from './components/EditNav';
 import IntroColumn from './components/IntroColumn';
@@ -267,6 +267,17 @@ const App: React.FC = () => {
                           </div>
                         ) : (
                           <div className="mx-2 flex justify-between items-center">
+                            {rankedItems?.length && 
+                                <a
+                                onClick={() => setMapModalShow(true)}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                title="display geographical heat map"
+                                className='text-slate-500 hover:text-slate-100 cursor-pointer'
+                              >
+                                <FaGlobe className='text-xl' />
+                              </a>
+                            }
                             <div className="justify-center w-full ml-2">
                               {year}
                               {name?.length > 0 && (
@@ -283,7 +294,7 @@ const App: React.FC = () => {
                               >
                                 <FaTv className='text-xl' />
                               </a>
-                            )}
+                            )}        
                           </div>
                         )}
                       </div>
@@ -345,7 +356,10 @@ const App: React.FC = () => {
           setNameModalShow(false);
         }}
       />
-      <MapModal isOpen={mapModalShow} onClose={()=> {setMapModalShow(false)}}/>
+      <MapModal 
+        isOpen={mapModalShow} 
+        onClose={()=> {setMapModalShow(false)}}
+      />
     </>
   );
 };

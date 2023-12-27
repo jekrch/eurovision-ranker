@@ -4,6 +4,7 @@ import { countries } from '../data/Countries';
 import { contestants2019, contestants2021, contestants2022, contestants2023, contestants2024, defaultYear, sanitizeYear } from '../data/Contestants';
 import { Dispatch } from 'redux';
 import Papa from 'papaparse';
+import { Vote } from "../data/Vote";
 
 const contestantCsvPath = '../data/contestants.csv';
 
@@ -16,7 +17,6 @@ export async function fetchCountryContestantsByYear(
     year, dispatch
   );
 
-  //console.log(contestants)
   let countryContestants: CountryContestant[] = contestants.map(contestant => {
     let country = countries.find(country => country.key === contestant.countryKey);
     if (!country) {
@@ -99,7 +99,7 @@ function sanitizeYoutubeLinks(
 }
 
 async function test(year: string) {
-  console.log(await getContestantsForYear(year));
+  console.log(await getVotesForYear(year));
 }
 
 async function getContestantsByYear(
@@ -193,6 +193,34 @@ export function getContestantsForYear(year: string): Promise<Contestant[]> {
   });
 }
 
+export function getVotesForYear(year: string): Promise<Vote[]> {
+  return new Promise((resolve, reject) => {
+    fetch('/votes.csv')
+      .then(response => response.text())
+      .then(csvString => {
+        Papa.parse(csvString, {
+          header: true,
+          complete: (results: any) => {
+            // Filter and map the data
+            const votes = results.data
+              .filter((row: any) => row.year === year)
+              .map((row: any) => ({
+                year: row.year,
+                round: row.round,
+                fromCountryKey: row.from_country_id,
+                toCountryKey: row.to_country_id,
+                totalPoints: row.total_points,
+                telePoints: row.tele_points,
+                juryPoints: row.jury_points,
+              }));
+            resolve(votes);
+          },
+          error: (error: any) => reject(error)
+        });
+      })
+      .catch(error => reject(error));
+  });
+}
 
 
 

@@ -1,14 +1,11 @@
 import React, { useState } from 'react';
 import { ComposableMap, Geographies, Geography } from 'react-simple-maps';
-import { Dialog } from '@headlessui/react';
 import geoJson from '../data/geoJson.json';
-import { countries } from '../data/Countries';
 import { useDispatch, useSelector } from 'react-redux';
 import { Dispatch } from 'redux';
 import { AppState } from '../redux/types';
 import { ZoomableGroup } from 'react-simple-maps';
 import { Tooltip as ReactTooltip } from "react-tooltip";
-import MainModal from './MainModal';
 import Modal from './Modal';
 
 interface MapModalProps {
@@ -84,11 +81,9 @@ const MapModal: React.FC<MapModalProps> = ({ isOpen, onClose }) => {
                                             geography={geo}
                                             data-tooltip-id="country-tooltip"
                                             onMouseEnter={(evt: any) => {
-                                                console.log(geo)
                                                 const name = geo.properties.name; // Adjust if the property name is different
                                                 const x = evt.clientX;
                                                 const y = evt.clientY;
-                                                console.log(name)
                                                 setTooltipData({ name: name, rank: rank?.toString() });
                                             }}
                                             onMouseLeave={() => {

@@ -32,7 +32,7 @@ const App: React.FC = () => {
   const [modalTab, setModalTab] = useState('about')
   const dispatch: Dispatch<any> = useDispatch();
   const {
-    year, name, rankedItems, unrankedItems, showUnranked, isDeleteMode
+    year, name, theme, rankedItems, unrankedItems, showUnranked, isDeleteMode
   } = useSelector((state: AppState) => state);
 
 
@@ -57,7 +57,6 @@ const App: React.FC = () => {
     }
     decodeFromUrl();
   }, [joyrideStepIndex])
-
 
   /**
    * Each case statement corresponds to a step in the tour
@@ -365,7 +364,7 @@ const App: React.FC = () => {
                     <ul
                       {...provided.droppableProps}
                       ref={provided.innerRef}
-                      className={classNames("h-full min-w-[10em] overflow-y-auto overflow-x-hidden pt-3 bg-[#1d1b54]", showUnranked ? "max-w-[50vw]" : "w-[80vw] max-w-[30em]")}
+                      className={classNames("h-full min-w-[10em] overflow-y-auto overflow-x-hidden pt-3 bg-[#1d1b54]", showUnranked ? "max-w-[50vw]" : "w-[80vw] max-w-[30em]", theme.includes("ab") ? "auroral-background" : null)}
                     >
                       <div className="z-40 w-full text-center font-bold bg-blue-900 text-slate-300 py-1 -mt-3 text-md tracking-tighter">
                         {showUnranked ? (

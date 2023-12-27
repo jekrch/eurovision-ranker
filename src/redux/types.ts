@@ -1,5 +1,4 @@
 import { CountryContestant } from "../data/CountryContestant";
-import { setShowUnranked } from './actions';
 
 export interface AppState {
     name: string;
@@ -9,6 +8,7 @@ export interface AppState {
     contestants: CountryContestant[];
     rankedItems: CountryContestant[];
     unrankedItems: CountryContestant[];
+    theme: string;
   }
   
   export interface Action {
@@ -26,6 +26,11 @@ export interface AppState {
     payload: string;
   }
   
+  export interface SetThemeAction extends Action {
+    type: 'SET_THEME';
+    payload: string;
+  }
+
   export interface SetShowUnrankedAction extends Action {
     type: 'SET_SHOW_UNRANKED';
     payload: boolean;

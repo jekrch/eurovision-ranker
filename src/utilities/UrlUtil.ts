@@ -1,5 +1,5 @@
 import { Dispatch } from 'redux';
-import { setName, setYear, setRankedItems, setUnrankedItems, setContestants } from '../redux/actions';
+import { setName, setYear, setRankedItems, setUnrankedItems, setContestants, setTheme } from '../redux/actions';
 import { fetchCountryContestantsByYear } from './ContestantFactory';
 import { CountryContestant } from '../data/CountryContestant';
 import { countries } from '../data/Countries';
@@ -12,17 +12,22 @@ import { getRankingComparison } from './RankAnalyzer';
 export const updateStates = (
     params: {
         rankingName: string | null,
-        contestYear: string | null
+        contestYear: string | null,
+        theme: string | null
     },
     dispatch: Dispatch<any>
 ) => {
-    let { rankingName, contestYear } = params;
-
+    let { rankingName, contestYear, theme } = params;
+    
     if (rankingName) {
         dispatch(
             setName(rankingName)
         );
     }
+
+    dispatch(
+        setTheme(theme ?? "")
+    );
 
     if (contestYear?.length) {
         contestYear = sanitizeYear(contestYear);
@@ -149,6 +154,7 @@ export const extractParams = (params: URLSearchParams) => {
     return {
         rankingName: params.get('n'), // 'name' for name
         contestYear: params.get('y'), // 'y' for year 
-        rankings: params.get('r')     // 'r' for rankings
+        rankings: params.get('r'),    // 'r' for rankings
+        theme: params.get('t')     // 't' for themes
     };
 };

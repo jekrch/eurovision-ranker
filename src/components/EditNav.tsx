@@ -6,7 +6,7 @@ import IconButton from './IconButton';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState, SetContestantsAction } from '../redux/types';
 import { SetIsDeleteMode, setContestants, setRankedItems, setUnrankedItems } from '../redux/actions';
-import { fetchCountryContestantsByYear } from '../utilities/ContestantFactory';
+import { fetchCountryContestantsByYear } from '../utilities/ContestantRepository';
 import { Dispatch } from 'redux';
 
 type EditNavProps = {
@@ -23,7 +23,7 @@ const EditNav: React.FC<EditNavProps> = ({ setNameModalShow, setRefreshUrl }) =>
    */
     async function resetRanking() {
         let yearContestants: CountryContestant[] = await fetchCountryContestantsByYear(
-            year, dispatch
+            year, '', dispatch
         );
 
         dispatch(

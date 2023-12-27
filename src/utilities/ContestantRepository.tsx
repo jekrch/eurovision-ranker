@@ -4,12 +4,13 @@ import { countries } from '../data/Countries';
 import { contestants2019, contestants2021, contestants2022, contestants2023, contestants2024, defaultYear, sanitizeYear } from '../data/Contestants';
 import { Dispatch } from 'redux';
 import Papa from 'papaparse';
-import { Vote } from "../data/Vote";
+import { assignVotesByCode } from "./VoteProcessor";
 
 const contestantCsvPath = '../data/contestants.csv';
 
 export async function fetchCountryContestantsByYear(
   year: string,
+  voteCode: string = '',
   dispatch?: Dispatch<any>
 ): Promise<CountryContestant[]> {
 
@@ -40,6 +41,13 @@ export async function fetchCountryContestantsByYear(
       contestant: contestant
     };
   }).sort((a, b) => a.country.name.localeCompare(b.country.name));
+
+  // add votes if requested
+  if (voteCode?.length) {
+    countryContestants = await assignVotesByCode(
+      countryContestants, year, voteCode
+    );
+  }
 
   return sanitizeYoutubeLinks(
     year, 
@@ -98,10 +106,6 @@ function sanitizeYoutubeLinks(
   return countryContestants;
 }
 
-async function test(year: string) {
-  console.log(await getVotesForYear(year));
-}
-
 async function getContestantsByYear(
   year: string,
   dispatch?: Dispatch<any>
@@ -114,35 +118,6 @@ async function getContestantsByYear(
   }
 
   return await getContestantsForYear(year);
-
-  // test(year);
-
-  // switch (year) {
-  //     case '2024': 
-  //         return contestants2024;
-  //     case '2023':
-  //         return contestants2023;
-  //     case `2022`:
-  //         return contestants2022; 
-  //     case `2021`:
-  //         return contestants2021; 
-  //     case `2019`:
-  //         return contestants2019; 
-  //     default:
-  //         let errorMsg = `No contestants found for year: ${year}, loading default ${defaultYear}`;
-
-  //         if (dispatch) {
-
-  //             console.log(errorMsg);
-  //             dispatch(
-  //                 setYear(defaultYear)
-  //             );
-  //             return await (defaultYear);
-
-  //         } else {
-  //             throw new Error(errorMsg)
-  //         }
-  //}
 }
 
 export function getContestantsForYear(year: string): Promise<Contestant[]> {
@@ -192,35 +167,4 @@ export function getContestantsForYear(year: string): Promise<Contestant[]> {
       .catch(error => reject(error));
   });
 }
-
-export function getVotesForYear(year: string): Promise<Vote[]> {
-  return new Promise((resolve, reject) => {
-    fetch('/votes.csv')
-      .then(response => response.text())
-      .then(csvString => {
-        Papa.parse(csvString, {
-          header: true,
-          complete: (results: any) => {
-            // Filter and map the data
-            const votes = results.data
-              .filter((row: any) => row.year === year)
-              .map((row: any) => ({
-                year: row.year,
-                round: row.round,
-                fromCountryKey: row.from_country_id,
-                toCountryKey: row.to_country_id,
-                totalPoints: row.total_points,
-                telePoints: row.tele_points,
-                juryPoints: row.jury_points,
-              }));
-            resolve(votes);
-          },
-          error: (error: any) => reject(error)
-        });
-      })
-      .catch(error => reject(error));
-  });
-}
-
-
 

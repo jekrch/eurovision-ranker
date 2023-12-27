@@ -37,11 +37,11 @@ export const tourSteps = [
     },
     {
       target: '.tour-step-10',
-      content: 'In "Rankings" you can select a year and click the link to see the official finals ranking from that year',
+      content: 'In "Rankings" you can select a year and click the links to see the official ranking by vote type from that year',
     },
     {
       target: '.tour-step-11',
-      content: 'In "Rankings" you can select a year and click the link to see the official finals ranking from that year',
+      content: 'In "Rankings" you can select a year and click the links to see the official ranking by vote type from that year',
     },
     {
       target: '.tour-step-12',

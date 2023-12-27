@@ -1,6 +1,6 @@
 import { Dispatch } from 'redux';
-import { setName, setYear, setRankedItems, setUnrankedItems, setContestants, setTheme } from '../redux/actions';
-import { fetchCountryContestantsByYear } from './ContestantFactory';
+import { setName, setYear, setRankedItems, setUnrankedItems, setContestants, setTheme, setVote } from '../redux/actions';
+import { fetchCountryContestantsByYear } from './ContestantRepository';
 import { CountryContestant } from '../data/CountryContestant';
 import { countries } from '../data/Countries';
 import { defaultYear, sanitizeYear } from '../data/Contestants';
@@ -13,11 +13,12 @@ export const updateStates = (
     params: {
         rankingName: string | null,
         contestYear: string | null,
-        theme: string | null
+        theme: string | null,
+        voteCode: string | null
     },
     dispatch: Dispatch<any>
 ) => {
-    let { rankingName, contestYear, theme } = params;
+    let { rankingName, contestYear, theme, voteCode } = params;
     
     if (rankingName) {
         dispatch(
@@ -27,6 +28,10 @@ export const updateStates = (
 
     dispatch(
         setTheme(theme ?? "")
+    );
+
+    dispatch(
+        setVote(voteCode ?? "")
     );
 
     if (contestYear?.length) {
@@ -48,11 +53,14 @@ export const updateStates = (
 export async function processAndUpdateRankings(
     contestYear: string,
     rankings: string | null,
+    voteCode: string | null,
     dispatch: Dispatch<any>
 ): Promise<string[] | undefined> {
 
     const yearContestants = await fetchCountryContestantsByYear(
-        contestYear, dispatch
+        contestYear, 
+        voteCode ?? '',
+        dispatch
     );
 
     dispatch(
@@ -124,6 +132,7 @@ export async function decodeRankingsFromURL(
     return await processAndUpdateRankings(
         extractedParams.contestYear || defaultYear, 
         extractedParams.rankings,
+        extractedParams.voteCode,
         dispatch
     );
 };
@@ -152,9 +161,10 @@ export function convertRankingsStrToArray(rankings: string): string[] {
 
 export const extractParams = (params: URLSearchParams) => {
     return {
-        rankingName: params.get('n'), // 'name' for name
-        contestYear: params.get('y'), // 'y' for year 
-        rankings: params.get('r'),    // 'r' for rankings
-        theme: params.get('t')     // 't' for themes
+        rankingName: params.get('n'), 
+        contestYear: params.get('y'), 
+        rankings: params.get('r'),   
+        theme: params.get('t'),         // e.g. ab
+        voteCode: params.get('v')       // e.g. {round}-{type}-{fromCountryKey} f-t-gb
     };
 };

@@ -20,7 +20,7 @@ import { decodeRankingsFromURL } from './utilities/UrlUtil';
 import { Dispatch } from 'redux';
 import MapModal from './components/MapModal';
 import Joyride, { ACTIONS, CallBackProps, EVENTS, STATUS } from 'react-joyride';
-import { fetchCountryContestantsByYear } from './utilities/ContestantFactory';
+import { fetchCountryContestantsByYear } from './utilities/ContestantRepository';
 import { tourSteps } from './tour/steps';
 
 const App: React.FC = () => {
@@ -253,7 +253,8 @@ const App: React.FC = () => {
   };
 
   async function clearRanking(year: string) {
-    let yearContestants = await fetchCountryContestantsByYear(year, dispatch);
+
+    let yearContestants = await fetchCountryContestantsByYear(year, '', dispatch);
   
     dispatch(setContestants(yearContestants));
     dispatch(setUnrankedItems(yearContestants));
@@ -341,8 +342,7 @@ const App: React.FC = () => {
                                   <Card
                                     key={item.id.toString()}
                                     className="m-auto text-slate-400 bg-'blue' no-select"
-                                    country={item.country}
-                                    contestant={item.contestant}
+                                    countryContestant={item}
                                     isDragging={snapshot.isDragging}
                                   />
                                 </li>
@@ -430,8 +430,7 @@ const App: React.FC = () => {
                                   key={`card-${item.id.toString()}`}
                                   className="m-auto text-slate-400 bg- bg-[#03022d] no-select"
                                   rank={index + 1}
-                                  country={item.country}
-                                  contestant={item.contestant!}
+                                  countryContestant={item}
                                   isLargeView={!showUnranked}
                                   isDeleteMode={showUnranked && isDeleteMode}
                                   deleteCallBack={deleteRankedCountry}

@@ -9,6 +9,7 @@ export interface AppState {
     rankedItems: CountryContestant[];
     unrankedItems: CountryContestant[];
     theme: string;
+    vote: string;
   }
   
   export interface Action {
@@ -26,6 +27,11 @@ export interface AppState {
     payload: string;
   }
   
+  export interface SetVoteAction extends Action {
+    type: 'SET_VOTE';
+    payload: string;
+  }
+
   export interface SetThemeAction extends Action {
     type: 'SET_THEME';
     payload: string;

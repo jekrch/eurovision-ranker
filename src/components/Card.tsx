@@ -4,6 +4,7 @@ import { FaTv } from 'react-icons/fa';
 import { Contestant } from '../data/Contestant';
 import { Country } from '../data/Country';
 import Flag from "react-world-flags"
+import { CountryContestant } from '../data/CountryContestant';
 
 const style = {
   padding: '0.5rem 1rem',
@@ -18,8 +19,7 @@ const style = {
 
 export interface CardProps {
   rank?: number;
-  country: Country;
-  contestant?: Contestant
+  countryContestant: CountryContestant;
   className: string;
   isDragging: boolean;
   isDeleteMode?: boolean;
@@ -28,9 +28,12 @@ export interface CardProps {
 }
 
 export const Card: FC<CardProps> = (props) => {
+  const contestant = props.countryContestant.contestant;
+  const country = props.countryContestant.country;
+
   return (
     <div
-    key={props.rank ? 'ranked-' : 'unranked-' + 'card-' + props.country.name}
+    key={props.rank ? 'ranked-' : 'unranked-' + 'card-' + country.name}
       className={classNames(
         props.className, "!cursor-grabber whitespace-normal text-sm overflow-hidden shadow rounded border border-0.5 border-gray-400",
         props.isDragging ? "shadow-slate-400 shadow-sm border-solid" : "",
@@ -47,7 +50,7 @@ export const Card: FC<CardProps> = (props) => {
               <div className="-my-2 flex-shrink-0 pb-[1px] mr-3 font-bold w-8 border-r-2 border-indigo-800 bg-indigo-800 bg-opacity-80 text-slate-300 font-bold tracking-tighter items-center justify-center flex text-xl -ml-[0.8em] rounded-sm -ml-4">
                 {props.rank}
               </div>
-              <Flag code={props.country.key} className="w-12 mr-3 opacity-80" />
+              <Flag code={country.key} className="w-12 mr-3 opacity-80" />
             </>
           ) : (
             <div className="flex-shrink-0 mr-2 tracking-tighter mr-0 items-center justify-center flex text-md -ml-[7px] rounded">
@@ -58,13 +61,13 @@ export const Card: FC<CardProps> = (props) => {
       }
       {/* <i className={`z-0 float-right text-3xl ml-2 flag-icon -mr-2 ${props.country?.icon}`} /> */}
       <div className={classNames("flex-grow text-slate-400", props.isLargeView ? "font-bold" : "font-normal my-auto")}>
-        {props.country?.name}
+        {country?.name}
         {props.isLargeView &&
           <>
             {/* <i className={`z-1 float-right ml-3 flag-icon -mr-2 ${props.country?.icon}`} /> */}
-            {props.contestant?.youtube &&
+            {contestant?.youtube &&
               <a
-                href={props.contestant?.youtube} target="_blank" rel="noopener noreferrer"
+                href={contestant?.youtube} target="_blank" rel="noopener noreferrer"
                 className='float-right rounded text-slate-500 ml-1 hover:text-slate-100 mt-[1px]'
               >
                 <FaTv className='text-xl -mr-2 -mt-1' />
@@ -72,13 +75,16 @@ export const Card: FC<CardProps> = (props) => {
             }
             <div className="flex items-center justify-between font-normal">
               <div>
-                {props.contestant ? (
+                {contestant ? (
                   <>
                     <span className="font-xs text-sm text-gray-500">
-                      {props.contestant?.artist}
+                      {contestant?.artist}
                     </span>
                     <span className="ml-2 font-xs text-xs text-gray-500">
-                      { props.contestant.song?.length && !props.contestant.song?.includes("TBD") ? `"${props.contestant.song}"` : `${props.contestant.song}`}
+                      { contestant.song?.length && !contestant.song?.includes("TBD") ? `"${contestant.song}"` : `${contestant.song}`}
+                    </span> 
+                    <span className="ml-2 font-xs text-xs text-gray-400 whitespace-nowrap">
+                      { props.countryContestant?.votes !== undefined ? `votes: ${props.countryContestant?.votes}` : null}
                     </span>
                   </>
                 ) :
@@ -105,7 +111,7 @@ export const Card: FC<CardProps> = (props) => {
               "rounded-sm ml-2 -mt-[2px] -mb-[2px] -mr-[12px] float-right text-white font-normal py-1 px-2 text-xs",
               "bg-red-800 opacity-70 hover:bg-red-600 active:bg-red-700"
             )}
-            onClick={() => { props?.deleteCallBack?.(props.country.id); }}
+            onClick={() => { props?.deleteCallBack?.(country.id); }}
           >&#x2715;</button>
         </>
       }

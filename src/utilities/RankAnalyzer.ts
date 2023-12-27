@@ -1,5 +1,5 @@
 import { CountryContestant } from "../data/CountryContestant";
-import { fetchCountryContestantsByYear } from "./ContestantFactory";
+import { fetchCountryContestantsByYear } from "./ContestantRepository";
 import { convertRankingsStrToArray } from "./UrlUtil";
 
 export type RankingComparison = {

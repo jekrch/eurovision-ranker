@@ -9,8 +9,9 @@ import { supportedYears } from '../data/Contestants';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '../redux/types';
 import ReactDOM from 'react-dom';
-import { fetchCountryContestantsByYear } from '../utilities/ContestantFactory';
+import { fetchCountryContestantsByYear } from '../utilities/ContestantRepository';
 import { CountryContestant } from '../data/CountryContestant';
+import { sortByVotes } from '../utilities/VoteProcessor';
 
 type MainModalProps = {
     isOpen: boolean;
@@ -51,19 +52,40 @@ const MainModal: React.FC<MainModalProps> = (props: MainModalProps) => {
         props.startTour();
     }
 
-    async function openEscFinals() {
-        const finalsYear = rankingYear ?? year;
-        const countryContestants: CountryContestant[] = await fetchCountryContestantsByYear(finalsYear);
-        const filteredContestants = countryContestants.filter(cc => cc.contestant?.finalsRank !== undefined && cc.contestant.finalsRank !== null);
+    async function openTotalRanking() {
+        const voteYear = rankingYear ?? year;
 
-        // Sort by finalsRank in ascending order
-        const sortedContestants = filteredContestants.sort((a, b) => a.contestant!.finalsRank! - b.contestant!.finalsRank!);
+        let concatenatedIds = await getSortedRankingCode(
+            voteYear, 'total', 'final'
+        );
 
-        // generate the ranking param
-        const concatenatedIds = sortedContestants.map(cc => cc.id).join('');
+        goToUrl(
+            `?r=${concatenatedIds}&y=${voteYear.substring(2, 4)}&n=Final&v=f-t`
+        )
+    }
 
-        console.log(concatenatedIds);
-        goToUrl(`?r=${concatenatedIds}&y=${finalsYear.substring(2, 4)}&n=finals`)
+    async function openTotalTelevoteRanking() {
+        const voteYear = rankingYear ?? year;
+
+        let concatenatedIds = await getSortedRankingCode(
+            voteYear, 'televote', 'final'
+        );
+
+        goToUrl(
+            `?r=${concatenatedIds}&y=${voteYear.substring(2, 4)}&n=Final+Televote&v=f-tv`
+        )
+    }
+
+    async function openTotalJuryRanking() {
+        const voteYear = rankingYear ?? year;
+
+        let concatenatedIds = await getSortedRankingCode(
+            voteYear, 'jury', 'final'
+        );
+
+        goToUrl(
+            `?r=${concatenatedIds}&y=${voteYear.substring(2, 4)}&n=Final+Jury+Vote&v=f-j`
+        )
     }
 
     if (!props.isOpen) return null;
@@ -138,10 +160,22 @@ const MainModal: React.FC<MainModalProps> = (props: MainModalProps) => {
                                     value={rankingYear ?? year}
                                     onChange={y => { setRankingYear(y); }}
                                     options={supportedYears.filter(i => i !== '2024')}
-                                /> <span 
-                                    onClick={openEscFinals} 
+                                /> 
+                                <span className="font-bold ml-2">ESC finals</span>
+                                <span 
+                                    onClick={openTotalRanking} 
                                     className="text-link cursor-pointer no-select ml-2"> 
-                                    ESC finals
+                                    total
+                                </span>
+                                <span 
+                                    onClick={openTotalTelevoteRanking} 
+                                    className="text-link cursor-pointer no-select ml-2"> 
+                                    televote
+                                </span>
+                                <span 
+                                    onClick={openTotalJuryRanking} 
+                                    className="text-link cursor-pointer no-select ml-2"> 
+                                    jury vote
                                 </span>
                             </p>
                             <p className="relative mb-[7em] mt-2 text-sm">(Select a year and click the link to see the final ranking in that year's finals)</p>
@@ -157,4 +191,22 @@ const MainModal: React.FC<MainModalProps> = (props: MainModalProps) => {
 };
 
 export default MainModal;
+
+async function getSortedRankingCode(voteYear: string, voteType: string, round: string) {
+    let countryContestants: CountryContestant[] = await fetchCountryContestantsByYear(voteYear);
+    countryContestants = await sortByVotes(
+        countryContestants,
+        voteYear,
+        voteType,
+        round
+    );
+
+    const sortedContestants = countryContestants.filter(
+        cc => cc?.votes !== undefined
+    );
+
+    // generate the ranking param
+    let concatenatedIds = sortedContestants.map(cc => cc.id).join('');
+    return concatenatedIds;
+}
 

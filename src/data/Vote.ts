@@ -3,7 +3,7 @@ export type Vote = {
     round: string;
     fromCountryKey: string;
     toCountryKey: string;
-    totalPoints: string;
-    telePoints: string;
-    juryPoints: string;
+    totalPoints?: number;
+    telePoints?: number;
+    juryPoints?: number;
   };

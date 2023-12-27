@@ -1,11 +1,12 @@
 import { CountryContestant } from '../data/CountryContestant';
-import { SET_NAME, SET_YEAR, SET_RANKED_ITEMS, SET_UNRANKED_ITEMS, SET_SHOW_UNRANKED, SET_CONTESTANTS, SET_IS_DELETE_MODE, SET_THEME } from './actions';
+import { SET_NAME, SET_YEAR, SET_RANKED_ITEMS, SET_UNRANKED_ITEMS, SET_SHOW_UNRANKED, SET_CONTESTANTS, SET_IS_DELETE_MODE, SET_THEME, SET_VOTE } from './actions';
 import { Action, AppState } from './types';
 
 const initialState: AppState = {
   name: '',
   year: '',
   theme: '',
+  vote: '',
   showUnranked: false,
   isDeleteMode: false,
   contestants: [],
@@ -21,6 +22,8 @@ const rootReducer = (state = initialState, action: Action): AppState => {
       return { ...state, year: action.payload as string };
     case SET_THEME:
         return { ...state, theme: action.payload as string };
+    case SET_VOTE:
+      return { ...state, vote: action.payload as string };
     case SET_SHOW_UNRANKED:
         return { ...state, showUnranked: action.payload as boolean };
     case SET_IS_DELETE_MODE:

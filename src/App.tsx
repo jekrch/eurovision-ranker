@@ -124,6 +124,19 @@ const App: React.FC = () => {
         );
         break;
 
+        case 5:
+          if (rankedItems.length >= 2) {
+            // swap the first two elements
+            const temp = rankedItems[0];
+            rankedItems[0] = rankedItems[1];
+            rankedItems[1] = temp;
+          }
+          dispatch(
+            setRankedItems(rankedItems)
+          );
+          setRefreshUrl(Math.random());
+          break;
+
       case 8:
         dispatch(
           setShowUnranked(true)

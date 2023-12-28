@@ -15,7 +15,7 @@ import IntroColumn from './components/IntroColumn';
 import { generateYoutubePlaylistUrl, rankedHasAnyYoutubeLinks } from './utilities/YoutubeUtil';
 import { AppState } from './redux/types';
 import { useDispatch, useSelector } from 'react-redux';
-import { setName, setYear, setRankedItems, setUnrankedItems, setShowUnranked, setContestants } from './redux/actions';
+import { setName, setYear, setRankedItems, setUnrankedItems, setShowUnranked, setContestants, setUrl } from './redux/actions';
 import { decodeRankingsFromURL, updateQueryParams } from './utilities/UrlUtil';
 import { Dispatch } from 'redux';
 import MapModal from './components/MapModal';
@@ -37,10 +37,8 @@ const App: React.FC = () => {
   const [configModalTab, setConfigModalTab] = useState('display')
   const dispatch: Dispatch<any> = useDispatch();
   const {
-    year, name, vote, theme, rankedItems, unrankedItems, showUnranked, isDeleteMode
+    year, name, vote, theme, rankedItems, unrankedItems, showUnranked, isDeleteMode, url
   } = useSelector((state: AppState) => state);
-
-
   const [runTour, setRunTour] = useState(false);
   const [joyrideStepIndex, setJoyrideStepIndex] = useState(0);
 
@@ -60,6 +58,19 @@ const App: React.FC = () => {
   }, []);
 
 
+  useEffect(() => {
+    console.log(url);
+    if (url !== window.location.href) {
+      const load = loadFromUrl(dispatch)
+      load();
+    } else {
+      console.log('URL state changed:', window.location.href !== url);
+      dispatch(
+        setUrl(window.location.href)
+      )
+    }
+  }, [window.location.href]);
+  
   useEffect(() => {
     const decodeFromUrl = async () => {
       await executeTourStepActions(joyrideStepIndex);
@@ -161,7 +172,17 @@ const App: React.FC = () => {
   };
 
   useEffect(() => {
-    const decodeFromUrl = async () => {
+    const load = loadFromUrl(dispatch)
+    load();
+  }, [])
+
+  /**
+   * Load everything from the current url
+   * @param dispatch 
+   * @returns 
+   */
+  function loadFromUrl(dispatch: Dispatch<any>) {
+    return async () => {
       const rankingsExist = await decodeRankingsFromURL(
         dispatch
       );
@@ -169,9 +190,8 @@ const App: React.FC = () => {
       dispatch(
         setShowUnranked(!rankingsExist)
       );
-    }
-    decodeFromUrl();
-  }, [])
+    };
+  }
 
   useEffect(() => {
     if (refreshUrl == 0) {

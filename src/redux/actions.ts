@@ -1,10 +1,11 @@
 import { CountryContestant } from '../data/CountryContestant';
-import { SetNameAction, SetYearAction, SetRankedItemsAction, SetUnrankedItemsAction, SetShowUnrankedAction, SetContestantsAction, SetIsDeleteModeAction, SetThemeAction, SetVoteAction } from './types';
+import { SetNameAction, SetYearAction, SetRankedItemsAction, SetUnrankedItemsAction, SetShowUnrankedAction, SetContestantsAction, SetIsDeleteModeAction, SetThemeAction, SetVoteAction, SetUrlAction } from './types';
 
 export const SET_NAME = 'SET_NAME';
 export const SET_YEAR = 'SET_YEAR';
 export const SET_THEME = 'SET_THEME';
 export const SET_VOTE = 'SET_VOTE';
+export const SET_URL = 'SET_URL';
 export const SET_SHOW_UNRANKED = 'SET_SHOW_UNRANKED';
 export const SET_IS_DELETE_MODE = 'SET_IS_DELETE_MODE';
 export const SET_CONTESTANTS = 'SET_CONTESTANTS';
@@ -25,6 +26,10 @@ export const setTheme = (theme: string): SetThemeAction => (
 
 export const setVote = (vote: string): SetVoteAction => (
     { type: SET_VOTE, payload: vote }
+);
+
+export const setUrl = (url: string): SetUrlAction => (
+    { type: SET_URL, payload: url }
 );
 
 export const setShowUnranked = (showUnranked: boolean): SetShowUnrankedAction => (

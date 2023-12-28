@@ -180,6 +180,11 @@ export const extractParams = (params: URLSearchParams) => {
       searchParams.set(key, params[key]);
     });
 
+    const newUrl = '?' + searchParams.toString();
+    const currentUrl = window.location.search;
+
     // Update the URL without reloading the page
-    window.history.pushState(null, '', '?' + searchParams.toString());
+    if (newUrl !== currentUrl) {
+        window.history.pushState(null, '', newUrl);
+    }
   }

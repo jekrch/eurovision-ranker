@@ -10,6 +10,7 @@ export interface AppState {
     unrankedItems: CountryContestant[];
     theme: string;
     vote: string;
+    url: string;
   }
   
   export interface Action {
@@ -34,6 +35,11 @@ export interface AppState {
 
   export interface SetThemeAction extends Action {
     type: 'SET_THEME';
+    payload: string;
+  }
+
+  export interface SetUrlAction extends Action {
+    type: 'SET_URL';
     payload: string;
   }
 

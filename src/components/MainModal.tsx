@@ -1,11 +1,7 @@
-import classNames from 'classnames';
 import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
-import Dropdown from './Dropdown';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart, faHouseUser, faList } from '@fortawesome/free-solid-svg-icons';
 import Modal from './Modal';
 import TabButton from './TabButton';
-import { supportedYears } from '../data/Contestants';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '../redux/types';
 import ReactDOM from 'react-dom';
@@ -52,42 +48,6 @@ const MainModal: React.FC<MainModalProps> = (props: MainModalProps) => {
         props.startTour();
     }
 
-    async function openTotalRanking() {
-        const voteYear = rankingYear ?? year;
-
-        let concatenatedIds = await getSortedRankingCode(
-            voteYear, 'total', 'final'
-        );
-
-        goToUrl(
-            `?r=${concatenatedIds}&y=${voteYear.substring(2, 4)}&n=Final&v=f-t`
-        )
-    }
-
-    async function openTotalTelevoteRanking() {
-        const voteYear = rankingYear ?? year;
-
-        let concatenatedIds = await getSortedRankingCode(
-            voteYear, 'televote', 'final'
-        );
-
-        goToUrl(
-            `?r=${concatenatedIds}&y=${voteYear.substring(2, 4)}&n=Final+Televote&v=f-tv`
-        )
-    }
-
-    async function openTotalJuryRanking() {
-        const voteYear = rankingYear ?? year;
-
-        let concatenatedIds = await getSortedRankingCode(
-            voteYear, 'jury', 'final'
-        );
-
-        goToUrl(
-            `?r=${concatenatedIds}&y=${voteYear.substring(2, 4)}&n=Final+Jury+Vote&v=f-j`
-        )
-    }
-
     if (!props.isOpen) return null;
 
     return (
@@ -105,13 +65,7 @@ const MainModal: React.FC<MainModalProps> = (props: MainModalProps) => {
                         onClick={() => setActiveTab('donate')}
                         icon={faHeart}
                         label="Donate"
-                    />
-                    <TabButton
-                        isActive={activeTab === 'rankings'}
-                        onClick={() => setActiveTab('rankings')}
-                        icon={faList}
-                        label="Rankings"
-                    />
+                    />          
                 </ul>
             </div>
 
@@ -147,66 +101,10 @@ const MainModal: React.FC<MainModalProps> = (props: MainModalProps) => {
                             </div>
                         </div>
                     </div>}
-
-                {activeTab === 'rankings' &&
-                    <div className="mb-0">
-                        <p><a className="text-link mb-3" href={getUrl("?r=ikd.gt4on&y=23&n=Your+Dev%27s+Personal+Favs")}>My personal favs from 2023 :-)</a></p>
-                        <div className=" mt-3">
-                            <p className="relative">
-
-                                <Dropdown
-                                    className="mx-auto w-[5em] z-50"
-                                    menuClassName="max-h-20"
-                                    value={rankingYear ?? year}
-                                    onChange={y => { setRankingYear(y); }}
-                                    options={supportedYears.filter(i => i !== '2024')}
-                                /> 
-                                <span className="font-bold ml-2">ESC finals</span>
-                                <span 
-                                    onClick={openTotalRanking} 
-                                    className="text-link cursor-pointer no-select ml-2"> 
-                                    total
-                                </span>
-                                <span 
-                                    onClick={openTotalTelevoteRanking} 
-                                    className="text-link cursor-pointer no-select ml-2"> 
-                                    televote
-                                </span>
-                                <span 
-                                    onClick={openTotalJuryRanking} 
-                                    className="text-link cursor-pointer no-select ml-2"> 
-                                    jury vote
-                                </span>
-                            </p>
-                            <p className="relative mb-[7em] mt-2 text-sm">(Select a year and click the link to see the final ranking in that year's finals)</p>
-                            {/* <p><a className="text-link" href={getUrl("?r=envw4g.gmckyjib.dod16f.ca7.bhq&y=23&n=finals")}>2023 ESC finals</a></p>
-                            <p><a className="text-link" href={getUrl("?r=ghde.bw1r7436myc.ef8.gbnktoq&y=22&n=finals")}>2022 ESC finals</a></p>
-                            <p><a className="text-link" href={getUrl("?r=woftgn0y9r.h71e.bjv4.g.ea.a3dqh&y=21&n=finals")}>2021 ESC finals</a></p>
-                            <p><a className="text-link" href={getUrl("?r=3w9fe45.ectklj0.coa.b.amrdv.fqh&y=19&n=finals")}>2019 ESC finals</a></p> */}
-                        </div>
-                    </div>}
             </div>
         </Modal>
     );
 };
 
 export default MainModal;
-
-async function getSortedRankingCode(voteYear: string, voteType: string, round: string) {
-    let countryContestants: CountryContestant[] = await fetchCountryContestantsByYear(voteYear);
-    countryContestants = await sortByVotes(
-        countryContestants,
-        voteYear,
-        voteType,
-        round
-    );
-
-    const sortedContestants = countryContestants.filter(
-        cc => cc?.votes !== undefined
-    );
-
-    // generate the ranking param
-    let concatenatedIds = sortedContestants.map(cc => cc.id).join('');
-    return concatenatedIds;
-}
 

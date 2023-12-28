@@ -1,3 +1,5 @@
+import { ContestantVotes } from "./Vote";
+
 export type Contestant = {
     countryKey: string;
     artist: string;
@@ -5,5 +7,6 @@ export type Contestant = {
     youtube?: string;
     finalsRank?: number;
     semiFinalsRank?: number;
+    votes?: ContestantVotes;
   };
   

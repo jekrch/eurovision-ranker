@@ -65,6 +65,7 @@ const NameModal: React.FC<NameModalProps> = (props: NameModalProps) => {
                         placeholder="Ranking name"
                         value={inputValue}
                         onKeyDown={handleKeyDown} 
+                        autoComplete="off" 
                         onChange={(e) => setInputValue(e.target.value)}
                     />
                 </div>

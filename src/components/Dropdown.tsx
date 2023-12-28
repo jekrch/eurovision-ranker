@@ -5,13 +5,14 @@ import classNames from 'classnames';
 
 type DropdownProps = {
   className?: string;
-  menuClassName?: string; 
+  menuClassName?: string;
   value: string;
   onChange: (value: string) => void;
   options: string[];
+  showSearch: boolean;
 };
 
-const Dropdown: React.FC<DropdownProps> = ({ value, onChange, options, className, menuClassName }) => {
+const Dropdown: React.FC<DropdownProps> = ({ value, onChange, options, className, menuClassName, showSearch }) => {
   const [filter, setFilter] = useState('');
 
   const filteredOptions = options.filter(option =>
@@ -21,7 +22,7 @@ const Dropdown: React.FC<DropdownProps> = ({ value, onChange, options, className
   const handleMenuClose = () => {
     setFilter('');
   };
-  
+
   return (
     <Menu as="div" className={classNames("relative inline-block text-left z-50", className)}>
       <div>
@@ -42,16 +43,18 @@ const Dropdown: React.FC<DropdownProps> = ({ value, onChange, options, className
       >
         <Menu.Items className="absolute left-0 mt-2 w-[6em] origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
           <div className="py-1 bg-slate-600 bg-opacity-80">
-            <input
-              type="text"
-              className="w-full px-4 py-2 text-sm font-normal bg-slate-800"
-              placeholder="Search..."
-              value={filter}
-              onChange={(e) => 
-                setFilter(e.target.value)
-              }
-            />
-            <div className={classNames("max-h-60 overflow-y-auto", menuClassName )}>
+            {showSearch &&
+              <input
+                type="text"
+                className="w-full px-4 py-2 text-sm font-normal bg-slate-800"
+                placeholder="Search..."
+                value={filter}
+                onChange={(e) =>
+                  setFilter(e.target.value)
+                }
+              />
+            }
+            <div className={classNames("max-h-60 overflow-y-auto", menuClassName)}>
               {filteredOptions.map((option, index) => (
                 <Menu.Item key={index}>
                   {({ active }) => (

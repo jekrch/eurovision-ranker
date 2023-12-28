@@ -43,14 +43,13 @@ export async function fetchCountryContestantsByYear(
   }).sort((a, b) => a.country.name.localeCompare(b.country.name));
 
   // add votes if requested
-  if (voteCode?.length) {
-    countryContestants = await assignVotesByCode(
-      countryContestants, year, voteCode
-    );
-  }
+  countryContestants = await assignVotesByCode(
+    countryContestants, year, voteCode
+  );
+
 
   return sanitizeYoutubeLinks(
-    year, 
+    year,
     countryContestants
   );
 }
@@ -93,7 +92,7 @@ function sanitizeYoutubeLinks(
     // Find the matching contestant 
     const matchingContestantWithYoutube = youtubeContestants.find(
       contestantInSecond =>
-        contestantInSecond.countryKey?.toLowerCase() === 
+        contestantInSecond.countryKey?.toLowerCase() ===
         countryContestantToUpdate.country.key?.toLowerCase()
     );
 

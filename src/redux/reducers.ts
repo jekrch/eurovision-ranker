@@ -6,7 +6,7 @@ const initialState: AppState = {
   name: '',
   year: '',
   theme: '',
-  vote: '',
+  vote: 'loading',
   showUnranked: false,
   isDeleteMode: false,
   contestants: [],

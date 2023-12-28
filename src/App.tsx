@@ -16,23 +16,28 @@ import { generateYoutubePlaylistUrl, rankedHasAnyYoutubeLinks } from './utilitie
 import { AppState } from './redux/types';
 import { useDispatch, useSelector } from 'react-redux';
 import { setName, setYear, setRankedItems, setUnrankedItems, setShowUnranked, setContestants } from './redux/actions';
-import { decodeRankingsFromURL } from './utilities/UrlUtil';
+import { decodeRankingsFromURL, updateQueryParams } from './utilities/UrlUtil';
 import { Dispatch } from 'redux';
 import MapModal from './components/MapModal';
 import Joyride, { ACTIONS, CallBackProps, EVENTS, STATUS } from 'react-joyride';
 import { fetchCountryContestantsByYear } from './utilities/ContestantRepository';
 import { tourSteps } from './tour/steps';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCog } from '@fortawesome/free-solid-svg-icons';
+import ConfigModal from './components/ConfigModal';
 
 const App: React.FC = () => {
   const [mainModalShow, setMainModalShow] = useState(false);
   const [nameModalShow, setNameModalShow] = useState(false);
   const [mapModalShow, setMapModalShow] = useState(false);
+  const [configModalShow, setConfigModalShow] = useState(false);
   const [refreshUrl, setRefreshUrl] = useState(0);
   const [refreshDnD, setRefreshDnD] = useState(0);
   const [modalTab, setModalTab] = useState('about')
+  const [configModalTab, setConfigModalTab] = useState('display')
   const dispatch: Dispatch<any> = useDispatch();
   const {
-    year, name, theme, rankedItems, unrankedItems, showUnranked, isDeleteMode
+    year, name, vote, theme, rankedItems, unrankedItems, showUnranked, isDeleteMode
   } = useSelector((state: AppState) => state);
 
 
@@ -78,6 +83,7 @@ const App: React.FC = () => {
         );
 
         break;
+
       case 2:
         const specificCountryCodes = ['fi', 'hr', 'es', 'cz', 'no', 'is'];
 
@@ -121,11 +127,15 @@ const App: React.FC = () => {
         break;   
       
       case 10:
-        openModal('rankings');
+        openConfigModal('rankings');
         break;
 
+      case 11: 
+        setConfigModalShow(false);
+        break; 
+        
       case 13:
-        setMainModalShow(false);
+        setConfigModalShow(false);
         dispatch(setName(""));
         await clearRanking(year);
         dispatch(
@@ -184,24 +194,19 @@ const App: React.FC = () => {
     handleYearUpdate();
   }, [year]);
 
+  // useEffect(() => {
+  //   const handleVoteUpdate = async () => {
+  //     updateQueryParams({ v: vote });
+  //     await decodeRankingsFromURL(
+  //       dispatch
+  //     );
+  //   }
+  //   handleVoteUpdate();
+  // }, [vote]);
+
   useEffect(() => {
     updateQueryParams({ n: name });
   }, [name]);
-
-  /**
-   * Function to update the query parameters
-   */
-  function updateQueryParams(params: { [key: string]: string }) {
-    const searchParams = new URLSearchParams(window.location.search);
-
-    // Set new or update existing parameters
-    Object.keys(params).forEach(key => {
-      searchParams.set(key, params[key]);
-    });
-
-    // Update the URL without reloading the page
-    window.history.pushState(null, '', '?' + searchParams.toString());
-  }
 
   /**
    * Handler for the drop event. Either reposition an item within 
@@ -290,16 +295,22 @@ const App: React.FC = () => {
     setRefreshUrl(Math.random())
   }
 
-  function openModal(tabName: string): void {
+  function openMainModal(tabName: string): void {
     setModalTab(tabName);
     setMainModalShow(true)
+  }
+
+  function openConfigModal(tabName: string): void {
+    setConfigModalTab(tabName);
+    setConfigModalShow(true)
   }
 
   return (
     <>
       <div className="site-content flex flex-col h-screen tour-step-12 tour-step-13 tour-step-14">
         <Navbar
-          openModal={openModal}
+          openModal={openMainModal}
+          openConfigModal={openConfigModal}
         />
         <div className="flex-grow overflow-auto overflow-x-hidden bg-[#040241] flex justify-center bg-opacity-0">
           <DragDropContext
@@ -368,13 +379,15 @@ const App: React.FC = () => {
                     >
                       <div className="z-40 w-full text-center font-bold bg-blue-900 text-slate-300 py-1 -mt-3 text-md tracking-tighter">
                         {showUnranked ? (
-                          <div className="w-full m-auto flex">
+                          <div className="w-full m-auto flex items-center justify-center">
                             <Dropdown
-                              className="tour-step-1 mx-auto relative w-[5em]"
+                              className="tour-step-1  w-[5em]"
                               value={year}
                               onChange={y => { dispatch(setYear(y)); }}
                               options={supportedYears}
-                            />
+                              showSearch={true}
+                            /> 
+                            
                           </div>
                         ) : (
                           <div className="mx-2 flex justify-between items-center">
@@ -411,7 +424,8 @@ const App: React.FC = () => {
                       </div>
                       {(rankedItems.length === 0 && showUnranked) && (
                         <IntroColumn
-                          openModal={openModal}
+                          openModal={openMainModal}
+                          openConfigModal={openConfigModal}
                           setRunTour={setRunTour}
                         />
                       )}
@@ -482,7 +496,17 @@ const App: React.FC = () => {
         isOpen={mapModalShow}
         onClose={() => { setMapModalShow(false) }}
       />
-
+      <ConfigModal
+        tab={configModalTab}
+        isOpen={configModalShow}
+        onClose={() => setConfigModalShow(false)}
+        startTour={() => {
+          dispatch(
+            setShowUnranked(true)
+          );
+          setRunTour(true);
+        }}
+      />
       <Joyride
         disableScrolling={true}
         disableScrollParentFix={true}

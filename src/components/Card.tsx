@@ -1,10 +1,13 @@
 import classNames from 'classnames';
-import type { FC } from 'react';
+import type { Dispatch, FC } from 'react';
 import { FaTv } from 'react-icons/fa';
 import { Contestant } from '../data/Contestant';
 import { Country } from '../data/Country';
 import Flag from "react-world-flags"
 import { CountryContestant } from '../data/CountryContestant';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppState } from '../redux/types';
+import { voteCodeHasType } from '../utilities/VoteProcessor';
 
 const style = {
   padding: '0.5rem 1rem',
@@ -28,12 +31,17 @@ export interface CardProps {
 }
 
 export const Card: FC<CardProps> = (props) => {
+  const dispatch: Dispatch<any> = useDispatch();
+  const {
+    vote
+  } = useSelector((state: AppState) => state);
+
   const contestant = props.countryContestant.contestant;
   const country = props.countryContestant.country;
 
   return (
     <div
-    key={props.rank ? 'ranked-' : 'unranked-' + 'card-' + country.name}
+      key={props.rank ? 'ranked-' : 'unranked-' + 'card-' + country.name}
       className={classNames(
         props.className, "!cursor-grabber whitespace-normal text-sm overflow-hidden shadow rounded border border-0.5 border-gray-400",
         props.isDragging ? "shadow-slate-400 shadow-sm border-solid" : "",
@@ -81,11 +89,19 @@ export const Card: FC<CardProps> = (props) => {
                       {contestant?.artist}
                     </span>
                     <span className="ml-2 font-xs text-xs text-gray-500">
-                      { contestant.song?.length && !contestant.song?.includes("TBD") ? `"${contestant.song}"` : `${contestant.song}`}
-                    </span> 
-                    <span className="ml-2 font-xs text-xs text-gray-400 whitespace-nowrap">
-                      { props.countryContestant?.votes !== undefined ? `votes: ${props.countryContestant?.votes}` : null}
+                      {contestant.song?.length && !contestant.song?.includes("TBD") ? `"${contestant.song}"` : `${contestant.song}`}
                     </span>
+                    <div className="mt-1 font-xs text-xs text-gray-400 whitespace-nowrap space-x-2">
+                      {(contestant?.votes?.totalPoints !== undefined && voteCodeHasType(vote, 't')) &&
+                        <span><span className="text-gray-500">total:</span> {`${contestant?.votes?.totalPoints}`} </span>
+                      }
+                      {(contestant?.votes?.telePoints !== undefined && voteCodeHasType(vote, 'tv')) &&
+                        <span> <span className="text-gray-500">tele:</span> {`${contestant?.votes?.telePoints}`} </span>
+                      }
+                      {(contestant?.votes?.juryPoints !== undefined && voteCodeHasType(vote, 'j')) &&
+                        <span> <span className="text-gray-500">jury:</span> {`${contestant?.votes?.juryPoints}`} </span>
+                      }
+                    </div>
                   </>
                 ) :
                   <>

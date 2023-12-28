@@ -4,10 +4,11 @@ import { faHouseUser, faHeart, faList, faGlasses } from '@fortawesome/free-solid
 
 type IntroColumnProps = {
     openModal: (tabName: string) => void;
+    openConfigModal: (tabName: string) => void;
     setRunTour:  (runTour: boolean) => void;
 };
 
-const IntroColumn: React.FC<IntroColumnProps> = ({ openModal, setRunTour }) => {
+const IntroColumn: React.FC<IntroColumnProps> = ({ openModal, openConfigModal, setRunTour }) => {
     return (
         <div className="flex justify-left items-center">
             <div className="text-gray-400 font-thin font-mono text-italic text-left ml-7 m-4 text-xs whitespace-normal max-w-[10em] mt-6">
@@ -42,7 +43,7 @@ const IntroColumn: React.FC<IntroColumnProps> = ({ openModal, setRunTour }) => {
 
                     <div
                         className="houseUser flex items-center mb-7"
-                        onClick={() => openModal('rankings')}
+                        onClick={() => openConfigModal('rankings')}
                     >
                         <FontAwesomeIcon
                             className="mr-2 ml-0 text-xl"

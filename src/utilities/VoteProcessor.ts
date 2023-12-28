@@ -1,6 +1,6 @@
 import { sanitizeYear } from "../data/Contestants";
 import { CountryContestant } from "../data/CountryContestant";
-import { Vote } from "../data/Vote";
+import { ContestantVotes, Vote } from "../data/Vote";
 import { fetchVotesForYear } from "./VoteRepository";
 
 export async function sortByVotes(
@@ -22,10 +22,76 @@ export async function sortByVotes(
     );
 
     // Sorting country contestants by votes in descending order
-    countryContestants.sort((a, b) => (b.votes ?? 0) - (a.votes ?? 0));
+    countryContestants.sort(
+        (a, b) => (getContestantVoteFieldValue(b.contestant?.votes, voteTypeFieldName)) -
+                  (getContestantVoteFieldValue(a.contestant?.votes, voteTypeFieldName))   
+    );
 
     return countryContestants;
 }
+
+/**
+ * Determines whether the vote code has a certain vote type code 
+ * t = total, tv = televote, j = jury
+ * 
+ * @param voteCode  e.g. f-tv-gb
+ * @param typeCode  e.g. tv
+ * @returns 
+ */
+export function voteCodeHasType(voteCode: string, typeCode: string): boolean {
+    if (!voteCode) { 
+        return false;
+    }
+    let typeCodes = voteCode.split('-')?.[1]?.split('.');
+    return typeCodes?.includes(typeCode);
+}
+
+export function updateVoteTypeCode(
+    currentCode: string | undefined, 
+    voteType: string, 
+    add: boolean
+): string {
+    if (!currentCode && !add) {
+        return '';
+    }
+    
+    // Ensure the round is present
+    if (!currentCode || !currentCode.startsWith('f-')) {
+        currentCode = 'f-';
+    }
+
+    // Extract the vote type section of the code
+    let codes = currentCode.split('-');
+
+    let voteTypes = codes?.[1]?.split('.');
+    if (!voteTypes?.[0]?.length) {
+        voteTypes = [];
+    }
+
+    if (add) {
+        // Add vote type if it's not already present
+        if (!voteTypes.includes(voteType)) {
+            voteTypes.push(voteType);
+        }
+    } else {
+        // Remove vote type if it exists
+        voteTypes = voteTypes.filter(v => v !== voteType);
+    }
+
+    let newVoteCode = codes[0];
+    let newTypeString = voteTypes.join('.');
+
+    if (!newTypeString?.length) {
+        return newVoteCode;
+    }
+
+    newVoteCode += `-${newTypeString}`;
+    
+    if (codes[2]) {
+        newVoteCode += codes[2]
+    }
+    return newVoteCode;
+} 
 
 function getVoteTypeFieldName(voteType: string) {
     switch (voteType) {
@@ -47,21 +113,43 @@ function assignVotesToCountryContestants(
     voteTypeFieldName: string,
 ): CountryContestant[] {
     // summing up the votes for each country
-    const voteSums: { [key: string]: number; } = {};
+    const voteSums: { [key: string]: ContestantVotes; } = {};
     votes.forEach(vote => {
-        if (!voteSums[vote.toCountryKey]) {
-            voteSums[vote.toCountryKey] = 0;
-        }
-        let voteToAdd: number = getVoteFieldValue(vote, voteTypeFieldName);
+        let contestantVotes = voteSums[vote.toCountryKey];
 
-        if (voteToAdd) {
-            voteSums[vote.toCountryKey] += voteToAdd;
+        if (!contestantVotes) {
+            contestantVotes = {
+                totalPoints: 0,
+                juryPoints: 0,
+                telePoints: 0,
+            } as ContestantVotes;
+            voteSums[vote.toCountryKey] = contestantVotes;
         }
+        let totalPointsToAdd: number = getVoteFieldValue(vote, 'totalPoints');
+        let juryPointsToAdd: number = getVoteFieldValue(vote, 'juryPoints');
+        let telePointsToAdd: number = getVoteFieldValue(vote, 'telePoints');
+
+        if (totalPointsToAdd) {
+            contestantVotes.totalPoints! += totalPointsToAdd;
+        }
+
+        if (juryPointsToAdd) {
+            contestantVotes.juryPoints! += juryPointsToAdd;
+        }
+
+        if (telePointsToAdd) {
+            contestantVotes.telePoints! += telePointsToAdd;
+        }
+
+        // if (voteToAdd) {
+        //     voteSums[vote.toCountryKey] += voteToAdd;
+        // }
     });
 
     // assigning summed votes to corresponding country contestants
     countryContestants.forEach(cc => {
-        cc.votes = voteSums[cc.country.key];
+        if (cc.contestant)
+            cc.contestant.votes = voteSums[cc.country.key];
     });
 
     return countryContestants;
@@ -69,6 +157,17 @@ function assignVotesToCountryContestants(
 
 function getVoteFieldValue(vote: Vote, fieldName: string): number {
     let value = vote[fieldName as keyof Vote] as string; 
+    return parseInt(value, 10);
+}
+
+function getContestantVoteFieldValue(
+    votes?: ContestantVotes, 
+    fieldName?: string
+): number {
+    if (!votes) {
+        return 0;
+    }
+    let value = votes[fieldName as keyof ContestantVotes] as string; 
     return parseInt(value, 10);
 }
 
@@ -102,7 +201,8 @@ function processVotingRound(round: string) {
     } else if (round === 'sf') {
         round = 'semi-final';
     } else {
-        throw new Error("Invalid voting round param value " + round);
+        //throw new Error("Invalid voting round param value " + round);
+        round = 'final';
     }
     return round;
 }

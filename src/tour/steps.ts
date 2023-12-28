@@ -33,11 +33,11 @@ export const tourSteps = [
     },
     {
       target: '.tour-step-9',
-      content: 'Click the Home icon to get more info',
+      content: 'Click the home icon for more info on this project',
     },
     {
       target: '.tour-step-10',
-      content: 'In "Rankings" you can select a year and click the links to see the official ranking by vote type from that year',
+      content: 'Click the cog icon to access advanced controls',
     },
     {
       target: '.tour-step-11',

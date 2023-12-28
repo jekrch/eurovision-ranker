@@ -168,3 +168,18 @@ export const extractParams = (params: URLSearchParams) => {
         voteCode: params.get('v')       // e.g. {round}-{type}-{fromCountryKey} f-t-gb
     };
 };
+
+  /**
+   * Function to update the query parameters
+   */
+  export function updateQueryParams(params: { [key: string]: string }) {
+    const searchParams = new URLSearchParams(window.location.search);
+
+    // Set new or update existing parameters
+    Object.keys(params).forEach(key => {
+      searchParams.set(key, params[key]);
+    });
+
+    // Update the URL without reloading the page
+    window.history.pushState(null, '', '?' + searchParams.toString());
+  }

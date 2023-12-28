@@ -1,7 +1,9 @@
-import { CountryContestant } from "../data/CountryContestant";
-import { hasAnyJuryVotes, hasAnyTeleVotes } from "./VoteProcessor";
-
+import { CountryContestant } from "../../data/CountryContestant";
+import { hasAnyJuryVotes, hasAnyTeleVotes } from "../VoteProcessor";
 import Papa from 'papaparse';
+import { EXPORT_TYPE } from "./ExportType";
+
+const BOM = "\uFEFF";
 
 export function convertToCSV(
     countryContestants: CountryContestant[]
@@ -93,7 +95,7 @@ export const downloadFile = (
     fileExtension: string
 ) => {
 
-    const blob = new Blob([string], { type: `text/${fileExtension};charset=utf-8;` });
+    const blob = new Blob([BOM + string], { type: `text/${fileExtension};charset=utf-8;` });
     const url = URL.createObjectURL(blob);
 
     // create link and trigger the download
@@ -115,3 +117,16 @@ export const copyDataToClipboard = async (text: string) => {
         console.error("Failed to copy: ", err);
     }
 };
+
+export async function getExportDataString(exportType: string, data: any) {
+    switch (exportType) {
+        case EXPORT_TYPE.CSV:
+        case EXPORT_TYPE.EXCEL:
+            return convertToCSV(data);
+        case EXPORT_TYPE.JSON:
+            return await convertToJSON(data);
+        case EXPORT_TYPE.TEXT:
+        default: 
+            return convertDataToText(data);;
+    }   
+}

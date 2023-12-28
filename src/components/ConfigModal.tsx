@@ -14,8 +14,9 @@ import { hasAnyJuryVotes, hasAnyTeleVotes, sortByVotes, updateVoteTypeCode, vote
 import { countries } from '../data/Countries';
 import { setTheme, setVote } from '../redux/actions';
 import { updateQueryParams } from '../utilities/UrlUtil';
-import { convertDataToText, convertToCSV, convertToJSON, copyDataToClipboard, downloadFile } from '../utilities/ExportUtil';
+import { convertDataToText, convertToCSV, convertToJSON, copyDataToClipboard, downloadFile, getExportDataString } from '../utilities/export/ExportUtil';
 import toast, { Toaster } from 'react-hot-toast';
+import { EXPORT_TYPE, EXPORT_TYPES, ExportType, getExportType } from '../utilities/export/ExportType';
 
 type ConfigModalProps = {
     isOpen: boolean;
@@ -27,17 +28,17 @@ type ConfigModalProps = {
 const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
     const dispatch: Dispatch<any> = useDispatch();
     const { year, vote, theme, rankedItems } = useSelector((state: AppState) => state);
-
     const [themeSelection, setThemeSelection] = useState('None');
     const [hasJuryVotes, setHasJuryVotes] = useState(false);
     const [hasTeleVotes, setHasTeleVotes] = useState(false);
     const [activeTab, setActiveTab] = useState(props.tab);
-    const [exportType, setExportType] = useState('Text');
+    const [exportTypeSelection, setExportTypeSelection] = useState('Text');
     const [rankingYear, setRankingYear] = useState(year);
     const [voteSource, setVoteSource] = useState('All');
     const currentDomain = window.location.origin; // Get the current domain
     const currentPath = window.location.pathname; // Get the current path
     const voteSourceOptions = ['All', ...countries.sort((a, b) => a.name.localeCompare(b.name)).map(c => c.name)];
+    const exportTypeOptions = Object.values(EXPORT_TYPES).map(exportType => exportType.name);
 
     function getVoteTypeOption(voteCode: string) {
         if (!voteCode?.length || voteCode == 'loading') {
@@ -146,46 +147,33 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
 
     }, [voteSource]);
 
+    /**
+     * Downloads rankedItems in the selected format 
+     */
     async function download() {
-        let data = await getExportDataString();
+        let data = await getExportDataString(
+            exportTypeSelection, rankedItems
+        );
 
-        let fileExtension = getFileExtension(exportType);
-        downloadFile(data, fileExtension);
-        console.log(data)
+        let exportType = getExportType(exportTypeSelection);
+
+        downloadFile(
+            data, 
+            exportType?.fileExtension
+        );
+        //toast.success('File downloaded');
     }
     
-    function getFileExtension(exportType: string) {
-        switch(exportType) {
-            case 'Text':
-                return 'txt';
-            case 'Json':
-                return 'json';
-            case 'Csv':
-                return 'csv';
-            case 'Excel':
-                return 'xls';
-            default: 
-                return 'txt';
-        }
-    }
-
+    /**
+     * Copies the rankedItems list to the clipboard using the 
+     * selected export type
+     */
     async function copyToClipboard() {
-        let data = await getExportDataString();
+        let data = await getExportDataString(
+            exportTypeSelection, rankedItems
+        );
         await copyDataToClipboard(data);
         toast.success('Copied to clipboard');
-    }
-
-    async function getExportDataString() {
-        switch (exportType) {
-            case 'Csv':
-            case 'Excel':
-                return convertToCSV(rankedItems);
-            case 'Json':
-                return await convertToJSON(rankedItems);
-            case 'Text':
-            default: 
-                return convertDataToText(rankedItems);;
-        }   
     }
     
     function getVoteSourceCodeFromOption(
@@ -483,9 +471,9 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
                             key="type-selector"
                             className="z-50 w-20 h-10 mx-auto mb-[10em]"  // Adjusted for Tailwind (w-[5em] to w-20)
                             menuClassName="max-h-[7em]"
-                            value={exportType}
-                            onChange={t => { setExportType(t); }}
-                            options={['Text', 'Csv', 'Json', 'Excel']}
+                            value={exportTypeSelection}
+                            onChange={t => { setExportTypeSelection(t); }}
+                            options={exportTypeOptions}
                             showSearch={false}
                         />
                         <button

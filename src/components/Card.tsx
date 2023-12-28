@@ -58,7 +58,17 @@ export const Card: FC<CardProps> = (props) => {
               <div className="-my-2 flex-shrink-0 pb-[1px] mr-3 font-bold w-8 border-r-2 border-indigo-800 bg-indigo-800 bg-opacity-80 text-slate-300 font-bold tracking-tighter items-center justify-center flex text-xl -ml-[0.8em] rounded-sm -ml-4">
                 {props.rank}
               </div>
-              <Flag code={country.key} className="w-12 mr-3 opacity-80" />
+              {country.key !== 'yu' ? (
+                <Flag code={country.key} className="w-12 mr-3 opacity-80" />
+              ) :
+                <div className="w-12 mr-3 opacity-80 my-auto">
+                  <img
+                    src="https://upload.wikimedia.org/wikipedia/commons/6/61/Flag_of_Yugoslavia_%281946-1992%29.svg"
+                    alt="Flag of Yugoslavia"
+                    className="w-full h-auto" 
+                  />
+                </div>
+              }
             </>
           ) : (
             <div className="flex-shrink-0 mr-2 tracking-tighter mr-0 items-center justify-center flex text-md -ml-[7px] rounded">

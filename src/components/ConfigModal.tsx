@@ -2,7 +2,7 @@ import classNames from 'classnames';
 import React, { useEffect, useRef, useState } from 'react';
 import { Dispatch } from 'redux';
 import Dropdown from './Dropdown';
-import { faEdit, faList } from '@fortawesome/free-solid-svg-icons';
+import { faEdit, faFileExport, faList } from '@fortawesome/free-solid-svg-icons';
 import Modal from './Modal';
 import TabButton from './TabButton';
 import { supportedYears } from '../data/Contestants';
@@ -14,6 +14,8 @@ import { hasAnyJuryVotes, hasAnyTeleVotes, sortByVotes, updateVoteTypeCode, vote
 import { countries } from '../data/Countries';
 import { setTheme, setVote } from '../redux/actions';
 import { updateQueryParams } from '../utilities/UrlUtil';
+import { convertDataToText, convertToCSV, convertToJSON, copyDataToClipboard, downloadFile } from '../utilities/ExportUtil';
+import toast, { Toaster } from 'react-hot-toast';
 
 type ConfigModalProps = {
     isOpen: boolean;
@@ -24,17 +26,17 @@ type ConfigModalProps = {
 
 const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
     const dispatch: Dispatch<any> = useDispatch();
-    const { year, vote, theme } = useSelector((state: AppState) => state);
+    const { year, vote, theme, rankedItems } = useSelector((state: AppState) => state);
 
     const [themeSelection, setThemeSelection] = useState('None');
     const [hasJuryVotes, setHasJuryVotes] = useState(false);
     const [hasTeleVotes, setHasTeleVotes] = useState(false);
     const [activeTab, setActiveTab] = useState(props.tab);
+    const [exportType, setExportType] = useState('Text');
     const [rankingYear, setRankingYear] = useState(year);
     const [voteSource, setVoteSource] = useState('All');
     const currentDomain = window.location.origin; // Get the current domain
     const currentPath = window.location.pathname; // Get the current path
-    const triggerButtonRef = useRef<HTMLDivElement>(null);
     const voteSourceOptions = ['All', ...countries.sort((a, b) => a.name.localeCompare(b.name)).map(c => c.name)];
 
     function getVoteTypeOption(voteCode: string) {
@@ -144,7 +146,48 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
 
     }, [voteSource]);
 
+    async function download() {
+        let data = await getExportDataString();
 
+        let fileExtension = getFileExtension(exportType);
+        downloadFile(data, fileExtension);
+        console.log(data)
+    }
+    
+    function getFileExtension(exportType: string) {
+        switch(exportType) {
+            case 'Text':
+                return 'txt';
+            case 'Json':
+                return 'json';
+            case 'Csv':
+                return 'csv';
+            case 'Excel':
+                return 'xls';
+            default: 
+                return 'txt';
+        }
+    }
+
+    async function copyToClipboard() {
+        let data = await getExportDataString();
+        await copyDataToClipboard(data);
+        toast.success('Copied to clipboard');
+    }
+
+    async function getExportDataString() {
+        switch (exportType) {
+            case 'Csv':
+            case 'Excel':
+                return convertToCSV(rankedItems);
+            case 'Json':
+                return await convertToJSON(rankedItems);
+            case 'Text':
+            default: 
+                return convertDataToText(rankedItems);;
+        }   
+    }
+    
     function getVoteSourceCodeFromOption(
         optionName: string
     ) {
@@ -186,6 +229,7 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
 
     useEffect(() => {
         setActiveTab(props.tab);
+        setActiveTab('export');
     }, [props.tab, props.isOpen]);
 
     useEffect(() => {
@@ -289,6 +333,13 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
                         onClick={() => setActiveTab('display')}
                         icon={faEdit}
                         label="Display"
+                    />
+
+                    <TabButton
+                        isActive={activeTab === 'export'}
+                        onClick={() => setActiveTab('export')}
+                        icon={faFileExport}
+                        label="Export"
                     />
                 </ul>
             </div>
@@ -424,7 +475,48 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
                             <p><a className="text-link" href={getUrl("?r=3w9fe45.ectklj0.coa.b.amrdv.fqh&y=19&n=finals")}>2019 ESC finals</a></p> */}
                         </div>
                         <p className="mb-[8em]"><a className="text-link text-sm mb-[3em]" href={getUrl("?r=ikd.gt4on&y=23&n=Your+Dev%27s+Personal+Favs")}>My personal favs from 2023 :-)</a></p>
-                    </div>}
+                    </div>
+                }
+                {activeTab === 'export' &&
+                    <div className="mb-0">
+                        <Dropdown
+                            key="type-selector"
+                            className="z-50 w-20 h-10 mx-auto mb-[10em]"  // Adjusted for Tailwind (w-[5em] to w-20)
+                            menuClassName="max-h-[7em]"
+                            value={exportType}
+                            onChange={t => { setExportType(t); }}
+                            options={['Text', 'Csv', 'Json', 'Excel']}
+                            showSearch={false}
+                        />
+                        <button
+                            className="bg-blue-500 hover:bg-blue-700 text-white font-normal py-1 pl-[0.7em] ml-4 pr-[0.9em] rounded-md text-xs mr-0"
+                            onClick={download}
+                        >
+                            Download
+                        </button>
+
+                        <button
+                            className="bg-blue-500 hover:bg-blue-700 text-white font-normal py-1 pl-[0.7em] ml-4 pr-[0.9em] rounded-md text-xs mr-0"
+                            onClick={copyToClipboard}
+                        >
+                            Copy to Clipboard
+                        </button>
+                        <Toaster 
+                        toastOptions={{
+                            success: {
+                             style: {
+                                color: 'white',
+                                background: '#474575',
+                              },
+                              iconTheme: {
+                                primary: 'green',
+                                secondary: 'white',
+                              },
+                            },
+                          }}
+                            position="top-center" />
+                    </div>
+                }
             </div>
 
         </Modal>

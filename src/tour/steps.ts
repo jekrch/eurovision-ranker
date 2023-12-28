@@ -29,7 +29,7 @@ export const tourSteps = [
   },
   {
     target: '.tour-step-8',
-    content: 'Click "Details" to go back to the country picker',
+    content: 'Click "Select" to go back to the country picker',
   },
   {
     target: '.tour-step-9',

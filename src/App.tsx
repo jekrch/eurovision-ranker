@@ -48,7 +48,7 @@ const App: React.FC = () => {
     const { action, index, status, type } = data;
 
     if (type === EVENTS.STEP_BEFORE && index === 0) {
-      clearRanking(year);        
+      clearRanking(year);
     }
 
     if ([STATUS.FINISHED, STATUS.SKIPPED].includes(status as any) || (action === ACTIONS.CLOSE && type === EVENTS.STEP_AFTER)) {
@@ -59,12 +59,38 @@ const App: React.FC = () => {
     }
   }, []);
 
+  /**
+   * load the url if the user navigates using back/forward. 
+   * this should provide and easier undo/redo workflow
+   */
+  useEffect(() => {
+    const handlePopState = (event: PopStateEvent) => {
+      // User clicked back (or forward) button
+      const decodeFromUrl = async () => {
+        const rankingsExist = await decodeRankingsFromURL(
+          dispatch
+        );
+        // Set showUnranked based on whether rankings exist
+        dispatch(
+          setShowUnranked(!rankingsExist)
+        );
+      }
+      decodeFromUrl();
+    };
+
+    window.addEventListener('popstate', handlePopState);
+
+    // Clean up the event listener when the component unmounts
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, []);
 
   useEffect(() => {
-    const decodeFromUrl = async () => {
+    const executeJoyRideStep = async () => {
       await executeTourStepActions(joyrideStepIndex);
     }
-    decodeFromUrl();
+    executeJoyRideStep();
   }, [joyrideStepIndex])
 
   /**
@@ -74,7 +100,7 @@ const App: React.FC = () => {
   async function executeTourStepActions(
     index: number
   ) {
-    switch (index) { 
+    switch (index) {
 
       case 1:
         if (year !== '2023') {
@@ -82,7 +108,7 @@ const App: React.FC = () => {
           setRefreshUrl(Math.random());
         }
 
-        await clearRanking(year);        
+        await clearRanking(year);
         dispatch(
           setShowUnranked(true)
         );
@@ -124,34 +150,34 @@ const App: React.FC = () => {
         );
         break;
 
-        case 5:
-          if (rankedItems.length >= 2) {
-            // swap the first two elements
-            const temp = rankedItems[0];
-            rankedItems[0] = rankedItems[1];
-            rankedItems[1] = temp;
-          }
-          dispatch(
-            setRankedItems(rankedItems)
-          );
-          setRefreshUrl(Math.random());
-          break;
+      case 5:
+        if (rankedItems.length >= 2) {
+          // swap the first two elements
+          const temp = rankedItems[0];
+          rankedItems[0] = rankedItems[1];
+          rankedItems[1] = temp;
+        }
+        dispatch(
+          setRankedItems(rankedItems)
+        );
+        setRefreshUrl(Math.random());
+        break;
 
       case 8:
         dispatch(
           setShowUnranked(true)
-        ); 
+        );
         //openModal('rankings');
-        break;   
-      
+        break;
+
       case 10:
         openConfigModal('rankings');
         break;
 
-      case 11: 
+      case 11:
         setConfigModalShow(false);
-        break; 
-        
+        break;
+
       case 13:
         setConfigModalShow(false);
         dispatch(setName(""));
@@ -278,7 +304,7 @@ const App: React.FC = () => {
   async function clearRanking(year: string) {
 
     let yearContestants = await fetchCountryContestantsByYear(year, '', dispatch);
-  
+
     dispatch(setContestants(yearContestants));
     dispatch(setUnrankedItems(yearContestants));
     dispatch(setRankedItems([]));
@@ -404,8 +430,8 @@ const App: React.FC = () => {
                               onChange={y => { dispatch(setYear(y)); }}
                               options={supportedYears}
                               showSearch={true}
-                            /> 
-                            
+                            />
+
                           </div>
                         ) : (
                           <div className="mx-2 flex justify-between items-center">
@@ -492,17 +518,17 @@ const App: React.FC = () => {
 
       </div>
       <div className="">
-      <MainModal
-        tab={modalTab}
-        isOpen={mainModalShow}
-        onClose={() => setMainModalShow(false)}
-        startTour={() => {
-          dispatch(
-            setShowUnranked(true)
-          );
-          setRunTour(true);
-        }}
-      />
+        <MainModal
+          tab={modalTab}
+          isOpen={mainModalShow}
+          onClose={() => setMainModalShow(false)}
+          startTour={() => {
+            dispatch(
+              setShowUnranked(true)
+            );
+            setRunTour(true);
+          }}
+        />
       </div>
       <NameModal
         isOpen={nameModalShow}

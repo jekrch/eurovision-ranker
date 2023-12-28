@@ -1,6 +1,5 @@
 import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import { faHeart, faHouseUser, faList } from '@fortawesome/free-solid-svg-icons';
-import Modal from './Modal';
 import TabButton from './TabButton';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '../redux/types';
@@ -8,6 +7,7 @@ import ReactDOM from 'react-dom';
 import { fetchCountryContestantsByYear } from '../utilities/ContestantRepository';
 import { CountryContestant } from '../data/CountryContestant';
 import { sortByVotes } from '../utilities/VoteProcessor';
+import Modal from './Modal';
 
 type MainModalProps = {
     isOpen: boolean;
@@ -104,7 +104,9 @@ const MainModal: React.FC<MainModalProps> = (props: MainModalProps) => {
                     </div>}
 
             </div>
-            <div className="text-right text-xs w-full -mb-3 mt-1 text-slate-500">
+            <div className="flex text-xs w-full -mb-4 mt-2 text-slate-500">
+            <span className="flex-grow mr-2">v1.0</span>
+            <span className="text-right">
                 {`Copyright (c) 2023${new Date().getFullYear()?.toString() !== '2023' ? '-' + new Date().getFullYear() : ''} `}
                 <a
                     className="text-link"
@@ -112,7 +114,8 @@ const MainModal: React.FC<MainModalProps> = (props: MainModalProps) => {
                     target="_blank"
                     rel="noopener noreferrer"
                 > Jacob Krch
-                </a>. All rights reserved
+                </a>. <span className="whitespace-nowrap">All rights reserved</span>
+            </span>
             </div>
         </Modal>
     );

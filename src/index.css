@@ -51,6 +51,10 @@ code {
   background: #555;
 }
 
+.custom-scrollbar::-webkit-scrollbar {
+  background-color: rgb(88, 103, 123);
+}
+
 .gradient-text {
   background: linear-gradient(45deg, #729fe8, #3b82f6, #9333ea);
   -webkit-background-clip: text;

@@ -217,7 +217,7 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
 
     useEffect(() => {
         setActiveTab(props.tab);
-        setActiveTab('export');
+        //setActiveTab('export');
     }, [props.tab, props.isOpen]);
 
     useEffect(() => {
@@ -388,7 +388,7 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
                                     <Dropdown
                                         key="country-selector"
                                         className="z-50 ml-4 w-[6em] w-auto mx-auto mb-2"  // Adjusted for Tailwind (w-[5em] to w-20)
-                                        menuClassName="max-h-[8em] w-auto"
+                                        menuClassName="w-auto"
                                         value={voteSource}
                                         onChange={s => { setVoteSource(s); }}
                                         options={voteSourceOptions}
@@ -401,11 +401,11 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
                         <div>
                             <h4 className="font-bold mb-3 mt-[2em]">Theme</h4>
 
-                            <div className="mb-[3em]">
+                            <div className="">
                                 <Dropdown
                                     key="theme-selector"
                                     className="ml-2 z-50 w-20 h-10 mx-auto mb-2"  // Adjusted for Tailwind (w-[5em] to w-20)
-                                    menuClassName="max-h-[6em]"
+                                    menuClassName=""
                                     value={themeSelection}
                                     onChange={v => { onThemeInputChanged(v); }}
                                     options={['None', 'Auroral']}
@@ -424,8 +424,8 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
                         <div className=" mt-3">
                             <div className="relative">
                                 <Dropdown
-                                    className="z-50 w-20 mx-auto mb-2"  // Adjusted for Tailwind (w-[5em] to w-20)
-                                    menuClassName="max-h-[7em]"
+                                    className="z-50 w-20 mx-auto mb-2" 
+                                    menuClassName=""
                                     value={rankingYear ?? year}
                                     onChange={y => { setRankingYear(y); }}
                                     options={supportedYears.filter(i => i !== '2024' && i !== '2020')}
@@ -462,15 +462,15 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
                             <p><a className="text-link" href={getUrl("?r=woftgn0y9r.h71e.bjv4.g.ea.a3dqh&y=21&n=finals")}>2021 ESC finals</a></p>
                             <p><a className="text-link" href={getUrl("?r=3w9fe45.ectklj0.coa.b.amrdv.fqh&y=19&n=finals")}>2019 ESC finals</a></p> */}
                         </div>
-                        <p className="mb-[8em]"><a className="text-link text-sm mb-[3em]" href={getUrl("?r=ikd.gt4on&y=23&n=Your+Dev%27s+Personal+Favs")}>My personal favs from 2023 :-)</a></p>
+                        <p className=""><a className="text-link text-sm mb-[3em]" href={getUrl("?r=ikd.gt4on&y=23&n=Your+Dev%27s+Personal+Favs")}>My personal favs from 2023 :-)</a></p>
                     </div>
                 }
                 {activeTab === 'export' &&
-                    <div className="mb-0">
+                    <div className="mb-10">
                         <Dropdown
                             key="type-selector"
-                            className="z-50 w-20 h-10 mx-auto mb-[10em]"  // Adjusted for Tailwind (w-[5em] to w-20)
-                            menuClassName="max-h-[7em]"
+                            className="z-50 w-20 h-10 mx-auto "  // Adjusted for Tailwind (w-[5em] to w-20)
+                            menuClassName=""
                             value={exportTypeSelection}
                             onChange={t => { setExportTypeSelection(t); }}
                             options={exportTypeOptions}

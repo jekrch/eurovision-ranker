@@ -65,7 +65,7 @@ const MainModal: React.FC<MainModalProps> = (props: MainModalProps) => {
                         onClick={() => setActiveTab('donate')}
                         icon={faHeart}
                         label="Donate"
-                    />          
+                    />
                 </ul>
             </div>
 
@@ -76,6 +76,7 @@ const MainModal: React.FC<MainModalProps> = (props: MainModalProps) => {
                         <p className="mt-4">This is an <a className="text-link" href="https://github.com/jekrch/eurovision-ranker">open-source project</a> that I'm doing in my spare time. If you have any feedback, suggestions, or want to report a bug, you can do so at my <a href="https://github.com/jekrch/eurovision-ranker/issues" className="text-link">github repository</a> or send me an email at <a href="mailto:eurovision.ranker@gmail.com" className="text-link">eurovision.ranker@gmail.com</a>. </p>
                         <p className="mt-4">I am indebted to Janne Spijkervet, John Ashley Burgoyne, and David John Baker, who have compiled a massive data-set, which I have used in this project. Their work is available on github: <a className="text-link" href="https://github.com/Spijkervet/eurovision-dataset">eurovision-dataset</a>.</p>
                         <p className="mt-4">If you're enjoying the app, please consider clicking the donate link above and making a small donation to a nonprofit youth development org in my hometown.</p>
+
                     </div>}
 
                 {activeTab === 'donate' &&
@@ -101,6 +102,17 @@ const MainModal: React.FC<MainModalProps> = (props: MainModalProps) => {
                             </div>
                         </div>
                     </div>}
+
+            </div>
+            <div className="text-right text-xs w-full -mb-3 mt-1 text-slate-500">
+                {`Copyright (c) 2023${new Date().getFullYear()?.toString() !== '2023' ? '-' + new Date().getFullYear() : ''} `}
+                <a
+                    className="text-link"
+                    href="https://github.com/jekrch"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                > Jacob Krch
+                </a>. All rights reserved
             </div>
         </Modal>
     );

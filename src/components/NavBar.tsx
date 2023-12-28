@@ -40,7 +40,7 @@ const Navbar: React.FC<NavbarProps> = ({ openModal, openConfigModal }) => {
                                 onClick={() => openModal('about')}
                             />
 
-                            <div className="tour-step-10">
+                            <div className="tour-step-10 tour-step-11">
                                 <FontAwesomeIcon
                                     className="configCog ml-2 mr-1 mb-0 text-xl float-right"
                                     icon={faCog}

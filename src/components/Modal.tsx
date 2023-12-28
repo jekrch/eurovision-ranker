@@ -13,6 +13,12 @@ const Modal: React.FC<ModalContainerProps> = (props: ModalContainerProps) => {
     
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
+            
+            if ((event.target as Element).closest('.dropdown-menu')) {
+                // click inside a dropdown menu, do nothing
+                return;
+            }
+
             if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
                 props.onClose();
             }

@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Menu, Transition } from '@headlessui/react';
 import { ChevronDownIcon } from '@heroicons/react/20/solid'
 import classNames from 'classnames';
+import { createPortal } from 'react-dom';
 
 type DropdownProps = {
   className?: string;
@@ -14,26 +15,54 @@ type DropdownProps = {
 
 const Dropdown: React.FC<DropdownProps> = ({ value, onChange, options, className, menuClassName, showSearch }) => {
   const [filter, setFilter] = useState('');
-
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const [menuPosition, setMenuPosition] = useState({
+    top: 0, 
+    left: 0, 
+    maxHeight: 300 // a default max height, or you can start with 0
+  });
   const filteredOptions = options.filter(option =>
     filter?.length ? option.toLowerCase().includes(filter.toLowerCase()) : true
   );
+
+  const portalMountNode = document.body;
 
   const handleMenuClose = () => {
     setFilter('');
   };
 
+  const updateMenuPosition = () => {
+    if (buttonRef.current) {
+      const rect = buttonRef.current.getBoundingClientRect();
+      const bottomSpace = window.innerHeight - rect.bottom; // Space available below the button
+      const maxHeight = Math.min(bottomSpace - 10, 300); // Example max height
+  
+      setMenuPosition({
+        top: rect.bottom + window.scrollY,
+        left: rect.left + window.scrollX,
+        maxHeight 
+      });
+    }
+  };
+  
+
   return (
     <Menu as="div" className={classNames("relative inline-block text-left z-50", className)}>
       <div>
-        <Menu.Button className={classNames("inline-flex w-full justify-center gap-x-1.5 rounded-md bg-slate-700 bg-opacity-10 px-3 py-[0.2em] h-6 text-sm font-bold text-gray-400 shadow-sm ring-1 ring-inset ring-gray-400 hover:bg-opacity-30", "h-[1.8em]")}>
+        <Menu.Button 
+          ref={buttonRef}
+          onClick={(e) => {
+            updateMenuPosition();
+          }}
+          className={classNames("inline-flex w-full justify-center gap-x-1.5 rounded-md bg-slate-700 bg-opacity-10 px-3 py-[0.2em] h-6 text-sm font-bold text-gray-400 shadow-sm ring-1 ring-inset ring-gray-400 hover:bg-opacity-30", "h-[1.8em]")}>
           {value}
           <ChevronDownIcon className="-mr-1 h-5 w-5 text-gray-400" aria-hidden="true" />
         </Menu.Button>
       </div>
 
       <Transition
-        as={React.Fragment}
+        //as={React.Fragment}
+        //show={isOpen} 
         enter="transition ease-out duration-100"
         enterFrom="transform opacity-0 scale-95"
         enterTo="transform opacity-100 scale-100"
@@ -41,25 +70,39 @@ const Dropdown: React.FC<DropdownProps> = ({ value, onChange, options, className
         leaveFrom="transform opacity-100 scale-100"
         leaveTo="transform opacity-0 scale-95"
       >
-        <Menu.Items className="absolute left-0 mt-2 w-[6em] origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+        {createPortal(
+          <div
+          style={{
+            position: 'absolute',
+            top: `${menuPosition.top}px`,
+            left: `${menuPosition.left}px`,
+            zIndex: 1000, // Ensure it's above everything else
+          }}
+          className="origin-top-right"
+        >
+        <Menu.Items 
+          as="div" 
+          style={{ maxHeight: `${menuPosition.maxHeight}px`, overflowY: 'auto' }}
+          className="dropdown-menu absolute mt-2 w-[6em] rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none custom-scrollbar"
+         >
           <div className="py-1 bg-slate-600 bg-opacity-80">
             {showSearch &&
               <input
                 type="text"
-                className="w-full px-4 py-2 text-sm font-normal bg-slate-800"
+                className="w-full text-white px-4 py-2 text-sm font-normal bg-slate-800"
                 placeholder="Search..."
                 value={filter}
-                onChange={(e) =>
+                onChange={(e) => {
                   setFilter(e.target.value)
-                }
+                }}
               />
             }
-            <div className={classNames("max-h-60 overflow-y-auto", menuClassName)}>
+            <div className={classNames("overflow-y-auto", menuClassName)}>
               {filteredOptions.map((option, index) => (
                 <Menu.Item key={index}>
                   {({ active }) => (
                     <button
-                      onClick={() => {
+                      onClick={(event) => {
                         onChange(option)
                         setFilter('');
                       }}
@@ -76,6 +119,9 @@ const Dropdown: React.FC<DropdownProps> = ({ value, onChange, options, className
             </div>
           </div>
         </Menu.Items>
+         </div>,
+        portalMountNode
+        )}
       </Transition>
     </Menu>
   );

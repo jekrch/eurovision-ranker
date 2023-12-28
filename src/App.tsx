@@ -47,6 +47,10 @@ const App: React.FC = () => {
   const handleJoyrideCallback = useCallback((data: CallBackProps) => {
     const { action, index, status, type } = data;
 
+    if (type === EVENTS.STEP_BEFORE && index === 0) {
+      clearRanking(year);        
+    }
+
     if ([STATUS.FINISHED, STATUS.SKIPPED].includes(status as any) || (action === ACTIONS.CLOSE && type === EVENTS.STEP_AFTER)) {
       setRunTour(false); // End the tour
       setJoyrideStepIndex(0);
@@ -70,7 +74,8 @@ const App: React.FC = () => {
   async function executeTourStepActions(
     index: number
   ) {
-    switch (index) {
+    switch (index) { 
+
       case 1:
         if (year !== '2023') {
           dispatch(setYear('2023'));
@@ -473,7 +478,7 @@ const App: React.FC = () => {
 
 
       </div>
-      <div className="tour-step-11">
+      <div className="">
       <MainModal
         tab={modalTab}
         isOpen={mainModalShow}

@@ -10,7 +10,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '../redux/types';
 import { fetchCountryContestantsByYear } from '../utilities/ContestantRepository';
 import { CountryContestant } from '../data/CountryContestant';
-import { sortByVotes, updateVoteTypeCode, voteCodeHasType } from '../utilities/VoteProcessor';
+import { hasAnyJuryVotes, hasAnyTeleVotes, sortByVotes, updateVoteTypeCode, voteCodeHasType } from '../utilities/VoteProcessor';
 import { countries } from '../data/Countries';
 import { setTheme, setVote } from '../redux/actions';
 import { updateQueryParams } from '../utilities/UrlUtil';
@@ -196,16 +196,10 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
         const handleYearUpdate = async () => {
             let yearContestants: CountryContestant[] = await fetchCountryContestantsByYear(rankingYear);
 
-            let hasTeleVotes = yearContestants.some(cc =>
-                cc?.contestant?.votes?.juryPoints &&
-                cc?.contestant?.votes?.juryPoints > 0
-            );
+            let hasTeleVotes = hasAnyTeleVotes(yearContestants)
             setHasTeleVotes(hasTeleVotes);
 
-            let hasJuryVotes = yearContestants.some(cc =>
-                cc?.contestant?.votes?.juryPoints &&
-                cc?.contestant?.votes?.juryPoints > 0
-            );
+            let hasJuryVotes = hasAnyJuryVotes(yearContestants);
             setHasJuryVotes(hasJuryVotes);
         }
 

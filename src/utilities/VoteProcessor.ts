@@ -1,5 +1,5 @@
 import { sanitizeYear } from "../data/Contestants";
-import { CountryContestant } from "../data/CountryContestant";
+import { CountryContestant } from '../data/CountryContestant';
 import { ContestantVotes, Vote } from "../data/Vote";
 import { fetchVotesForYear } from "./VoteRepository";
 
@@ -206,3 +206,18 @@ function processVotingRound(round: string) {
     }
     return round;
 }
+
+export function hasAnyJuryVotes(yearContestants: CountryContestant[]) {
+    return yearContestants.some(cc =>
+        cc?.contestant?.votes?.juryPoints &&
+        cc?.contestant?.votes?.juryPoints > 0
+    );
+}
+
+export function hasAnyTeleVotes(yearContestants: CountryContestant[]) {
+    return yearContestants.some(cc =>
+        cc?.contestant?.votes?.telePoints &&
+        cc?.contestant?.votes?.telePoints > 0
+    );
+}
+

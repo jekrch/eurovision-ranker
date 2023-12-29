@@ -351,9 +351,9 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
                 {activeTab === 'display' &&
                     <div className="mb-0">
                         <div>
-                            <h4 className="font-bold mb-[0.3em]">Show Votes</h4>
+                            <h4 className="font-bold mb-[0.2em]">Show Votes</h4>
 
-                            <div className="mb-[1em]">
+                            <div className="mb-[0.5em]">
 
                                 <span className="flex items-center ml-2">
                                     <Checkbox
@@ -396,7 +396,7 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
                         </div>
 
                         <div>
-                            <h4 className="font-bold mb-[1em] mt-[0.8em]">Theme</h4>
+                            <h4 className="font-bold mb-[1em] mt-[0em]">Theme</h4>
 
                             <div className="">
                                 <Dropdown
@@ -482,9 +482,9 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
                             options={exportTypeOptions}
                             showSearch={false}
                         />
-
+                        <div>
                         <IconButton
-                            className="ml-4 bg-blue-500 hover:bg-blue-700 text-white font-normal py-1 pl-[0.7em] ml-0 pr-[0.9em] rounded-md text-xs mr-0"
+                            className="ml-0 bg-blue-500 hover:bg-blue-700 text-white font-normal py-1 pl-[0.7em] ml-0 pr-[0.9em] rounded-md text-xs mr-0"
                             onClick={download}
                             icon={faDownload}
                             title='Download'
@@ -496,7 +496,7 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
                             icon={faCopy}
                             title='Copy to Clipboard'
                         />
-
+                        </div>
                         <Toaster
                             toastOptions={{
                                 success: {

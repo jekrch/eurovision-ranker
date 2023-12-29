@@ -354,22 +354,13 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
                             <h4 className="font-bold mb-[0.3em]">Show Votes</h4>
 
                             <div className="mb-[1em]">
-                                {/* <Dropdown
-                                key="type-selector"
-                                className="z-50 w-20 h-10 mx-auto mb-2"  // Adjusted for Tailwind (w-[5em] to w-20)
-                                menuClassName="max-h-[6em]"
-                                value={voteTypeSelection}
-                                onChange={v => { setVoteTypeSelection(v); }}
-                                options={['None', 'Total', 'Tele', 'Jury']}
-                                showSearch={false}
-                            /> */}
+
                                 <span className="flex items-center ml-2">
                                     <Checkbox
                                         id="total-checkbox"
                                         checked={voteCodeHasType(vote, 't')}
                                         onChange={c => { onVoteTypeInputChanged('t', c); }}
                                         label="Total"
-
                                     />
 
                                     <Checkbox

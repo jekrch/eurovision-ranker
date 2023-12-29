@@ -2,7 +2,7 @@ import classNames from 'classnames';
 import React, { useEffect, useRef, useState } from 'react';
 import { Dispatch } from 'redux';
 import Dropdown from './Dropdown';
-import { faEdit, faFileExport, faList } from '@fortawesome/free-solid-svg-icons';
+import { faCopy, faDownload, faEdit, faFileExport, faList } from '@fortawesome/free-solid-svg-icons';
 import Modal from './Modal';
 import TabButton from './TabButton';
 import { supportedYears } from '../data/Contestants';
@@ -18,6 +18,7 @@ import { convertDataToText, convertToCSV, convertToJSON, copyDataToClipboard, do
 import toast, { Toaster } from 'react-hot-toast';
 import { EXPORT_TYPE, EXPORT_TYPES, ExportType, getExportType } from '../utilities/export/ExportType';
 import Checkbox from './Checkbox';
+import IconButton from './IconButton';
 
 type ConfigModalProps = {
     isOpen: boolean;
@@ -74,7 +75,7 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
     }
 
     function onVoteTypeInputChanged(
-        voteType: string, 
+        voteType: string,
         checked: boolean
     ) {
         let newVote = updateVoteTypeCode(
@@ -163,12 +164,12 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
         let exportType = getExportType(exportTypeSelection);
 
         downloadFile(
-            data, 
+            data,
             exportType?.fileExtension
         );
         //toast.success('File downloaded');
     }
-    
+
     /**
      * Copies the rankedItems list to the clipboard using the 
      * selected export type
@@ -180,7 +181,12 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
         await copyDataToClipboard(data);
         toast.success('Copied to clipboard');
     }
-    
+
+    async function copyUrlToClipboard() {
+        await copyDataToClipboard(window.location.href);
+        toast.success('Copied to clipboard');
+    }
+
     function getVoteSourceCodeFromOption(
         optionName: string
     ) {
@@ -358,13 +364,13 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
                                 showSearch={false}
                             /> */}
                                 <span className="flex items-center ml-2">
-                                     <Checkbox
+                                    <Checkbox
                                         id="total-checkbox"
                                         checked={voteCodeHasType(vote, 't')}
                                         onChange={c => { onVoteTypeInputChanged('t', c); }}
                                         label="Total"
-                                        
-                                        />
+
+                                    />
 
                                     <Checkbox
                                         id="tele-checkbox"
@@ -372,7 +378,7 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
                                         onChange={c => { onVoteTypeInputChanged('tv', c); }}
                                         label="Tele"
                                         className="ml-[1em]"
-                                        />
+                                    />
 
                                     <Checkbox
                                         id="jury-checkbox"
@@ -380,7 +386,7 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
                                         onChange={c => { onVoteTypeInputChanged('j', c); }}
                                         label="Jury"
                                         className="ml-[1em]"
-                                        />
+                                    />
                                 </span>
                                 {/* hidden for now */}
                                 <div className="mt-[1em] hidden">
@@ -399,12 +405,12 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
                         </div>
 
                         <div>
-                            <h4 className="font-bold mb-[1em] mt-[1em]">Theme</h4>
+                            <h4 className="font-bold mb-[1em] mt-[0.8em]">Theme</h4>
 
                             <div className="">
                                 <Dropdown
                                     key="theme-selector"
-                                    className="ml-5 z-50 w-20 h-10 mx-auto mb-2"  // Adjusted for Tailwind (w-[5em] to w-20)
+                                    className="ml-5 z-50 w-20 h-0 mx-auto mb-3"  // Adjusted for Tailwind (w-[5em] to w-20)
                                     menuClassName=""
                                     value={themeSelection}
                                     onChange={v => { onThemeInputChanged(v); }}
@@ -424,7 +430,7 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
                         <div className=" mt-3">
                             <div className="relative">
                                 <Dropdown
-                                    className="z-50 w-20 mx-auto mb-2" 
+                                    className="z-50 w-20 mx-auto mb-2"
                                     menuClassName=""
                                     value={rankingYear ?? year}
                                     onChange={y => { setRankingYear(y); }}
@@ -466,42 +472,53 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
                     </div>
                 }
                 {activeTab === 'export' &&
-                    <div className="mb-10">
+                    <div className="mb-0">
+                        <div className="mb-[1.5em]">
+                            <IconButton
+                                className="bg-blue-500 hover:bg-blue-700 text-white font-normal py-1 pl-[0.7em] ml-0 pr-[0.9em] rounded-md text-xs mr-0"
+                                onClick={copyUrlToClipboard}
+                                icon={faCopy}
+                                title='Copy URL to Clipboard'
+                            />
+                        </div>
+
                         <Dropdown
                             key="type-selector"
-                            className="z-50 w-20 h-10 mx-auto "  // Adjusted for Tailwind (w-[5em] to w-20)
+                            className="z-50 w-20 h-10 mx-auto" 
                             menuClassName=""
                             value={exportTypeSelection}
                             onChange={t => { setExportTypeSelection(t); }}
                             options={exportTypeOptions}
                             showSearch={false}
                         />
-                        <button
-                            className="bg-blue-500 hover:bg-blue-700 text-white font-normal py-1 pl-[0.7em] ml-4 pr-[0.9em] rounded-md text-xs mr-0"
-                            onClick={download}
-                        >
-                            Download
-                        </button>
 
-                        <button
-                            className="bg-blue-500 hover:bg-blue-700 text-white font-normal py-1 pl-[0.7em] ml-4 pr-[0.9em] rounded-md text-xs mr-0"
+                        <IconButton
+                            className="ml-4 bg-blue-500 hover:bg-blue-700 text-white font-normal py-1 pl-[0.7em] ml-0 pr-[0.9em] rounded-md text-xs mr-0"
+                            onClick={download}
+                            icon={faDownload}
+                            title='Download'
+                        />
+
+                        <IconButton
+                            className="ml-4 bg-blue-500 hover:bg-blue-700 text-white font-normal py-1 pl-[0.7em] ml-0 pr-[0.9em] rounded-md text-xs mr-0"
                             onClick={copyToClipboard}
-                        >
-                            Copy to Clipboard
-                        </button>
-                        <Toaster 
-                        toastOptions={{
-                            success: {
-                             style: {
-                                color: 'white',
-                                background: '#474575',
-                              },
-                              iconTheme: {
-                                primary: 'green',
-                                secondary: 'white',
-                              },
-                            },
-                          }}
+                            icon={faCopy}
+                            title='Copy to Clipboard'
+                        />
+
+                        <Toaster
+                            toastOptions={{
+                                success: {
+                                    style: {
+                                        color: 'white',
+                                        background: '#474575',
+                                    },
+                                    iconTheme: {
+                                        primary: 'green',
+                                        secondary: 'white',
+                                    },
+                                },
+                            }}
                             position="top-center" />
                     </div>
                 }

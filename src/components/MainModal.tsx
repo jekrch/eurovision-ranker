@@ -26,15 +26,6 @@ const MainModal: React.FC<MainModalProps> = (props: MainModalProps) => {
     const currentPath = window.location.pathname; // Get the current path
     const triggerButtonRef = useRef<HTMLDivElement>(null);
 
-    function getUrl(queryString: string) {
-        return `${currentDomain}${currentPath}${queryString}`;
-    }
-
-    function goToUrl(queryString: string) {
-        const url = getUrl(queryString);
-        window.location.href = url;
-    }
-
     useEffect(() => {
         setActiveTab(props.tab);
     }, [props.tab, props.isOpen]);

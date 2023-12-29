@@ -351,11 +351,22 @@ const App: React.FC = () => {
 
   return (
     <>
-      <div className="site-content flex flex-col h-screen tour-step-12 tour-step-13 tour-step-14">
+      <div className={classNames(
+        "site-content flex flex-col h-screen tour-step-12 tour-step-13 tour-step-14", 
+        {'star-sky': theme.includes('ab')}
+      )}>
+        {theme.includes("ab") &&
+          <div className="star-container z-10"> 
+            <div className="star" id="stars"></div>
+            <div className="star" id="stars2"></div>
+            <div className="star" id="stars3"></div>
+          </div>
+        }
         <Navbar
           openModal={openMainModal}
           openConfigModal={openConfigModal}
         />
+
         <div className="flex-grow overflow-auto overflow-x-hidden bg-[#040241] flex justify-center bg-opacity-0">
           <DragDropContext
             onDragEnd={handleOnDragEnd}
@@ -413,13 +424,17 @@ const App: React.FC = () => {
                 </div>
               )}
               {/* Ranked Countries List */}
-              <div className="tour-step-5">
+              <div className="tour-step-5 z-20">
                 <StrictModeDroppable droppableId="rankedItems">
                   {(provided) => (
                     <ul
                       {...provided.droppableProps}
                       ref={provided.innerRef}
-                      className={classNames("h-full min-w-[10em] overflow-y-auto overflow-x-hidden pt-3 bg-[#1d1b54]", showUnranked ? "max-w-[50vw]" : "w-[80vw] max-w-[30em]", theme.includes("ab") ? "auroral-background" : null)}
+                      className={
+                        classNames(
+                          "h-full min-w-[10em] overflow-y-auto overflow-x-hidden pt-3 bg-[#1d1b54]", showUnranked ? "max-w-[50vw]" : "w-[80vw] max-w-[30em]", 
+                          {"auroral-background" : theme.includes("ab")}
+                        )}
                     >
                       <div className="z-40 w-full text-center font-bold bg-blue-900 text-slate-300 py-1 -mt-3 text-md tracking-tighter">
                         {showUnranked ? (
@@ -514,9 +529,8 @@ const App: React.FC = () => {
             setRefreshUrl={setRefreshUrl}
           />
         }
-
-
       </div>
+
       <div className="">
         <MainModal
           tab={modalTab}

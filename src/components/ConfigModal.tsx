@@ -17,6 +17,7 @@ import { updateQueryParams } from '../utilities/UrlUtil';
 import { convertDataToText, convertToCSV, convertToJSON, copyDataToClipboard, downloadFile, getExportDataString } from '../utilities/export/ExportUtil';
 import toast, { Toaster } from 'react-hot-toast';
 import { EXPORT_TYPE, EXPORT_TYPES, ExportType, getExportType } from '../utilities/export/ExportType';
+import Checkbox from './Checkbox';
 
 type ConfigModalProps = {
     isOpen: boolean;
@@ -72,9 +73,13 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
         }
     }
 
-    function onVoteTypeInputChanged(voteType: string, checked: boolean) {
-
-        let newVote = updateVoteTypeCode(vote, voteType, checked);
+    function onVoteTypeInputChanged(
+        voteType: string, 
+        checked: boolean
+    ) {
+        let newVote = updateVoteTypeCode(
+            vote, voteType, checked
+        );
         if (newVote !== vote) {
 
             dispatch(
@@ -211,7 +216,10 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
     }
 
     function goToUrl(queryString: string) {
-        const url = getUrl(queryString);
+        let url = getUrl(queryString);
+        if (theme) {
+            url += `&t=${theme}`;
+        }
         window.location.href = url;
     }
 
@@ -337,7 +345,7 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
                 {activeTab === 'display' &&
                     <div className="mb-0">
                         <div>
-                            <h4 className="font-bold mb-3">Show Votes</h4>
+                            <h4 className="font-bold mb-[0.3em]">Show Votes</h4>
 
                             <div className="mb-[1em]">
                                 {/* <Dropdown
@@ -350,37 +358,29 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
                                 showSearch={false}
                             /> */}
                                 <span className="flex items-center ml-2">
-                                    <input
-                                        key="total-input-checkbox"
-                                        type="checkbox"
+                                     <Checkbox
+                                        id="total-checkbox"
                                         checked={voteCodeHasType(vote, 't')}
-                                        onChange={c => { onVoteTypeInputChanged('t', c.target.checked); }}
-                                        className="w-4 h-4 rounded focus:ring-blue-600 ring-offset-gray-800 focus:ring-2 bg-gray-700 border-gray-600" />
-                                    <label key="total-label" className="ms-2 text-xs font-medium text-gray-300">
-                                        Total
-                                    </label>
+                                        onChange={c => { onVoteTypeInputChanged('t', c); }}
+                                        label="Total"
+                                        
+                                        />
 
-                                    <input
-                                        key={`tele-checkbox-${hasTeleVotes}`}
-                                        type="checkbox"
+                                    <Checkbox
+                                        id="tele-checkbox"
                                         checked={voteCodeHasType(vote, 'tv')}
-                                        onChange={c => { onVoteTypeInputChanged('tv', c.target.checked); }}
-                                        className="ml-6 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
-                                    <label key="link-checkbox" className="ms-2 text-xs font-medium text-gray-900 dark:text-gray-300">
-                                        Tele
-                                    </label>
+                                        onChange={c => { onVoteTypeInputChanged('tv', c); }}
+                                        label="Tele"
+                                        className="ml-[1em]"
+                                        />
 
-                                    <input
-                                        key={`jury-checkbox-${hasTeleVotes}`}
-                                        type="checkbox"
+                                    <Checkbox
+                                        id="jury-checkbox"
                                         checked={voteCodeHasType(vote, 'j')}
-                                        onChange={c => { onVoteTypeInputChanged('j', c.target.checked); }}
-                                        className="ml-6 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
-                                    <label key="jury-checkbox" className="ms-2 text-xs font-medium text-gray-900 dark:text-gray-300">
-                                        Jury
-                                    </label>
-
-
+                                        onChange={c => { onVoteTypeInputChanged('j', c); }}
+                                        label="Jury"
+                                        className="ml-[1em]"
+                                        />
                                 </span>
                                 {/* hidden for now */}
                                 <div className="mt-[1em] hidden">
@@ -399,12 +399,12 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
                         </div>
 
                         <div>
-                            <h4 className="font-bold mb-3 mt-[2em]">Theme</h4>
+                            <h4 className="font-bold mb-[1em] mt-[1em]">Theme</h4>
 
                             <div className="">
                                 <Dropdown
                                     key="theme-selector"
-                                    className="ml-2 z-50 w-20 h-10 mx-auto mb-2"  // Adjusted for Tailwind (w-[5em] to w-20)
+                                    className="ml-5 z-50 w-20 h-10 mx-auto mb-2"  // Adjusted for Tailwind (w-[5em] to w-20)
                                     menuClassName=""
                                     value={themeSelection}
                                     onChange={v => { onThemeInputChanged(v); }}

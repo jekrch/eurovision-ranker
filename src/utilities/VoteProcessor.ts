@@ -64,6 +64,7 @@ export function updateVoteTypeCode(
     let codes = currentCode.split('-');
 
     let voteTypes = codes?.[1]?.split('.');
+
     if (!voteTypes?.[0]?.length) {
         voteTypes = [];
     }

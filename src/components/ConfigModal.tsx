@@ -5,7 +5,7 @@ import Dropdown from './Dropdown';
 import { faCopy, faDownload, faEdit, faFileExport, faList } from '@fortawesome/free-solid-svg-icons';
 import Modal from './Modal';
 import TabButton from './TabButton';
-import { supportedYears } from '../data/Contestants';
+import { sanitizeYear, supportedYears } from '../data/Contestants';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '../redux/types';
 import { fetchCountryContestantsByYear } from '../utilities/ContestantRepository';
@@ -266,6 +266,26 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
         round: string
     ) {
         let countryContestants: CountryContestant[] = await fetchCountryContestantsByYear(voteYear);
+
+        // for 1956 we can only go by rank (1 vs 2) since 
+        // there were no votes, only a singular winner
+        if (sanitizeYear(year) === '1956') {
+
+            // since there's only 1 winner and everyone else, I'm choosing 
+            // to only return the winner so I don't muck up my rank analysis/
+            // comparison features down the road 
+            
+            // countryContestants.sort(
+            //     (a, b) => (
+            //         a.contestant!.finalsRank! -
+            //         b.contestant!.finalsRank!
+            //     )   
+            // );
+            return countryContestants.filter(
+                    cc => cc.contestant?.finalsRank!.toString() === '1'
+                ).map(cc => cc.id).join('');
+        }
+
         countryContestants = await sortByVotes(
             countryContestants,
             voteYear,

@@ -19,7 +19,18 @@ export async function fetchCountryContestantsByYear(
   );
 
   let countryContestants: CountryContestant[] = contestants.map(contestant => {
-    let country = countries.find(country => country.key === contestant.countryKey);
+
+    // special handling for 1956 where two contestants were sent for each participating nation
+    let secondaryContestant = sanitizeYear(year) === '1956' && contestant.countryKey.endsWith('2');
+
+    let contestantCountryKey = contestant.countryKey;
+
+    if (secondaryContestant) {
+      // I appended '2' to the end of each secondary contestant's country key (e.g. fr and fr2)
+      contestantCountryKey = contestantCountryKey.slice(0, -1);;
+    }
+
+    let country = countries.find(country => country.key === contestantCountryKey);
     if (!country) {
 
       if (contestant.countryKey?.toLowerCase() === 'czech republic') {
@@ -35,18 +46,30 @@ export async function fetchCountryContestantsByYear(
     if (!country) {
       throw new Error(`No matching country found for contestant with countryKey: ${contestant.countryKey}`);
     }
-    return {
-      id: country.id,
-      country: country,
-      contestant: contestant
-    };
+
+    if (secondaryContestant) {
+      // if this is a secondary contestant reflect this in the country name 
+      // to better distinguish them
+      let countryB = { ...country} ;
+      countryB.name += ' (2)';
+      return {
+        id: '_' + country.id,
+        country: countryB,
+        contestant: contestant
+      };
+    } else {
+      return {
+        id: country.id,
+        country: country,
+        contestant: contestant
+      };
+    }
   }).sort((a, b) => a.country.name.localeCompare(b.country.name));
 
   // add votes if requested
   countryContestants = await assignVotesByCode(
     countryContestants, year, voteCode
   );
-
 
   return sanitizeYoutubeLinks(
     year,
@@ -142,17 +165,30 @@ export function getContestantsForYear(year: string): Promise<Contestant[]> {
                     artist: row.performer,
                     song: row.song,
                     youtube: row.youtube_url,
-                    finalsRank: row.place_contest,
+                    finalsRank: row.place_final ?? row.place_contest,
                     semiFinalsRank: row.place_sf,
                   });
                 } else {
-                  // Update the existing entry
-                  const existingEntry: any = tempStorage.get(countryKey);
-                  if (row.place_contest) {
-                    existingEntry.finalsRank = row.place_contest;
-                  }
-                  if (row.place_sf) {
-                    existingEntry.semiFinalsRank = row.place_sf;
+                  if (year !== '1956') {
+                    console.debug('dupe found ' + year + ' ' + countryKey);
+                    // Update the existing entry
+                    const existingEntry: any = tempStorage.get(countryKey);
+                    if (row.place_contest) {
+                      existingEntry.finalsRank = row.place_contest;
+                    }
+                    if (row.place_sf) {
+                      existingEntry.semiFinalsRank = row.place_sf;
+                    }
+                  } else {
+                    // since 1956 had two songs per country, I'm allowing country dupes here
+                    tempStorage.set(countryKey + '2', {
+                      countryKey: countryKey + '2',
+                      artist: row.performer,
+                      song: row.song,
+                      youtube: row.youtube_url,
+                      finalsRank: row.place_final ?? row.place_contest,
+                      semiFinalsRank: row.place_sf,
+                    });
                   }
                 }
               });

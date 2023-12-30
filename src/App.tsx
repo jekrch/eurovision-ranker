@@ -320,8 +320,9 @@ const App: React.FC = () => {
    * 
    * @param countryId 
    */
-  function deleteRankedCountry(countryId: string) {
-    const index = rankedItems.findIndex(i => i.id === countryId);
+  function deleteRankedCountry(id: string) {
+    console.log(rankedItems);
+    const index = rankedItems.findIndex(i => i.id === id);
     const [objectToMove] = rankedItems.splice(index, 1);
     const insertionIndex = unrankedItems.findIndex(
       i => i.country.name > objectToMove.country.name

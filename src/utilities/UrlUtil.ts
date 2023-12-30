@@ -142,11 +142,29 @@ export function convertRankingsStrToArray(rankings: string): string[] {
     let i = 0;
 
     while (i < rankings.length) {
-        // Check for the period and the next character
-        if (rankings[i] === '.' && i + 1 < rankings.length) {
+        // skip the underscore and adjust for the next character or 
+        // next two if it's a period
+        if (rankings[i] === '_') {
+            if (i + 1 < rankings.length) {
+                if (rankings[i + 1] === '.' && i + 2 < rankings.length) {
+                    rankedIds.push(rankings.substring(i, i + 3));
+                    i += 3;
+                } else {
+                    rankedIds.push(rankings.substring(i, i + 2));
+                    i += 2;
+                }
+            } else {
+                // if underscore is the last character, just push it
+                rankedIds.push(rankings[i]);
+                i += 1;
+            }
+        } 
+        // check for the period and the next character
+        else if (rankings[i] === '.' && i + 1 < rankings.length) {
             rankedIds.push(rankings.substring(i, i + 2));
             i += 2;
-        } else {
+        } 
+        else {
             rankedIds.push(rankings[i]);
             i += 1;
         }

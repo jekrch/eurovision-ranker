@@ -92,7 +92,13 @@ const MainModal: React.FC<MainModalProps> = (props: MainModalProps) => {
 
             </div>
             <div className="flex text-xs w-full -mb-4 mt-2 text-slate-500">
-            <span className="flex-grow mr-2">v1.1</span>
+            <span className="flex-grow mr-2">
+                <a className="text-link"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    href="https://github.com/jekrch/eurovision-ranker/releases/tag/v1.1"
+                >v1.1</a>
+            </span>
             <span className="text-right">
                 {`Copyright (c) 2023${new Date().getFullYear()?.toString() !== '2023' ? '-' + new Date().getFullYear() : ''} `}
                 <a

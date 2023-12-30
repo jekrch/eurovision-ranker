@@ -18,13 +18,9 @@ type MainModalProps = {
 
 const MainModal: React.FC<MainModalProps> = (props: MainModalProps) => {
     const dispatch: Dispatch<any> = useDispatch();
-    const { year } = useSelector((state: AppState) => state);
-
+    const year = useSelector((state: AppState) => state.year);
     const [activeTab, setActiveTab] = useState(props.tab);
     const [rankingYear, setRankingYear] = useState(year);
-    const currentDomain = window.location.origin; // Get the current domain
-    const currentPath = window.location.pathname; // Get the current path
-    const triggerButtonRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         setActiveTab(props.tab);
@@ -65,7 +61,7 @@ const MainModal: React.FC<MainModalProps> = (props: MainModalProps) => {
                     <div className="">
                         <p>Thanks for using my app! Confused? Try taking the <span onClick={startTour} className="text-link">tour</span>. </p>
                         <p className="mt-4">This is an <a className="text-link" href="https://github.com/jekrch/eurovision-ranker">open-source project</a> that I'm doing in my spare time. If you have any feedback, suggestions, or want to report a bug, you can do so at my <a href="https://github.com/jekrch/eurovision-ranker/issues" className="text-link">github repository</a> or send me an email at <a href="mailto:eurovision.ranker@gmail.com" className="text-link">eurovision.ranker@gmail.com</a>. </p>
-                        <p className="mt-4">I am indebted to Janne Spijkervet, John Ashley Burgoyne, and David John Baker, who have compiled a massive data-set, which I have used in this project. Their work is available on github: <a className="text-link" href="https://github.com/Spijkervet/eurovision-dataset">eurovision-dataset</a>.</p>
+                        <p className="mt-4">I am indebted to Janne Spijkervet, John Ashley Burgoyne, and David John Baker, who have compiled a massive dataset, which I have used in this project. Their work is available on <a className="text-link" href="https://github.com/Spijkervet/eurovision-dataset">github</a>.</p>
                         <p className="mt-4">If you're enjoying the app, please consider clicking the donate link above and making a small donation to a nonprofit youth development org in my hometown.</p>
 
                     </div>}

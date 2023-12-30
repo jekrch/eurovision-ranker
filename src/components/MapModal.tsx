@@ -21,10 +21,8 @@ interface TooltipData {
 
 const MapModal: React.FC<MapModalProps> = ({ isOpen, onClose }) => {
     const dispatch: Dispatch<any> = useDispatch();
-    const {
-        rankedItems
-    } = useSelector((state: AppState) => state);
-
+    const rankedItems = useSelector((state: AppState) => state.rankedItems);
+    
     let countryCodes = rankedItems.map(i => i.country.key.toUpperCase());
     const isHighlighted = (countryCode: string) => countryCodes.includes(countryCode);
     const [tooltipData, setTooltipData] = useState<TooltipData | null>(null);

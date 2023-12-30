@@ -29,7 +29,10 @@ type ConfigModalProps = {
 
 const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
     const dispatch: Dispatch<any> = useDispatch();
-    const { year, vote, theme, rankedItems } = useSelector((state: AppState) => state);
+    const year = useSelector((state: AppState) => state.year);
+    const vote = useSelector((state: AppState) => state.vote);
+    const theme = useSelector((state: AppState) => state.theme);
+    const rankedItems = useSelector((state: AppState) => state.rankedItems);
     const [themeSelection, setThemeSelection] = useState('None');
     const [hasJuryVotes, setHasJuryVotes] = useState(false);
     const [hasTeleVotes, setHasTeleVotes] = useState(false);

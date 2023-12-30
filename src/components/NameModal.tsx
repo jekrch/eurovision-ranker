@@ -10,8 +10,7 @@ type NameModalProps = {
 
 const NameModal: React.FC<NameModalProps> = (props: NameModalProps) => {
     const dispatch: Dispatch<any> = useDispatch();
-    const  { name } = useSelector((state: AppState) => state);
-
+    const name = useSelector((state: AppState) => state.name);
     const [inputValue, setInputValue] = useState(name); 
     const modalRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);

@@ -36,10 +36,13 @@ const App: React.FC = () => {
   const [modalTab, setModalTab] = useState('about')
   const [configModalTab, setConfigModalTab] = useState('display')
   const dispatch: Dispatch<any> = useDispatch();
-  const {
-    year, name, vote, theme, rankedItems, unrankedItems, showUnranked, isDeleteMode
-  } = useSelector((state: AppState) => state);
-
+  const year = useSelector((state: AppState) => state.year);
+  const name = useSelector((state: AppState) => state.name);
+  const theme = useSelector((state: AppState) => state.theme);
+  const rankedItems = useSelector((state: AppState) => state.rankedItems);
+  const unrankedItems = useSelector((state: AppState) => state.unrankedItems);
+  const showUnranked = useSelector((state: AppState) => state.showUnranked);
+  const isDeleteMode = useSelector((state: AppState) => state.isDeleteMode);
 
   const [runTour, setRunTour] = useState(false);
   const [joyrideStepIndex, setJoyrideStepIndex] = useState(0);

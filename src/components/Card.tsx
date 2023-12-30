@@ -1,8 +1,7 @@
 import classNames from 'classnames';
 import type { Dispatch, FC } from 'react';
 import { FaTv } from 'react-icons/fa';
-import { Contestant } from '../data/Contestant';
-import { Country } from '../data/Country';
+
 import Flag from "react-world-flags"
 import { CountryContestant } from '../data/CountryContestant';
 import { useDispatch, useSelector } from 'react-redux';
@@ -32,9 +31,7 @@ export interface CardProps {
 
 export const Card: FC<CardProps> = (props) => {
   const dispatch: Dispatch<any> = useDispatch();
-  const {
-    vote
-  } = useSelector((state: AppState) => state);
+  const vote = useSelector((state: AppState) => state.vote);
 
   const contestant = props.countryContestant.contestant;
   const country = props.countryContestant.country;

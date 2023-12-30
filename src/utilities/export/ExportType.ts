@@ -39,7 +39,3 @@ export const EXPORT_TYPES: { [key in EXPORT_TYPE]: ExportType } = {
         fileExtension: 'xls'
     },
 };
-
-// Example usage
-const csvType = EXPORT_TYPES[EXPORT_TYPE.CSV];
-console.log(csvType.fileExtension);  // Output: 'csv'

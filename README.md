@@ -5,7 +5,7 @@
 
 Eurovision Ranker is a web app for ranking Eurovision Song Contestant participants. It draws on data from the [Eurovision-Dataset](https://github.com/Spijkervet/eurovision-dataset) for each contest year going back to 1956. 
 
-A user's ranking is stored in the URL so it can be easily saved for later reference or shared with friends. [React Joyride](https://react-joyride.com/) is used to provide a tour that shows off other features: e.g. generating YouTube playlists and exploring official voting results from previous years. 
+A user's ranking is stored in the URL so it can be easily saved for later reference or shared with friends. [React Joyride](https://react-joyride.com/) is used to provide a tour that demos other features: e.g. generating YouTube playlists and exploring official voting results from previous years. 
 
 Users can also view a geographical heat map of their ranking, which is implemented using [React Simple Maps](https://www.react-simple-maps.io/)
 

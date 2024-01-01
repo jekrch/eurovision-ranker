@@ -1,4 +1,4 @@
-import React, { SetStateAction, useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
 import { Card } from './components/Card';
 import { StrictModeDroppable } from './components/StrictModeDroppable';
@@ -22,8 +22,6 @@ import MapModal from './components/MapModal';
 import Joyride, { ACTIONS, CallBackProps, EVENTS, STATUS } from 'react-joyride';
 import { fetchCountryContestantsByYear } from './utilities/ContestantRepository';
 import { tourSteps } from './tour/steps';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCog } from '@fortawesome/free-solid-svg-icons';
 import ConfigModal from './components/ConfigModal';
 
 const App: React.FC = () => {
@@ -32,16 +30,15 @@ const App: React.FC = () => {
   const [mapModalShow, setMapModalShow] = useState(false);
   const [configModalShow, setConfigModalShow] = useState(false);
   const [refreshUrl, setRefreshUrl] = useState(0);
-  const [refreshDnD, setRefreshDnD] = useState(0);
   const [modalTab, setModalTab] = useState('about')
   const [configModalTab, setConfigModalTab] = useState('display')
   const dispatch: Dispatch<any> = useDispatch();
+  const showUnranked = useSelector((state: AppState) => state.showUnranked);
   const year = useSelector((state: AppState) => state.year);
   const name = useSelector((state: AppState) => state.name);
   const theme = useSelector((state: AppState) => state.theme);
   const rankedItems = useSelector((state: AppState) => state.rankedItems);
   const unrankedItems = useSelector((state: AppState) => state.unrankedItems);
-  const showUnranked = useSelector((state: AppState) => state.showUnranked);
   const isDeleteMode = useSelector((state: AppState) => state.isDeleteMode);
 
   const [runTour, setRunTour] = useState(false);
@@ -374,7 +371,7 @@ const App: React.FC = () => {
         <div className="flex-grow overflow-auto overflow-x-hidden bg-[#040241] flex justify-center bg-opacity-0">
           <DragDropContext
             onDragEnd={handleOnDragEnd}
-            key={`drag-drop-context-${refreshDnD}`}
+            key={`drag-drop-context`}
             onDragStart={() => {
               if (window.navigator.vibrate) {
                 window.navigator.vibrate(100);
@@ -386,7 +383,7 @@ const App: React.FC = () => {
               {/* Unranked Countries List */}
               {showUnranked && (
                 <div className="max-w-[50vw] overflow-y-auto flex-grow mr-1" >
-                  <StrictModeDroppable droppableId="unrankedItems" key={`strict-${refreshDnD}`}>
+                  <StrictModeDroppable droppableId="unrankedItems" key={`strict-md`}>
                     {(provided) => (
                       <ul
                         {...provided.droppableProps}

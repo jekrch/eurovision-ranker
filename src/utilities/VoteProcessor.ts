@@ -31,6 +31,22 @@ export async function sortByVotes(
 }
 
 /**
+ * Returns true if the vote code has a source country variable. 
+ * e.g. f-t > false, f-t-gb > true
+ * 
+ * @param voteCode
+ * @returns 
+ */
+export function voteCodeHasSourceCountry(voteCode: string) {
+    if (!voteCode.length) {
+        return false;
+    }
+    let voteCodeParts = voteCode.split('-');
+
+    return voteCodeParts?.length === 3 && voteCodeParts[2]?.length;
+}
+
+/**
  * Determines whether the vote code has a certain vote type code 
  * t = total, tv = televote, j = jury
  * 

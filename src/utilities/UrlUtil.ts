@@ -6,6 +6,7 @@ import { countries } from '../data/Countries';
 import { defaultYear, sanitizeYear } from '../data/Contestants';
 import { getRankingComparison } from './RankAnalyzer';
 
+
 /**
  * Updates states based on extracted parameters using Redux.
  */

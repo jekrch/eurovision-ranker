@@ -1,5 +1,4 @@
-import { sortByVotes, updateVoteTypeCode, voteCodeHasType } from "./VoteProcessor";
-import { fetchVotesForYear } from "./VoteRepository";
+import { updateVoteTypeCode, voteCodeHasType, voteCodeHasSourceCountry } from "./VoteProcessor";
 
 jest.mock("./VoteRepository", () => ({
     fetchVotesForYear: jest.fn()
@@ -27,5 +26,17 @@ describe('updateVoteTypeCode', () => {
     it('removes vote type if present and add is false', () => {
       const result = updateVoteTypeCode('f-j.tv', 'tv', false);
       expect(result).toBe('f-j');
+    });
+  });
+
+  describe('voteCodeHasSourceCountry', () => {
+    it('returns false for voteCode without a source country', () => {
+      const result = voteCodeHasSourceCountry('f-j');
+      expect(result).toBeFalsy();
+    });
+
+    it('returns true for voteCode with a source country', () => {
+      const result = voteCodeHasSourceCountry('f-j-gb');
+      expect(result).toBeTruthy();
     });
   });

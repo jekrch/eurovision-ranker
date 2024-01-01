@@ -4,9 +4,8 @@ import { countries } from '../data/Countries';
 import { contestants2019, contestants2021, contestants2022, contestants2023, contestants2024, defaultYear, sanitizeYear } from '../data/Contestants';
 import { Dispatch } from 'redux';
 import Papa from 'papaparse';
-import { assignVotesByCode } from "./VoteProcessor";
-
-const contestantCsvPath = '../data/contestants.csv';
+import { assignVotesByCode, voteCodeHasSourceCountry } from "./VoteProcessor";
+import { cachedYear, initialCountryContestantCache } from "../data/InitialContestants";
 
 export async function fetchCountryContestantsByYear(
   year: string,
@@ -14,6 +13,25 @@ export async function fetchCountryContestantsByYear(
   dispatch?: Dispatch<any>
 ): Promise<CountryContestant[]> {
 
+  // if we're requesting the cached year and there's no source country in 
+  // the vote code, return an already parsed json array (for performance)
+  if (
+      sanitizeYear(year) === cachedYear && 
+      !voteCodeHasSourceCountry(voteCode)
+    ) {
+    return initialCountryContestantCache;
+  } 
+  
+  return await fetchAndProcessCountryContestants(
+    year, voteCode, dispatch
+  );
+}
+
+export async function fetchAndProcessCountryContestants(
+   year: string,
+   voteCode: string,
+   dispatch: Dispatch<any> | undefined, 
+) {
   let contestants: Contestant[] = await getContestantsByYear(
     year, dispatch
   );
@@ -30,27 +48,18 @@ export async function fetchCountryContestantsByYear(
       contestantCountryKey = contestantCountryKey.slice(0, -1);;
     }
 
-    let country = countries.find(country => country.key === contestantCountryKey);
-    if (!country) {
-
-      if (contestant.countryKey?.toLowerCase() === 'czech republic') {
-        contestant.countryKey = 'Czechia';
-      }
-      country = countries.find(country => country.name === contestant.countryKey);
-
-      if (country) {
-        contestant.countryKey = country.key;
-      }
-    }
+    let country = fetchCountryByKey(contestantCountryKey, contestant);
 
     if (!country) {
-      throw new Error(`No matching country found for contestant with countryKey: ${contestant.countryKey}`);
+      throw new Error(
+        `No matching country found for contestant with countryKey: ${contestant.countryKey}`
+      );
     }
 
     if (secondaryContestant) {
       // if this is a secondary contestant reflect this in the country name 
       // to better distinguish them
-      let countryB = { ...country} ;
+      let countryB = { ...country };
       countryB.name += ' (2)';
       return {
         id: '_' + country.id,
@@ -71,10 +80,39 @@ export async function fetchCountryContestantsByYear(
     countryContestants, year, voteCode
   );
 
-  return sanitizeYoutubeLinks(
+  countryContestants = sanitizeYoutubeLinks(
     year,
     countryContestants
   );
+  return countryContestants;
+}
+
+function fetchCountryByKey(
+  contestantCountryKey: string, 
+  contestant: Contestant
+) {
+  let country = countries.find(country => country.key === contestantCountryKey);
+
+  // some countries in the dataset have their name used as their two character 
+  // country code. if we couldn't find the country using the code, try using 
+  // the name, and fix the field assignment
+  if (!country) {
+
+    // consolidate cz on Czechia 
+    if (contestant.countryKey?.toLowerCase() === 'czech republic') {
+      contestant.countryKey = 'Czechia';
+    }
+
+    country = countries.find(
+      country => country.name === contestant.countryKey
+    );
+
+    if (country) {
+      contestant.countryKey = country.key;
+    }
+  }
+
+  return country;
 }
 
 /**

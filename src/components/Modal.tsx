@@ -4,6 +4,7 @@ import React, { ReactNode, useEffect, useRef, useState } from 'react';
 type ModalContainerProps = {
     isOpen: boolean;
     className: string;
+    closeBtnClassName?: string;
     onClose: () => void;
     children: ReactNode;
 };
@@ -71,9 +72,19 @@ const Modal: React.FC<ModalContainerProps> = (props: ModalContainerProps) => {
                         props.className
                     )}
             >
-                <button onClick={props.onClose}
-                    className="absolute top-0 right-0 mt-4 mr-4 text-gray-300 text-lg leading-none hover:text-gray-400">
-                    &#x2715;
+                <button 
+                    type="button" 
+                    className={
+                        classNames(
+                            "absolute top-0 right-0 mt-4 mr-4 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white", 
+                            props.closeBtnClassName)}
+                    data-modal-hide="default-modal"
+                    onClick={props.onClose}
+                >
+                    <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                    </svg>
+                    <span className="sr-only">Close modal</span>
                 </button>
                 {props.children}
             </div>

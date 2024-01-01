@@ -35,7 +35,7 @@ const MainModal: React.FC<MainModalProps> = (props: MainModalProps) => {
         props.startTour();
     }
 
-    if (!props.isOpen) return null;
+    //if (!props.isOpen) return null;
 
     return (
         <Modal isOpen={props.isOpen} onClose={props.onClose} className="">

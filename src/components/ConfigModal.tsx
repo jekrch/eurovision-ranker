@@ -339,7 +339,7 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
         )
     }
 
-    if (!props.isOpen) return null;
+    //if (!props.isOpen) return null;
 
     return (
         <Modal isOpen={props.isOpen} onClose={props.onClose} className="">

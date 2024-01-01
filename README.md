@@ -1,4 +1,4 @@
-![Version](https://img.shields.io/badge/version-1.1-blue)
+![Version](https://img.shields.io/badge/version-1.2-blue)
 ![Run Tests](https://github.com/jekrch/eurovision-ranker/actions/workflows/test_on_push.yml/badge.svg)
 
 [https://www.eurovision-ranker.com/](https://www.eurovision-ranker.com/)
@@ -17,10 +17,7 @@ Run unit tests `npm test`
 
 # Automated Testing with GitHub Actions
 ## Run Tests Workflow
-This project uses GitHub Actions to automate running tests. The workflow is defined in the .github/workflows directory and is named "Run Tests".
-
-### When it Runs
-The "Run Tests" workflow is triggered on every push to the `main` and `dev` branches. 
+This project uses GitHub Actions to automate running tests. The workflow is defined in the ``.github/workflows`` directory and is named "Run Tests" (`test_on_push.yml`). This workflow is triggered on every push to the `main` and `dev` branches. 
 
 ### Workflow Steps
 1. The latest version of the code is checked out.

@@ -18,7 +18,7 @@ const Navbar: React.FC<NavbarProps> = ({ openModal, openConfigModal }) => {
         <nav className="nav-diagonal-split-bg bg-gray-800 text-white p-2 px-4 sticky top-0 z-50">
             <div className="container mx-auto flex justify-between items-center z-50">
                 <div className="text-lg tracking-tighter gradient-text font-bold flex items-center">
-                    Eurovision Ranker
+                    <span className="product-name">Eurovision Ranker</span>
                     <img
                         src={`${process.env.PUBLIC_URL}/eurovision-heart.svg`}
                         alt="Heart"

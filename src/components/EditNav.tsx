@@ -100,6 +100,7 @@ const EditNav: React.FC<EditNavProps> = ({ setNameModalShow, setRefreshUrl }) =>
                             <IconButton
                                 icon={faPenAlt}
                                 className="ml-4"
+                                iconClassName='mr-[0.3em]'
                                 onClick={() => setNameModalShow(true)}
                                 title="Name"
                             />

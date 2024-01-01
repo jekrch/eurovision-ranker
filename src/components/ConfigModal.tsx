@@ -424,7 +424,7 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
                             <div className="">
                                 <Dropdown
                                     key="theme-selector"
-                                    className="ml-5 z-50 w-20 h-0 mx-auto mb-3"  // Adjusted for Tailwind (w-[5em] to w-20)
+                                    className="ml-5 z-50 w-30 h-0 mx-auto mb-3"  // Adjusted for Tailwind (w-[5em] to w-20)
                                     menuClassName=""
                                     value={themeSelection}
                                     onChange={v => { onThemeInputChanged(v); }}

@@ -70,11 +70,12 @@ const MainModal: React.FC<MainModalProps> = (props: MainModalProps) => {
                     <div className="mb-0">
                         <div className="float-left w-1/2 mr-5 mt-2">
 
-                            <img
-                                src={`${process.env.PUBLIC_URL}/mnay.png`}
-                                alt="Heart"
-                                className="w-full shadow-lg rounded mb-5" />
-
+                            <div className="aspect-ratio-box mb-5">
+                                <img
+                                    src={`${process.env.PUBLIC_URL}/mnay.png`}
+                                    alt="Heart"
+                                    className="w-full shadow-lg rounded mb-5" />
+                            </div>
                             <button
                                 className="w-full bg-blue-500 hover:bg-blue-700 text-white font-normal py-1 px-3 rounded-full text-md mb-1"
                                 onClick={() => window.open('https://www.givemn.org/story/Jddsdf', '_blank')}
@@ -92,27 +93,26 @@ const MainModal: React.FC<MainModalProps> = (props: MainModalProps) => {
 
             </div>
             <div className="flex text-xs w-full -mb-4 mt-2 text-slate-500">
-            <span className="flex-grow mr-2">
-                <a className="text-link"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    href="https://github.com/jekrch/eurovision-ranker/releases"
-                >v1.2</a>
-            </span>
-            <span className="text-right">
-                {`Copyright (c) 2023${new Date().getFullYear()?.toString() !== '2023' ? '-' + new Date().getFullYear() : ''} `}
-                <a
-                    className="text-link"
-                    href="https://github.com/jekrch"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                > Jacob Krch
-                </a>. <span className="whitespace-nowrap">All rights reserved</span>
-            </span>
+                <span className="flex-grow mr-2">
+                    <a className="text-link"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        href="https://github.com/jekrch/eurovision-ranker/releases"
+                    >v1.2</a>
+                </span>
+                <span className="text-right">
+                    {`Copyright (c) 2023${new Date().getFullYear()?.toString() !== '2023' ? '-' + new Date().getFullYear() : ''} `}
+                    <a
+                        className="text-link"
+                        href="https://github.com/jekrch"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    > Jacob Krch
+                    </a>. <span className="whitespace-nowrap">All rights reserved</span>
+                </span>
             </div>
         </Modal>
     );
 };
 
 export default MainModal;
-

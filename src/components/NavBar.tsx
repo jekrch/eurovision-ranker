@@ -4,6 +4,7 @@ import { faCog, faHouseUser } from '@fortawesome/free-solid-svg-icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '../redux/types';
 import { setShowUnranked } from '../redux/actions';
+import IconButton from './IconButton';
 
 type NavbarProps = {
     openModal: (tabName: string) => void;
@@ -28,12 +29,11 @@ const Navbar: React.FC<NavbarProps> = ({ openModal, openConfigModal }) => {
                     <li>
                         <div className="flex items-center">
 
-                            <button
+                            <IconButton
                                 className="tour-step-4 tour-step-8 bg-blue-500 hover:bg-blue-700 text-white font-normal py-1 pl-[0.7em] pr-[0.9em] rounded-full text-xs mr-0 w-[5em]"
                                 onClick={() => dispatch(setShowUnranked(!showUnranked))}
-                            >
-                                {showUnranked ? 'Details' : 'Select'}
-                            </button>
+                                title={showUnranked ? 'Details' : 'Select'}
+                            />
                             <FontAwesomeIcon
                                 className="tour-step-9 houseUser mr-1 mb-1 ml-4 text-xl"
                                 icon={faHouseUser}

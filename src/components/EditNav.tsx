@@ -68,6 +68,7 @@ const EditNav: React.FC<EditNavProps> = ({ setNameModalShow, setRefreshUrl }) =>
                                 icon={faArrowRight}
                                 disabled={!unrankedItems.length}
                                 onClick={addAllUnranked}
+                                iconClassName='mr-[0.3em]'
                                 title="Add All"
                             />
 
@@ -75,6 +76,7 @@ const EditNav: React.FC<EditNavProps> = ({ setNameModalShow, setRefreshUrl }) =>
                                 icon={faTrashAlt}
                                 disabled={!rankedItems.length}
                                 className="ml-4"
+                                iconClassName='mr-[0.3em]'
                                 onClick={resetRanking}
                                 title="Clear"
                             />
@@ -86,6 +88,7 @@ const EditNav: React.FC<EditNavProps> = ({ setNameModalShow, setRefreshUrl }) =>
                                     "ml-4",
                                     rankedItems.length && isDeleteMode ? "bg-red-800 border-red-100 hover:bg-red-700" : null
                                 )}
+                                iconClassName='mr-[0.3em]'
                                 onClick={() => {
                                     dispatch(
                                         SetIsDeleteMode(!isDeleteMode)

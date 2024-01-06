@@ -24,6 +24,7 @@ import { fetchCountryContestantsByYear } from './utilities/ContestantRepository'
 import { tourSteps } from './tour/steps';
 import ConfigModal from './components/ConfigModal';
 import IconButton from './components/IconButton';
+import RankedItemsHeader from './components/RankedItemsHeader';
 
 const App: React.FC = () => {
   const [mainModalShow, setMainModalShow] = useState(false);
@@ -450,10 +451,17 @@ const App: React.FC = () => {
                     <div
                       className={
                         classNames(
-                          "grid h-full max-h-full min-h-full ",
-                          { "grid-rows-[1fr_auto]": (rankedItems?.length > 0) }
+                          "grid h-full max-h-full min-h-full grid-rows-[auto_1fr]",
+                          //{ "grid-rows-[auto_1fr]": (rankedItems?.length > 0) }
                         )}
                     >
+                        <RankedItemsHeader
+                          setMapModalShow={() => setMapModalShow(true)}
+                          generateYoutubePlaylistUrl={generateYoutubePlaylistUrl}
+                          rankedHasAnyYoutubeLinks={rankedHasAnyYoutubeLinks}
+                          supportedYears={supportedYears}
+                        />
+
                       <ul
                         {...provided.droppableProps}
                         ref={provided.innerRef}
@@ -464,51 +472,8 @@ const App: React.FC = () => {
                             { "auroral-background": theme.includes("ab") }
                           )}
                       >
-                        <div className="z-40 w-full text-center font-bold bg-blue-900 text-slate-300 py-1 -mt-3 text-md tracking-tighter">
-                          {showUnranked ? (
-                            <div className="w-full m-auto flex items-center justify-center">
-                              <Dropdown
-                                className="tour-step-1  w-[5em]"
-                                value={year}
-                                onChange={y => { dispatch(setYear(y)); }}
-                                options={supportedYears}
-                                showSearch={true}
-                              />
 
-                            </div>
-                          ) : (
-                            <div className="mx-2 flex justify-between items-center">
-                              {rankedItems?.length > 0 &&
-                                <a
-                                  onClick={() => setMapModalShow(true)}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  title="display geographical heat map"
-                                  className='text-slate-500 hover:text-slate-100 cursor-pointer'
-                                >
-                                  <FaGlobe className='text-xl tour-step-7' />
-                                </a>
-                              }
-                              <div className="justify-center w-full ml-2">
-                                {year}
-                                {name?.length > 0 && (
-                                  <span className="font-bold text-slate-400 text-md"> - {name}</span>
-                                )}
-                              </div>
-                              {rankedHasAnyYoutubeLinks(rankedItems) && (
-                                <a
-                                  href={generateYoutubePlaylistUrl(rankedItems)}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  title="generate youtube playlist"
-                                  className='text-slate-500 hover:text-slate-100'
-                                >
-                                  <FaTv className='text-xl tour-step-6' />
-                                </a>
-                              )}
-                            </div>
-                          )}
-                        </div>
+
                         {(rankedItems.length === 0 && showUnranked) && (
                           <IntroColumn
                             openModal={openMainModal}
@@ -525,7 +490,7 @@ const App: React.FC = () => {
                                   ref={provided.innerRef}
                                   {...provided.draggableProps}
                                   {...provided.dragHandleProps}
-                                  className="no-select m-2"
+                                  className={classNames("no-select m-2", { "mt-0" : (index === 0)})}
                                 >
                                   <Card
                                     key={`card-${item.id.toString()}`}
@@ -545,11 +510,11 @@ const App: React.FC = () => {
                         {provided.placeholder}
                       </ul>
                       {(showUnranked && rankedItems?.length > 0) &&
-                        <div className="h-9 bg-blue-900 text-slate-300 items-center flex">
+                        <div className="pl-2 rounded-b-md h-8 bg-blue-900 text-slate-300 items-center flex">
                           <IconButton
                             className={
                               classNames(
-                                "tour-step-4 ml-auto bg-blue-500 hover:bg-blue-700 text-white font-normal py-1 pl-[0.7em] pr-[0.9em] rounded-full text-xs mr-0 w-[6em]",
+                                "tour-step-4 ml-auto bg-blue-500 hover:bg-blue-700 text-white font-normal py-[2px] pl-[0.7em] pr-[0.9em] rounded-full text-xs mr-0 w-[6em]",
                                 { "tada-animation": showUnranked && rankedItems?.length }
                               )}
                             onClick={() => dispatch(setShowUnranked(!showUnranked))}

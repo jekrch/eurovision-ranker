@@ -10,7 +10,7 @@ type IntroColumnProps = {
 
 const IntroColumn: React.FC<IntroColumnProps> = ({ openModal, openConfigModal, setRunTour }) => {
     return (
-        <div className="flex justify-left items-center">
+        <div className="flex justify-left items-center ">
             <div className="text-gray-400 font-normal tracking-tight font-sans text-italic text-left ml-7 m-4 text-xs whitespace-normal max-w-[10em] mt-6">
                 <ol className="list-disc mb-7">
                     <li className="mb-3">Drag countries into this column to rank</li>

@@ -1,7 +1,7 @@
 import React, { Dispatch } from 'react';
 import { FaGlobe, FaTv } from 'react-icons/fa';
-import Dropdown from './Dropdown'; // Adjust import path as necessary
-import { CountryContestant } from '../data/CountryContestant'; // Adjust import path as necessary
+import Dropdown from './Dropdown'; 
+import { CountryContestant } from '../data/CountryContestant'; 
 import { useDispatch } from 'react-redux';
 import { AppState } from '../redux/types';
 import { useSelector } from 'react-redux';

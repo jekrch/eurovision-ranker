@@ -92,7 +92,7 @@ const MapModal: React.FC<MapModalProps> = ({ isOpen, onClose }) => {
                                                 default: {
                                                     fill: highlight ? fillColor : '#333', // Dark fill for non-highlighted countries
                                                     stroke: '#FFF', // Bright outline
-                                                    strokeWidth: 0.5, // Adjust stroke width for visibility
+                                                    strokeWidth: 0.5,
                                                     outline: 'none',
                                                 },
                                                 hover: {

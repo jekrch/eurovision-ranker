@@ -137,7 +137,7 @@ code {
 }
 
 .donate-widget {
-  transform: scale(0.6); /* Adjust the scale value as needed */
+  transform: scale(0.6);
   transform-origin: top left;
 }
 

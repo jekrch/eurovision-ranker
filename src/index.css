@@ -18,6 +18,12 @@ html, body {
   max-width: 100%; /* to prevent horizontal scroll */
 }
 
+.site-content {
+  max-height: 100vh; /* Fallback for browsers that do not support Custom Properties */
+  max-height: calc(var(--vh, 1vh) * 100);
+  display: flex;
+  flex-direction: column;
+}
 
 body {
   margin: 0;
@@ -210,4 +216,20 @@ code {
 
 .tada-animation {
   animation: tada 12s ease-in-out infinite;
+}
+
+@keyframes bounceRight {
+  0%, 91.67% { /* 11s out of 12s as static */
+    transform: translateX(0);
+  }
+  93.75%, 96.25% {
+    transform: translateX(5px);
+  }
+  97.5%, 100% {
+    transform: translateX(0);
+  }
+}
+
+.bounce-right {
+  animation: bounceRight 12s ease-out infinite;
 }

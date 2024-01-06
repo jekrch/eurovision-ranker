@@ -13,7 +13,7 @@ export const tourSteps = [
   },
   {
     target: '.tour-step-4',
-    content: 'Click "Details" to see more info about your countries',
+    content: 'Click "View List" to see more info about your countries',
   },
   {
     target: '.tour-step-5',

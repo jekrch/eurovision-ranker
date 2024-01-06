@@ -8,7 +8,7 @@ import MainModal from './components/MainModal';
 import Dropdown from './components/Dropdown';
 import { supportedYears } from './data/Contestants';
 import NameModal from './components/NameModal';
-import { FaGlobe, FaGlobeEurope, FaTv } from 'react-icons/fa';
+import { FaGlobe, FaGlobeEurope, FaTv, FaChevronRight } from 'react-icons/fa';
 import Navbar from './components/NavBar';
 import EditNav from './components/EditNav';
 import IntroColumn from './components/IntroColumn';
@@ -23,6 +23,7 @@ import Joyride, { ACTIONS, CallBackProps, EVENTS, STATUS } from 'react-joyride';
 import { fetchCountryContestantsByYear } from './utilities/ContestantRepository';
 import { tourSteps } from './tour/steps';
 import ConfigModal from './components/ConfigModal';
+import IconButton from './components/IconButton';
 
 const App: React.FC = () => {
   const [mainModalShow, setMainModalShow] = useState(false);
@@ -58,6 +59,23 @@ const App: React.FC = () => {
       setJoyrideStepIndex(index + (action === ACTIONS.PREV ? -1 : 1));
     }
   }, []);
+
+
+  useEffect(() => {
+    const setVh = () => {
+      let vh = window.innerHeight * 0.01;
+      document.documentElement.style.setProperty('--vh', `${vh}px`);
+    };
+
+    window.addEventListener('resize', setVh);
+
+    setVh();
+
+    return () => {
+      window.removeEventListener('resize', setVh);
+    };
+  }, []);
+
 
   /**
    * load the url if the user navigates using back/forward. 
@@ -353,11 +371,11 @@ const App: React.FC = () => {
   return (
     <>
       <div className={classNames(
-        "site-content flex flex-col h-screen tour-step-12 tour-step-13 tour-step-14", 
-        {'star-sky': theme.includes('ab')}
+        "site-content flex flex-col h-screen tour-step-12 tour-step-13 tour-step-14",
+        { 'star-sky': theme.includes('ab') }
       )}>
         {theme.includes("ab") &&
-          <div className="star-container z-10"> 
+          <div className="star-container z-10">
             <div className="star" id="stars"></div>
             <div className="star" id="stars2"></div>
             <div className="star" id="stars3"></div>
@@ -424,99 +442,129 @@ const App: React.FC = () => {
 
                 </div>
               )}
+
               {/* Ranked Countries List */}
-              <div className="tour-step-5 z-20">
+              <div className="tour-step-5 z-20 min-full">
                 <StrictModeDroppable droppableId="rankedItems">
                   {(provided) => (
-                    <ul
-                      {...provided.droppableProps}
-                      ref={provided.innerRef}
+                    <div
                       className={
                         classNames(
-                          "h-full min-w-[10em] overflow-y-auto overflow-x-hidden pt-3 bg-[#1d1b54]", showUnranked ? "max-w-[50vw]" : "w-[80vw] max-w-[30em]", 
-                          {"auroral-background" : theme.includes("ab")}
+                          "grid h-full max-h-full min-h-full ",
+                          { "grid-rows-[1fr_auto]": (rankedItems?.length > 0) }
                         )}
                     >
-                      <div className="z-40 w-full text-center font-bold bg-blue-900 text-slate-300 py-1 -mt-3 text-md tracking-tighter">
-                        {showUnranked ? (
-                          <div className="w-full m-auto flex items-center justify-center">
-                            <Dropdown
-                              className="tour-step-1  w-[5em]"
-                              value={year}
-                              onChange={y => { dispatch(setYear(y)); }}
-                              options={supportedYears}
-                              showSearch={true}
-                            />
+                      <ul
+                        {...provided.droppableProps}
+                        ref={provided.innerRef}
+                        className={
+                          classNames(
+                            "overflow-y-auto overflow-x-hidden pt-3 bg-[#1d1b54]",
+                            showUnranked ? "max-w-[50vw]" : "w-[80vw] max-w-[30em]",
+                            { "auroral-background": theme.includes("ab") }
+                          )}
+                      >
+                        <div className="z-40 w-full text-center font-bold bg-blue-900 text-slate-300 py-1 -mt-3 text-md tracking-tighter">
+                          {showUnranked ? (
+                            <div className="w-full m-auto flex items-center justify-center">
+                              <Dropdown
+                                className="tour-step-1  w-[5em]"
+                                value={year}
+                                onChange={y => { dispatch(setYear(y)); }}
+                                options={supportedYears}
+                                showSearch={true}
+                              />
 
-                          </div>
-                        ) : (
-                          <div className="mx-2 flex justify-between items-center">
-                            {rankedItems?.length > 0 &&
-                              <a
-                                onClick={() => setMapModalShow(true)}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                title="display geographical heat map"
-                                className='text-slate-500 hover:text-slate-100 cursor-pointer'
-                              >
-                                <FaGlobe className='text-xl tour-step-7' />
-                              </a>
-                            }
-                            <div className="justify-center w-full ml-2">
-                              {year}
-                              {name?.length > 0 && (
-                                <span className="font-bold text-slate-400 text-md"> - {name}</span>
+                            </div>
+                          ) : (
+                            <div className="mx-2 flex justify-between items-center">
+                              {rankedItems?.length > 0 &&
+                                <a
+                                  onClick={() => setMapModalShow(true)}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  title="display geographical heat map"
+                                  className='text-slate-500 hover:text-slate-100 cursor-pointer'
+                                >
+                                  <FaGlobe className='text-xl tour-step-7' />
+                                </a>
+                              }
+                              <div className="justify-center w-full ml-2">
+                                {year}
+                                {name?.length > 0 && (
+                                  <span className="font-bold text-slate-400 text-md"> - {name}</span>
+                                )}
+                              </div>
+                              {rankedHasAnyYoutubeLinks(rankedItems) && (
+                                <a
+                                  href={generateYoutubePlaylistUrl(rankedItems)}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  title="generate youtube playlist"
+                                  className='text-slate-500 hover:text-slate-100'
+                                >
+                                  <FaTv className='text-xl tour-step-6' />
+                                </a>
                               )}
                             </div>
-                            {rankedHasAnyYoutubeLinks(rankedItems) && (
-                              <a
-                                href={generateYoutubePlaylistUrl(rankedItems)}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                title="generate youtube playlist"
-                                className='text-slate-500 hover:text-slate-100'
-                              >
-                                <FaTv className='text-xl tour-step-6' />
-                              </a>
-                            )}
-                          </div>
+                          )}
+                        </div>
+                        {(rankedItems.length === 0 && showUnranked) && (
+                          <IntroColumn
+                            openModal={openMainModal}
+                            openConfigModal={openConfigModal}
+                            setRunTour={setRunTour}
+                          />
                         )}
-                      </div>
-                      {(rankedItems.length === 0 && showUnranked) && (
-                        <IntroColumn
-                          openModal={openMainModal}
-                          openConfigModal={openConfigModal}
-                          setRunTour={setRunTour}
-                        />
-                      )}
-                      {rankedItems.map((item, index) => (
-                        <Draggable key={`draggable-${item.id.toString()}`} draggableId={item.id.toString()} index={index}>
-                          {(provided, snapshot) => {
-                            return (
-                              <li
-                                key={`li-${item.id.toString()}`}
-                                ref={provided.innerRef}
-                                {...provided.draggableProps}
-                                {...provided.dragHandleProps}
-                                className="no-select m-2"
-                              >
-                                <Card
-                                  key={`card-${item.id.toString()}`}
-                                  className="m-auto text-slate-400 bg- bg-[#03022d] no-select"
-                                  rank={index + 1}
-                                  countryContestant={item}
-                                  isLargeView={!showUnranked}
-                                  isDeleteMode={showUnranked && isDeleteMode}
-                                  deleteCallBack={deleteRankedCountry}
-                                  isDragging={snapshot.isDragging}
-                                />
-                              </li>
-                            )
-                          }}
-                        </Draggable>
-                      ))}
-                      {provided.placeholder}
-                    </ul>
+                        {rankedItems.map((item, index) => (
+                          <Draggable key={`draggable-${item.id.toString()}`} draggableId={item.id.toString()} index={index}>
+                            {(provided, snapshot) => {
+                              return (
+                                <li
+                                  key={`li-${item.id.toString()}`}
+                                  ref={provided.innerRef}
+                                  {...provided.draggableProps}
+                                  {...provided.dragHandleProps}
+                                  className="no-select m-2"
+                                >
+                                  <Card
+                                    key={`card-${item.id.toString()}`}
+                                    className="m-auto text-slate-400 bg- bg-[#03022d] no-select"
+                                    rank={index + 1}
+                                    countryContestant={item}
+                                    isLargeView={!showUnranked}
+                                    isDeleteMode={showUnranked && isDeleteMode}
+                                    deleteCallBack={deleteRankedCountry}
+                                    isDragging={snapshot.isDragging}
+                                  />
+                                </li>
+                              )
+                            }}
+                          </Draggable>
+                        ))}
+                        {provided.placeholder}
+                      </ul>
+                      {(showUnranked && rankedItems?.length > 0) &&
+                        <div className="h-9 bg-blue-900 text-slate-300 items-center flex">
+                          <IconButton
+                            className={
+                              classNames(
+                                "tour-step-4 ml-auto bg-blue-500 hover:bg-blue-700 text-white font-normal py-1 pl-[0.7em] pr-[0.9em] rounded-full text-xs mr-0 w-[6em]",
+                                { "tada-animation": showUnranked && rankedItems?.length }
+                              )}
+                            onClick={() => dispatch(setShowUnranked(!showUnranked))}
+                            title={'View List'}
+                          />
+                          <FaChevronRight
+                            className={
+                              classNames(
+                                "ml-2 mr-auto text-lg justify-center align-center bounce-right",
+                                { "tada-animation": showUnranked && rankedItems?.length }
+                              )}
+                          />
+                        </div>
+                      }
+                    </div>
                   )}
                 </StrictModeDroppable>
               </div>
@@ -590,7 +638,6 @@ const App: React.FC = () => {
             backgroundColor: '#333',
             primaryColor: '#f04',
             textColor: '#fff',
-            // ...other style adjustments based on theme
           }
         }}
       />

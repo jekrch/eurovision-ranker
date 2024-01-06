@@ -32,7 +32,12 @@ const Navbar: React.FC<NavbarProps> = ({ openModal, openConfigModal }) => {
                         <div className="flex items-center">
 
                             <IconButton
-                                className={classNames("tour-step-4 tour-step-8 bg-blue-500 hover:bg-blue-700 text-white font-normal py-1 pl-[0.7em] pr-[0.9em] rounded-full text-xs mr-0 w-[5em]", {"tada-animation" : showUnranked && rankedItems?.length})}
+                                className={
+                                    classNames(
+                                        "tour-step-8 bg-blue-500 hover:bg-blue-700 text-white font-normal py-1 pl-[0.7em] pr-[0.9em] rounded-full text-xs mr-0 w-[5em]", 
+                                        //{"tada-animation" : showUnranked && rankedItems?.length}
+                                    )
+                                }
                                 onClick={() => dispatch(setShowUnranked(!showUnranked))}
                                 title={showUnranked ? 'Details' : 'Select'}
                             />

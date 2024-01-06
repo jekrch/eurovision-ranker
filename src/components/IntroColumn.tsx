@@ -11,11 +11,11 @@ type IntroColumnProps = {
 const IntroColumn: React.FC<IntroColumnProps> = ({ openModal, openConfigModal, setRunTour }) => {
     return (
         <div className="flex justify-left items-center">
-            <div className="text-gray-400 font-thin font-mono text-italic text-left ml-7 m-4 text-xs whitespace-normal max-w-[10em] mt-6">
+            <div className="text-gray-400 font-normal tracking-tight font-sans text-italic text-left ml-7 m-4 text-xs whitespace-normal max-w-[10em] mt-6">
                 <ol className="list-disc mb-7">
                     <li className="mb-3">Drag countries into this column to rank</li>
-                    <li className="mb-3">Rankings are saved to the URL for you to save or share with friends</li>
-                    <li className="mb-2">Click 'details' above to see more info on your ranked countries</li>
+                    <li className="mb-3">Click 'Details' above to see more info on your ranked countries</li>
+                    <li className="mb-2">Rankings are saved to the URL for you to save or share with friends</li>
                 </ol>
 
                 <div className="">

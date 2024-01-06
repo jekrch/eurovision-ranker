@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '../redux/types';
 import { setShowUnranked } from '../redux/actions';
 import IconButton from './IconButton';
+import classNames from 'classnames';
 
 type NavbarProps = {
     openModal: (tabName: string) => void;
@@ -14,23 +15,24 @@ type NavbarProps = {
 const Navbar: React.FC<NavbarProps> = ({ openModal, openConfigModal }) => {
     const dispatch: Dispatch<any> = useDispatch();
     const showUnranked = useSelector((state: AppState) => state.showUnranked);
-    
+    const rankedItems = useSelector((state: AppState) => state.rankedItems);
+
     return (
         <nav className="nav-diagonal-split-bg bg-gray-800 text-white p-2 px-4 sticky top-0 z-50">
             <div className="container mx-auto flex justify-between items-center z-50">
-                <div className="text-lg tracking-tighter gradient-text font-bold flex items-center">
+                <div className="text-lg tracking-tighter gradient-text pulse-color-on-load font-bold flex items-center">
                     <span className="product-name">Eurovision Ranker</span>
                     <img
                         src={`${process.env.PUBLIC_URL}/eurovision-heart.svg`}
                         alt="Heart"
-                        className="w-4 h-4 ml-2" />
+                        className="w-4 h-4 ml-2 pulse-on-load" />
                 </div>
                 <ul className="flex space-x-2">
                     <li>
                         <div className="flex items-center">
 
                             <IconButton
-                                className="tour-step-4 tour-step-8 bg-blue-500 hover:bg-blue-700 text-white font-normal py-1 pl-[0.7em] pr-[0.9em] rounded-full text-xs mr-0 w-[5em]"
+                                className={classNames("tour-step-4 tour-step-8 bg-blue-500 hover:bg-blue-700 text-white font-normal py-1 pl-[0.7em] pr-[0.9em] rounded-full text-xs mr-0 w-[5em]", {"tada-animation" : showUnranked && rankedItems?.length})}
                                 onClick={() => dispatch(setShowUnranked(!showUnranked))}
                                 title={showUnranked ? 'Details' : 'Select'}
                             />

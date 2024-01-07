@@ -1,14 +1,13 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
+import { DragDropContext, Draggable, DropResult } from 'react-beautiful-dnd';
 import { Card } from './components/Card';
 import { StrictModeDroppable } from './components/StrictModeDroppable';
 import classNames from 'classnames';
 import { CountryContestant } from './data/CountryContestant';
 import MainModal from './components/MainModal';
-import Dropdown from './components/Dropdown';
 import { supportedYears } from './data/Contestants';
 import NameModal from './components/NameModal';
-import { FaGlobe, FaGlobeEurope, FaTv, FaChevronRight } from 'react-icons/fa';
+import { FaChevronRight, FaGlobe, FaList, FaTv } from 'react-icons/fa';
 import Navbar from './components/NavBar';
 import EditNav from './components/EditNav';
 import IntroColumn from './components/IntroColumn';
@@ -25,6 +24,7 @@ import { tourSteps } from './tour/steps';
 import ConfigModal from './components/ConfigModal';
 import IconButton from './components/IconButton';
 import RankedItemsHeader from './components/RankedItemsHeader';
+import WelcomeOverlay from './components/WelcomeOverlay';
 
 const App: React.FC = () => {
   const [mainModalShow, setMainModalShow] = useState(false);
@@ -43,8 +43,30 @@ const App: React.FC = () => {
   const unrankedItems = useSelector((state: AppState) => state.unrankedItems);
   const isDeleteMode = useSelector((state: AppState) => state.isDeleteMode);
 
+  /**
+   * Determines whether any rankings are set in the url
+   * @returns 
+   */
+  const areRankingsSet = () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const rParam = urlParams.get('r');
+    return rParam !== null && rParam !== '';
+  };
+
+  const [showOverlay, setShowOverlay] = useState(!areRankingsSet());
+  const [isOverlayExit, setIsOverlayExit] = useState(false);
+
   const [runTour, setRunTour] = useState(false);
   const [joyrideStepIndex, setJoyrideStepIndex] = useState(0);
+
+  const handleGetStarted = () => {
+    setIsOverlayExit(true);
+    const overlayDiv = document.querySelector('.overlay')!;
+    overlayDiv.classList.add('slide-left');
+    setTimeout(() => {
+      setShowOverlay(false)
+    }, 500); // 500ms for the animation duration
+  };
 
   const handleJoyrideCallback = useCallback((data: CallBackProps) => {
     const { action, index, status, type } = data;
@@ -220,6 +242,7 @@ const App: React.FC = () => {
 
   useEffect(() => {
     const decodeFromUrl = async () => {
+
       const rankingsExist = await decodeRankingsFromURL(
         dispatch
       );
@@ -370,11 +393,25 @@ const App: React.FC = () => {
   }
 
   return (
-    <>
+    <div className="overflow-hidden">
+
+      {showOverlay && (
+        <WelcomeOverlay
+          exiting={isOverlayExit}
+          handleGetStarted={handleGetStarted}
+          handleTakeTour={() => {
+            handleGetStarted();
+            setRunTour(true);
+          }}
+        />
+      )}
+
+
       <div className={classNames(
         "site-content flex flex-col h-screen tour-step-12 tour-step-13 tour-step-14",
         { 'star-sky': theme.includes('ab') }
       )}>
+
         {theme.includes("ab") &&
           <div className="star-container z-10">
             <div className="star" id="stars"></div>
@@ -445,7 +482,7 @@ const App: React.FC = () => {
               )}
 
               {/* Ranked Countries List */}
-              <div className="tour-step-5 z-20 min-full">
+              <div className="tour-step-5 z-20">
                 <StrictModeDroppable droppableId="rankedItems">
                   {(provided) => (
                     <div
@@ -455,19 +492,19 @@ const App: React.FC = () => {
                           //{ "grid-rows-[auto_1fr]": (rankedItems?.length > 0) }
                         )}
                     >
-                        <RankedItemsHeader
-                          setMapModalShow={() => setMapModalShow(true)}
-                          generateYoutubePlaylistUrl={generateYoutubePlaylistUrl}
-                          rankedHasAnyYoutubeLinks={rankedHasAnyYoutubeLinks}
-                          supportedYears={supportedYears}
-                        />
+                      <RankedItemsHeader
+                        setMapModalShow={() => setMapModalShow(true)}
+                        generateYoutubePlaylistUrl={generateYoutubePlaylistUrl}
+                        rankedHasAnyYoutubeLinks={rankedHasAnyYoutubeLinks}
+                        supportedYears={supportedYears}
+                      />
 
                       <ul
                         {...provided.droppableProps}
                         ref={provided.innerRef}
                         className={
                           classNames(
-                            "overflow-y-auto overflow-x-hidden pt-3 bg-[#1d1b54] ",
+                            " overflow-y-auto overflow-x-hidden pt-3 bg-[#1d1b54] ",
                             showUnranked ? "max-w-50vw-6em" : "w-[80vw] max-w-[30em]",
                             { "auroral-background": theme.includes("ab") }
                           )}
@@ -490,7 +527,7 @@ const App: React.FC = () => {
                                   ref={provided.innerRef}
                                   {...provided.draggableProps}
                                   {...provided.dragHandleProps}
-                                  className={classNames("no-select m-2", { "mt-0" : (index === 0)})}
+                                  className={classNames("no-select m-2", { "mt-0": (index === 0) })}
                                 >
                                   <Card
                                     key={`card-${item.id.toString()}`}
@@ -514,7 +551,7 @@ const App: React.FC = () => {
                           <IconButton
                             className={
                               classNames(
-                                "tour-step-4 ml-auto bg-blue-500 hover:bg-blue-700 text-white font-normal py-[2px] pl-[0.7em] pr-[0.9em] rounded-full text-xs mr-0 w-[6em]",
+                                "tour-step-4 ml-auto bg-blue-600 hover:bg-blue-700 text-white font-normal py-1 pl-[0.7em] pr-[0.9em] rounded-md text-xs mr-0 w-[6em]",
                                 { "tada-animation": showUnranked && rankedItems?.length }
                               )}
                             onClick={() => dispatch(setShowUnranked(!showUnranked))}
@@ -537,11 +574,13 @@ const App: React.FC = () => {
           </DragDropContext>
         </div>
 
-        {showUnranked &&
-          <EditNav
-            setNameModalShow={setNameModalShow}
-            setRefreshUrl={setRefreshUrl}
-          />
+        {(showUnranked && (!showOverlay || isOverlayExit)) &&
+          <div className={`edit-nav-container ${(!showOverlay || isOverlayExit) && 'slide-up-animation'}`}>
+            <EditNav
+              setNameModalShow={setNameModalShow}
+              setRefreshUrl={setRefreshUrl}
+            />
+          </div>
         }
       </div>
 
@@ -607,7 +646,7 @@ const App: React.FC = () => {
         }}
       />
 
-    </>
+    </div>
   );
 };
 

@@ -54,9 +54,9 @@ const NameModal: React.FC<NameModalProps> = (props: NameModalProps) => {
         <div className="fixed z-50 inset-0 bg-black bg-opacity-50 flex justify-center items-center">
             <div
                 ref={modalRef}
-                className="relative bg-[#272557] opacity-95 m-4 h-auto text-slate-400 z-200 p-6 rounded-lg shadow-lg max-w-lg w-full">
+                className="relative bg-[#272557] opacity-95 m-4 h-auto text-slate-400 z-200 p-3 pt-5 rounded-lg shadow-lg max-w-lg w-full">
 
-                <div className="mb-4">
+                <div className="mb-3">
                     <input 
                         id="name" 
                         ref={inputRef} 
@@ -71,19 +71,19 @@ const NameModal: React.FC<NameModalProps> = (props: NameModalProps) => {
                 <div className="float-right">
                     <button
                         type="submit"
-                        className="w-[1/2] text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                        className="w-[1/2] text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
                         onClick={handleSave}
                     >
                         Save
                     </button>
                     <button
-                        className="ml-2 text-white bg-slate-700 hover:bg-slate-800 focus:ring-4 focus:outline-none focus:ring-slate-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-slate-600 dark:hover:bg-slate-700 dark:focus:ring-blue-800"
+                        className="ml-2 text-white bg-slate-700 hover:bg-slate-800 focus:ring-4 focus:outline-none focus:ring-slate-300 font-medium rounded-lg text-sm px-5 py-2 text-center dark:bg-slate-600 dark:hover:bg-slate-700 dark:focus:ring-blue-800"
                         onClick={() => setInputValue('')}
                     >
                         Clear
                     </button>
                     <button
-                        className="ml-2 text-white bg-slate-700 hover:bg-slate-800 focus:ring-4 focus:outline-none focus:ring-slate-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-slate-600 dark:hover:bg-slate-700 dark:focus:ring-blue-800"
+                        className="ml-2 text-white bg-slate-700 hover:bg-slate-800 focus:ring-4 focus:outline-none focus:ring-slate-300 font-medium rounded-lg text-sm px-5 py-2 text-center dark:bg-slate-600 dark:hover:bg-slate-700 dark:focus:ring-blue-800"
                         onClick={props.onClose}
                     >
                         Cancel

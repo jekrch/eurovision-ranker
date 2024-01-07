@@ -441,7 +441,8 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
 
                 {activeTab === 'rankings' &&
                     <div className="mb-0">
-                        <div className=" mt-3">
+                        <p className="relative mb-[1em] mt-2 text-sm">Select a year and click links to see official final rankings</p>
+                        <div className=" mt-5 mb-2">
                             <div className="relative">
                                 <Dropdown
                                     className="z-50 w-20 mx-auto mb-2"
@@ -476,7 +477,7 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
                                     }
                                 </span>
                             </div>
-                            <p className="relative mb-[1em] mt-2 text-sm">(Select a year and click the link to see the final ranking in that year's finals)</p>
+
                             {/* <p><a className="text-link" href={getUrl("?r=envw4g.gmckyjib.dod16f.ca7.bhq&y=23&n=finals")}>2023 ESC finals</a></p>
                             <p><a className="text-link" href={getUrl("?r=ghde.bw1r7436myc.ef8.gbnktoq&y=22&n=finals")}>2022 ESC finals</a></p>
                             <p><a className="text-link" href={getUrl("?r=woftgn0y9r.h71e.bjv4.g.ea.a3dqh&y=21&n=finals")}>2021 ESC finals</a></p>

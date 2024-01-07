@@ -6,7 +6,8 @@ html {
   padding: env(safe-area-inset);
 }
 
-html, body {
+html,
+body {
   width: 100%;
   margin: 0;
   padding: 0;
@@ -15,11 +16,13 @@ html, body {
 
 .container {
   width: 100vw;
-  max-width: 100%; /* to prevent horizontal scroll */
+  max-width: 100%;
+  /* to prevent horizontal scroll */
 }
 
 .site-content {
-  max-height: 100vh; /* Fallback for browsers that do not support Custom Properties */
+  max-height: 100vh;
+  /* Fallback for browsers that do not support Custom Properties */
   max-height: calc(var(--vh, 1vh) * 100);
   display: flex;
   flex-direction: column;
@@ -69,9 +72,12 @@ code {
 }
 
 @keyframes glow {
-  0%, 100% {
+
+  0%,
+  100% {
     box-shadow: 0 0 15px #132b28, 0 0 30px #694fd1, 0 0 45px #a84fd1, 0 0 60px #4fd1c5;
   }
+
   50% {
     box-shadow: 0 0 30px #32193d, 0 0 60px #7c37c1, 0 0 90px #9f46b4, 0 0 120px #4fd1c5;
   }
@@ -83,58 +89,59 @@ code {
 
 /* #2c345f */
 .nav-diagonal-split-bg {
-  background: linear-gradient(
-    135deg, #13172b 60%, rgb(40, 53, 94) 40%
-  );
-} 
+  background: linear-gradient(135deg, #13172b 60%, rgb(40, 53, 94) 40%);
+}
 
 .houseUser {
-	margin-top: 0.15em;
-	height: 1em;
-	color: grey;
+  margin-top: 0.15em;
+  height: 1em;
+  color: grey;
 }
 
 .houseUser:hover {
-	opacity: 0.5 !important;
-	cursor: pointer;
+  opacity: 0.5 !important;
+  cursor: pointer;
 }
 
 .configCog {
-	margin-top: 0.15em;
-	height: 1em;
-	color: grey;
+  margin-top: 0.15em;
+  height: 1em;
+  color: grey;
 }
 
 .configCog:hover {
-	opacity: 0.5 !important;
-	cursor: pointer;
+  opacity: 0.5 !important;
+  cursor: pointer;
 }
 
 
 .configCog:hover {
-    -webkit-animation: spin 900ms none normal;
-    animation: spin 900ms none normal;
+  -webkit-animation: spin 900ms none normal;
+  animation: spin 900ms none normal;
 }
 
 @-webkit-keyframes spin {
-    0% {
-        -webkit-transform: rotate(0deg);
-        transform: rotate(0deg);
-    }
-    100% {
-        -webkit-transform: rotate(59deg);
-        transform: rotate(59deg);
-    }
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+
+  100% {
+    -webkit-transform: rotate(59deg);
+    transform: rotate(59deg);
+  }
 }
+
 @keyframes spin {
-    0% {
-        -webkit-transform: rotate(0deg);
-        transform: rotate(0deg);
-    }
-    100% {
-        -webkit-transform: rotate(59deg);
-        transform: rotate(59deg);
-    }
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+
+  100% {
+    -webkit-transform: rotate(59deg);
+    transform: rotate(59deg);
+  }
 }
 
 .donate-widget {
@@ -144,18 +151,18 @@ code {
 
 .text-link {
   cursor: pointer;
-  font-weight: 500; 
+  font-weight: 500;
   color: #3c72e7;
 }
 
 .text-link:hover {
-  color: #4a8df8; 
-  text-decoration: underline; 
+  color: #4a8df8;
+  text-decoration: underline;
 }
 
 .map-container {
-  width: 100%;   
-  height: 100%; 
+  width: 100%;
+  height: 100%;
   position: relative;
 }
 
@@ -166,8 +173,8 @@ code {
 
 .aspect-ratio-box {
   position: relative;
-  width: 100%; 
-  padding-top: 56.25%; 
+  width: 100%;
+  padding-top: 56.25%;
 }
 
 .aspect-ratio-box img {
@@ -180,8 +187,8 @@ code {
 
 @keyframes ripple {
   to {
-      transform: scale(4);
-      opacity: 0;
+    transform: scale(4);
+    opacity: 0;
   }
 }
 
@@ -189,9 +196,11 @@ code {
   0% {
     transform: scale(1);
   }
+
   50% {
-    transform: scale(1.3); 
+    transform: scale(1.3);
   }
+
   100% {
     transform: scale(1);
   }
@@ -206,13 +215,32 @@ code {
 }
 
 @keyframes tada {
-  0%, 83.33% { /* 10s out of 12s as static */
+
+  0%,
+  83.33% {
+    /* 10s out of 12s as static */
     transform: scale(1) rotate(0deg);
   }
-  85%, 90% { transform: scale(1) rotate(0deg); }
-  92.5%, 95%, 97.5% { transform: scale(1.1) rotate(3deg); }
-  93.75%, 96.25% { transform: scale(1.1) rotate(-3deg); }
-  100% { transform: scale(1) rotate(0deg); }
+
+  85%,
+  90% {
+    transform: scale(1) rotate(0deg);
+  }
+
+  92.5%,
+  95%,
+  97.5% {
+    transform: scale(1.1) rotate(3deg);
+  }
+
+  93.75%,
+  96.25% {
+    transform: scale(1.1) rotate(-3deg);
+  }
+
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
 }
 
 .tada-animation {
@@ -220,13 +248,20 @@ code {
 }
 
 @keyframes bounceRight {
-  0%, 91.67% { /* 11s out of 12s as static */
+
+  0%,
+  91.67% {
+    /* 11s out of 12s as static */
     transform: translateX(0);
   }
-  93.75%, 96.25% {
+
+  93.75%,
+  96.25% {
     transform: translateX(5px);
   }
-  97.5%, 100% {
+
+  97.5%,
+  100% {
     transform: translateX(0);
   }
 }
@@ -237,4 +272,74 @@ code {
 
 .max-w-50vw-6em {
   width: clamp(6em, 45vw, 11em);
+}
+
+.overlay {
+  /* position: fixed;
+  left: 0;
+  right: 0; */
+  top: var(--nav-height);
+  bottom: var(--edit-nav-height);
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+  transition: transform 0.4s ease-in-out, opacity 0.4s ease-in-out;
+  opacity: 1;
+}
+
+.overlay.slide-left {
+  transform: translateY(-100%);
+  opacity: 0;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0%;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 100%;
+  }
+}
+
+.slide-up-animation {
+  animation: slideUp 0.2s ease-in forwards;
+}
+
+/* Thanks Chris Smith for welcome overlay background animation
+https://codepen.io/chris22smith/pen/RZogMa */
+
+.overlay-bg {
+  animation: slide 3s ease-in-out infinite alternate;
+  background-image: linear-gradient(-60deg, #03B5AA 50%, #3B82F6 50%);
+  bottom: 0;
+  left: -50%;
+  opacity: .5;
+  position: fixed;
+  right: -50%;
+  top: 0;
+  z-index: -1;
+}
+
+.overlay-bg2 {
+  animation-direction: alternate-reverse;
+  animation-duration: 4s;
+}
+
+.overlay-bg3 {
+  animation-duration: 5s;
+}
+
+@keyframes slide {
+  0% {
+    transform: translateX(-25%);
+  }
+
+  100% {
+    transform: translateX(25%);
+  }
 }

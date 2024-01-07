@@ -17,11 +17,11 @@ export const tourSteps = [
   },
   {
     target: '.tour-step-5',
-    content: 'Drag countries around to change the order',
+    content: 'Drag countries to change the order',
   },
   {
     target: '.tour-step-6',
-    content: 'Click the TV icon to generate a youtube playlist from your ranking',
+    content: 'Click the TV icon to generate a YouTube playlist from your ranking',
   },
   {
     target: '.tour-step-7',

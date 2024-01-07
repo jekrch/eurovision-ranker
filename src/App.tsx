@@ -408,7 +408,7 @@ const App: React.FC = () => {
 
 
       <div className={classNames(
-        "site-content flex flex-col h-screen tour-step-12 tour-step-13 tour-step-14",
+        "site-content flex flex-col h-screen tour-step-12 tour-step-13 tour-step-14 normal-bg",
         { 'star-sky': theme.includes('ab') }
       )}>
 
@@ -504,7 +504,7 @@ const App: React.FC = () => {
                         ref={provided.innerRef}
                         className={
                           classNames(
-                            " overflow-y-auto overflow-x-hidden pt-3 bg-[#1d1b54] ",
+                            "overflow-y-auto overflow-x-hidden pt-3 bg-[#1d1b54]",
                             showUnranked ? "max-w-50vw-6em" : "w-[80vw] max-w-[30em]",
                             { "auroral-background": theme.includes("ab") }
                           )}

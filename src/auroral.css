@@ -2,7 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-
 .auroral-background {
   background: linear-gradient(-45deg, #311144, #070629, #44077d, #231f8d);
   background-size: 400% 400%;
@@ -21,14 +20,19 @@
   }
 }
 
+.normal-bg {
+  padding-bottom: env(safe-area-inset-bottom);
+  height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+  overflow: hidden;
+  max-height: -webkit-fill-available;
+  background: radial-gradient(ellipse at bottom, #28355E 0%,#090a0f 100%);
+}
+
 .star-sky {
-    /* padding-top: env(safe-area-inset-top);
-    padding-bottom: env(safe-area-inset-bottom); */
     padding-bottom: env(safe-area-inset-bottom);
     height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
     overflow: hidden;
     max-height: -webkit-fill-available;
-    /* max-height:100vh; */
     background: radial-gradient(ellipse at bottom, #1b2735 0%,#090a0f 100%);
 }
 

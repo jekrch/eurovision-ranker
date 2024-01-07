@@ -18,7 +18,7 @@ const Navbar: React.FC<NavbarProps> = ({ openModal, openConfigModal }) => {
     const rankedItems = useSelector((state: AppState) => state.rankedItems);
 
     return (
-        <nav className="nav-diagonal-split-bg bg-gray-800 text-white p-2 px-4 sticky top-0 z-50">
+        <nav className="nav-diagonal-split-bg bg-gray-800 text-white py-1 px-4 sticky top-0 z-50">
             <div className="container mx-auto flex justify-between items-center z-50">
                 <div className="text-lg tracking-tighter gradient-text pulse-color-on-load font-bold flex items-center">
                     <span className="product-name">Eurovision Ranker</span>

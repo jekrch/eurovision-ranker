@@ -81,9 +81,10 @@ code {
   animation: glow 10s ease-in-out infinite;
 }
 
+/* #2c345f */
 .nav-diagonal-split-bg {
   background: linear-gradient(
-    135deg, #13172b 60%, #2c345f 40%
+    135deg, #13172b 60%, rgb(40, 53, 94) 40%
   );
 } 
 
@@ -232,4 +233,8 @@ code {
 
 .bounce-right {
   animation: bounceRight 12s ease-out infinite;
+}
+
+.max-w-50vw-6em {
+  width: clamp(6em, 45vw, 11em);
 }

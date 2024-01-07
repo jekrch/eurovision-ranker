@@ -398,7 +398,7 @@ const App: React.FC = () => {
             }}
           >
 
-            <div className="flex flex-row justify-center gap-4 p-4">
+            <div className="flex flex-row justify-center gap-4 px-4 py-2">
               {/* Unranked Countries List */}
               {showUnranked && (
                 <div className="max-w-[50vw] overflow-y-auto flex-grow mr-1" >
@@ -467,8 +467,8 @@ const App: React.FC = () => {
                         ref={provided.innerRef}
                         className={
                           classNames(
-                            "overflow-y-auto overflow-x-hidden pt-3 bg-[#1d1b54]",
-                            showUnranked ? "max-w-[50vw]" : "w-[80vw] max-w-[30em]",
+                            "overflow-y-auto overflow-x-hidden pt-3 bg-[#1d1b54] ",
+                            showUnranked ? "max-w-50vw-6em" : "w-[80vw] max-w-[30em]",
                             { "auroral-background": theme.includes("ab") }
                           )}
                       >
@@ -523,7 +523,7 @@ const App: React.FC = () => {
                           <FaChevronRight
                             className={
                               classNames(
-                                "ml-2 mr-auto text-lg justify-center align-center bounce-right",
+                                "ml-2 mr-auto text-lg justify-center align-center bounce-right text-blue-300",
                                 { "tada-animation": showUnranked && rankedItems?.length }
                               )}
                           />

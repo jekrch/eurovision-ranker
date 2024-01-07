@@ -52,7 +52,7 @@ export const Card: FC<CardProps> = (props) => {
         props.rank && (
           props.isLargeView ? (
             <>
-              <div className="-my-2 flex-shrink-0 pb-[1px] mr-3 font-bold w-8 border-r-2 border-indigo-800 bg-indigo-800 bg-opacity-80 text-slate-300 font-bold tracking-tighter items-center justify-center flex text-xl -ml-[0.8em] rounded-sm -ml-4">
+              <div className="-my-2 flex-shrink-0 pb-[1px] mr-3 font-bold w-8 border-r-2 border-indigo-800 bg-blue-900 bg-opacity-80 text-slate-300 font-bold tracking-tighter items-center justify-center flex text-xl -ml-[0.8em] rounded-sm -ml-4">
                 {props.rank}
               </div>
               {country.key !== 'yu' ? (

@@ -83,13 +83,13 @@ const Dropdown: React.FC<DropdownProps> = ({ value, onChange, options, className
         <Menu.Items 
           as="div" 
           style={{ maxHeight: `${menuPosition.maxHeight}px`, overflowY: 'auto' }}
-          className="dropdown-menu absolute mt-2 w-[6em] rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none custom-scrollbar"
+          className="dropdown-menu absolute mt-2 w-[6em] rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none custom-scrollbar"
          >
-          <div className="py-1 bg-slate-600 bg-opacity-80">
+          <div className="py-1 bg-slate-600 bg-opacity-96">
             {showSearch &&
               <input
                 type="text"
-                className="w-full text-white px-4 py-2 text-sm font-normal bg-slate-800"
+                className="w-full text-slate-300 px-4 py-2 text-sm font-normal bg-slate-800"
                 placeholder="Search..."
                 value={filter}
                 onChange={(e) => {

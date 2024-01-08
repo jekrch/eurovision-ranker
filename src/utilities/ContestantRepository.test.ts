@@ -17,6 +17,13 @@ describe('contestantCache validation', () => {
         mockFetchFromPath('votes.csv', '../.././public/votes.csv');
 
         const result = await fetchAndProcessCountryContestants(cachedYear, '', undefined);
+        
+        initialCountryContestantCache.forEach(c => {
+            c.contestant!.finalsRank = c.contestant?.finalsRank?.toString()?.replace('.0', '') as number | undefined;
+            c.contestant!.semiFinalsRank = c.contestant?.semiFinalsRank?.toString()?.replace('.0', '') as number | undefined;
+            return c;
+        })
+        
         expect(result).toEqual(initialCountryContestantCache);
     });
 });

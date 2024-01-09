@@ -271,7 +271,7 @@ code {
 }
 
 .max-w-50vw-6em {
-  width: clamp(6em, 45vw, 11em);
+  width: clamp(6em, 45vw, 10.5em);
 }
 
 .overlay {

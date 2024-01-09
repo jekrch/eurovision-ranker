@@ -42,7 +42,8 @@ export const Card: FC<CardProps> = (props) => {
         props.className, "min-h-[2.5em] py-[0.4em] flex flex-row items-stretch !cursor-grabber whitespace-normal text-sm overflow-hidden shadow rounded border border-0.5 border-gray-400",
         props.isDragging ? "shadow-slate-400 shadow-sm border-solid" : "",
         !props.isDragging && props.rank === 1 ? "first-card-glow" : "",
-        props.rank ? "border-solid border-gray" : "border-dashed"
+        props.rank ? "border-solid border-gray" : "border-dashed",
+        !props.isLargeView && !props.isDeleteMode ? "pr-[1em]" : ""
       )}
 
       style={style}
@@ -134,11 +135,11 @@ export const Card: FC<CardProps> = (props) => {
       {props.isLargeView &&
         <div id="right-edge" className="flex-shrink-0 flex flex-col justify-between text-xl text-slate-500">
           {contestant?.youtube &&
-            <a href={contestant?.youtube} target="_blank" rel="noopener noreferrer" className='rounded text-slate-500 hover:text-slate-100 mr-[5px]'>
+            <a href={contestant?.youtube} target="_blank" rel="noopener noreferrer" className='rounded text-slate-500 hover:text-slate-100 mr-[0.3em]'>
               <FaTv className='text-xl' />
             </a>
           }
-          <div id="gripper" className="pl-[7px] -mb-[px]">
+          <div id="gripper" className="pl-[0.3em] -mb-[1px]">
             &#8942;&#8942;
           </div>
         </div>

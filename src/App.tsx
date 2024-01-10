@@ -489,7 +489,6 @@ const App: React.FC = () => {
                       className={
                         classNames(
                           "grid h-full max-h-full min-h-full grid-rows-[auto_1fr]",
-                          //{ "grid-rows-[auto_1fr]": (rankedItems?.length > 0) }
                         )}
                     >
                       <RankedItemsHeader
@@ -504,7 +503,7 @@ const App: React.FC = () => {
                         ref={provided.innerRef}
                         className={
                           classNames(
-                            "overflow-y-auto overflow-x-hidden pt-3 bg-[#1d1b54]",
+                            "overflow-y-auto overflow-x-hidden pt-3 bg-[#1d1b54] ranked-items-background",
                             showUnranked ? "max-w-50vw-6em" : "w-[80vw] max-w-[30em]",
                             { "auroral-background": theme.includes("ab") }
                           )}
@@ -547,7 +546,7 @@ const App: React.FC = () => {
                         {provided.placeholder}
                       </ul>
                       {(showUnranked && rankedItems?.length > 0) &&
-                        <div className="pl-2 rounded-b-md h-8 bg-blue-900 text-slate-300 items-center flex">
+                        <div className="pl-2 rounded-b-md h-8 bg-blue-900 text-slate-300 items-center flex shadow-md">
                           <IconButton
                             className={
                               classNames(
@@ -631,17 +630,18 @@ const App: React.FC = () => {
         styles={{
           overlay: { height: '100vh' },
           buttonNext: {
-            backgroundColor: '#3c82f6'
+            backgroundColor: '#3c82f6', 
+            color: '#dfe4eb'           
           },
           buttonBack: {
-            color: '#fff',
+            color: '#cbd5e1',
           },
           options: {
             zIndex: 10000,
             arrowColor: '#333',
             backgroundColor: '#333',
             primaryColor: '#f04',
-            textColor: '#fff',
+            textColor: '#cbd5e1',            
           }
         }}
       />

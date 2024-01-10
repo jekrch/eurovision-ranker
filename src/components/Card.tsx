@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import type { Dispatch, FC } from 'react';
+import type { FC } from 'react';
 import { FaTv } from 'react-icons/fa';
 
 import Flag from "react-world-flags"
@@ -7,17 +7,6 @@ import { CountryContestant } from '../data/CountryContestant';
 import { useSelector } from 'react-redux';
 import { AppState } from '../redux/types';
 import { voteCodeHasType } from '../utilities/VoteProcessor';
-
-const style = {
-  //padding: '0.5rem 1rem',
-  //marginBottom: '.5rem',
-  marginRight: '.5rem',
-  marginLeft: '.5rem',
-  textColor: "white",
-  //backgroundColor: 'gray-dark',
-  display: 'flex', // Enable Flexbox
-  //alignItems: 'stretch', // Align items vertically
-};
 
 export interface CardProps {
   rank?: number;
@@ -39,14 +28,12 @@ export const Card: FC<CardProps> = (props) => {
     <div
       key={props.rank ? 'ranked-' : 'unranked-' + 'card-' + country.name}
       className={classNames(
-        props.className, "min-h-[2.5em] py-[0.4em] flex flex-row items-stretch !cursor-grabber whitespace-normal text-sm overflow-hidden shadow rounded border border-0.5 border-gray-400",
+        props.className, "mx-[.5rem] min-h-[2.5em] py-[0.4em] flex flex-row items-stretch !cursor-grabber whitespace-normal text-sm overflow-hidden shadow rounded border border-0.5 border-gray-400",
         props.isDragging ? "shadow-slate-400 shadow-sm border-solid" : "",
         !props.isDragging && props.rank === 1 ? "first-card-glow" : "",
         props.rank ? "border-solid border-gray" : "border-dashed",
         !props.isLargeView && !props.isDeleteMode ? "pr-[1em]" : ""
       )}
-
-      style={style}
     >
 
       {

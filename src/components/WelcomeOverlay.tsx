@@ -23,6 +23,7 @@ const WelcomeOverlay: React.FC<WelcomeOverlayProps> = ({ handleGetStarted, handl
     return (
         <div
             className={`z-50 w-full h-full fixed top-0 left-0 flex items-center justify-center`} // bg-gray-900 transition-opacity duration-100 ${exiting ? 'bg-opacity-0' : 'bg-opacity-80'}`}
+            style={{ zIndex: 1000 }}
             onClick={handleClickOutside}
         >
             <div className={`overlay-bg transition-opacity duration-500 ${exiting ? 'opacity-0' : 'opacity-30'}`}></div>
@@ -33,19 +34,25 @@ const WelcomeOverlay: React.FC<WelcomeOverlayProps> = ({ handleGetStarted, handl
                 className={
                     classNames(
                         "flex flex-col justify-between z-50 overlay left-5 right-5 top-[3em] ",
-                        "bottom-[1em] rounded-xl absolute bg-[#1d2344] opacity-98 pb-6 pt-8",
+                        "bottom-[1em] rounded-xl absolute bg-[#1d2344] opacity-98 pb-6 pt-6",
                         "m-auto shadow-lg max-w-[20em] max-h-[20em] text-slate-400 opacity-96"
                     )}
                 style={{ zIndex: 300 }}
             >
-
-
                 <div className="text-slate-400 mx-8 mt-0">
-                    <p className="text-lg text-center font-bold tracking-tight text-slate-400">Welcome to <span className="gradient-text">Eurovision Ranker</span>!</p>
+                    <div className="text-md text-center font-semibold tracking-tight text-slate-400 mb-0 leading-tight">
+                        Welcome to
+                        <div className="mt-0">
+                            <span className="text-lg gradient-text font-bold">Eurovision Ranker <img
+                                src={`${process.env.PUBLIC_URL}/eurovision-heart.svg`}
+                                alt="Heart"
+                                className="w-5 h-5 ml-0 mb-1 inline pulse-on-load" /></span>
+                        </div>
+                    </div>
                 </div>
 
 
-                <div className="text-sm mx-8 my-4 mt-2 overflow-auto">
+                <div className="text-sm mx-8 my-4 mt-1 overflow-auto">
                     <div className="mb-2 italic text-sm">where you can...</div>
                     <ol className="list-none text-md space-y-[2px]">
                         <li className="flex items-start"> <FaList className="mt-1 mr-2 text-indigo-500" /> <span>rank contests going back to 1956</span></li>

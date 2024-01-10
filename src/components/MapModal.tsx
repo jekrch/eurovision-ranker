@@ -22,7 +22,7 @@ interface TooltipData {
 const MapModal: React.FC<MapModalProps> = ({ isOpen, onClose }) => {
     const dispatch: Dispatch<any> = useDispatch();
     const rankedItems = useSelector((state: AppState) => state.rankedItems);
-    
+
     let countryCodes = rankedItems.map(i => i.country.key.toUpperCase());
     const isHighlighted = (countryCode: string) => countryCodes.includes(countryCode);
     const [tooltipData, setTooltipData] = useState<TooltipData | null>(null);
@@ -30,10 +30,10 @@ const MapModal: React.FC<MapModalProps> = ({ isOpen, onClose }) => {
     const getColorByIndex = (countryCode: string) => {
         const index = countryCodes.indexOf(countryCode);
         const totalCountries = countryCodes.length;
-        const intensity = 1 - (index / totalCountries); 
+        const intensity = 1 - (index / totalCountries);
 
         // Lightest at the beginning, darkest at the end
-        const lightness = 100 - (intensity * 90); 
+        const lightness = 100 - (intensity * 90);
         return `hsl(210, 100%, ${lightness}%)`;
     };
 
@@ -50,21 +50,21 @@ const MapModal: React.FC<MapModalProps> = ({ isOpen, onClose }) => {
     }
 
     return (
-        <Modal 
-            className="fixed inset-0 z-10 overflow-y-auto pb-2 pt-5 px-2 min-w-[80vw] max-h-[80vh]" 
+        <Modal
+            className="fixed inset-0 z-10 overflow-y-auto pb-2 pt-5 px-2 min-w-[80vw] max-h-[80vh]"
             closeBtnClassName='mt-[0.6em] mr-[0.5em]'
             isOpen={isOpen} onClose={onClose}
         >
-            <div className="mb-1 -mt-2 mb-2 w-full font-strong text-center rounded-md ">Ranking heat map</div>
+            <div className="-mt-3 mb-2 w-full text-md font-strong text-center rounded-md ">Ranking heat map</div>
             <div className="">
                 <ComposableMap
-                    className="bg-black rounded-md w-full max-h-[60vh]"
+                    className="bg-black rounded-md w-full max-h-[60vh] shadow-md"
                     projectionConfig={{
                         scale: 800,
-                        center: [15, 50],        
+                        center: [15, 50],
                     }}
-                     //</div>style={{ width: "auto", height: "auto" }}>
-                    >
+
+                >
                     <ZoomableGroup>
                         <Geographies geography={geoJson}>
                             {({ geographies }: { geographies: any[] }) =>

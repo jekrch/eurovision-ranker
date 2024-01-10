@@ -27,7 +27,7 @@ const RankedItemsHeader: React.FC<IRankedItemsHeaderProps> = ({
     const rankedItems = useSelector((state: AppState) => state.rankedItems);
 
     return (
-        <div className="z-40 rounded-t-md w-full text-center font-bold bg-blue-900 text-slate-300 py-1 text-md tracking-tighter">
+        <div className="z-40 rounded-t-md w-full text-center font-bold bg-blue-900 text-slate-300 py-1 text-md tracking-tighter shadow-md">
             {showUnranked ? (
                 <div className="w-full m-auto flex items-center justify-center">
                     <Dropdown

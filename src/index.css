@@ -4,6 +4,10 @@
 
 html {
   padding: env(safe-area-inset);
+  /* padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom); */
 }
 
 html,
@@ -21,7 +25,8 @@ body {
 }
 
 .site-content {
-  max-height: 100vh;
+  /* max-height: 100vh; */
+  max-height: var(--app-height);
   /* Fallback for browsers that do not support Custom Properties */
   max-height: calc(var(--vh, 1vh) * 100);
   display: flex;

@@ -416,7 +416,8 @@ const App: React.FC = () => {
       )}
 
 
-      <div className={classNames(
+      <div 
+        className={classNames(
         "site-content flex flex-col h-screen tour-step-12 tour-step-13 tour-step-14 normal-bg",
         { 'star-sky': theme.includes('ab') }
       )}>

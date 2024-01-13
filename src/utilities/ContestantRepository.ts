@@ -6,6 +6,7 @@ import { Dispatch } from 'redux';
 import Papa from 'papaparse';
 import { assignVotesByCode, voteCodeHasSourceCountry } from "./VoteProcessor";
 import { cachedYear, initialCountryContestantCache } from "../data/InitialContestants";
+import { SongDetails } from "../data/SongDetails";
 
 export async function fetchCountryContestantsByYear(
   year: string,
@@ -180,6 +181,11 @@ async function getContestantsByYear(
   return await getContestantsForYear(year);
 }
 
+/**
+ * Returns all contestants for the provided year 
+ * @param year 
+ * @returns 
+ */
 export function getContestantsForYear(year: string): Promise<Contestant[]> {
   return new Promise((resolve, reject) => {
     fetch('/contestants.csv')
@@ -241,3 +247,39 @@ export function getContestantsForYear(year: string): Promise<Contestant[]> {
   });
 }
 
+export function getSongDetails(
+  year: string, 
+  songTitle: string
+): Promise<SongDetails | undefined> {
+
+  return new Promise((resolve, reject) => {
+
+    fetch('/contestants.csv')
+      .then(response => response.text())
+      .then(csvString => {
+
+        Papa.parse(csvString, {
+          header: true,
+          complete: (results: any) => {
+            const matchingRow = results.data.find(
+              (row: any) => row.year === year && row.song === songTitle
+            );
+
+            if (matchingRow) {
+              //console.log(matchingRow)
+              resolve({
+                lyrics: matchingRow.lyrics, 
+                composers: matchingRow.composers,
+                lyricists: matchingRow.lyricists
+              } as SongDetails);
+
+            } else {
+              resolve(undefined);
+            }
+          },
+          error: (error: any) => reject(error)
+        });
+      })
+      .catch(error => reject(error));
+  });
+}

@@ -1,12 +1,6 @@
 import classNames from 'classnames';
 import type { FC } from 'react';
-import { FaTv } from 'react-icons/fa';
-
-import Flag from "react-world-flags"
 import { CountryContestant } from '../data/CountryContestant';
-import { useSelector } from 'react-redux';
-import { AppState } from '../redux/types';
-import { voteCodeHasType } from '../utilities/VoteProcessor';
 
 export interface CardProps {
   rank?: number;
@@ -15,13 +9,9 @@ export interface CardProps {
   isDragging: boolean;
   isDeleteMode?: boolean;
   deleteCallBack?: (id: string) => void;
-  isLargeView?: boolean;
 }
 
 export const Card: FC<CardProps> = (props) => {
-  const vote = useSelector((state: AppState) => state.vote);
-
-  const contestant = props.countryContestant.contestant;
   const country = props.countryContestant.country;
 
   return (
@@ -32,107 +22,24 @@ export const Card: FC<CardProps> = (props) => {
         props.isDragging ? "shadow-slate-400 shadow-sm border-solid" : "",
         !props.isDragging && props.rank === 1 ? "first-card-glow" : "",
         props.rank ? "border-solid border-gray" : "border-dashed",
-        !props.isLargeView && !props.isDeleteMode ? "pr-[1em]" : ""
+        !props.isDeleteMode ? "pr-[1em]" : ""
       )}
     >
-
-      {
-        props.rank ? (
-          props.isLargeView ? (
-            <>
-              <div className="-my-2 flex-shrink-0 pb-[1px] mr-3 font-bold w-8 border-r-2 border-blue-900 bg-blue-900 bg-opacity-80 text-slate-300 tracking-tighter items-center justify-center flex text-xl rounded-sm">
-                {props.rank}
-              </div>
-
-              {country.key !== 'yu' ? (
-                <Flag code={country.key} className="w-12 mr-3 opacity-80" />
-              ) :
-                <div className="w-12 mr-3 opacity-80 my-auto">
-                  <img
-                    src="https://upload.wikimedia.org/wikipedia/commons/6/61/Flag_of_Yugoslavia_%281946-1992%29.svg"
-                    alt="Flag of Yugoslavia"
-                    className="w-full h-auto"
-                  />
-                </div>
-              }
-            </>
-          ) : (
-            <div className="flex-shrink-0 ml-2 mr-2 tracking-tighter items-center justify-center flex text-md rounded">
-              {props.rank}.
-            </div>
-          )
-        ) : ( <div className="w-3"></div>)
+      { props.rank ? (
+          <div className="flex-shrink-0 ml-2 mr-2 tracking-tighter items-center justify-center flex text-md rounded">
+            {props.rank}.
+          </div>
+        ) : (<div className="w-3"></div>)
       }
+
       {/* <i className={`z-0 float-right text-3xl ml-2 flag-icon -mr-2 ${props.country?.icon}`} /> */}
-      <div className={classNames("flex-grow text-slate-400", props.isLargeView ? "font-bold" : "font-normal my-auto")}>
+      <div className={classNames("flex-grow text-slate-400 font-normal my-auto")}>
         <div className={`overflow-hidden overflow-ellipsis ${(props.rank && props.isDeleteMode) && 'max-w-[3.9em]'}`}>
           <span className="overflow-hidden overflow-ellipsis">{country?.name}</span>
         </div>
-        {props.isLargeView &&
-          <>
-            {/* <i className={`z-1 float-right ml-3 flag-icon -mr-2 ${props.country?.icon}`} /> */}
 
-
-            <div className="flex flex-grow items-center justify-between font-normal">
-              <div>
-                {contestant ? (
-                  <>
-                    <span className="font-xs text-sm text-gray-500">
-                      {contestant?.artist}
-                    </span>
-                    <span className="ml-2 font-xs text-xs text-gray-500">
-                      {contestant.song?.length && !contestant.song?.includes("TBD") ? `"${contestant.song}"` : `${contestant.song}`}
-                    </span>
-
-                    <div className="mt-1 font-xs text-xs text-gray-400 mb-1 flex flex-wrap">
-                      {(contestant?.votes?.totalPoints !== undefined && voteCodeHasType(vote, 't')) &&
-                        <div className="flex items-center mr-2">
-                          <span className="text-gray-500">total:&nbsp;</span>
-                          <span>{`${contestant?.votes?.totalPoints}`}</span>
-                        </div>
-                      }
-                      {(contestant?.votes?.telePoints !== undefined && voteCodeHasType(vote, 'tv')) &&
-                        <div className="flex items-center mr-2">
-                          <span className="text-gray-500">tele:&nbsp;</span>
-                          <span>{`${contestant?.votes?.telePoints}`}</span>
-                        </div>
-                      }
-                      {(contestant?.votes?.juryPoints !== undefined && voteCodeHasType(vote, 'j')) &&
-                        <div className="flex items-center mr-2">
-                          <span className="text-gray-500">jury:&nbsp;</span>
-                          <span>{`${contestant?.votes?.juryPoints}`}</span>
-                        </div>
-                      }
-                    </div>
-
-                  </>
-                ) :
-                  <>
-                    <span className="font-xs text-xs text-gray-500 strong">
-                      Did not participate
-                    </span>
-                  </>
-                }
-              </div>
-            </div>
-          </>
-        }
       </div>
 
-      {props.isLargeView &&
-        <div id="right-edge" className="flex-shrink-0 flex flex-col justify-between text-xl text-slate-500">
-          {contestant?.youtube &&
-            <a href={contestant?.youtube} target="_blank" rel="noopener noreferrer" className='rounded text-slate-500 hover:text-slate-100 mr-[0.3em]'>
-              <FaTv className='text-xl' />
-            </a>
-          }
-          <div id="gripper" className="pl-[0.3em] -mb-[1px]">
-            &#8942;&#8942;
-          </div>
-        </div>
-      }
-      {/* <div className="bg-red-800 z-40 w-20">test</div> */}
-      
       {props.isDeleteMode &&
         <button
           className={classNames(

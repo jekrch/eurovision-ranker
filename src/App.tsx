@@ -25,6 +25,8 @@ import ConfigModal from './components/ConfigModal';
 import IconButton from './components/IconButton';
 import RankedItemsHeader from './components/RankedItemsHeader';
 import WelcomeOverlay from './components/WelcomeOverlay';
+import { DetailsCard } from './components/DetailsCard';
+import SongModal from './components/LyricsModal';
 
 const App: React.FC = () => {
   const [mainModalShow, setMainModalShow] = useState(false);
@@ -42,6 +44,8 @@ const App: React.FC = () => {
   const rankedItems = useSelector((state: AppState) => state.rankedItems);
   const unrankedItems = useSelector((state: AppState) => state.unrankedItems);
   const isDeleteMode = useSelector((state: AppState) => state.isDeleteMode);
+  const [isSongModalOpen, setIsSongModalOpen] = useState(false);
+  const [selectedCountryContestant, setSelectedCountryContestant] = useState<CountryContestant | undefined>(undefined);
 
   /**
    * Determines whether any rankings are set in the url
@@ -294,6 +298,7 @@ const App: React.FC = () => {
     updateQueryParams({ n: name });
   }, [name]);
 
+
   /**
    * Handler for the drop event. Either reposition an item within 
    * its source array or move it to the other array 
@@ -360,7 +365,6 @@ const App: React.FC = () => {
    * @param countryId 
    */
   function deleteRankedCountry(id: string) {
-    console.log(rankedItems);
     const index = rankedItems.findIndex(i => i.id === id);
     const [objectToMove] = rankedItems.splice(index, 1);
     const insertionIndex = unrankedItems.findIndex(
@@ -390,6 +394,11 @@ const App: React.FC = () => {
   function openConfigModal(tabName: string): void {
     setConfigModalTab(tabName);
     setConfigModalShow(true)
+  }
+
+  function openSongModal(countryCountestant: CountryContestant) {
+    setSelectedCountryContestant(countryCountestant);
+    setIsSongModalOpen(true);
   }
 
   return (
@@ -528,16 +537,27 @@ const App: React.FC = () => {
                                   {...provided.dragHandleProps}
                                   className={classNames("no-select m-2", { "mt-0": (index === 0) })}
                                 >
+                                  { showUnranked ? (
                                   <Card
                                     key={`card-${item.id.toString()}`}
                                     className="m-auto text-slate-400 bg- bg-[#03022d] no-select"
                                     rank={index + 1}
                                     countryContestant={item}
-                                    isLargeView={!showUnranked}
                                     isDeleteMode={showUnranked && isDeleteMode}
                                     deleteCallBack={deleteRankedCountry}
                                     isDragging={snapshot.isDragging}
                                   />
+                                  ) : 
+                                  <DetailsCard
+                                    key={`card-${item.id.toString()}`}
+                                    className="m-auto text-slate-400 bg- bg-[#03022d] no-select"
+                                    rank={index + 1}
+                                    countryContestant={item}  
+                                    openSongModal={() => openSongModal(item)}                                
+                                    isDragging={snapshot.isDragging}
+                                  />
+                                
+                                }
                                 </li>
                               )
                             }}
@@ -573,6 +593,26 @@ const App: React.FC = () => {
           </DragDropContext>
         </div>
 
+        <div className="hidden fixed bottom-[3em] left-[1em] z-50" style={{  }}>
+          <button 
+            onClick={() => {
+              dispatch(
+                setShowUnranked(!showUnranked)
+              );
+            }}
+            className={
+              "w-[4em] py-3 bg-blue-900 hover:bg-blue-800 z-50 relative" + 
+              "overflow-hidden text-slate-200 font-normal py-1 px-3 " +
+              "rounded-full border-slate-400 border-[0.1em] text-base shadow-lg " +
+              "bg-opacity-80"
+            }
+            >
+            <div className="text-slate-200">
+              {showUnranked ? 'VIEW' : 'EDIT'} 
+            </div>
+          </button>
+        </div>
+
         {(showUnranked && (!showOverlay || isOverlayExit)) &&
           <div className={`edit-nav-container ${(!showOverlay || isOverlayExit) && 'slide-up-animation'}`}>
             <EditNav
@@ -605,6 +645,11 @@ const App: React.FC = () => {
       <MapModal
         isOpen={mapModalShow}
         onClose={() => { setMapModalShow(false) }}
+      />
+      <SongModal
+          isOpen={isSongModalOpen}
+          countryContestant={selectedCountryContestant}
+          onClose={() => setIsSongModalOpen(false)}
       />
       <ConfigModal
         tab={configModalTab}

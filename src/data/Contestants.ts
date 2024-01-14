@@ -26,7 +26,7 @@ export const contestants2024: Contestant[] = [
   { countryKey: 'az', artist: 'TBD', song: '' }, // Azerbaijan
   { countryKey: 'be', artist: 'Mustii', song: 'TBD Feb 24' }, // Belgium
   { countryKey: 'hr', artist: 'TBD Feb 24', song: '' }, // Croatia
-  { countryKey: 'cy', artist: 'Silia Kapsis', song: '' }, // Cyprus
+  { countryKey: 'cy', artist: 'Silia Kapsis', song: 'Liar' }, // Cyprus
   { countryKey: 'cz', artist: 'Aiko', song: 'Pedestal', youtube: 'https://www.youtube.com/watch?v=5DbRldMKFUU' }, // Czechia
   { countryKey: 'dk', artist: 'TBD Feb 24', song: '' }, // Denmark
   { countryKey: 'ee', artist: 'TBD Feb 24', song: '' }, // Estonia

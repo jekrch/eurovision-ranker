@@ -60,7 +60,9 @@ export function fetchVotesForYear(
 }
 
 
-export function fetchDistinctFromCountryIdsForYear(year: string): Promise<string[]> {
+export function fetchDistinctFromCountryIdsForYear(
+  year: string
+): Promise<string[]> {
   year = sanitizeYear(year);
 
   return new Promise((resolve, reject) => {

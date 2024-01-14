@@ -40,9 +40,12 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
     const [exportTypeSelection, setExportTypeSelection] = useState('Text');
     const [rankingYear, setRankingYear] = useState(year);
     const [voteSource, setVoteSource] = useState('All');
-    const currentDomain = window.location.origin; // Get the current domain
-    const currentPath = window.location.pathname; // Get the current path
-    const voteSourceOptions = ['All', ...countries.sort((a, b) => a.name.localeCompare(b.name)).map(c => c.name)];
+    const [voteSourceOptions, setVoteSourceOptions] = useState<string[]>(
+        ['All', ...countries.sort((a, b) => a.name.localeCompare(b.name)).map(c => c.name)]
+    );
+    const currentDomain = window.location.origin;
+    const currentPath = window.location.pathname;
+
     const exportTypeOptions = Object.values(EXPORT_TYPES).map(exportType => exportType.name);
 
     function getVoteTypeOption(voteCode: string) {
@@ -245,6 +248,10 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
         const handleYearUpdate = async () => {
             let yearContestants: CountryContestant[] = await fetchCountryContestantsByYear(rankingYear);
 
+            setVoteSourceOptions(
+                ['All', ...yearContestants.map(cc => cc.country).sort((a, b) => a.name.localeCompare(b.name)).map(c => c.name)]
+            )
+
             let hasTeleVotes = hasAnyTeleVotes(yearContestants)
             setHasTeleVotes(hasTeleVotes);
 
@@ -263,9 +270,26 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
     async function getSortedRankingCode(
         voteYear: string,
         voteType: string,
-        round: string
+        round: string,
+        voteSource?: string
     ) {
-        let countryContestants: CountryContestant[] = await fetchCountryContestantsByYear(voteYear);
+        let voteCode = undefined;
+        let sourceCountryKey = undefined;
+
+        if (voteSource?.length && voteSource !== 'All') {
+            sourceCountryKey = countries.find(c => c.name == voteSource)?.key;
+
+            if (!sourceCountryKey) {
+                console.error('Unable to find vote source: ' + voteSource);
+            } else {
+                voteCode = `${round}-${voteType}-${sourceCountryKey}`;
+            }
+        }
+
+        let countryContestants: CountryContestant[] = await fetchCountryContestantsByYear(
+            voteYear,
+            voteCode
+        );
 
         // for 1956 we can only go by rank (1 vs 2) since 
         // there were no votes, only a singular winner
@@ -274,7 +298,7 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
             // since there's only 1 winner and everyone else, I'm choosing 
             // to only return the winner so I don't muck up my rank analysis/
             // comparison features down the road 
-            
+
             // countryContestants.sort(
             //     (a, b) => (
             //         a.contestant!.finalsRank! -
@@ -282,15 +306,16 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
             //     )   
             // );
             return countryContestants.filter(
-                    cc => cc.contestant?.finalsRank!.toString() === '1'
-                ).map(cc => cc.id).join('');
+                cc => cc.contestant?.finalsRank!.toString() === '1'
+            ).map(cc => cc.id).join('');
         }
 
         countryContestants = await sortByVotes(
             countryContestants,
             voteYear,
             voteType,
-            round
+            round,
+            sourceCountryKey
         );
 
         const sortedContestants = countryContestants.filter(
@@ -298,47 +323,100 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
         );
 
         // generate the ranking param
-        let concatenatedIds = sortedContestants.map(cc => cc.id).join('');
-        return concatenatedIds;
+        return sortedContestants.map(cc => cc.id).join('');
     }
 
+    function getSourceCountryKey(voteSource: string) {
+
+        if (voteSource?.length && voteSource !== 'All') {
+            const sourceCountryKey = countries.find(c => c.name == voteSource)?.key;
+
+            if (!sourceCountryKey?.length) {
+                console.error('Source country not found for ' + voteSource);
+            }
+
+            return sourceCountryKey;
+        }
+    }
     async function openTotalRanking() {
         const voteYear = rankingYear ?? year;
 
         let concatenatedIds = await getSortedRankingCode(
-            voteYear, 'total', 'final'
+            voteYear, 'total', 'final', voteSource
         );
 
         goToUrl(
-            `?r=${concatenatedIds}&y=${voteYear.substring(2, 4)}&n=Final&v=f-t`
+            `?r=${concatenatedIds}&` +
+            `y=${voteYear.substring(2, 4)}&` +
+            `n=Final${getSourceCountryPostfix(voteSource)}&` +
+            `v=${getVoteCode('f', 't', voteSource)}`
         )
     }
 
     async function openTotalTelevoteRanking() {
+
         const voteYear = rankingYear ?? year;
 
         let concatenatedIds = await getSortedRankingCode(
-            voteYear, 'televote', 'final'
+            voteYear, 'televote', 'final', voteSource
         );
 
-        //console.log(`?r=${concatenatedIds}&y=${voteYear.substring(2, 4)}&n=Final+Televote&v=f-tv`)
         goToUrl(
-            `?r=${concatenatedIds}&y=${voteYear.substring(2, 4)}&n=Final+Televote&v=f-tv`
+            `?r=${concatenatedIds}&` +
+            `y=${voteYear.substring(2, 4)}&` +
+            `n=Final+Televote${getSourceCountryPostfix(voteSource)}&` +
+            `v=${getVoteCode('f', 'tv', voteSource)}`
         )
     }
 
     async function openTotalJuryRanking() {
+
         const voteYear = rankingYear ?? year;
 
         let concatenatedIds = await getSortedRankingCode(
-            voteYear, 'jury', 'final'
+            voteYear, 'jury', 'final', voteSource
         );
 
         goToUrl(
-            `?r=${concatenatedIds}&y=${voteYear.substring(2, 4)}&n=Final+Jury+Vote&v=f-j`
+            `?r=${concatenatedIds}` +
+            `&y=${voteYear.substring(2, 4)}&` +
+            `n=Final+Jury+Vote${getSourceCountryPostfix(voteSource)}&` +
+            `v=${getVoteCode('f', 'j', voteSource)}`
         )
     }
 
+    /**
+     * Returns the vote code param for the provided round, type, and source (country)
+     * 
+     * @param round 
+     * @param voteType 
+     * @param voteSource 
+     * @returns 
+     */
+    function getVoteCode(
+        round: string,
+        voteType: string,
+        voteSource: string
+    ) {
+
+        let voteCode = `${round}-${voteType}`;
+
+        const countryKey = getSourceCountryKey(voteSource);
+
+        if (countryKey?.length) {
+            voteCode += `-${countryKey}`;
+        }
+
+        return voteCode;
+    }
+
+    function getSourceCountryPostfix(sourceCountry?: string) {
+        if (!sourceCountry?.length || sourceCountry === 'All') {
+            return '';
+        }
+
+        return `+from+${sourceCountry.replaceAll(' ', '+')}`;
+    }
     //if (!props.isOpen) return null;
 
     return (
@@ -391,7 +469,7 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
                                         checked={voteCodeHasType(vote, 'tv')}
                                         onChange={c => { onVoteTypeInputChanged('tv', c); }}
                                         label="Tele"
-                                        className="ml-[1em]"
+                                        className="ml-[0.5em]"
                                     />
 
                                     <Checkbox
@@ -399,7 +477,7 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
                                         checked={voteCodeHasType(vote, 'j')}
                                         onChange={c => { onVoteTypeInputChanged('j', c); }}
                                         label="Jury"
-                                        className="ml-[1em]"
+                                        className="ml-[0.5em]"
                                     />
                                 </span>
                                 {/* hidden for now */}
@@ -407,7 +485,7 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
                                     <span className="ml-2 text-sm">{'from'}</span>
                                     <Dropdown
                                         key="country-selector"
-                                        className="z-50 ml-4 w-[6em] w-auto mx-auto mb-2"  // Adjusted for Tailwind (w-[5em] to w-20)
+                                        className="z-50 ml-4 w-[6em] mx-auto mb-2"
                                         menuClassName="w-auto"
                                         value={voteSource}
                                         onChange={s => { setVoteSource(s); }}
@@ -419,12 +497,12 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
                         </div>
 
                         <div>
-                            <h4 className="font-bold mb-[1em] mt-[0em]">Theme</h4>
+                            <h4 className="font-bold mb-[0.7em] mt-[0em]">Theme</h4>
 
                             <div className="">
                                 <Dropdown
                                     key="theme-selector"
-                                    className="ml-5 z-50 w-30 h-0 mx-auto mb-3"  // Adjusted for Tailwind (w-[5em] to w-20)
+                                    className="ml-5 z-50 w-30 mx-auto mb-3"  // Adjusted for Tailwind (w-[5em] to w-20)
                                     menuClassName=""
                                     value={themeSelection}
                                     onChange={v => { onThemeInputChanged(v); }}
@@ -441,9 +519,13 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
 
                 {activeTab === 'rankings' &&
                     <div className="mb-0">
-                        <p className="relative mb-[1em] mt-2 text-sm">Select a year and click links to see official final rankings</p>
-                        <div className=" mt-5 mb-2">
-                            <div className="relative">
+                        <p className="relative mb-[1em] mt-2 text-sm">Select a year and voting country, then click one of the buttons to see official final rankings</p>
+                        <div className="mt-5 mb-[1.5em]">
+
+                            <span className="font-bold ml-0 whitespace-nowrap">ESC final rankings</span>
+
+                            {/* <div className="mt-[0.7em] font-semibold ml-0 whitespace-nowrap">Contest year and voting country</div> */}
+                            <div className="relative mt-[0.7em]">
                                 <Dropdown
                                     className="z-50 w-20 mx-auto mb-2"
                                     menuClassName=""
@@ -452,30 +534,45 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
                                     options={supportedYears.filter(i => i !== '2024' && i !== '2020')}
                                     showSearch={true}
                                 />
+                                <span className="ml-2 text-sm">{'from'}</span>
 
-                                <span className="font-bold ml-2 whitespace-nowrap">ESC finals</span>
+                                <Dropdown
+                                    key="country-selector"
+                                    className="z-50 ml-3 mx-auto mb-2"
+                                    menuClassName="w-auto"
+                                    value={voteSource}
+                                    onChange={s => { setVoteSource(s); }}
+                                    options={voteSourceOptions}
+                                    showSearch={true}
+                                />
 
-                                <span className="">
-                                    <span
-                                        onClick={openTotalRanking}
-                                        className="text-link ml-2">
-                                        total
+
+                                <div className="mt-2 ml-0">
+
+                                    <span className="">
+                                        <IconButton
+                                            onClick={openTotalRanking}
+                                            className="pl-[1em] pr-[1em] rounded-md"
+                                            title="total"
+                                        />
+                                        {hasTeleVotes &&
+                                            <IconButton
+                                                onClick={openTotalTelevoteRanking}
+                                                className="ml-3 pl-[1em] pr-[1em] rounded-md"
+                                                title="televote"
+                                            />
+                                        }
+                                        {hasJuryVotes &&
+                                            <IconButton
+                                                onClick={openTotalJuryRanking}
+                                                className="ml-3 pl-[1em] pr-[1em] rounded-md"
+                                                title="jury"
+                                            />
+
+                                        }
                                     </span>
-                                    {hasTeleVotes &&
-                                        <span
-                                            onClick={openTotalTelevoteRanking}
-                                            className="text-link ml-2">
-                                            televote
-                                        </span>
-                                    }
-                                    {hasJuryVotes &&
-                                        <span
-                                            onClick={openTotalJuryRanking}
-                                            className="text-link ml-2">
-                                            jury
-                                        </span>
-                                    }
-                                </span>
+
+                                </div>
                             </div>
 
                             {/* <p><a className="text-link" href={getUrl("?r=envw4g.gmckyjib.dod16f.ca7.bhq&y=23&n=finals")}>2023 ESC finals</a></p>
@@ -483,14 +580,14 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
                             <p><a className="text-link" href={getUrl("?r=woftgn0y9r.h71e.bjv4.g.ea.a3dqh&y=21&n=finals")}>2021 ESC finals</a></p>
                             <p><a className="text-link" href={getUrl("?r=3w9fe45.ectklj0.coa.b.amrdv.fqh&y=19&n=finals")}>2019 ESC finals</a></p> */}
                         </div>
-                        <p className=""><a className="text-link text-sm mb-[3em]" href={getUrl("?r=ikd.gt4on&y=23&n=Your+Dev%27s+Personal+Favs")}>My personal favs from 2023 :-)</a></p>
+                        {/* <p className=""><a className="text-link text-sm mb-[3em]" href={getUrl("?r=ikd.gt4on&y=23&n=Your+Dev%27s+Personal+Favs")}>My personal favs from 2023 :-)</a></p> */}
                     </div>
                 }
                 {activeTab === 'export' &&
                     <div className="mb-0">
                         <div className="mb-[1.5em]">
                             <IconButton
-                                className="bg-blue-500 hover:bg-blue-700 text-white font-normal py-1 pl-[0.7em] ml-0 pr-[0.9em] rounded-md text-xs mr-0"
+                                className="bg-blue-500 hover:bg-blue-700 text-white font-normal pl-[0.7em] ml-0 rounded-md text-xs py-[0.5em] px-[1em]"
                                 onClick={copyUrlToClipboard}
                                 icon={faCopy}
                                 title='Copy URL to Clipboard'
@@ -499,7 +596,7 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
 
                         <Dropdown
                             key="type-selector"
-                            className="z-50 w-20 h-10 mx-auto" 
+                            className="z-50 w-20 h-10 mx-auto"
                             menuClassName=""
                             value={exportTypeSelection}
                             onChange={t => { setExportTypeSelection(t); }}
@@ -507,19 +604,19 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
                             showSearch={false}
                         />
                         <div>
-                        <IconButton
-                            className="ml-0 bg-blue-500 hover:bg-blue-700 text-white font-normal py-1 pl-[0.7em] ml-0 pr-[0.9em] rounded-md text-xs mr-0"
-                            onClick={download}
-                            icon={faDownload}
-                            title='Download'
-                        />
+                            <IconButton
+                                className="ml-0 bg-blue-500 hover:bg-blue-700 text-white font-normal pl-[0.7em] rounded-md text-xs py-[0.5em] pr-[1em]"
+                                onClick={download}
+                                icon={faDownload}
+                                title='Download'
+                            />
 
-                        <IconButton
-                            className="ml-4 bg-blue-500 hover:bg-blue-700 text-white font-normal py-1 pl-[0.7em] ml-0 pr-[0.9em] rounded-md text-xs mr-0"
-                            onClick={copyToClipboard}
-                            icon={faCopy}
-                            title='Copy to Clipboard'
-                        />
+                            <IconButton
+                                className="ml-4 bg-blue-500 hover:bg-blue-700 text-white font-normal pl-[0.7em] rounded-md text-xs py-[0.5em] pr-[1em]"
+                                onClick={copyToClipboard}
+                                icon={faCopy}
+                                title='Copy to Clipboard'
+                            />
                         </div>
                         <Toaster
                             toastOptions={{

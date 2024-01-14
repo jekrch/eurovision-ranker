@@ -86,9 +86,9 @@ const SongModal: React.FC<SongModalProps> = (props: SongModalProps) => {
         <Modal
             isOpen={props.isOpen}
             onClose={props.onClose}
-            className="z-50 select-text">
+            className="z-50 select-text min-h-[20em]">
 
-            <div className="-mt-[0.5em] mr-[1.2em] mb-3 font-semibold text-base text-slate-300">
+            <div className="-mt-[0.5em] mr-[1.2em] mb-3 font-semibold text-base text-slate-[400px]">
                 {props.countryContestant?.country.name} - {contestant?.artist} - "{contestant?.song}"
             </div>
 

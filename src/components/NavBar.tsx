@@ -20,13 +20,20 @@ const Navbar: React.FC<NavbarProps> = ({ openModal, openConfigModal }) => {
     return (
         <nav className="nav-diagonal-split-bg bg-gray-800 text-white py-1 px-4 sticky top-0 z-50">
             <div className="container mx-auto flex justify-between items-center z-50">
-                <div className="text-lg tracking-tighter gradient-text pulse-color-on-load font-bold flex items-center">
-                    <span className="product-name">Eurovision Ranker</span>
-                    <img
-                        src={`${process.env.PUBLIC_URL}/eurovision-heart.svg`}
-                        alt="Heart"
-                        className="w-4 h-4 ml-2 pulse-on-load" />
+                <div className="flex items-center flex-wrap">
+                    <div className="items-center -mb-1">
+                        <span className="inline gradient-text product-name">
+                            Eurovision Ranker
+                        </span>
+                        <img
+                            src={`${process.env.PUBLIC_URL}/eurovision-heart.svg`}
+                            alt="Heart"
+                            style={{ display: 'inline', verticalAlign: 'middle' }}
+                            className="ml-[0.2em] mb-1 w-5 h-5 pulse-on-load" />
+                    </div>
+
                 </div>
+
                 <ul className="flex space-x-2">
                     <li>
                         <div className="flex items-center">
@@ -34,7 +41,7 @@ const Navbar: React.FC<NavbarProps> = ({ openModal, openConfigModal }) => {
                             <IconButton
                                 className={
                                     classNames(
-                                        "tour-step-8 bg-blue-500 hover:bg-blue-700 text-white font-normal py-1 pl-[0.7em] pr-[0.9em] rounded-full text-xs mr-0 w-[5em]", 
+                                        "tour-step-8 bg-blue-500 hover:bg-blue-700 text-white font-normal py-1 pl-[0.7em] pr-[0.9em] rounded-full text-xs mr-0 w-[5em]",
                                         //{"tada-animation" : showUnranked && rankedItems?.length}
                                     )
                                 }

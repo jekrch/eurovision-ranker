@@ -24,6 +24,12 @@ body {
   /* to prevent horizontal scroll */
 }
 
+.product-name {
+  font-size: 1.225rem; 
+  font-weight: bolder; 
+  letter-spacing: -0.045em; 
+}
+
 .site-content {
   /* max-height: 100vh; */
   max-height: var(--app-height);

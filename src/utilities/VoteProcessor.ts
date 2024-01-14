@@ -27,7 +27,12 @@ export async function sortByVotes(
                   (getContestantVoteFieldValue(a.contestant?.votes, voteTypeFieldName))   
     );
 
-    return countryContestants;
+    return countryContestants.filter(
+        // filter out any countries with 0 votes
+        v => {
+            return getContestantVoteFieldValue(v.contestant?.votes, voteTypeFieldName) > 0;
+        }
+    );
 }
 
 /**

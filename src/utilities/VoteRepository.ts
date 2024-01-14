@@ -60,4 +60,29 @@ export function fetchVotesForYear(
 }
 
 
+export function fetchDistinctFromCountryIdsForYear(year: string): Promise<string[]> {
+  year = sanitizeYear(year);
+
+  return new Promise((resolve, reject) => {
+    fetch('/votes.csv')
+      .then(response => response.text())
+      .then(csvString => {
+        Papa.parse(csvString, {
+          header: true,
+          complete: (results: any) => {
+            const fromCountryIds = results.data
+              .filter((row: any) => row.year === year)
+              .map((row: any) => row.from_country_id)
+              .filter((value: string, index: number, self: string[]) => self.indexOf(value) === index); // Removing duplicates
+
+            resolve(fromCountryIds);
+          },
+          error: (error: any) => reject(error)
+        });
+      })
+      .catch(error => reject(error));
+  });
+}
+
+
 

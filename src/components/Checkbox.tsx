@@ -34,7 +34,7 @@ const Checkbox: React.FC<CheckboxProps> = ({ checked, onChange, label, className
                     </svg>
                 </span>
             </label>
-            <span className="text-slate-300 text-sm">{label}</span>
+            <span className="text-slate-400 text-sm">{label}</span>
         </div>
     );
 };

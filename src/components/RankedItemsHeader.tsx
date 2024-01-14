@@ -32,6 +32,7 @@ const RankedItemsHeader: React.FC<IRankedItemsHeaderProps> = ({
                 <div className="w-full m-auto flex items-center justify-center">
                     <Dropdown
                         className="tour-step-1 w-[5em]"
+                        buttonClassName='!h-[1.8em]'
                         value={year}
                         onChange={y => { dispatch(setYear(y)); }}
                         options={supportedYears}

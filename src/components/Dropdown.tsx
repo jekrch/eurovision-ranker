@@ -7,19 +7,20 @@ import { createPortal } from 'react-dom';
 type DropdownProps = {
   className?: string;
   menuClassName?: string;
+  buttonClassName?: string;
   value: string;
   onChange: (value: string) => void;
   options: string[];
   showSearch: boolean;
 };
 
-const Dropdown: React.FC<DropdownProps> = ({ value, onChange, options, className, menuClassName, showSearch }) => {
+const Dropdown: React.FC<DropdownProps> = ({ value, onChange, options, className, menuClassName, showSearch, buttonClassName }) => {
   const [filter, setFilter] = useState('');
   const buttonRef = useRef<HTMLButtonElement>(null);
   const [menuPosition, setMenuPosition] = useState({
     top: 0, 
     left: 0, 
-    maxHeight: 300 // a default max height, or you can start with 0
+    maxHeight: 300 
   });
   const filteredOptions = options.filter(option =>
     filter?.length ? option.toLowerCase().includes(filter.toLowerCase()) : true
@@ -54,7 +55,13 @@ const Dropdown: React.FC<DropdownProps> = ({ value, onChange, options, className
           onClick={(e) => {
             updateMenuPosition();
           }}
-          className={classNames("inline-flex w-full justify-center gap-x-1.5 rounded-md bg-slate-700 bg-opacity-10 px-3 py-[0.2em] h-6 text-sm font-bold text-gray-400 shadow-sm ring-1 ring-inset ring-gray-400 hover:bg-opacity-30", "h-[1.8em]")}>
+          className={classNames(
+            "inline-flex w-full justify-center gap-x-1.5 rounded-md",
+            "bg-slate-700 bg-opacity-10 px-3 py-[0.2em] h-6 text-sm font-bold",
+            "text-gray-400 shadow-sm ring-1 ring-inset ring-gray-400 hover:bg-opacity-30",
+            "h-[2em] items-center", 
+            buttonClassName
+          )}>
           {value}
           <ChevronDownIcon className="-mr-1 h-5 w-5 text-gray-400" aria-hidden="true" />
         </Menu.Button>

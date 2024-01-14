@@ -402,7 +402,7 @@ const App: React.FC = () => {
   }
 
   return (
-    <div className="overflow-hidden">
+    <div className="overflow-hidden font-sans">
 
       {showOverlay && (
         <WelcomeOverlay
@@ -567,11 +567,11 @@ const App: React.FC = () => {
                         {provided.placeholder}
                       </ul>
                       {(showUnranked && rankedItems?.length > 0) &&
-                        <div className="pl-2 rounded-b-md h-8 bg-blue-900 text-slate-300 items-center flex shadow-md">
+                        <div className="pl-2 rounded-b-md h-8 bg-[#344ea3] text-slate-300 items-center flex shadow-md">
                           <IconButton
                             className={
                               classNames(
-                                "tour-step-4 ml-auto bg-blue-600 hover:bg-blue-700 text-white font-normal py-1 pl-[0.7em] pr-[0.9em] rounded-md text-xs mr-0 w-[6em]",
+                                "tour-step-4 ml-auto bg-blue-600 hover:bg-blue-700 text-white font-normal py-1 pl-[0.7em] pr-[0.9em] rounded-md text-xs mr-0 w-[6.2em]",
                                 { "tada-animation": showUnranked && rankedItems?.length }
                               )}
                             onClick={() => dispatch(setShowUnranked(!showUnranked))}

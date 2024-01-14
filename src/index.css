@@ -2,8 +2,25 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url(
+  'https://fonts.googleapis.com/css2?family=Francois:wght@400;700&display=swap'
+);
+
+
+@import url(
+  'https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap'
+);
+
+.product-name {
+  font-size: 1.325rem; 
+  font-weight: bolder; 
+  letter-spacing: -0.045em; 
+  font-family: 'Francois', cursive; 
+}
+
+
 html {
-   padding: env(safe-area-inset); 
+  padding: env(safe-area-inset); 
   /* padding-left: env(safe-area-inset-left);
   padding-right: env(safe-area-inset-right);
   padding-top: env(safe-area-inset-top);
@@ -94,7 +111,7 @@ code {
 
 /* #2c345f */
 .nav-diagonal-split-bg {
-  background: linear-gradient(135deg, #13172b 60%, rgb(40, 53, 94) 40%);
+  background: linear-gradient(135deg, #13172b 60%, #28355e 40%);
 }
 
 .houseUser {

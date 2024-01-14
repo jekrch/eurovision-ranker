@@ -52,7 +52,7 @@ const RankedItemsHeader: React.FC<IRankedItemsHeaderProps> = ({
                             <FaGlobe className='text-xl tour-step-7' />
                         </a>
                     )}
-                    <div className="justify-center w-full ml-2">
+                    <div className="justify-center w-full ml-2 mr-2">
                         {year}
                         {name && (
                             <span className="font-bold text-slate-400 text-md"> - {name}</span>

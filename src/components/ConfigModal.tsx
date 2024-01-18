@@ -37,7 +37,7 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
     const [themeSelection, setThemeSelection] = useState('None');
     const [hasJuryVotes, setHasJuryVotes] = useState(false);
     const [hasTeleVotes, setHasTeleVotes] = useState(false);
-    const [activeTab, setActiveTab] = useState('display');//props.tab);
+    const [activeTab, setActiveTab] = useState(props.tab);
     const [exportTypeSelection, setExportTypeSelection] = useState('Text');
     const [rankingYear, setRankingYear] = useState(year);
     const [voteSource, setVoteSource] = useState('All');
@@ -246,7 +246,7 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
     }
 
     useEffect(() => {
-        //setActiveTab(props.tab);
+        setActiveTab(props.tab);
         
         //setActiveTab('export');
     }, [props.tab, props.isOpen]);

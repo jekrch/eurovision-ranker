@@ -27,12 +27,17 @@ export async function sortByVotes(
                   (getContestantVoteFieldValue(a.contestant?.votes, voteTypeFieldName))   
     );
 
-    return countryContestants.filter(
-        // filter out any countries with 0 votes
-        v => {
-            return getContestantVoteFieldValue(v.contestant?.votes, voteTypeFieldName) > 0;
-        }
-    );
+    // if there is a source country, filter out 0 votes, otherwise, keep them
+    if (fromCountryKey?.length) {
+        return countryContestants.filter(
+            // filter out any countries with 0 votes
+            v => {
+                return getContestantVoteFieldValue(v.contestant?.votes, voteTypeFieldName) > 0;
+            }
+        );
+    } else {
+        return countryContestants;
+    }
 }
 
 /**

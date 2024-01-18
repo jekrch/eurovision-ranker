@@ -514,7 +514,7 @@ const App: React.FC = () => {
                         className={
                           classNames(
                             "overflow-y-auto overflow-x-hidden pt-3 bg-[#1d1b54] ranked-items-background w-full",
-                            showUnranked ? "max-w-50vw-6em" : "w-[80vw] max-w-[30em]",
+                            showUnranked ? "max-w-50vw-6em" : "w-[80vw] max-w-[30em] min-w-[15em]",
                             { "auroral-background": theme.includes("ab") }
                           )}
                       >

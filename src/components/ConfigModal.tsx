@@ -10,9 +10,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '../redux/types';
 import { fetchCountryContestantsByYear } from '../utilities/ContestantRepository';
 import { CountryContestant } from '../data/CountryContestant';
-import { hasAnyJuryVotes, hasAnyTeleVotes, sortByVotes, updateVoteTypeCode, voteCodeHasType } from '../utilities/VoteProcessor';
+import { assignVotesByCode, hasAnyJuryVotes, hasAnyTeleVotes, sortByVotes, updateVoteTypeCode, voteCodeHasType } from '../utilities/VoteProcessor';
 import { countries } from '../data/Countries';
-import { setTheme, setVote } from '../redux/actions';
+import { setContestants, setRankedItems, setTheme, setVote } from '../redux/actions';
 import { updateQueryParams } from '../utilities/UrlUtil';
 import { convertDataToText, convertToCSV, convertToJSON, copyDataToClipboard, downloadFile, getExportDataString } from '../utilities/export/ExportUtil';
 import toast, { Toaster } from 'react-hot-toast';
@@ -33,14 +33,19 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
     const vote = useSelector((state: AppState) => state.vote);
     const theme = useSelector((state: AppState) => state.theme);
     const rankedItems = useSelector((state: AppState) => state.rankedItems);
+    const contestants = useSelector((state: AppState) => state.contestants);
     const [themeSelection, setThemeSelection] = useState('None');
     const [hasJuryVotes, setHasJuryVotes] = useState(false);
     const [hasTeleVotes, setHasTeleVotes] = useState(false);
-    const [activeTab, setActiveTab] = useState(props.tab);
+    const [activeTab, setActiveTab] = useState('display');//props.tab);
     const [exportTypeSelection, setExportTypeSelection] = useState('Text');
     const [rankingYear, setRankingYear] = useState(year);
     const [voteSource, setVoteSource] = useState('All');
     const [voteSourceOptions, setVoteSourceOptions] = useState<string[]>(
+        ['All', ...countries.sort((a, b) => a.name.localeCompare(b.name)).map(c => c.name)]
+    );
+    const [displayVoteSource, setDisplayVoteSource] = useState('All');
+    const [voteDisplaySourceOptions, setVoteDisplaySourceOptions] = useState<string[]>(
         ['All', ...countries.sort((a, b) => a.name.localeCompare(b.name)).map(c => c.name)]
     );
     const currentDomain = window.location.origin;
@@ -104,60 +109,65 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
         }
     }, [theme]);
 
-    // function getVoteSourceOption(voteCode: string) {
+    function getVoteSourceOption(voteCode: string) {
 
-    //     console.log(voteCode);
-    //     if (!voteCode?.length || voteCode == 'loading') {
-    //         return 'All';
-    //     }
+        if (!voteCode?.length || voteCode == 'loading') {
+            return 'All';
+        }
 
-    //     let codes = voteCode.split("-");
-    //     let sourceCountryKey = codes[2];
+        let codes = voteCode.split("-");
+        let sourceCountryKey = codes[2];
 
-    //     console.log(sourceCountryKey)
+        if (!sourceCountryKey) {
+            return 'All'
+        }
 
-    //     if (!sourceCountryKey) {
-    //         return 'All'
-    //     }
-
-    //     return countries.filter(
-    //         c => c.key === sourceCountryKey
-    //     )?.[0]?.name;
-    // }
-
-    // useEffect(() => {
-    //     setVoteTypeSelection(
-    //         getVoteTypeOption(vote)
-    //     );
-    //     setVoteSource(
-    //         getVoteSourceOption(vote)
-    //     );
-    // }, [vote]);
+        return countries.filter(
+            c => c.key === sourceCountryKey
+        )?.[0]?.name;
+    }
 
     useEffect(() => {
+        setDisplayVoteSource(
+            getVoteSourceOption(vote)
+        );
+    }, [vote]);
 
-        // if (vote === 'loading')
-        //     return;
+    /**
+     * On updating the displayed voting country, update the vote code
+     */
+    useEffect(() => {
 
-        // console.log(voteTypeSelection)
+        const handleVoteCountryUpdate = async () => {
+            if (vote === 'loading')
+                return;
 
-        // if (!voteTypeSelection) {
-        //     return;
-        // }
+            let voteTypeCode = vote?.split('-')?.[1] ?? '';
 
-        // let newVoteTypeCode = getVoteTypeCodeFromOption(voteTypeSelection);
-        // let countryCode = getVoteSourceCodeFromOption(voteSource);
+            let countryCode = getVoteSourceCodeFromOption(displayVoteSource);
 
-        // let newVote = `f-${newVoteTypeCode}-${countryCode}`;
-        // console.log(newVote);
+            let newVote = `f-${voteTypeCode}-${countryCode}`;
 
-        // updateQueryParams({ v: newVote });
+            let newContestants = await assignVotesByCode(
+                contestants,
+                year,
+                newVote
+            );
 
-        // dispatch(
-        //     setVote(newVote)
-        // )
+            dispatch(
+                setContestants(newContestants)
+            )
 
-    }, [voteSource]);
+            if (newVote !== vote) {
+                updateQueryParams({ v: newVote });
+
+                dispatch(
+                    setVote(newVote)
+                )
+            }
+        }
+        handleVoteCountryUpdate();
+    }, [displayVoteSource]);
 
     /**
      * Downloads rankedItems in the selected format 
@@ -236,7 +246,8 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
     }
 
     useEffect(() => {
-        setActiveTab(props.tab);
+        //setActiveTab(props.tab);
+        
         //setActiveTab('export');
     }, [props.tab, props.isOpen]);
 
@@ -249,7 +260,11 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
             let yearContestants: CountryContestant[] = await fetchCountryContestantsByYear(rankingYear);
 
             setVoteSourceOptions(
-                ['All', ...yearContestants.map(cc => cc.country).sort((a, b) => a.name.localeCompare(b.name)).map(c => c.name)]
+                ['All', ...yearContestants.map(
+                    cc => cc.country
+                ).sort(
+                    (a, b) => a.name.localeCompare(b.name)
+                ).map(c => c.name)]
             )
 
             let hasTeleVotes = hasAnyTeleVotes(yearContestants)
@@ -479,17 +494,18 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
                                         label="Jury"
                                         className="ml-[0.5em]"
                                     />
+                                    
                                 </span>
                                 {/* hidden for now */}
-                                <div className="mt-[1em] hidden">
-                                    <span className="ml-2 text-sm">{'from'}</span>
+                                <div className="mt-[0.5em] ">
+                                    <span className="ml-5 text-sm">{'from'}</span>
                                     <Dropdown
-                                        key="country-selector"
-                                        className="z-50 ml-4 w-[6em] mx-auto mb-2"
+                                        key="country-selector-2"
+                                        className="z-50 ml-4 min-w[6em] mx-auto mb-2"
                                         menuClassName="w-auto"
-                                        value={voteSource}
-                                        onChange={s => { setVoteSource(s); }}
-                                        options={voteSourceOptions}
+                                        value={displayVoteSource}
+                                        onChange={s => { setDisplayVoteSource(s); }}
+                                        options={voteDisplaySourceOptions}
                                         showSearch={true}
                                     />
                                 </div>

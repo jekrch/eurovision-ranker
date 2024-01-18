@@ -18,7 +18,7 @@ export async function sortByVotes(
     let voteTypeFieldName: string = getVoteTypeFieldName(voteType);
 
     countryContestants = assignVotesToCountryContestants(
-        votes, countryContestants, voteTypeFieldName
+        votes, countryContestants
     );
 
     // Sorting country contestants by votes in descending order
@@ -115,7 +115,7 @@ export function updateVoteTypeCode(
     newVoteCode += `-${newTypeString}`;
     
     if (codes[2]) {
-        newVoteCode += codes[2]
+        newVoteCode += `-${codes[2]}`
     }
     return newVoteCode;
 } 
@@ -136,8 +136,7 @@ function getVoteTypeFieldName(voteType: string) {
 
 function assignVotesToCountryContestants(
     votes: Vote[],
-    countryContestants: CountryContestant[],
-    voteTypeFieldName: string,
+    countryContestants: CountryContestant[]
 ): CountryContestant[] {
     // summing up the votes for each country
     const voteSums: { [key: string]: ContestantVotes; } = {};
@@ -217,8 +216,7 @@ export async function assignVotesByCode(
 
     return assignVotesToCountryContestants(
         votes,
-        countryContestants, 
-        voteTypeFieldName
+        countryContestants
     );
 }
 

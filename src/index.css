@@ -76,7 +76,8 @@ code {
 }
 
 .gradient-text {
-  background: linear-gradient(45deg, #729fe8, #3b82f6, #9333ea);
+  /* background: linear-gradient(45deg, #729fe8, #3b82f6, #9333ea); */
+  background: linear-gradient(155deg, #729fe8, #729fe8, #9e33ea);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -100,7 +101,7 @@ code {
 
 /* #2c345f */
 .nav-diagonal-split-bg {
-  background: linear-gradient(135deg, #13172b 60%, rgb(40, 53, 94) 40%);
+  background: linear-gradient(135deg, #13172b 60%, #283760  40%);
 }
 
 .houseUser {

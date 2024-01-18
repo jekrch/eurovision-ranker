@@ -34,6 +34,7 @@ const App: React.FC = () => {
   const [mapModalShow, setMapModalShow] = useState(false);
   const [configModalShow, setConfigModalShow] = useState(false);
   const [refreshUrl, setRefreshUrl] = useState(0);
+  const [refreshRankedList, setRefreshRankedList] = useState(0);
   const [modalTab, setModalTab] = useState('about')
   const [configModalTab, setConfigModalTab] = useState('display')
   const dispatch: Dispatch<any> = useDispatch();
@@ -41,6 +42,7 @@ const App: React.FC = () => {
   const year = useSelector((state: AppState) => state.year);
   const name = useSelector((state: AppState) => state.name);
   const theme = useSelector((state: AppState) => state.theme);
+  const vote = useSelector((state: AppState) => state.vote);
   const rankedItems = useSelector((state: AppState) => state.rankedItems);
   const unrankedItems = useSelector((state: AppState) => state.unrankedItems);
   const isDeleteMode = useSelector((state: AppState) => state.isDeleteMode);
@@ -103,6 +105,13 @@ const App: React.FC = () => {
     };
   }, []);
 
+  /**
+   * When the vote code updates, make sure to refresh the ranked 
+   * list so the new votes are displayed
+   */
+  useEffect(() => {
+    setRefreshRankedList(Math.random())
+  }, [vote]);
 
   /**
    * load the url if the user navigates using back/forward. 
@@ -452,6 +461,7 @@ const App: React.FC = () => {
                   <StrictModeDroppable droppableId="unrankedItems" key={`strict-md`}>
                     {(provided) => (
                       <ul
+                        key={`ranked-list-${refreshRankedList}`}
                         {...provided.droppableProps}
                         ref={provided.innerRef}
                         className={classNames("pt-3 min-w-[10em] tour-step-2", "")}
@@ -514,7 +524,7 @@ const App: React.FC = () => {
                         className={
                           classNames(
                             "overflow-y-auto overflow-x-hidden pt-3 bg-[#1d1b54] ranked-items-background w-full",
-                            showUnranked ? "max-w-50vw-6em" : "w-[80vw] max-w-[30em] min-w-[15em]",
+                            showUnranked ? "min-w-[9em] max-w-50vw-6em" : "w-[80vw] max-w-[30em] min-w-[20em]",
                             { "auroral-background": theme.includes("ab") }
                           )}
                       >
@@ -595,6 +605,7 @@ const App: React.FC = () => {
         </div>
 
         <div className="hidden fixed bottom-[3em] left-[1em] z-50" style={{  }}>
+          <div className='p-2 bg-slate-300 bg-opacity-40 rounded-lg'>
           <button 
             onClick={() => {
               dispatch(
@@ -604,7 +615,7 @@ const App: React.FC = () => {
             className={
               "w-[4em] py-3 bg-blue-900 hover:bg-blue-800 z-50 relative" + 
               "overflow-hidden text-slate-200 font-normal py-1 px-3 " +
-              "rounded-full border-slate-400 border-[0.1em] text-base shadow-lg " +
+              "rounded-full border-slate-600 border-[0.1em] text-base shadow-lg " +
               "bg-opacity-80"
             }
             >
@@ -612,6 +623,7 @@ const App: React.FC = () => {
               {showUnranked ? 'VIEW' : 'EDIT'} 
             </div>
           </button>
+          </div>
         </div>
 
         {(showUnranked && (!showOverlay || isOverlayExit)) &&

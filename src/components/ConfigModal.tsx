@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Dispatch } from 'redux';
 import Dropdown from './Dropdown';
 import { faCopy, faDownload, faEdit, faFileExport, faList } from '@fortawesome/free-solid-svg-icons';
@@ -12,11 +12,11 @@ import { fetchCountryContestantsByYear } from '../utilities/ContestantRepository
 import { CountryContestant } from '../data/CountryContestant';
 import { assignVotesByCode, hasAnyJuryVotes, hasAnyTeleVotes, sortByVotes, updateVoteTypeCode, voteCodeHasType } from '../utilities/VoteProcessor';
 import { countries } from '../data/Countries';
-import { setContestants, setRankedItems, setTheme, setVote } from '../redux/actions';
+import { setContestants, setTheme, setVote } from '../redux/actions';
 import { updateQueryParams } from '../utilities/UrlUtil';
-import { convertDataToText, convertToCSV, convertToJSON, copyDataToClipboard, downloadFile, getExportDataString } from '../utilities/export/ExportUtil';
+import { copyDataToClipboard, downloadFile, getExportDataString } from '../utilities/export/ExportUtil';
 import toast, { Toaster } from 'react-hot-toast';
-import { EXPORT_TYPE, EXPORT_TYPES, ExportType, getExportType } from '../utilities/export/ExportType';
+import { EXPORT_TYPES, getExportType } from '../utilities/export/ExportType';
 import Checkbox from './Checkbox';
 import IconButton from './IconButton';
 
@@ -469,7 +469,7 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
                         <div>
                             <h4 className="font-bold mb-[0.2em]">Show Votes</h4>
 
-                            <div className="mb-[0.5em]">
+                            <div className="mb-[0.5em] border-slate-700 border-y-[1px]">
 
                                 <span className="flex items-center ml-2">
                                     <Checkbox
@@ -498,7 +498,7 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
                                 </span>
                                 {/* hidden for now */}
                                 <div className="mt-[0.5em] ">
-                                    <span className="ml-5 text-sm">{'from'}</span>
+                                    <span className="ml-5 text-sm">{'From'}</span>
                                     <Dropdown
                                         key="country-selector-2"
                                         className="z-50 ml-4 min-w[6em] mx-auto mb-2"

@@ -6,6 +6,7 @@ import { useDispatch } from 'react-redux';
 import { AppState } from '../redux/types';
 import { useSelector } from 'react-redux';
 import { setYear } from '../redux/actions';
+import MenuComponent from './MenuComponent';
 
 interface IRankedItemsHeaderProps {
     setMapModalShow: () => void;
@@ -52,6 +53,7 @@ const RankedItemsHeader: React.FC<IRankedItemsHeaderProps> = ({
                             <FaGlobe className='text-xl tour-step-7' />
                         </a>
                     )}
+                    <MenuComponent name={''}/>
                     <div className="justify-center w-full ml-2 mr-2">
                         {year}
                         {name && (

@@ -359,3 +359,24 @@ https://codepen.io/chris22smith/pen/RZogMa */
 .ranked-items-background {
   background: linear-gradient(to bottom, #2a286e, #0c0c38); 
 }
+
+.menu-enter {
+  opacity: 0;
+  transform: translateY(-20px);
+}
+
+.menu-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 200ms, transform 200ms;
+}
+
+.menu-exit {
+  opacity: 1;
+}
+
+.menu-exit-active {
+  opacity: 0;
+  transform: translateY(-5px);
+  transition: opacity 200ms, transform 200ms;
+}

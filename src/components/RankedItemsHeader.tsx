@@ -43,24 +43,27 @@ const RankedItemsHeader: React.FC<IRankedItemsHeaderProps> = ({
             ) : (
                 <div className="mx-2 flex justify-between items-center">
                     {rankedItems?.length > 0 && (
-                        <a
-                            onClick={setMapModalShow}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            title="Display geographical heat map"
-                            className='text-slate-500 hover:text-slate-100 cursor-pointer'
-                        >
-                            <FaGlobe className='text-xl tour-step-7' />
-                        </a>
+                        // <a
+                        //     onClick={setMapModalShow}
+                        //     target="_blank"
+                        //     rel="noopener noreferrer"
+                        //     title="Display geographical heat map"
+                        //     className='text-slate-500 hover:text-slate-100 cursor-pointer'
+                        // >
+                        //     <FaGlobe className='text-xl tour-step-7' />
+                        // </a>
+                       <></>
                     )}
-                    <MenuComponent name={''}/>
+                    
+                    
                     <div className="justify-center w-full ml-2 mr-2">
                         {year}
                         {name && (
                             <span className="font-bold text-slate-400 text-md"> - {name}</span>
                         )}
                     </div>
-                    {rankedHasAnyYoutubeLinks(rankedItems) && (
+                    <MenuComponent name={''}/>
+                    {/* {rankedHasAnyYoutubeLinks(rankedItems) && (
                         <a
                             href={generateYoutubePlaylistUrl(rankedItems)}
                             target="_blank"
@@ -70,7 +73,7 @@ const RankedItemsHeader: React.FC<IRankedItemsHeaderProps> = ({
                         >
                             <FaTv className='text-xl tour-step-6' />
                         </a>
-                    )}
+                    )} */}
                 </div>
             )}
         </div>

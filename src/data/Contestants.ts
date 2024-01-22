@@ -26,7 +26,7 @@ export const contestants2024: Contestant[] = [
   { countryKey: 'az', artist: 'TBD', song: '' }, // Azerbaijan
   { countryKey: 'be', artist: 'Mustii', song: 'TBD Feb 24' }, // Belgium
   { countryKey: 'hr', artist: 'TBD Feb 24', song: '' }, // Croatia
-  { countryKey: 'cy', artist: 'Silia Kapsis', song: 'Liar' }, // Cyprus
+  { countryKey: 'cy', artist: 'Silia Kapsis', song: 'Liar', }, // Cyprus
   { countryKey: 'cz', artist: 'Aiko', song: 'Pedestal', youtube: 'https://www.youtube.com/watch?v=5DbRldMKFUU' }, // Czechia
   { countryKey: 'dk', artist: 'TBD Feb 24', song: '' }, // Denmark
   { countryKey: 'ee', artist: 'TBD Feb 24', song: '' }, // Estonia
@@ -50,7 +50,7 @@ export const contestants2024: Contestant[] = [
   { countryKey: 'pt', artist: 'TBD Mar 24', song: '' }, // Portugal
   { countryKey: 'sm', artist: 'TBD Feb 24', song: '' }, // San Marino
   { countryKey: 'rs', artist: 'TBD Mar 24', song: '' }, // Serbia
-  { countryKey: 'si', artist: 'Raiven', song: 'Veronika' }, // Slovenia
+  { countryKey: 'si', artist: 'Raiven', song: 'Veronika', youtube: 'https://www.youtube.com/watch?v=uWcSsi7SliI' }, // Slovenia
   { countryKey: 'es', artist: 'TBD Feb 24', song: '' }, // Spain
   { countryKey: 'se', artist: 'TBD Mar 24', song: '' }, // Sweden
   { countryKey: 'ch', artist: 'TBD Mar 24', song: '' }, // Switzerland

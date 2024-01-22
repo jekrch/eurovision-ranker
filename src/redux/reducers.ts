@@ -1,5 +1,5 @@
 import { CountryContestant } from '../data/CountryContestant';
-import { SET_NAME, SET_YEAR, SET_RANKED_ITEMS, SET_UNRANKED_ITEMS, SET_SHOW_UNRANKED, SET_CONTESTANTS, SET_IS_DELETE_MODE, SET_THEME, SET_VOTE } from './actions';
+import { SET_NAME, SET_YEAR, SET_RANKED_ITEMS, SET_UNRANKED_ITEMS, SET_SHOW_UNRANKED, SET_CONTESTANTS, SET_IS_DELETE_MODE, SET_THEME, SET_VOTE, SET_HEADER_MENU_OPEN } from './actions';
 import { Action, AppState } from './types';
 
 const initialState: AppState = {
@@ -9,6 +9,7 @@ const initialState: AppState = {
   vote: 'loading',
   showUnranked: false,
   isDeleteMode: false,
+  headerMenuOpen: false,
   contestants: [],
   rankedItems: [],
   unrankedItems: []
@@ -28,6 +29,8 @@ const rootReducer = (state = initialState, action: Action): AppState => {
         return { ...state, showUnranked: action.payload as boolean };
     case SET_IS_DELETE_MODE:
         return { ...state, isDeleteMode: action.payload as boolean };
+    case SET_HEADER_MENU_OPEN:
+        return { ...state, headerMenuOpen: action.payload as boolean };
     case SET_RANKED_ITEMS:
       return { ...state, rankedItems: action.payload as CountryContestant[] };
     case SET_UNRANKED_ITEMS:

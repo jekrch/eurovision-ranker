@@ -2,6 +2,7 @@ import { CountryContestant } from "../../data/CountryContestant";
 import { hasAnyJuryVotes, hasAnyTeleVotes } from "../VoteProcessor";
 import Papa from 'papaparse';
 import { EXPORT_TYPE } from "./ExportType";
+import toast from 'react-hot-toast';
 
 const BOM = "\uFEFF";
 
@@ -85,13 +86,13 @@ export function convertDataToText(
     countryContestants: CountryContestant[]
 ): string {
     const listArray = countryContestants.map((cc, index) => {
-        return `${index + 1}. ${cc.country.name}: ${cc?.contestant?.artist} "${cc.contestant?.song}"` 
+        return `${index + 1}. ${cc.country.name}: ${cc?.contestant?.artist} "${cc.contestant?.song}"`
     });
     return listArray.join('\n');
 }
 
 export const downloadFile = (
-    string: string, 
+    string: string,
     fileExtension: string
 ) => {
 
@@ -101,7 +102,7 @@ export const downloadFile = (
     // create link and trigger the download
     const link = document.createElement('a');
     link.href = url;
-    link.setAttribute('download', `escRanking.${fileExtension}`); 
+    link.setAttribute('download', `escRanking.${fileExtension}`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -109,6 +110,11 @@ export const downloadFile = (
     // clean up the URL
     URL.revokeObjectURL(url);
 };
+
+export async function copyUrlToClipboard() {
+    await copyDataToClipboard(window.location.href);
+    toast.success('Copied to clipboard');
+}
 
 export const copyDataToClipboard = async (text: string) => {
     try {
@@ -126,7 +132,22 @@ export async function getExportDataString(exportType: string, data: any) {
         case EXPORT_TYPE.JSON:
             return await convertToJSON(data);
         case EXPORT_TYPE.TEXT:
-        default: 
+        default:
             return convertDataToText(data);;
-    }   
+    }
+}
+
+/**
+* Copies the rankedItems list to the clipboard using the 
+* specified export type
+*/
+export async function copyToClipboard(
+    rankedItems: CountryContestant[],
+    type: EXPORT_TYPE
+) {
+    let data = await getExportDataString(
+        type, rankedItems
+    );
+    await copyDataToClipboard(data);
+    toast.success('Copied to clipboard');
 }

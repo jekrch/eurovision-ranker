@@ -5,6 +5,7 @@ export interface AppState {
     year: string;
     showUnranked: boolean;
     isDeleteMode: boolean;
+    headerMenuOpen: boolean;
     contestants: CountryContestant[];
     rankedItems: CountryContestant[];
     unrankedItems: CountryContestant[];
@@ -39,6 +40,11 @@ export interface AppState {
 
   export interface SetShowUnrankedAction extends Action {
     type: 'SET_SHOW_UNRANKED';
+    payload: boolean;
+  }
+
+  export interface SetHeaderMenuOpen extends Action {
+    type: 'SET_HEADER_MENU_OPEN';
     payload: boolean;
   }
 

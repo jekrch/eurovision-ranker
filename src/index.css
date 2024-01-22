@@ -360,6 +360,11 @@ https://codepen.io/chris22smith/pen/RZogMa */
   background: linear-gradient(to bottom, #2a286e, #0c0c38); 
 }
 
+.ranked-bar-background {
+  /* background: linear-gradient(to bottom, #434181, #2525a1);  */
+  /* background: linear-gradient(to bottom, #3d3c53, #191931);  */
+}
+
 .menu-enter {
   opacity: 0;
   transform: translateY(-20px);
@@ -380,3 +385,30 @@ https://codepen.io/chris22smith/pen/RZogMa */
   transform: translateY(-5px);
   transition: opacity 200ms, transform 200ms;
 }
+
+.submenu-enter {
+  opacity: 0;
+  transform: translateY(-20px);
+  transition: opacity 200ms, transform 200ms;
+}
+
+.submenu-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.submenu-exit {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.submenu-exit-active {
+  opacity: 0;
+  transform: translateY(-20px);
+  transition: opacity 200ms, transform 200ms;
+}
+
+.rotate-90 {
+  transform: rotate(90deg);
+}
+

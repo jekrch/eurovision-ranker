@@ -2,23 +2,26 @@ import React, { Dispatch } from 'react';
 import { FaGlobe, FaTv } from 'react-icons/fa';
 import Dropdown from './Dropdown'; 
 import { CountryContestant } from '../data/CountryContestant'; 
-import { useDispatch } from 'react-redux';
+import { AnyIfEmpty, useDispatch } from 'react-redux';
 import { AppState } from '../redux/types';
 import { useSelector } from 'react-redux';
 import { setYear } from '../redux/actions';
-import MenuComponent from './MenuComponent';
+import RankedHeaderMenu from './RankedHeaderMenu';
+import { Toaster } from 'react-hot-toast';
 
 interface IRankedItemsHeaderProps {
     setMapModalShow: () => void;
+    openNameModal: () => void;
+    openConfig: (tab: string) => void;
     generateYoutubePlaylistUrl: (rankedItems: CountryContestant[]) => string;
-    rankedHasAnyYoutubeLinks: (rankedItems: CountryContestant[]) => boolean;
     supportedYears: string[];
 }
 
 const RankedItemsHeader: React.FC<IRankedItemsHeaderProps> = ({
     setMapModalShow,
     generateYoutubePlaylistUrl,
-    rankedHasAnyYoutubeLinks,
+    openNameModal,
+    openConfig,
     supportedYears
 }) => {
     const dispatch: Dispatch<any> = useDispatch();
@@ -28,7 +31,7 @@ const RankedItemsHeader: React.FC<IRankedItemsHeaderProps> = ({
     const rankedItems = useSelector((state: AppState) => state.rankedItems);
 
     return (
-        <div className="z-40 rounded-t-md w-full text-center font-bold bg-blue-900 text-slate-300 py-1 text-md tracking-tighter shadow-md">
+        <div className="z-40 rounded-t-sm w-full text-center font-bold bg-blue-900 text-slate-300 py-1 text-md tracking-tighter shadow-md ranked-bar-background">
             {showUnranked ? (
                 <div className="w-full m-auto flex items-center justify-center">
                     <Dropdown
@@ -41,7 +44,7 @@ const RankedItemsHeader: React.FC<IRankedItemsHeaderProps> = ({
                     />
                 </div>
             ) : (
-                <div className="mx-2 flex justify-between items-center">
+                <div className="mr-2 ml-5 flex justify-between items-center">
                     {rankedItems?.length > 0 && (
                         // <a
                         //     onClick={setMapModalShow}
@@ -62,7 +65,12 @@ const RankedItemsHeader: React.FC<IRankedItemsHeaderProps> = ({
                             <span className="font-bold text-slate-400 text-md"> - {name}</span>
                         )}
                     </div>
-                    <MenuComponent name={''}/>
+                    <RankedHeaderMenu 
+                        openNameModal={openNameModal}
+                        openConfig={openConfig}
+                        onMapClick={setMapModalShow} 
+                        generateYoutubePlaylistUrl={() => {return generateYoutubePlaylistUrl(rankedItems)}}
+                    />
                     {/* {rankedHasAnyYoutubeLinks(rankedItems) && (
                         <a
                             href={generateYoutubePlaylistUrl(rankedItems)}

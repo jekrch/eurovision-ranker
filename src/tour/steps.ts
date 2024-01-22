@@ -21,38 +21,42 @@ export const tourSteps = [
   },
   {
     target: '.tour-step-6',
-    content: 'Click the TV icon to generate a YouTube playlist from your ranking',
+    content: 'Click here to see more options',
   },
   {
     target: '.tour-step-7',
-    content: 'Click the globe icon to see a heat map of your ranking',
+    content: 'You can generate a YouTube playlist from your ranking',
   },
   {
     target: '.tour-step-8',
-    content: 'Click "Select" to go back to the country picker',
+    content: 'Or view a geographical heat map.',
   },
   {
     target: '.tour-step-9',
-    content: 'Click the home icon for more info on this project',
+    content: 'Click "Select" to go back to the country picker',
   },
   {
     target: '.tour-step-10',
-    content: 'Click the cog icon to access advanced controls',
+    content: 'Click the home icon for more info on this project',
   },
   {
     target: '.tour-step-11',
-    content: 'In "Rankings" you can select a year and click the links to see the official ranking by vote type',
+    content: 'Click the cog icon to access advanced controls',
   },
   {
     target: '.tour-step-12',
-    content: 'Want to save or share your ranking? Just copy the URL! All of your ranking data is stored there.',
+    content: 'In "Rankings" you can select a year and click the links to see the official ranking by vote type',
   },
   {
     target: '.tour-step-13',
-    content: 'e.g. your current URL is: eurovision-ranker.com?n=Sigrit%27s+Top+Picks&y=23&r=nidk4t',
+    content: 'Want to save or share your ranking? Just copy the URL! All of your ranking data is stored there.',
   },
   {
     target: '.tour-step-14',
+    content: 'e.g. your current URL is: eurovision-ranker.com?n=Sigrit%27s+Top+Picks&y=23&r=nidk4t',
+  },
+  {
+    target: '.tour-step-15',
     content: 'Enjoy, friends ❤️',
   }
 ].map(step => ({ ...step, disableBeacon: true }));

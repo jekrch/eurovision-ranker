@@ -14,9 +14,9 @@ import { assignVotesByCode, hasAnyJuryVotes, hasAnyTeleVotes, sortByVotes, updat
 import { countries } from '../data/Countries';
 import { setContestants, setTheme, setVote } from '../redux/actions';
 import { updateQueryParams } from '../utilities/UrlUtil';
-import { copyDataToClipboard, downloadFile, getExportDataString } from '../utilities/export/ExportUtil';
+import { copyDataToClipboard, copyToClipboard, copyUrlToClipboard, downloadFile, getExportDataString } from '../utilities/export/ExportUtil';
 import toast, { Toaster } from 'react-hot-toast';
-import { EXPORT_TYPES, getExportType } from '../utilities/export/ExportType';
+import { EXPORT_TYPE, EXPORT_TYPES, getExportType } from '../utilities/export/ExportType';
 import Checkbox from './Checkbox';
 import IconButton from './IconButton';
 
@@ -184,23 +184,6 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
             exportType?.fileExtension
         );
         //toast.success('File downloaded');
-    }
-
-    /**
-     * Copies the rankedItems list to the clipboard using the 
-     * selected export type
-     */
-    async function copyToClipboard() {
-        let data = await getExportDataString(
-            exportTypeSelection, rankedItems
-        );
-        await copyDataToClipboard(data);
-        toast.success('Copied to clipboard');
-    }
-
-    async function copyUrlToClipboard() {
-        await copyDataToClipboard(window.location.href);
-        toast.success('Copied to clipboard');
     }
 
     function getVoteSourceCodeFromOption(
@@ -629,25 +612,17 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
 
                             <IconButton
                                 className="ml-4 bg-blue-500 hover:bg-blue-700 text-white font-normal pl-[0.7em] rounded-md text-xs py-[0.5em] pr-[1em]"
-                                onClick={copyToClipboard}
+                                onClick={
+                                    () => copyToClipboard(
+                                        rankedItems, 
+                                        exportTypeSelection as EXPORT_TYPE
+                                    )
+                                }
                                 icon={faCopy}
                                 title='Copy to Clipboard'
                             />
                         </div>
-                        <Toaster
-                            toastOptions={{
-                                success: {
-                                    style: {
-                                        color: 'white',
-                                        background: '#474575',
-                                    },
-                                    iconTheme: {
-                                        primary: 'green',
-                                        secondary: 'white',
-                                    },
-                                },
-                            }}
-                            position="top-center" />
+                       
                     </div>
                 }
             </div>

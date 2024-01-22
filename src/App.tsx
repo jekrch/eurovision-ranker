@@ -14,7 +14,7 @@ import IntroColumn from './components/IntroColumn';
 import { generateYoutubePlaylistUrl, rankedHasAnyYoutubeLinks } from './utilities/YoutubeUtil';
 import { AppState } from './redux/types';
 import { useDispatch, useSelector } from 'react-redux';
-import { setName, setYear, setRankedItems, setUnrankedItems, setShowUnranked, setContestants } from './redux/actions';
+import { setName, setYear, setRankedItems, setUnrankedItems, setShowUnranked, setContestants, setHeaderMenuOpen } from './redux/actions';
 import { decodeRankingsFromURL, updateQueryParams } from './utilities/UrlUtil';
 import { Dispatch } from 'redux';
 import MapModal from './components/MapModal';
@@ -27,6 +27,7 @@ import RankedItemsHeader from './components/RankedItemsHeader';
 import WelcomeOverlay from './components/WelcomeOverlay';
 import { DetailsCard } from './components/DetailsCard';
 import SongModal from './components/LyricsModal';
+import { Toaster } from 'react-hot-toast';
 
 const App: React.FC = () => {
   const [mainModalShow, setMainModalShow] = useState(false);
@@ -202,6 +203,7 @@ const App: React.FC = () => {
         dispatch(
           setShowUnranked(false)
         );
+
         break;
 
       case 5:
@@ -215,24 +217,35 @@ const App: React.FC = () => {
           setRankedItems(rankedItems)
         );
         setRefreshUrl(Math.random());
+        
+        dispatch(
+          setHeaderMenuOpen(true)
+        );
+        
         break;
 
-      case 8:
+      case 6:
+        dispatch(
+          setHeaderMenuOpen(true)
+        );
+        break;
+
+      case 9:
         dispatch(
           setShowUnranked(true)
         );
         //openModal('rankings');
         break;
 
-      case 10:
+      case 11:
         openConfigModal('rankings');
         break;
 
-      case 11:
+      case 12:
         setConfigModalShow(false);
         break;
 
-      case 13:
+      case 14:
         setConfigModalShow(false);
         dispatch(setName(""));
         await clearRanking(year);
@@ -425,11 +438,11 @@ const App: React.FC = () => {
       )}
 
 
-      <div 
+      <div
         className={classNames(
-        "site-content flex flex-col h-screen tour-step-12 tour-step-13 tour-step-14 normal-bg",
-        { 'star-sky': theme.includes('ab') }
-      )}>
+          "site-content flex flex-col h-screen tour-step-13 tour-step-14 tour-step-15 normal-bg",
+          { 'star-sky': theme.includes('ab') }
+        )}>
 
         {theme.includes("ab") &&
           <div className="star-container z-10">
@@ -514,70 +527,73 @@ const App: React.FC = () => {
                       <RankedItemsHeader
                         setMapModalShow={() => setMapModalShow(true)}
                         generateYoutubePlaylistUrl={generateYoutubePlaylistUrl}
-                        rankedHasAnyYoutubeLinks={rankedHasAnyYoutubeLinks}
                         supportedYears={supportedYears}
+                        openNameModal={() => setNameModalShow(true)}
+                        openConfig={openConfigModal}
                       />
 
-                      <ul
-                        {...provided.droppableProps}
-                        ref={provided.innerRef}
-                        className={
-                          classNames(
-                            "overflow-y-auto overflow-x-hidden pt-3 bg-[#1d1b54] ranked-items-background w-full",
-                            showUnranked ? "min-w-[9em] max-w-50vw-6em" : "w-[80vw] max-w-[30em] min-w-[20em]",
-                            { "auroral-background": theme.includes("ab") }
+                      <div className="px-1 overflow-y-auto h-full">
+                        <ul
+                          {...provided.droppableProps}
+                          ref={provided.innerRef}
+                          className={
+                            classNames(
+                              "overflow-y-auto overflow-x-hidden pt-3 bg-[#1d1b54] ranked-items-background w-full h-full",
+                              showUnranked ? "min-w-[9em] max-w-50vw-6em" : "w-[80vw] max-w-[30em] min-w-[20em]",
+                              { "auroral-background": theme.includes("ab") }
+                            )}
+                        >
+
+
+                          {(rankedItems.length === 0 && showUnranked) && (
+                            <IntroColumn
+                              openModal={openMainModal}
+                              openConfigModal={openConfigModal}
+                              setRunTour={setRunTour}
+                            />
                           )}
-                      >
+                          {rankedItems.map((item, index) => (
+                            <Draggable key={`draggable-${item.id.toString()}`} draggableId={item.id.toString()} index={index}>
+                              {(provided, snapshot) => {
+                                return (
+                                  <li
+                                    key={`li-${item.id.toString()}`}
+                                    ref={provided.innerRef}
+                                    {...provided.draggableProps}
+                                    {...provided.dragHandleProps}
+                                    className={classNames("no-select m-2", { "mt-0": (index === 0) })}
+                                  >
+                                    {showUnranked ? (
+                                      <Card
+                                        key={`card-${item.id.toString()}`}
+                                        className="m-auto text-slate-400 bg- bg-[#03022d] no-select"
+                                        rank={index + 1}
+                                        countryContestant={item}
+                                        isDeleteMode={showUnranked && isDeleteMode}
+                                        deleteCallBack={deleteRankedCountry}
+                                        isDragging={snapshot.isDragging}
+                                      />
+                                    ) :
+                                      <DetailsCard
+                                        key={`card-${item.id.toString()}`}
+                                        className="m-auto text-slate-400 bg- bg-[#03022d] no-select"
+                                        rank={index + 1}
+                                        countryContestant={item}
+                                        openSongModal={() => openSongModal(item)}
+                                        isDragging={snapshot.isDragging}
+                                      />
 
-
-                        {(rankedItems.length === 0 && showUnranked) && (
-                          <IntroColumn
-                            openModal={openMainModal}
-                            openConfigModal={openConfigModal}
-                            setRunTour={setRunTour}
-                          />
-                        )}
-                        {rankedItems.map((item, index) => (
-                          <Draggable key={`draggable-${item.id.toString()}`} draggableId={item.id.toString()} index={index}>
-                            {(provided, snapshot) => {
-                              return (
-                                <li
-                                  key={`li-${item.id.toString()}`}
-                                  ref={provided.innerRef}
-                                  {...provided.draggableProps}
-                                  {...provided.dragHandleProps}
-                                  className={classNames("no-select m-2", { "mt-0": (index === 0) })}
-                                >
-                                  { showUnranked ? (
-                                  <Card
-                                    key={`card-${item.id.toString()}`}
-                                    className="m-auto text-slate-400 bg- bg-[#03022d] no-select"
-                                    rank={index + 1}
-                                    countryContestant={item}
-                                    isDeleteMode={showUnranked && isDeleteMode}
-                                    deleteCallBack={deleteRankedCountry}
-                                    isDragging={snapshot.isDragging}
-                                  />
-                                  ) : 
-                                  <DetailsCard
-                                    key={`card-${item.id.toString()}`}
-                                    className="m-auto text-slate-400 bg- bg-[#03022d] no-select"
-                                    rank={index + 1}
-                                    countryContestant={item}  
-                                    openSongModal={() => openSongModal(item)}                                
-                                    isDragging={snapshot.isDragging}
-                                  />
-                                
-                                }
-                                </li>
-                              )
-                            }}
-                          </Draggable>
-                        ))}
-                        {provided.placeholder}
-                      </ul>
+                                    }
+                                  </li>
+                                )
+                              }}
+                            </Draggable>
+                          ))}
+                          {provided.placeholder}
+                        </ul>
+                      </div>
                       {(showUnranked && rankedItems?.length > 0) &&
-                        <div className="pl-2 rounded-b-md h-8 bg-blue-900 text-slate-300 items-center flex shadow-md">
+                        <div className="pl-2 rounded-b-md h-8 bg-blue-900 ranked-bar-background text-slate-300 items-center flex shadow-md">
                           <IconButton
                             className={
                               classNames(
@@ -604,25 +620,25 @@ const App: React.FC = () => {
           </DragDropContext>
         </div>
 
-        <div className="hidden fixed bottom-[3em] left-[1em] z-50" style={{  }}>
+        <div className="hidden fixed bottom-[3em] left-[1em] z-50" style={{}}>
           <div className='p-2 bg-slate-300 bg-opacity-40 rounded-lg'>
-          <button 
-            onClick={() => {
-              dispatch(
-                setShowUnranked(!showUnranked)
-              );
-            }}
-            className={
-              "w-[4em] py-3 bg-blue-900 hover:bg-blue-800 z-50 relative" + 
-              "overflow-hidden text-slate-200 font-normal py-1 px-3 " +
-              "rounded-full border-slate-600 border-[0.1em] text-base shadow-lg " +
-              "bg-opacity-80"
-            }
+            <button
+              onClick={() => {
+                dispatch(
+                  setShowUnranked(!showUnranked)
+                );
+              }}
+              className={
+                "w-[4em] py-3 bg-blue-900 hover:bg-blue-800 z-50 relative" +
+                "overflow-hidden text-slate-200 font-normal py-1 px-3 " +
+                "rounded-full border-slate-600 border-[0.1em] text-base shadow-lg " +
+                "bg-opacity-80"
+              }
             >
-            <div className="text-slate-200">
-              {showUnranked ? 'VIEW' : 'EDIT'} 
-            </div>
-          </button>
+              <div className="text-slate-200">
+                {showUnranked ? 'VIEW' : 'EDIT'}
+              </div>
+            </button>
           </div>
         </div>
 
@@ -660,9 +676,9 @@ const App: React.FC = () => {
         onClose={() => { setMapModalShow(false) }}
       />
       <SongModal
-          isOpen={isSongModalOpen}
-          countryContestant={selectedCountryContestant}
-          onClose={() => setIsSongModalOpen(false)}
+        isOpen={isSongModalOpen}
+        countryContestant={selectedCountryContestant}
+        onClose={() => setIsSongModalOpen(false)}
       />
       <ConfigModal
         tab={configModalTab}
@@ -688,8 +704,8 @@ const App: React.FC = () => {
         styles={{
           overlay: { height: '100vh' },
           buttonNext: {
-            backgroundColor: '#3c82f6', 
-            color: '#dfe4eb'           
+            backgroundColor: '#3c82f6',
+            color: '#dfe4eb'
           },
           buttonBack: {
             color: '#cbd5e1',
@@ -699,11 +715,24 @@ const App: React.FC = () => {
             arrowColor: '#333',
             backgroundColor: '#333',
             primaryColor: '#f04',
-            textColor: '#cbd5e1',            
+            textColor: '#cbd5e1',
           }
         }}
       />
-
+      <Toaster
+        toastOptions={{
+          success: {
+            style: {
+              color: 'white',
+              background: '#474575',
+            },
+            iconTheme: {
+              primary: 'green',
+              secondary: 'white',
+            },
+          },
+        }}
+        position="top-center" />
     </div>
   );
 };

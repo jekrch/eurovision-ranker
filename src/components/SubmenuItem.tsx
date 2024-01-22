@@ -60,7 +60,7 @@ const SubmenuItem: React.FC<SubmenuContainerProps> = ({ buttonIcon, text, childr
       {createPortal(
         <ul
           style={submenuStyle as unknown as any}
-          className="absolute bg-slate-600 shadow-lg shadow-blue-gray-500/10 rounded-sm border border-slate-400 overflow-auto flex flex-col min-w-[180px] z-50"
+          className="absolute bg-slate-600 shadow-lg shadow-blue-gray-500/10 rounded-sm border border-slate-400 overflow-auto flex flex-col min-w-[180px] z-20"
         >
           {children}
         </ul>,

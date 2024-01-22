@@ -22,7 +22,7 @@ export const contestants2024: Contestant[] = [
   { countryKey: 'al', artist: 'Besa Kokëdhima', song: 'Zemrën n\'dorë', youtube: 'https://www.youtube.com/watch?v=7rEDP1lSoDQ' },
   { countryKey: 'am', artist: 'TBD', song: '' }, // Armenia
   { countryKey: 'au', artist: 'TBD', song: '' }, // Australia
-  { countryKey: 'at', artist: 'TBD Dec 23', song: '' }, // Austria
+  { countryKey: 'at', artist: 'Kaleen', song: 'We Will Rave' }, // Austria
   { countryKey: 'az', artist: 'TBD', song: '' }, // Azerbaijan
   { countryKey: 'be', artist: 'Mustii', song: 'TBD Feb 24' }, // Belgium
   { countryKey: 'hr', artist: 'TBD Feb 24', song: '' }, // Croatia
@@ -32,7 +32,7 @@ export const contestants2024: Contestant[] = [
   { countryKey: 'ee', artist: 'TBD Feb 24', song: '' }, // Estonia
   { countryKey: 'fi', artist: 'TBD Feb 24', song: '' }, // Finland
   { countryKey: 'fr', artist: 'Slimane', song: 'Mon amour', youtube: 'https://www.youtube.com/watch?v=bal8oESDH7s' }, // France
-  { countryKey: 'ge', artist: 'TBD', song: '' }, // Georgia
+  { countryKey: 'ge', artist: 'Nutsa Buzaladze', song: '' }, // Georgia
   { countryKey: 'de', artist: 'TBD Feb 24', song: 'TBD' }, // Germany
   { countryKey: 'gr', artist: 'Marina Satti', song: 'TBD' }, // Greece
   { countryKey: 'is', artist: 'TBD Mar 24', song: '' }, // Iceland

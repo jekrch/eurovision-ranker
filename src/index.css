@@ -107,7 +107,7 @@ code {
 .houseUser {
   margin-top: 0.15em;
   height: 1em;
-  color: grey;
+  color: #808080;
 }
 
 .houseUser:hover {
@@ -412,3 +412,6 @@ https://codepen.io/chris22smith/pen/RZogMa */
   transform: rotate(90deg);
 }
 
+.no-scroll {
+  overflow: hidden;
+}

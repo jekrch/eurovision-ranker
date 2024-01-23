@@ -49,7 +49,7 @@ export const IconButton: React.FC<IconButtonProps> = ({ icon, onClick, className
         <button
             className={classNames(
                 "relative overflow-hidden text-white font-normal py-1 pl-2 pr-3 rounded-full text-xs",
-                disabled ? "bg-slate-500" : "bg-blue-500 hover:bg-blue-700",
+                disabled ? "bg-slate-500" : "bg-blue-600 hover:bg-blue-700",
                 className
             )}
             onClick={handleClick}

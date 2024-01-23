@@ -27,10 +27,20 @@ const RankedHeaderMenu: React.FC<RankedHeaderMenuProps> = (props: RankedHeaderMe
   const rankedItems = useSelector((state: AppState) => state.rankedItems);
   const globalMenuOpenTrigger = useSelector((state: AppState) => state.headerMenuOpen);
   const dispatch: Dispatch<any> = useDispatch();
+  const CLOSING_DURATION = 300;
 
   const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
+  const shouldClose = isMenuOpen;
+  setIsMenuOpen(!isMenuOpen);
+
+  if (shouldClose) {
+    setTimeout(() => {
+      document.body.classList.remove('no-scroll');
+    }, CLOSING_DURATION);
+  } else {
+    document.body.classList.add('no-scroll');
+  }
+};
 
   const handleClickOutside = (event: MouseEvent) => {
     const target = event.target as Element;
@@ -58,35 +68,43 @@ const RankedHeaderMenu: React.FC<RankedHeaderMenuProps> = (props: RankedHeaderMe
   
 
   useEffect(() => {
+    let timeoutId: any;
+  
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
+      clearTimeout(timeoutId);
+      document.body.classList.remove('no-scroll');
     };
   }, []);
 
   useEffect(() => {
-
     if (globalMenuOpenTrigger) {
       setIsMenuOpen(true);
-      // reset the trigger to false 
-      dispatch(
-        setHeaderMenuOpen(false)
-      )
+      document.body.classList.add('no-scroll');
+      dispatch(setHeaderMenuOpen(false));
+    } else {
+      setTimeout(() => {
+        document.body.classList.remove('no-scroll');
+      }, CLOSING_DURATION);
     }
   }, [globalMenuOpenTrigger]);
 
   return (
     <div className="relative inline-block" ref={menuRef}>
       <button
-        className={classNames("tour-step-6 w-6 h-6 bg-slate-500 hover:bg-slate-400 rounded-full flex justify-center items-center cursor-pointer", { "!bg-slate-400": isMenuOpen })}
+        className={classNames("tour-step-6 w-6 h-6 bg-[#808080] hover:bg-slate-400 rounded-full flex justify-center items-center cursor-pointer", { "!bg-slate-400": isMenuOpen })}
         onClick={toggleMenu}
       >
-        <FontAwesomeIcon icon={faEllipsisH} />
+        <FontAwesomeIcon 
+          className="text-slate-300"
+          icon={faEllipsisH} 
+        />
       </button>
       <CSSTransition in={isMenuOpen} timeout={200} classNames="menu" unmountOnExit>
         <ul
           role="menu"
-          className="absolute z-20 min-w-[180px] right-0 mt-1 bg-slate-600 shadow-lg shadow-blue-gray-500/10 rounded-sm border border-slate-400 overflow-auto flex flex-col"
+          className="absolute z-20 min-w-[180px] right-0 mt-1 shadow-lg shadow-blue-gray-500/10 rounded-sm border border-slate-500 overflow-auto flex flex-col"
         >
           <MenuItem
             icon={faGlobe}

@@ -42,7 +42,7 @@ const SubmenuItem: React.FC<SubmenuContainerProps> = ({ buttonIcon, text, childr
     <li
       ref={buttonRef}
       className={
-        classNames("relative bg-slate-600 hover:bg-slate-700 flex w-full cursor-pointer select-none items-center justify-between gap-2 px-3 pt-[9px] pb-2 text-start transition-all",
+        classNames("relative bg-slate-600 hover:bg-slate-700 flex w-full cursor-pointer select-none items-center justify-between gap-2 px-3 pt-[9px] pb-2 text-start transition-all bg-opacity-95 hover:bg-opacity-100",
         {"!bg-slate-700": isSubmenuOpen}
       )}
       onClick={toggleSubmenu}
@@ -60,7 +60,7 @@ const SubmenuItem: React.FC<SubmenuContainerProps> = ({ buttonIcon, text, childr
       {createPortal(
         <ul
           style={submenuStyle as unknown as any}
-          className="absolute bg-slate-600 shadow-lg shadow-blue-gray-500/10 rounded-sm border border-slate-400 overflow-auto flex flex-col min-w-[180px] z-20"
+          className="absolute shadow-lg shadow-blue-gray-500/10 rounded-sm border border-slate-500 overflow-auto flex flex-col min-w-[180px] z-20 "
         >
           {children}
         </ul>,

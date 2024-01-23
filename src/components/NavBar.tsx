@@ -41,7 +41,7 @@ const Navbar: React.FC<NavbarProps> = ({ openModal, openConfigModal }) => {
                             <IconButton
                                 className={
                                     classNames(
-                                        "tour-step-9 bg-blue-500 hover:bg-blue-700 text-white font-normal py-1 pl-[0.7em] pr-[0.9em] rounded-full text-xs mr-0 w-[5em]",
+                                        "tour-step-9 bg-blue-600 hover:bg-blue-700 text-white font-normal py-1 pl-[0.7em] pr-[0.9em] rounded-full text-xs mr-0 w-[5em]",
                                         //{"tada-animation" : showUnranked && rankedItems?.length}
                                     )
                                 }

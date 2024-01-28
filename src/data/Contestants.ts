@@ -36,12 +36,12 @@ export const contestants2024: Contestant[] = [
   { countryKey: 'de', artist: 'TBD Feb 24', song: 'TBD' }, // Germany
   { countryKey: 'gr', artist: 'Marina Satti', song: 'TBD' }, // Greece
   { countryKey: 'is', artist: 'TBD Mar 24', song: '' }, // Iceland
-  { countryKey: 'ie', artist: 'TBD', song: '' }, // Ireland
+  { countryKey: 'ie', artist: 'Bambie Thug', song: 'Doomsday Blue', youtube: 'https://www.youtube.com/watch?v=PcFyY6hrhI4' }, // Ireland (prerelease vid)
   { countryKey: 'il', artist: 'TBD', song: '' }, // Israel
   { countryKey: 'it', artist: 'TBD Feb 24', song: '' }, // Italy
   { countryKey: 'lv', artist: 'TBD Feb 24', song: '' }, // Latvia
   { countryKey: 'lt', artist: 'TBD Feb 24', song: '' }, // Lithuania
-  { countryKey: 'lu', artist: 'TBD Jan 24', song: '' }, // Luxembourg
+  { countryKey: 'lu', artist: 'Tali', song: 'Fighter', youtube: 'https://www.youtube.com/watch?v=HV3sORfrREE' }, // Luxembourg
   { countryKey: 'mt', artist: 'TBD Jan 24', song: '' }, // Malta
   { countryKey: 'md', artist: 'TBD Feb 24', song: '' }, // Moldova
   { countryKey: 'nl', artist: 'Joost Klein', song: 'TBD Mar 24' }, // Netherlands

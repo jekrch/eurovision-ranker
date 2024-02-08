@@ -24,38 +24,38 @@ export const contestants2024: Contestant[] = [
   { countryKey: 'au', artist: 'TBD', song: '' }, // Australia
   { countryKey: 'at', artist: 'Kaleen', song: 'We Will Rave' }, // Austria
   { countryKey: 'az', artist: 'TBD', song: '' }, // Azerbaijan
-  { countryKey: 'be', artist: 'Mustii', song: 'TBD Feb 24' }, // Belgium
-  { countryKey: 'hr', artist: 'TBD Feb 24', song: '' }, // Croatia
+  { countryKey: 'be', artist: 'Mustii', song: 'TBD Feb 20' }, // Belgium
+  { countryKey: 'hr', artist: 'TBD Feb 25', song: '' }, // Croatia
   { countryKey: 'cy', artist: 'Silia Kapsis', song: 'Liar', }, // Cyprus
   { countryKey: 'cz', artist: 'Aiko', song: 'Pedestal', youtube: 'https://www.youtube.com/watch?v=5DbRldMKFUU' }, // Czechia
-  { countryKey: 'dk', artist: 'TBD Feb 24', song: '' }, // Denmark
-  { countryKey: 'ee', artist: 'TBD Feb 24', song: '' }, // Estonia
-  { countryKey: 'fi', artist: 'TBD Feb 24', song: '' }, // Finland
+  { countryKey: 'dk', artist: 'TBD Feb 17', song: '' }, // Denmark
+  { countryKey: 'ee', artist: 'TBD Feb 17', song: '' }, // Estonia
+  { countryKey: 'fi', artist: 'TBD Feb 10', song: '' }, // Finland
   { countryKey: 'fr', artist: 'Slimane', song: 'Mon amour', youtube: 'https://www.youtube.com/watch?v=bal8oESDH7s' }, // France
   { countryKey: 'ge', artist: 'Nutsa Buzaladze', song: '' }, // Georgia
   { countryKey: 'de', artist: 'TBD Feb 24', song: 'TBD' }, // Germany
   { countryKey: 'gr', artist: 'Marina Satti', song: 'TBD' }, // Greece
   { countryKey: 'is', artist: 'TBD Mar 24', song: '' }, // Iceland
-  { countryKey: 'ie', artist: 'Bambie Thug', song: 'Doomsday Blue', youtube: 'https://www.youtube.com/watch?v=PcFyY6hrhI4' }, // Ireland (prerelease vid)
-  { countryKey: 'il', artist: 'TBD', song: '' }, // Israel
+  { countryKey: 'ie', artist: 'Bambie Thug', song: 'Doomsday Blue', youtube: 'https://www.youtube.com/watch?v=n73nIfFI3k4' }, // Ireland (prerelease vid)
+  { countryKey: 'il', artist: 'Eden Golan', song: '' }, // Israel
   { countryKey: 'it', artist: 'TBD Feb 24', song: '' }, // Italy
   { countryKey: 'lv', artist: 'TBD Feb 24', song: '' }, // Latvia
   { countryKey: 'lt', artist: 'TBD Feb 24', song: '' }, // Lithuania
   { countryKey: 'lu', artist: 'Tali', song: 'Fighter', youtube: 'https://www.youtube.com/watch?v=HV3sORfrREE' }, // Luxembourg
-  { countryKey: 'mt', artist: 'TBD Jan 24', song: '' }, // Malta
-  { countryKey: 'md', artist: 'TBD Feb 24', song: '' }, // Moldova
-  { countryKey: 'nl', artist: 'Joost Klein', song: 'TBD Mar 24' }, // Netherlands
-  { countryKey: 'no', artist: 'TBD Feb 24', song: '' }, // Norway
+  { countryKey: 'mt', artist: 'Sarah Bonnici', song: 'Loop', youtube: 'https://www.youtube.com/watch?v=-IIxDNyIBdE' }, // Malta
+  { countryKey: 'md', artist: 'TBD Feb 17', song: '' }, // Moldova
+  { countryKey: 'nl', artist: 'Joost Klein', song: 'TBD Mar' }, // Netherlands
+  { countryKey: 'no', artist: 'Gåte', song: 'Ulveham', youtube: 'https://www.youtube.com/watch?v=UipzszlJwRQ' }, // Norway
   { countryKey: 'pl', artist: 'TBD', song: '' }, // Poland
-  { countryKey: 'pt', artist: 'TBD Mar 24', song: '' }, // Portugal
+  { countryKey: 'pt', artist: 'TBD Mar 9', song: '' }, // Portugal
   { countryKey: 'sm', artist: 'TBD Feb 24', song: '' }, // San Marino
-  { countryKey: 'rs', artist: 'TBD Mar 24', song: '' }, // Serbia
+  { countryKey: 'rs', artist: 'TBD Mar 2', song: '' }, // Serbia
   { countryKey: 'si', artist: 'Raiven', song: 'Veronika', youtube: 'https://www.youtube.com/watch?v=uWcSsi7SliI' }, // Slovenia
-  { countryKey: 'es', artist: 'TBD Feb 24', song: '' }, // Spain
-  { countryKey: 'se', artist: 'TBD Mar 24', song: '' }, // Sweden
-  { countryKey: 'ch', artist: 'TBD Mar 24', song: '' }, // Switzerland
-  { countryKey: 'ua', artist: 'TBD Feb 24', song: '' }, // Ukraine
-  { countryKey: 'gb', artist: 'Olly Alexander', song: 'TBD' }, // United Kingdom
+  { countryKey: 'es', artist: 'Nebulossa', song: 'Zorra', youtube: 'https://www.youtube.com/watch?v=GdagS_0hX8k' }, // Spain
+  { countryKey: 'se', artist: 'TBD Mar 9', song: '' }, // Sweden
+  { countryKey: 'ch', artist: 'TBD Mar', song: '' }, // Switzerland
+  { countryKey: 'ua', artist: 'Alyona Alyona and Jerry Heil', song: 'Teresa & Maria', youtube: 'https://www.youtube.com/watch?v=k_8cNbF8FLI' }, // Ukraine
+  { countryKey: 'gb', artist: 'Olly Alexander', song: 'Dizzy' }, // United Kingdom
 ];
 
 export const contestants2023: Contestant[] = [

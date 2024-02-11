@@ -30,7 +30,7 @@ export const contestants2024: Contestant[] = [
   { countryKey: 'cz', artist: 'Aiko', song: 'Pedestal', youtube: 'https://www.youtube.com/watch?v=5DbRldMKFUU' }, // Czechia
   { countryKey: 'dk', artist: 'TBD Feb 17', song: '' }, // Denmark
   { countryKey: 'ee', artist: 'TBD Feb 17', song: '' }, // Estonia
-  { countryKey: 'fi', artist: 'TBD Feb 10', song: '' }, // Finland
+  { countryKey: 'fi', artist: 'Windows95man', song: 'No Rules!', youtube: 'https://www.youtube.com/watch?v=Tf1NS1vEhSg' }, // Finland
   { countryKey: 'fr', artist: 'Slimane', song: 'Mon amour', youtube: 'https://www.youtube.com/watch?v=bal8oESDH7s' }, // France
   { countryKey: 'ge', artist: 'Nutsa Buzaladze', song: '' }, // Georgia
   { countryKey: 'de', artist: 'TBD Feb 24', song: 'TBD' }, // Germany
@@ -38,8 +38,8 @@ export const contestants2024: Contestant[] = [
   { countryKey: 'is', artist: 'TBD Mar 24', song: '' }, // Iceland
   { countryKey: 'ie', artist: 'Bambie Thug', song: 'Doomsday Blue', youtube: 'https://www.youtube.com/watch?v=n73nIfFI3k4' }, // Ireland (prerelease vid)
   { countryKey: 'il', artist: 'Eden Golan', song: '' }, // Israel
-  { countryKey: 'it', artist: 'TBD Feb 24', song: '' }, // Italy
-  { countryKey: 'lv', artist: 'TBD Feb 24', song: '' }, // Latvia
+  { countryKey: 'it', artist: 'Angelina Mango', song: 'La noia', youtube: 'https://www.youtube.com/watch?v=psiytW9Or2s' }, // Italy
+  { countryKey: 'lv', artist: 'Dons', song: 'Hollow', youtube:'https://www.youtube.com/watch?v=V_Jhif6qXyY' }, // Latvia
   { countryKey: 'lt', artist: 'TBD Feb 24', song: '' }, // Lithuania
   { countryKey: 'lu', artist: 'Tali', song: 'Fighter', youtube: 'https://www.youtube.com/watch?v=HV3sORfrREE' }, // Luxembourg
   { countryKey: 'mt', artist: 'Sarah Bonnici', song: 'Loop', youtube: 'https://www.youtube.com/watch?v=-IIxDNyIBdE' }, // Malta

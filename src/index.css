@@ -75,6 +75,10 @@ code {
   background-color: rgb(88, 103, 123);
 }
 
+.gradient-background {
+  background: linear-gradient(155deg, #3d76cb, #1a2a45, #9e33ea);
+}
+
 .gradient-text {
   /* background: linear-gradient(45deg, #729fe8, #3b82f6, #9333ea); */
   background: linear-gradient(155deg, #729fe8, #729fe8, #9e33ea);

@@ -9,9 +9,10 @@ interface MenuItemProps {
     url?: string;
     className?: string;
     onClick?: () => void;
+    afterClick?: () => void;
 }
 
-const MenuItem: React.FC<MenuItemProps> = ({ icon, text, className, url, onClick }) => {
+const MenuItem: React.FC<MenuItemProps> = ({ icon, text, className, url, onClick, afterClick }) => {
 
     const openUrlInNewTab = (url: string): void => {
         window.open(url, '_blank', 'noopener,noreferrer');
@@ -25,7 +26,13 @@ const MenuItem: React.FC<MenuItemProps> = ({ icon, text, className, url, onClick
                     "text-slate-300 bg-slate-600 hover:bg-slate-700 flex w-full cursor-pointer select-none items-center gap-2 px-3 pt-[9px] pb-2 text-start transition-all hover:bg-blue-gray-50 hover:text-blue-gray-900 focus:bg-blue-gray-50 focus:bg-opacity-80 focus:text-blue-gray-900 active:bg-blue-gray-50 active:bg-opacity-80 active:text-blue-gray-900 bg-opacity-95 hover:bg-opacity-100",
                     className
             )}
-            onClick={url !== undefined ? () => openUrlInNewTab(url) : onClick}
+            onClick={
+                url !== undefined ? () => openUrlInNewTab(url) : 
+                () => { 
+                    onClick?.(); 
+                    afterClick?.();                    
+                } 
+            }
         >
             <div className="w-[1.2em] text-center">
               { icon && <FontAwesomeIcon icon={icon} />}

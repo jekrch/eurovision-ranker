@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect, Dispatch } from 'react';
-import { createPortal } from 'react-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEllipsisH, faGlobe, faTv, faFileExport, faClipboard, faCopy, faLink, faFile, faFileCode, faList, faEdit, faPen } from '@fortawesome/free-solid-svg-icons';
 import { CSSTransition } from 'react-transition-group';
@@ -7,7 +6,6 @@ import classNames from 'classnames';
 import MenuItem from './MenuItem';
 import SubmenuItem from './SubmenuItem';
 import { copyDataToClipboard, copyToClipboard, copyUrlToClipboard, getExportDataString } from '../utilities/export/ExportUtil';
-import toast from 'react-hot-toast';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '../redux/types';
 import { EXPORT_TYPE } from '../utilities/export/ExportType';
@@ -90,6 +88,10 @@ const RankedHeaderMenu: React.FC<RankedHeaderMenuProps> = (props: RankedHeaderMe
     }
   }, [globalMenuOpenTrigger]);
 
+  function close() {
+    setIsMenuOpen(false);
+  }
+  
   return (
     <div className="relative inline-block" ref={menuRef}>
       <button
@@ -110,7 +112,8 @@ const RankedHeaderMenu: React.FC<RankedHeaderMenuProps> = (props: RankedHeaderMe
             icon={faGlobe}
             text="View Heat Map"
             className="tour-step-8"
-            onClick={props.onMapClick}
+            onClick={props.onMapClick}            
+            afterClick={close}
           />
 
           {
@@ -120,15 +123,31 @@ const RankedHeaderMenu: React.FC<RankedHeaderMenuProps> = (props: RankedHeaderMe
               text="YouTube Playlist"
               className="tour-step-7"
               onClick={() => window.open(props.generateYoutubePlaylistUrl?.(), '_blank')}
+              afterClick={close}
             />
           }
+
           <MenuItem
             icon={faPen}
             text="Edit Name"
             onClick={() => props.openNameModal()}
+            afterClick={close}
           />
-          <MenuItem icon={faList} text="Rankings" onClick={() => props.openConfig("rankings")} />
-          <MenuItem icon={faEdit} text="Display settings" onClick={() => props.openConfig("display")} />
+
+          <MenuItem 
+            icon={faList} 
+            text="Rankings" 
+            onClick={() => props.openConfig("rankings")} 
+            afterClick={close}
+          />
+          
+          <MenuItem 
+            icon={faEdit} 
+            text="Display settings" 
+            onClick={() => props.openConfig("display")}
+            afterClick={close} 
+          />
+
           <SubmenuItem
             text="Copy"
             buttonIcon={faCopy}

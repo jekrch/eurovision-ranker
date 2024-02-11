@@ -75,8 +75,27 @@ code {
   background-color: rgb(88, 103, 123);
 }
 
-.gradient-background {
+.gradient-background2 {
   background: linear-gradient(155deg, #3d76cb, #1a2a45, #9e33ea);
+}
+
+.gradient-backgroundd {
+  background: linear-gradient(155deg, #3d76cb, #1a2a45, #9e33ea), url(/public/noise.svg);
+  filter: contrast(100%) brightness(100%);
+}
+
+.gradient-background {
+  /* Define the gradient and a CSS-generated grid in the same background */
+  background: 
+    /* Grid overlay */
+    linear-gradient(155deg, #3d76cb, #1a2a45, #9e33ea);
+  
+  /* Preserve the aspect of the gradient under filter effects */
+  filter: contrast(100%) brightness(100%);
+  
+  /* Ensure the background covers the entire element and is not repeated */
+  background-size: auto, auto, cover;
+  background-repeat: no-repeat;
 }
 
 .gradient-text {
@@ -105,7 +124,8 @@ code {
 
 /* #2c345f */
 .nav-diagonal-split-bg {
-  background: linear-gradient(135deg, #13172b 60%, #283760  40%);
+  /*background: linear-gradient(135deg, #13172b 60%, #283760  40%);*/
+  background: linear-gradient(135deg, #13172b, #334678);
 }
 
 .houseUser {

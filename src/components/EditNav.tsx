@@ -58,7 +58,7 @@ const EditNav: React.FC<EditNavProps> = ({ setNameModalShow, setRefreshUrl }) =>
     }
 
     return (
-        <nav className="nav-diagonal-split-bg bg-gray-800 text-white px-3 pb-2 pt-1 sticky bottom-0 z-50">
+        <nav className="nav-diagonal-split-bg bg-gray-800 text-white px-3 pb-1 pt-1 sticky bottom-0 z-50">
             <div className="container mx-auto flex justify-between items-center">
                 <ul className="flex space-x-2">
                     <li>

@@ -28,25 +28,25 @@ export const contestants2024: Contestant[] = [
   { countryKey: 'hr', artist: 'TBD Feb 25', song: '' }, // Croatia
   { countryKey: 'cy', artist: 'Silia Kapsis', song: 'Liar', }, // Cyprus
   { countryKey: 'cz', artist: 'Aiko', song: 'Pedestal', youtube: 'https://www.youtube.com/watch?v=5DbRldMKFUU' }, // Czechia
-  { countryKey: 'dk', artist: 'TBD Feb 17', song: '' }, // Denmark
-  { countryKey: 'ee', artist: 'TBD Feb 17', song: '' }, // Estonia
+  { countryKey: 'dk', artist: 'Saba', song: 'Sand', youtube: 'https://www.youtube.com/watch?v=3pCtdFnv9eQ' }, // Denmark
+  { countryKey: 'ee', artist: '5miinust and Puuluup', song: '(Nendest) narkootikumidest ei tea me (küll) midagi', youtube: 'https://www.youtube.com/watch?v=ui_u0M7_hjs' }, // Estonia
   { countryKey: 'fi', artist: 'Windows95man', song: 'No Rules!', youtube: 'https://www.youtube.com/watch?v=Tf1NS1vEhSg' }, // Finland
   { countryKey: 'fr', artist: 'Slimane', song: 'Mon amour', youtube: 'https://www.youtube.com/watch?v=bal8oESDH7s' }, // France
   { countryKey: 'ge', artist: 'Nutsa Buzaladze', song: '' }, // Georgia
-  { countryKey: 'de', artist: 'TBD Feb 24', song: 'TBD' }, // Germany
-  { countryKey: 'gr', artist: 'Marina Satti', song: 'TBD' }, // Greece
-  { countryKey: 'is', artist: 'TBD Mar 24', song: '' }, // Iceland
+  { countryKey: 'de', artist: 'Isaak', song: 'Always on the Run', youtube: 'https://www.youtube.com/watch?v=twhq3S4YHdQ' }, // Germany
+  { countryKey: 'gr', artist: 'Marina Satti', song: 'Zari' }, // Greece
+  { countryKey: 'is', artist: 'TBD Mar 2', song: '' }, // Iceland
   { countryKey: 'ie', artist: 'Bambie Thug', song: 'Doomsday Blue', youtube: 'https://www.youtube.com/watch?v=n73nIfFI3k4' }, // Ireland (prerelease vid)
   { countryKey: 'il', artist: 'Eden Golan', song: '' }, // Israel
   { countryKey: 'it', artist: 'Angelina Mango', song: 'La noia', youtube: 'https://www.youtube.com/watch?v=psiytW9Or2s' }, // Italy
   { countryKey: 'lv', artist: 'Dons', song: 'Hollow', youtube:'https://www.youtube.com/watch?v=V_Jhif6qXyY' }, // Latvia
-  { countryKey: 'lt', artist: 'TBD Feb 24', song: '' }, // Lithuania
+  { countryKey: 'lt', artist: 'Silvester Belt', song: 'Luktelk', youtube: 'https://www.youtube.com/watch?v=OrL668EQRu0' }, // Lithuania
   { countryKey: 'lu', artist: 'Tali', song: 'Fighter', youtube: 'https://www.youtube.com/watch?v=HV3sORfrREE' }, // Luxembourg
   { countryKey: 'mt', artist: 'Sarah Bonnici', song: 'Loop', youtube: 'https://www.youtube.com/watch?v=-IIxDNyIBdE' }, // Malta
-  { countryKey: 'md', artist: 'TBD Feb 17', song: '' }, // Moldova
+  { countryKey: 'md', artist: 'Natalia Barbu', song: 'In the Middle', youtube: 'https://www.youtube.com/watch?v=Jom9sNL5whs' }, // Moldova
   { countryKey: 'nl', artist: 'Joost Klein', song: 'TBD Mar' }, // Netherlands
   { countryKey: 'no', artist: 'Gåte', song: 'Ulveham', youtube: 'https://www.youtube.com/watch?v=UipzszlJwRQ' }, // Norway
-  { countryKey: 'pl', artist: 'TBD', song: '' }, // Poland
+  { countryKey: 'pl', artist: 'TBD Feb 19', song: '' }, // Poland
   { countryKey: 'pt', artist: 'TBD Mar 9', song: '' }, // Portugal
   { countryKey: 'sm', artist: 'TBD Feb 24', song: '' }, // San Marino
   { countryKey: 'rs', artist: 'TBD Mar 2', song: '' }, // Serbia

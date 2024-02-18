@@ -48,7 +48,7 @@ export const IconButton: React.FC<IconButtonProps> = ({ icon, onClick, className
     return (
         <button
             className={classNames(
-                "relative overflow-hidden text-white font-normal py-1 pl-2 pr-3 rounded-full text-xs",
+                "relative overflow-hidden text-white font-normal py-1 pl-2 pr-3 rounded-md text-xs",
                 disabled ? "bg-slate-500" : "bg-blue-600 bg-[#3d76cb] hover:bg-blue-700",
                 className
             )}

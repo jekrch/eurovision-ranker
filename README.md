@@ -1,4 +1,4 @@
-![Version](https://img.shields.io/badge/version-2.4-blue)
+![Version](https://img.shields.io/badge/version-2.5-blue)
 ![Run Tests](https://github.com/jekrch/eurovision-ranker/actions/workflows/test_on_push.yml/badge.svg)
 
 [https://www.eurovision-ranker.com/](https://www.eurovision-ranker.com/)

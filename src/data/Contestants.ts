@@ -24,15 +24,15 @@ export const contestants2024: Contestant[] = [
   { countryKey: 'au', artist: 'TBD', song: '' }, // Australia
   { countryKey: 'at', artist: 'Kaleen', song: 'We Will Rave' }, // Austria
   { countryKey: 'az', artist: 'TBD', song: '' }, // Azerbaijan
-  { countryKey: 'be', artist: 'Mustii', song: 'TBD Feb 20' }, // Belgium
-  { countryKey: 'hr', artist: 'TBD Feb 25', song: '' }, // Croatia
-  { countryKey: 'cy', artist: 'Silia Kapsis', song: 'Liar', }, // Cyprus
+  { countryKey: 'be', artist: 'Mustii', song: "Before the Party's Over", youtube: 'https://www.youtube.com/watch?v=WCe9zrWEFNc' }, // Belgium
+  { countryKey: 'hr', artist: 'Baby Lasagna', song: 'Rim Tim Tagi Dim', youtube: 'https://www.youtube.com/watch?v=kmg8EAD-Kjw' }, // Croatia
+  { countryKey: 'cy', artist: 'Silia Kapsis', song: 'Liar', youtube: 'https://www.youtube.com/watch?v=8q5QozrtEPA' }, // Cyprus
   { countryKey: 'cz', artist: 'Aiko', song: 'Pedestal', youtube: 'https://www.youtube.com/watch?v=5DbRldMKFUU' }, // Czechia
   { countryKey: 'dk', artist: 'Saba', song: 'Sand', youtube: 'https://www.youtube.com/watch?v=3pCtdFnv9eQ' }, // Denmark
   { countryKey: 'ee', artist: '5miinust and Puuluup', song: '(Nendest) narkootikumidest ei tea me (küll) midagi', youtube: 'https://www.youtube.com/watch?v=ui_u0M7_hjs' }, // Estonia
   { countryKey: 'fi', artist: 'Windows95man', song: 'No Rules!', youtube: 'https://www.youtube.com/watch?v=Tf1NS1vEhSg' }, // Finland
   { countryKey: 'fr', artist: 'Slimane', song: 'Mon amour', youtube: 'https://www.youtube.com/watch?v=bal8oESDH7s' }, // France
-  { countryKey: 'ge', artist: 'Nutsa Buzaladze', song: '' }, // Georgia
+  { countryKey: 'ge', artist: 'Nutsa Buzaladze', song: 'TBD March' }, // Georgia
   { countryKey: 'de', artist: 'Isaak', song: 'Always on the Run', youtube: 'https://www.youtube.com/watch?v=twhq3S4YHdQ' }, // Germany
   { countryKey: 'gr', artist: 'Marina Satti', song: 'Zari' }, // Greece
   { countryKey: 'is', artist: 'TBD Mar 2', song: '' }, // Iceland
@@ -44,16 +44,16 @@ export const contestants2024: Contestant[] = [
   { countryKey: 'lu', artist: 'Tali', song: 'Fighter', youtube: 'https://www.youtube.com/watch?v=HV3sORfrREE' }, // Luxembourg
   { countryKey: 'mt', artist: 'Sarah Bonnici', song: 'Loop', youtube: 'https://www.youtube.com/watch?v=-IIxDNyIBdE' }, // Malta
   { countryKey: 'md', artist: 'Natalia Barbu', song: 'In the Middle', youtube: 'https://www.youtube.com/watch?v=Jom9sNL5whs' }, // Moldova
-  { countryKey: 'nl', artist: 'Joost Klein', song: 'TBD Mar' }, // Netherlands
+  { countryKey: 'nl', artist: 'Joost Klein', song: 'Europapa', youtube: 'https://www.youtube.com/watch?v=gT2wY0DjYGo' }, // Netherlands
   { countryKey: 'no', artist: 'Gåte', song: 'Ulveham', youtube: 'https://www.youtube.com/watch?v=UipzszlJwRQ' }, // Norway
-  { countryKey: 'pl', artist: 'TBD Feb 19', song: '' }, // Poland
-  { countryKey: 'pt', artist: 'TBD Mar 9', song: '' }, // Portugal
-  { countryKey: 'sm', artist: 'TBD Feb 24', song: '' }, // San Marino
+  { countryKey: 'pl', artist: 'Luna', song: 'The Tower', youtube: 'https://www.youtube.com/watch?v=IhvDkF9XZx0' }, // Poland
+  { countryKey: 'pt', artist: 'TBD Mar 9', song: '', youtube: '' }, // Portugal
+  { countryKey: 'sm', artist: 'Megara', song: '11:11', youtube: 'https://www.youtube.com/watch?v=f1tgNLfcIOw' }, // San Marino
   { countryKey: 'rs', artist: 'TBD Mar 2', song: '' }, // Serbia
   { countryKey: 'si', artist: 'Raiven', song: 'Veronika', youtube: 'https://www.youtube.com/watch?v=uWcSsi7SliI' }, // Slovenia
   { countryKey: 'es', artist: 'Nebulossa', song: 'Zorra', youtube: 'https://www.youtube.com/watch?v=GdagS_0hX8k' }, // Spain
   { countryKey: 'se', artist: 'TBD Mar 9', song: '' }, // Sweden
-  { countryKey: 'ch', artist: 'TBD Mar', song: '' }, // Switzerland
+  { countryKey: 'ch', artist: 'Nemo', song: 'The Code', youtube: 'https://www.youtube.com/watch?v=kiGDvM14Kwg' }, // Switzerland
   { countryKey: 'ua', artist: 'Alyona Alyona and Jerry Heil', song: 'Teresa & Maria', youtube: 'https://www.youtube.com/watch?v=k_8cNbF8FLI' }, // Ukraine
   { countryKey: 'gb', artist: 'Olly Alexander', song: 'Dizzy' }, // United Kingdom
 ];

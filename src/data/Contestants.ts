@@ -35,7 +35,7 @@ export const contestants2024: Contestant[] = [
   { countryKey: 'ge', artist: 'Nutsa Buzaladze', song: 'TBD March' }, // Georgia
   { countryKey: 'de', artist: 'Isaak', song: 'Always on the Run', youtube: 'https://www.youtube.com/watch?v=twhq3S4YHdQ' }, // Germany
   { countryKey: 'gr', artist: 'Marina Satti', song: 'Zari' }, // Greece
-  { countryKey: 'is', artist: 'TBD Mar 2', song: '' }, // Iceland
+  { countryKey: 'is', artist: 'Hera Björk', song: 'Scared of Heights', youtube: 'https://www.youtube.com/watch?v=i0zn27qa1BA' }, // Iceland
   { countryKey: 'ie', artist: 'Bambie Thug', song: 'Doomsday Blue', youtube: 'https://www.youtube.com/watch?v=n73nIfFI3k4' }, // Ireland (prerelease vid)
   { countryKey: 'il', artist: 'Eden Golan', song: '' }, // Israel
   { countryKey: 'it', artist: 'Angelina Mango', song: 'La noia', youtube: 'https://www.youtube.com/watch?v=psiytW9Or2s' }, // Italy
@@ -49,13 +49,13 @@ export const contestants2024: Contestant[] = [
   { countryKey: 'pl', artist: 'Luna', song: 'The Tower', youtube: 'https://www.youtube.com/watch?v=IhvDkF9XZx0' }, // Poland
   { countryKey: 'pt', artist: 'TBD Mar 9', song: '', youtube: '' }, // Portugal
   { countryKey: 'sm', artist: 'Megara', song: '11:11', youtube: 'https://www.youtube.com/watch?v=f1tgNLfcIOw' }, // San Marino
-  { countryKey: 'rs', artist: 'TBD Mar 2', song: '' }, // Serbia
+  { countryKey: 'rs', artist: 'Teya Dora', song: 'Ramonda', youtube: 'https://www.youtube.com/watch?v=SDXB0mXFR34' }, // Serbia
   { countryKey: 'si', artist: 'Raiven', song: 'Veronika', youtube: 'https://www.youtube.com/watch?v=uWcSsi7SliI' }, // Slovenia
   { countryKey: 'es', artist: 'Nebulossa', song: 'Zorra', youtube: 'https://www.youtube.com/watch?v=GdagS_0hX8k' }, // Spain
   { countryKey: 'se', artist: 'TBD Mar 9', song: '' }, // Sweden
   { countryKey: 'ch', artist: 'Nemo', song: 'The Code', youtube: 'https://www.youtube.com/watch?v=kiGDvM14Kwg' }, // Switzerland
   { countryKey: 'ua', artist: 'Alyona Alyona and Jerry Heil', song: 'Teresa & Maria', youtube: 'https://www.youtube.com/watch?v=k_8cNbF8FLI' }, // Ukraine
-  { countryKey: 'gb', artist: 'Olly Alexander', song: 'Dizzy' }, // United Kingdom
+  { countryKey: 'gb', artist: 'Olly Alexander', song: 'Dizzy', youtube: 'https://www.youtube.com/watch?v=lLNUj7kvn2w' }, // United Kingdom
 ];
 
 export const contestants2023: Contestant[] = [

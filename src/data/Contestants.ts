@@ -22,7 +22,7 @@ export const contestants2024: Contestant[] = [
   { countryKey: 'al', artist: 'Besa Kokëdhima', song: 'Zemrën n\'dorë', youtube: 'https://www.youtube.com/watch?v=7rEDP1lSoDQ' },
   { countryKey: 'am', artist: 'TBD', song: '' }, // Armenia
   { countryKey: 'au', artist: 'TBD', song: '' }, // Australia
-  { countryKey: 'at', artist: 'Kaleen', song: 'We Will Rave' }, // Austria
+  { countryKey: 'at', artist: 'Kaleen', song: 'We Will Rave', youtube: 'https://www.youtube.com/watch?v=Kqda15G4T-4' }, // Austria
   { countryKey: 'az', artist: 'TBD', song: '' }, // Azerbaijan
   { countryKey: 'be', artist: 'Mustii', song: "Before the Party's Over", youtube: 'https://www.youtube.com/watch?v=WCe9zrWEFNc' }, // Belgium
   { countryKey: 'hr', artist: 'Baby Lasagna', song: 'Rim Tim Tagi Dim', youtube: 'https://www.youtube.com/watch?v=kmg8EAD-Kjw' }, // Croatia

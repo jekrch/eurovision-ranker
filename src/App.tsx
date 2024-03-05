@@ -593,7 +593,7 @@ const App: React.FC = () => {
                         </ul>
                       </div>
                       {(showUnranked && rankedItems?.length > 0) &&
-                        <div className="pl-2 rounded-b-md h-8 bg-blue-900 ranked-bar-background text-slate-300 items-center flex shadow-md">
+                        <div className="pl-2 rounded-b-md h-8 bg-blue-900 ranked-bar-background text-slate-300 items-center flex shadow-md gradient-background">
                           <IconButton
                             className={
                               classNames(

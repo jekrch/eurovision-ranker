@@ -21,9 +21,9 @@ export const defaultYear = '2023';
 export const contestants2024: Contestant[] = [
   { countryKey: 'al', artist: 'Besa Kokëdhima', song: 'Zemrën n\'dorë', youtube: 'https://www.youtube.com/watch?v=7rEDP1lSoDQ' },
   { countryKey: 'am', artist: 'TBD', song: '' }, // Armenia
-  { countryKey: 'au', artist: 'TBD', song: '' }, // Australia
+  { countryKey: 'au', artist: 'Electric Fields', song: 'One Milkali (One Blood)', youtube: 'https://www.youtube.com/watch?v=f1wwqQ41txw' }, // Australia
   { countryKey: 'at', artist: 'Kaleen', song: 'We Will Rave', youtube: 'https://www.youtube.com/watch?v=Kqda15G4T-4' }, // Austria
-  { countryKey: 'az', artist: 'TBD', song: '' }, // Azerbaijan
+  { countryKey: 'az', artist: 'Fahree', song: '' }, // Azerbaijan
   { countryKey: 'be', artist: 'Mustii', song: "Before the Party's Over", youtube: 'https://www.youtube.com/watch?v=WCe9zrWEFNc' }, // Belgium
   { countryKey: 'hr', artist: 'Baby Lasagna', song: 'Rim Tim Tagi Dim', youtube: 'https://www.youtube.com/watch?v=kmg8EAD-Kjw' }, // Croatia
   { countryKey: 'cy', artist: 'Silia Kapsis', song: 'Liar', youtube: 'https://www.youtube.com/watch?v=8q5QozrtEPA' }, // Cyprus
@@ -32,12 +32,12 @@ export const contestants2024: Contestant[] = [
   { countryKey: 'ee', artist: '5miinust and Puuluup', song: '(Nendest) narkootikumidest ei tea me (küll) midagi', youtube: 'https://www.youtube.com/watch?v=ui_u0M7_hjs' }, // Estonia
   { countryKey: 'fi', artist: 'Windows95man', song: 'No Rules!', youtube: 'https://www.youtube.com/watch?v=Tf1NS1vEhSg' }, // Finland
   { countryKey: 'fr', artist: 'Slimane', song: 'Mon amour', youtube: 'https://www.youtube.com/watch?v=bal8oESDH7s' }, // France
-  { countryKey: 'ge', artist: 'Nutsa Buzaladze', song: 'TBD March' }, // Georgia
+  { countryKey: 'ge', artist: 'Nutsa Buzaladze', song: 'Fire Fighter' }, // Georgia
   { countryKey: 'de', artist: 'Isaak', song: 'Always on the Run', youtube: 'https://www.youtube.com/watch?v=twhq3S4YHdQ' }, // Germany
-  { countryKey: 'gr', artist: 'Marina Satti', song: 'Zari' }, // Greece
+  { countryKey: 'gr', artist: 'Marina Satti', song: 'ZARI', youtube: 'https://www.youtube.com/watch?v=mTSTnLWGUPs' }, // Greece
   { countryKey: 'is', artist: 'Hera Björk', song: 'Scared of Heights', youtube: 'https://www.youtube.com/watch?v=i0zn27qa1BA' }, // Iceland
   { countryKey: 'ie', artist: 'Bambie Thug', song: 'Doomsday Blue', youtube: 'https://www.youtube.com/watch?v=n73nIfFI3k4' }, // Ireland (prerelease vid)
-  { countryKey: 'il', artist: 'Eden Golan', song: '' }, // Israel
+  { countryKey: 'il', artist: 'Eden Golan', song: 'Hurricane', youtube: 'https://www.youtube.com/watch?v=lJYn09tuPw4' }, // Israel
   { countryKey: 'it', artist: 'Angelina Mango', song: 'La noia', youtube: 'https://www.youtube.com/watch?v=psiytW9Or2s' }, // Italy
   { countryKey: 'lv', artist: 'Dons', song: 'Hollow', youtube:'https://www.youtube.com/watch?v=V_Jhif6qXyY' }, // Latvia
   { countryKey: 'lt', artist: 'Silvester Belt', song: 'Luktelk', youtube: 'https://www.youtube.com/watch?v=OrL668EQRu0' }, // Lithuania
@@ -47,12 +47,12 @@ export const contestants2024: Contestant[] = [
   { countryKey: 'nl', artist: 'Joost Klein', song: 'Europapa', youtube: 'https://www.youtube.com/watch?v=gT2wY0DjYGo' }, // Netherlands
   { countryKey: 'no', artist: 'Gåte', song: 'Ulveham', youtube: 'https://www.youtube.com/watch?v=UipzszlJwRQ' }, // Norway
   { countryKey: 'pl', artist: 'Luna', song: 'The Tower', youtube: 'https://www.youtube.com/watch?v=IhvDkF9XZx0' }, // Poland
-  { countryKey: 'pt', artist: 'TBD Mar 9', song: '', youtube: '' }, // Portugal
+  { countryKey: 'pt', artist: 'Iolanda', song: 'Grito', youtube: 'https://www.youtube.com/watch?v=K5wDGhcDSpQ' }, // Portugal
   { countryKey: 'sm', artist: 'Megara', song: '11:11', youtube: 'https://www.youtube.com/watch?v=f1tgNLfcIOw' }, // San Marino
   { countryKey: 'rs', artist: 'Teya Dora', song: 'Ramonda', youtube: 'https://www.youtube.com/watch?v=SDXB0mXFR34' }, // Serbia
   { countryKey: 'si', artist: 'Raiven', song: 'Veronika', youtube: 'https://www.youtube.com/watch?v=uWcSsi7SliI' }, // Slovenia
   { countryKey: 'es', artist: 'Nebulossa', song: 'Zorra', youtube: 'https://www.youtube.com/watch?v=GdagS_0hX8k' }, // Spain
-  { countryKey: 'se', artist: 'TBD Mar 9', song: '' }, // Sweden
+  { countryKey: 'se', artist: 'Marcus & Martinus', song: 'Unforgettable', youtube: 'https://www.youtube.com/watch?v=yekc8t0rJqA' }, // Sweden
   { countryKey: 'ch', artist: 'Nemo', song: 'The Code', youtube: 'https://www.youtube.com/watch?v=kiGDvM14Kwg' }, // Switzerland
   { countryKey: 'ua', artist: 'Alyona Alyona and Jerry Heil', song: 'Teresa & Maria', youtube: 'https://www.youtube.com/watch?v=k_8cNbF8FLI' }, // Ukraine
   { countryKey: 'gb', artist: 'Olly Alexander', song: 'Dizzy', youtube: 'https://www.youtube.com/watch?v=lLNUj7kvn2w' }, // United Kingdom

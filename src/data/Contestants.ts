@@ -32,7 +32,7 @@ export const contestants2024: Contestant[] = [
   { countryKey: 'ee', artist: '5miinust and Puuluup', song: '(Nendest) narkootikumidest ei tea me (küll) midagi', youtube: 'https://www.youtube.com/watch?v=ui_u0M7_hjs' }, // Estonia
   { countryKey: 'fi', artist: 'Windows95man', song: 'No Rules!', youtube: 'https://www.youtube.com/watch?v=Tf1NS1vEhSg' }, // Finland
   { countryKey: 'fr', artist: 'Slimane', song: 'Mon amour', youtube: 'https://www.youtube.com/watch?v=bal8oESDH7s' }, // France
-  { countryKey: 'ge', artist: 'Nutsa Buzaladze', song: 'Fire Fighter' }, // Georgia
+  { countryKey: 'ge', artist: 'Nutsa Buzaladze', song: 'Firefighter', youtube: 'https://www.youtube.com/watch?v=blMwY8Jabyk' }, // Georgia
   { countryKey: 'de', artist: 'Isaak', song: 'Always on the Run', youtube: 'https://www.youtube.com/watch?v=twhq3S4YHdQ' }, // Germany
   { countryKey: 'gr', artist: 'Marina Satti', song: 'ZARI', youtube: 'https://www.youtube.com/watch?v=mTSTnLWGUPs' }, // Greece
   { countryKey: 'is', artist: 'Hera Björk', song: 'Scared of Heights', youtube: 'https://www.youtube.com/watch?v=i0zn27qa1BA' }, // Iceland

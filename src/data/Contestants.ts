@@ -16,11 +16,11 @@ export function sanitizeYear(contestYear: string | null): string {
   return defaultYear;
 }
 
-export const defaultYear = '2023';
+export const defaultYear = '2024';
 
 export const contestants2024: Contestant[] = [
   { countryKey: 'al', artist: 'Besa Kokëdhima', song: 'Zemrën n\'dorë', youtube: 'https://www.youtube.com/watch?v=7rEDP1lSoDQ' },
-  { countryKey: 'am', artist: 'TBD', song: '' }, // Armenia
+  { countryKey: 'am', artist: 'LADANIVA', song: 'Jako', youtube: 'https://www.youtube.com/watch?v=_6xfmW0Fc40' }, // Armenia
   { countryKey: 'au', artist: 'Electric Fields', song: 'One Milkali (One Blood)', youtube: 'https://www.youtube.com/watch?v=f1wwqQ41txw' }, // Australia
   { countryKey: 'at', artist: 'Kaleen', song: 'We Will Rave', youtube: 'https://www.youtube.com/watch?v=Kqda15G4T-4' }, // Austria
   { countryKey: 'az', artist: 'Fahree', song: '' }, // Azerbaijan

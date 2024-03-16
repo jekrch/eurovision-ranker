@@ -23,7 +23,7 @@ export const contestants2024: Contestant[] = [
   { countryKey: 'am', artist: 'LADANIVA', song: 'Jako', youtube: 'https://www.youtube.com/watch?v=_6xfmW0Fc40' }, // Armenia
   { countryKey: 'au', artist: 'Electric Fields', song: 'One Milkali (One Blood)', youtube: 'https://www.youtube.com/watch?v=f1wwqQ41txw' }, // Australia
   { countryKey: 'at', artist: 'Kaleen', song: 'We Will Rave', youtube: 'https://www.youtube.com/watch?v=Kqda15G4T-4' }, // Austria
-  { countryKey: 'az', artist: 'Fahree', song: '' }, // Azerbaijan
+  { countryKey: 'az', artist: 'FAHREE feat. Ilkin Dovlatov', song: 'Özünlə apar', youtube: 'https://www.youtube.com/watch?v=NNhAk4rVgNc' }, // Azerbaijan
   { countryKey: 'be', artist: 'Mustii', song: "Before the Party's Over", youtube: 'https://www.youtube.com/watch?v=WCe9zrWEFNc' }, // Belgium
   { countryKey: 'hr', artist: 'Baby Lasagna', song: 'Rim Tim Tagi Dim', youtube: 'https://www.youtube.com/watch?v=kmg8EAD-Kjw' }, // Croatia
   { countryKey: 'cy', artist: 'Silia Kapsis', song: 'Liar', youtube: 'https://www.youtube.com/watch?v=8q5QozrtEPA' }, // Cyprus

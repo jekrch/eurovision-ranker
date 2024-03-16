@@ -52,7 +52,7 @@ export const initialCountryContestantCache = [
     {
       id: '.e',
       country: { id: '.e', name: 'Azerbaijan', key: 'az', icon: 'flag-icon-az' },
-      contestant: { countryKey: 'az', artist: 'Fahree', song: '', votes: undefined }
+      contestant: { countryKey: 'az', artist: 'FAHREE feat. Ilkin Dovlatov', song: 'Özünlə apar', votes: undefined, youtube: 'https://www.youtube.com/watch?v=NNhAk4rVgNc' }
     },
     {
       id: '.g',

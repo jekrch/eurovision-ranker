@@ -11,8 +11,8 @@ export const initialCountryContestantCache = [
       contestant: {
         countryKey: 'al',
         artist: 'Besa Kokëdhima',
-        song: "Zemrën n'dorë",
-        youtube: 'https://www.youtube.com/watch?v=7rEDP1lSoDQ',
+        song: "Titan",
+        youtube: 'https://www.youtube.com/watch?v=nrjFhjpm7D8',
         votes: undefined
       }
     },
@@ -52,7 +52,7 @@ export const initialCountryContestantCache = [
     {
       id: '.e',
       country: { id: '.e', name: 'Azerbaijan', key: 'az', icon: 'flag-icon-az' },
-      contestant: { countryKey: 'az', artist: 'FAHREE feat. Ilkin Dovlatov', song: 'Özünlə apar', votes: undefined, youtube: 'https://www.youtube.com/watch?v=NNhAk4rVgNc' }
+      contestant: { countryKey: 'az', artist: 'FAHREE feat. Ilkin Dovlatov', song: 'Özünlə Apar', votes: undefined, youtube: 'https://www.youtube.com/watch?v=NNhAk4rVgNc' }
     },
     {
       id: '.g',

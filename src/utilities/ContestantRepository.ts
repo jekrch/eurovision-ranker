@@ -269,6 +269,7 @@ export function getSongDetails(
               //console.log(matchingRow)
               resolve({
                 lyrics: matchingRow.lyrics, 
+                engLyrics: matchingRow.eng_lyrics,
                 composers: matchingRow.composers,
                 lyricists: matchingRow.lyricists
               } as SongDetails);

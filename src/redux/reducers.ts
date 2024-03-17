@@ -1,5 +1,6 @@
+import { Category } from "../utilities/CategoryUtil";
 import { CountryContestant } from '../data/CountryContestant';
-import { SET_NAME, SET_YEAR, SET_RANKED_ITEMS, SET_UNRANKED_ITEMS, SET_SHOW_UNRANKED, SET_CONTESTANTS, SET_IS_DELETE_MODE, SET_THEME, SET_VOTE, SET_HEADER_MENU_OPEN } from './actions';
+import { SET_NAME, SET_YEAR, SET_RANKED_ITEMS, SET_UNRANKED_ITEMS, SET_SHOW_UNRANKED, SET_CONTESTANTS, SET_IS_DELETE_MODE, SET_THEME, SET_VOTE, SET_HEADER_MENU_OPEN, SET_CATEGORIES } from './actions';
 import { Action, AppState } from './types';
 
 const initialState: AppState = {
@@ -12,7 +13,8 @@ const initialState: AppState = {
   headerMenuOpen: false,
   contestants: [],
   rankedItems: [],
-  unrankedItems: []
+  unrankedItems: [],
+  categories: []
 };
 
 const rootReducer = (state = initialState, action: Action): AppState => {
@@ -37,6 +39,8 @@ const rootReducer = (state = initialState, action: Action): AppState => {
       return { ...state, unrankedItems: action.payload as CountryContestant[] };
     case SET_CONTESTANTS:
       return { ...state, contestants: action.payload as CountryContestant[] };
+    case SET_CATEGORIES:
+      return { ...state, categories: action.payload as Category[] };
     default:
       return state;
   }

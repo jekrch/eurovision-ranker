@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { AppState } from '../redux/types';
 import Modal from './Modal';
@@ -7,15 +7,12 @@ import { getSongDetails } from '../utilities/ContestantRepository';
 
 type SongModalProps = {
     isOpen: boolean;
-    //tab: string;
     countryContestant?: CountryContestant;
     onClose: () => void;
 };
 
 const SongModal: React.FC<SongModalProps> = (props: SongModalProps) => {
-    //const dispatch: Dispatch<any> = useDispatch();
     const year = useSelector((state: AppState) => state.year);
-    // const [activeTab, setActiveTab] = useState(props.tab);
     const [lyrics, setLyrics] = useState<string | undefined>('');
     const [engLyrics, setEngLyrics] = useState<string | undefined>('');
     const [composers, setComposers] = useState('');
@@ -23,17 +20,13 @@ const SongModal: React.FC<SongModalProps> = (props: SongModalProps) => {
     const [showEngLyrics, setShowEngLyrics] = useState<boolean>(false);
     const contestant = props.countryContestant?.contestant;
 
-    // useEffect(() => {
-    //     setActiveTab(props.tab);
-    // }, [props.tab, props.isOpen]);
-
-
-    /**
-     * Load additional song details 
-     */
     useEffect(() => {
         if (year && contestant?.song) {
             setShowEngLyrics(false);
+            setLyricists('');
+            setComposers('');
+            setLyrics(undefined);
+            setEngLyrics(undefined);
             getSongDetails(year, contestant.song)
                 .then(fetchedSongDetails => {
                     assignLyrics(
@@ -53,7 +46,6 @@ const SongModal: React.FC<SongModalProps> = (props: SongModalProps) => {
         engLyrics: string | undefined,
         song: string | undefined
     ) {
-
         if (!lyrics?.length) {
             setLyrics('N/A');
             return;
@@ -66,13 +58,10 @@ const SongModal: React.FC<SongModalProps> = (props: SongModalProps) => {
         setEngLyrics(finalEngLyrics);
     }
 
-    //if (!props.isOpen) return null;
-
     function formatLyrics(
         lyrics: string | undefined,
         song: string | undefined
     ) {
-
         if (!lyrics) {
             return lyrics;
         }
@@ -93,7 +82,6 @@ const SongModal: React.FC<SongModalProps> = (props: SongModalProps) => {
     const LabeledValue: React.FC<
         { label: string; value: string | null | undefined }
     > = ({ label, value }) => {
-
         if (!value) {
             return null;
         }
@@ -143,43 +131,29 @@ const SongModal: React.FC<SongModalProps> = (props: SongModalProps) => {
                     value={lyricists?.replaceAll(';', ', ')}
                 />
                 <hr className="mt-[1em] mr-2 border-slate-500" />
-                <div
-                    className="mt-[1em]">
-                    {(showEngLyrics ? engLyrics : lyrics)?.split('\\n').map((line, index) => (
-                        <div key={index}>{line?.length ? line : '\u00A0'}</div>
-                    ))}
+                <div className="mt-[1em] relative overflow-hidden">
+                    <div className="lyrics-wrapper">
+                        <div
+                            className={`lyrics-container ${
+                                showEngLyrics && lyrics?.length ? 'slide-out-left' : 'slide-in-right'
+                            }`}
+                        >
+                            {lyrics?.split('\\n').map((line, index) => (
+                                <div key={index}>{line?.length ? line : '\u00A0'}</div>
+                            ))}
+                        </div>
+                        <div
+                            className={`lyrics-container ${
+                                showEngLyrics ? 'slide-in-right' : 'slide-out-left'
+                            }`}
+                        >
+                            {engLyrics?.split('\\n').map((line, index) => (
+                                <div key={index}>{line?.length ? line : '\u00A0'}</div>
+                            ))}
+                        </div>
+                    </div>
                 </div>
             </div>
-            {/* <div className="border-b border-gray-200 dark:border-gray-700 -mt-4">
-                <ul className="flex flex-wrap -mb-px text-sm font-medium text-center text-gray-500 dark:text-gray-400">
-                    <TabButton
-                        isActive={activeTab === 'lyrics'}
-                        onClick={() => setActiveTab('about')}
-                        icon={faHouseUser}
-                        label="About"
-                    />
-                    <TabButton
-                        isActive={activeTab === 'donate'}
-                        onClick={() => setActiveTab('donate')}
-                        icon={faHeart}
-                        label="Donate"
-                    />
-                </ul>
-            </div> */}
-
-            {/* <div className="overflow-y-auto pt-4 select-text pb-3 flex-grow">
-                {activeTab === 'about' &&
-                    <div className="">
-
-                    </div>}
-
-                {activeTab === 'donate' &&
-                    <div className="mb-0">
-                       
-                    </div>}
-
-            </div> */}
-
         </Modal>
     );
 };

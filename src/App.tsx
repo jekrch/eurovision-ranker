@@ -306,16 +306,6 @@ const App: React.FC = () => {
     handleYearUpdate();
   }, [year]);
 
-  // useEffect(() => {
-  //   const handleVoteUpdate = async () => {
-  //     updateQueryParams({ v: vote });
-  //     await decodeRankingsFromURL(
-  //       dispatch
-  //     );
-  //   }
-  //   handleVoteUpdate();
-  // }, [vote]);
-
   useEffect(() => {
     updateQueryParams({ n: name });
   }, [name]);
@@ -530,6 +520,7 @@ const App: React.FC = () => {
                         supportedYears={supportedYears}
                         openNameModal={() => setNameModalShow(true)}
                         openConfig={openConfigModal}
+                        className={showUnranked ? "min-w-[9em] max-w-50vw-6em" : "w-[80vw] max-w-[30em] min-w-[20em]"}
                       />
 
                       <div className="px-1 overflow-y-auto h-full">
@@ -723,11 +714,21 @@ const App: React.FC = () => {
         toastOptions={{
           success: {
             style: {
-              color: 'white',
+              color: '#E8E7E6',
               background: '#474575',
             },
             iconTheme: {
               primary: 'green',
+              secondary: 'white',
+            },
+          },
+          error: {
+            style: {
+              color: '#E8E7E6',
+              background: '#474575',
+            },
+            iconTheme: {
+              primary: 'red',
               secondary: 'white',
             },
           },

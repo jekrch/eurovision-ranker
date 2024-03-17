@@ -439,3 +439,44 @@ https://codepen.io/chris22smith/pen/RZogMa */
 .no-scroll {
   overflow: hidden;
 }
+
+.lyrics-wrapper {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+.lyrics-container {
+  width: 100%;
+  transition: transform 0.3s ease-in-out;
+}
+
+.slide-out-left {
+  animation: slideOutLeft 0.3s forwards;
+}
+
+.slide-in-right {
+  animation: slideInRight 0.3s forwards;
+}
+
+@keyframes slideOutLeft {
+  0% {
+      transform: translateX(0);
+  }
+  99% {
+      transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(-100%);
+    height: 0;
+  }
+}
+
+@keyframes slideInRight {
+  0% {
+      transform: translateX(100%);
+  }
+  100% {
+      transform: translateX(0);
+  }
+}

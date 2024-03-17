@@ -2,7 +2,7 @@ import classNames from 'classnames';
 import React, { useEffect, useState } from 'react';
 import { Dispatch } from 'redux';
 import Dropdown from './Dropdown';
-import { faCopy, faDownload, faEdit, faFileExport, faList } from '@fortawesome/free-solid-svg-icons';
+import { faCopy, faDownload, faEdit, faFileExport, faList, faSlidersH, faTrash } from '@fortawesome/free-solid-svg-icons';
 import Modal from './Modal';
 import TabButton from './TabButton';
 import { sanitizeYear, supportedYears } from '../data/Contestants';
@@ -19,6 +19,8 @@ import toast, { Toaster } from 'react-hot-toast';
 import { EXPORT_TYPE, EXPORT_TYPES, getExportType } from '../utilities/export/ExportType';
 import Checkbox from './Checkbox';
 import IconButton from './IconButton';
+import { setCategories as setStateCategories } from '../redux/actions';
+import { Category, isValidCategoryName, parseCategoriesUrlParam, saveCategoriesToUrl } from '../utilities/CategoryUtil';
 
 type ConfigModalProps = {
     isOpen: boolean;
@@ -50,8 +52,64 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
     );
     const currentDomain = window.location.origin;
     const currentPath = window.location.pathname;
-
     const exportTypeOptions = Object.values(EXPORT_TYPES).map(exportType => exportType.name);
+    const [categories, setCategories] = useState<Category[]>([]);
+    const [newCategoryName, setNewCategoryName] = useState('');
+
+    const addCategory = () => {
+        if (newCategoryName.trim() !== '') {
+            if (!isValidCategoryName(newCategoryName)) {
+                return;
+            }
+            const updatedCategories = [...categories, { name: newCategoryName, weight: 5 }];
+            setNewCategoryName('');
+            saveCategories(updatedCategories);
+        }
+    };
+
+    const updateCategoryName = (index: number, name: string) => {
+        if (!isValidCategoryName(newCategoryName)) {
+            return;
+        }
+        const updatedCategories = [...categories];
+        updatedCategories[index].name = name;
+        saveCategories(updatedCategories);
+    };
+
+    const deleteCategory = (index: number) => {
+        const updatedCategories = [...categories];
+        updatedCategories.splice(index, 1);
+        saveCategories(updatedCategories);
+    };
+
+    const updateCategoryWeight = (index: number, weight: number) => {
+        const updatedCategories = [...categories];
+        updatedCategories[index].weight = weight;
+        saveCategories(updatedCategories);
+    };
+
+    function saveCategories(updatedCategories: Category[]) {
+        setCategories(updatedCategories);
+        dispatch(
+            setStateCategories(updatedCategories)
+        );
+        saveCategoriesToUrl(updatedCategories);
+    }
+
+    /**
+     * Load categories from the url
+     */
+    useEffect(() => {
+        const searchParams = new URLSearchParams(window.location.search);
+        const categoriesParam = searchParams.get('c');
+        if (categoriesParam) {
+            const parsedCategories = parseCategoriesUrlParam(categoriesParam);
+            setCategories(parsedCategories);
+            dispatch(
+                setStateCategories(parsedCategories)
+            )
+        }
+    }, []);
 
     function getVoteTypeOption(voteCode: string) {
         if (!voteCode?.length || voteCode == 'loading') {
@@ -230,8 +288,8 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
 
     useEffect(() => {
         setActiveTab(props.tab);
-        
-        //setActiveTab('export');
+
+        setActiveTab('categories');
     }, [props.tab, props.isOpen]);
 
     useEffect(() => {
@@ -442,6 +500,13 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
                         icon={faFileExport}
                         label="Export"
                     />
+
+                    <TabButton
+                        isActive={activeTab === 'categories'}
+                        onClick={() => setActiveTab('categories')}
+                        icon={faSlidersH}
+                        label="Categories"
+                    />
                 </ul>
             </div>
 
@@ -477,7 +542,7 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
                                         label="Jury"
                                         className="ml-[0.5em]"
                                     />
-                                    
+
                                 </span>
                                 {/* hidden for now */}
                                 <div className="mt-[0.5em] ">
@@ -582,6 +647,7 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
                         {/* <p className=""><a className="text-link text-sm mb-[3em]" href={getUrl("?r=ikd.gt4on&y=23&n=Your+Dev%27s+Personal+Favs")}>My personal favs from 2023 :-)</a></p> */}
                     </div>
                 }
+
                 {activeTab === 'export' &&
                     <div className="mb-0">
                         <div className="mb-[1.5em]">
@@ -614,7 +680,7 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
                                 className="ml-4 bg-blue-500 hover:bg-blue-700 text-white font-normal pl-[0.7em] rounded-md text-xs py-[0.5em] pr-[1em]"
                                 onClick={
                                     () => copyToClipboard(
-                                        rankedItems, 
+                                        rankedItems,
                                         exportTypeSelection as EXPORT_TYPE
                                     )
                                 }
@@ -622,7 +688,89 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
                                 title='Copy to Clipboard'
                             />
                         </div>
-                       
+
+                    </div>
+                }
+
+                {activeTab === 'categories' &&
+                    <div className="mb-0">
+                        <p className="relative mb-[1em] mt-2 text-sm">Create categories to build multiple rankings based on different criteria: e.g. <i>Vocals, Dance, Lyrics</i> etc.</p>
+                        <div className="mt-5 mb-[1.5em]">
+                            <span className="font-bold ml-0 whitespace-nowrap">Categories</span>
+                            <div className="mt-4">
+                                <input
+                                    type="text"
+                                    placeholder="Enter category name"
+                                    value={newCategoryName}
+                                    onChange={(e) => setNewCategoryName(e.target.value)}
+                                    onKeyDown={(e) => {
+                                        if (e.key === "Enter")
+                                            addCategory();
+                                    }}
+                                    className="px-2.5 py-1.5 ml-1 mr-3 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                                />
+                                <IconButton
+                                    className="ml-0 bg-blue-500 hover:bg-blue-700 text-white font-normal pl-[0.7em] rounded-md text-xs py-[0.5em] pr-[1em]"
+                                    onClick={addCategory}
+                                    icon={undefined}
+                                    title='Add'
+                                />
+                                <IconButton
+                                    className="ml-3 bg-rose-800 hover:bg-rose-700 text-white font-normal pl-[0.7em] rounded-md text-xs py-[0.5em] pr-[1em]"
+                                    onClick={() => { saveCategories([]) }}
+                                    icon={faTrash}
+                                    title='Clear'
+                                />
+
+                            </div>
+                            <table className="mt-4 w-full table-auto">
+                                {categories?.length > 0 &&
+                                    <thead>
+                                        <tr className='text-sm'>
+                                            <th className="text-left px-2">Name</th>
+                                            <th className="text-left px-2">Weight</th>
+                                            <th className="px-2"></th>
+                                        </tr>
+                                    </thead>
+                                }
+                                <tbody>
+                                    {categories.map((category, index) => (
+                                        <tr key={index}>
+                                            <td className="px-2 py-2">
+                                                <input
+                                                    type="text"
+                                                    value={category.name}
+                                                    onChange={(e) => updateCategoryName(index, e.target.value)}
+                                                    className="px-2.5 py-1.5 mr-3 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white w-full"
+                                                />
+                                            </td>
+                                            <td className="px-2">
+                                                <div className="flex items-center">
+                                                    <input
+                                                        type="range"
+                                                        min="0"
+                                                        max="10"
+                                                        step="1"
+                                                        value={category.weight}
+                                                        onChange={(e) => updateCategoryWeight(index, parseInt(e.target.value))}
+                                                        className="w-full"
+                                                    />
+                                                    <span className="ml-2 w-3">{category.weight}</span>
+                                                </div>
+                                            </td>
+                                            <td className="px-2">
+                                                <button
+                                                    onClick={() => deleteCategory(index)}
+                                                    className="bg-rose-700 hover:bg-rose-600 text-white rounded-md px-2 py-[0.1em]"
+                                                >
+                                                    X
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 }
             </div>
@@ -632,4 +780,3 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
 };
 
 export default ConfigModal;
-

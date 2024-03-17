@@ -1,4 +1,5 @@
 import { CountryContestant } from "../data/CountryContestant";
+import { Category } from "../utilities/CategoryUtil";
 
 export interface AppState {
     name: string;
@@ -9,6 +10,7 @@ export interface AppState {
     contestants: CountryContestant[];
     rankedItems: CountryContestant[];
     unrankedItems: CountryContestant[];
+    categories: Category[];
     theme: string;
     vote: string;
   }
@@ -68,3 +70,7 @@ export interface AppState {
     payload: CountryContestant[];
   }
   
+  export interface SetCategories extends Action {
+    type: 'SET_CATEGORIES';
+    payload: Category[];
+  }

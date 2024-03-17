@@ -1,11 +1,11 @@
 import React, { useState, useRef, useEffect, Dispatch } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEllipsisH, faGlobe, faTv, faFileExport, faClipboard, faCopy, faLink, faFile, faFileCode, faList, faEdit, faPen } from '@fortawesome/free-solid-svg-icons';
+import { faEllipsisH, faGlobe, faTv, faCopy, faLink, faFile, faFileCode, faList, faEdit, faPen } from '@fortawesome/free-solid-svg-icons';
 import { CSSTransition } from 'react-transition-group';
 import classNames from 'classnames';
 import MenuItem from './MenuItem';
 import SubmenuItem from './SubmenuItem';
-import { copyDataToClipboard, copyToClipboard, copyUrlToClipboard, getExportDataString } from '../utilities/export/ExportUtil';
+import {  copyToClipboard, copyUrlToClipboard } from '../utilities/export/ExportUtil';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '../redux/types';
 import { EXPORT_TYPE } from '../utilities/export/ExportType';
@@ -95,7 +95,7 @@ const RankedHeaderMenu: React.FC<RankedHeaderMenuProps> = (props: RankedHeaderMe
   return (
     <div className="relative inline-block" ref={menuRef}>
       <button
-        className={classNames("tour-step-6 w-6 h-6 bg-[#9d9a9a] hover:bg-slate-400 rounded-full flex justify-center items-center cursor-pointer", { "!bg-slate-400": isMenuOpen })}
+        className={classNames("tour-step-6 w-6 h-6 bg-[#8e8d8d] hover:bg-slate-400 rounded-full flex justify-center items-center cursor-pointer", { "!bg-slate-400": isMenuOpen })}
         onClick={toggleMenu}
       >
         <FontAwesomeIcon 

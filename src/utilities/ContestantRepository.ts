@@ -65,13 +65,15 @@ export async function fetchAndProcessCountryContestants(
       return {
         id: '_' + country.id,
         country: countryB,
-        contestant: contestant
+        contestant: contestant,
+        rankings: []
       };
     } else {
       return {
         id: country.id,
         country: country,
-        contestant: contestant
+        contestant: contestant,
+        rankings: []
       };
     }
   }).sort((a, b) => a.country.name.localeCompare(b.country.name));

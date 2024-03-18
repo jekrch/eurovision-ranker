@@ -6,7 +6,6 @@ export type Category = {
     weight: number;
 }
 
-
  /**
      * Determines whether the provided category name is valid.
      * If not, a toast alert is displayed
@@ -15,8 +14,8 @@ export type Category = {
      * @returns 
      */
  export function isValidCategoryName(newCategoryName: string) {
-    if (newCategoryName.includes(',')) {
-        toast.error('Category names cannot contain commas.');
+    if (newCategoryName.includes('|')) {
+        toast.error('Category names cannot contain "|"');
         return false;
     }
     if (newCategoryName.trim().toLowerCase() == 'total') {
@@ -30,12 +29,12 @@ export type Category = {
 export function saveCategoriesToUrl(updatedCategories: Category[]) {
     const categoriesParam = updatedCategories.map(
         category => `${category.name}-${category.weight}`
-    ).join(',');
+    ).join('|');
     updateQueryParams({ c: categoriesParam });
 }
 
 export function parseCategoriesUrlParam(categoriesParam: string) {
-    return categoriesParam.split(',').map(category => {
+    return categoriesParam.split('|').map(category => {
         const lastDashIndex = category.lastIndexOf('-');
         const name = category.slice(0, lastDashIndex);
         const weight = parseInt(category.slice(lastDashIndex + 1), 10);

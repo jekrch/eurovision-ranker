@@ -1,6 +1,6 @@
 import { Category } from "../utilities/CategoryUtil";
 import { CountryContestant } from '../data/CountryContestant';
-import { SetNameAction, SetYearAction, SetRankedItemsAction, SetUnrankedItemsAction, SetShowUnrankedAction, SetContestantsAction, SetIsDeleteModeAction, SetThemeAction, SetVoteAction, SetHeaderMenuOpen, SetCategories } from './types';
+import { SetNameAction, SetYearAction, SetRankedItemsAction, SetUnrankedItemsAction, SetShowUnrankedAction, SetContestantsAction, SetIsDeleteModeAction, SetThemeAction, SetVoteAction, SetHeaderMenuOpen, SetCategories, SetActiveCategory } from './types';
 
 export const SET_NAME = 'SET_NAME';
 export const SET_YEAR = 'SET_YEAR';
@@ -13,6 +13,7 @@ export const SET_CONTESTANTS = 'SET_CONTESTANTS';
 export const SET_RANKED_ITEMS = 'SET_RANKED_ITEMS';
 export const SET_UNRANKED_ITEMS = 'SET_UNRANKED_ITEMS';
 export const SET_CATEGORIES = 'SET_CATEGORIES';
+export const SET_ACTIVE_CATEGORY = 'SET_ACTIVE_CATEGORY';
 
 export const setName = (name: string): SetNameAction => (
     { type: SET_NAME, payload: name }
@@ -56,4 +57,8 @@ export const setContestants = (items: CountryContestant[]): SetContestantsAction
 
 export const setCategories = (categories: Category[]): SetCategories => (
     { type: SET_CATEGORIES, payload: categories }
+);
+
+export const setActiveCategory = (index: number): SetActiveCategory => (
+    { type: SET_ACTIVE_CATEGORY, payload: index }
 );

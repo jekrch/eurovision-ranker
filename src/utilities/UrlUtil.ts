@@ -20,7 +20,7 @@ export const updateStates = (
     dispatch: Dispatch<any>
 ) => {
     let { rankingName, contestYear, theme, voteCode } = params;
-    
+
     if (rankingName) {
         dispatch(
             setName(rankingName)
@@ -54,12 +54,13 @@ export const updateStates = (
 export async function processAndUpdateRankings(
     contestYear: string,
     rankings: string | null,
+    categoryRankings: string | null,
     voteCode: string | null,
     dispatch: Dispatch<any>
 ): Promise<string[] | undefined> {
 
     const yearContestants = await fetchCountryContestantsByYear(
-        contestYear, 
+        contestYear,
         voteCode ?? '',
         dispatch
     );
@@ -68,7 +69,27 @@ export async function processAndUpdateRankings(
         setContestants(yearContestants)
     );
 
-    if (rankings) {
+    if (categoryRankings) {
+        const rankedCountries = categoryRankings.split('|').map(ranking => {
+            const [countryKey, rankingsStr] = ranking.split('~');
+            const rankings = rankingsStr.split('~').map(Number);
+            const country = countries.find(c => c.key === countryKey);
+            if (country) {
+                const countryContestant = yearContestants.find(c => c.country.key === countryKey);
+                if (countryContestant) {
+                    countryContestant.rankings = rankings;
+                    return countryContestant;
+                }
+            }
+        }).filter(Boolean) as CountryContestant[];
+
+        const unrankedCountries = yearContestants.filter(
+            countryContestant => !rankedCountries.some(c => c.id === countryContestant.id)
+        );
+
+        dispatch(setRankedItems(rankedCountries));
+        dispatch(setUnrankedItems(unrankedCountries));
+    } else if (rankings) {
 
         // let compare = getRankingComparison(
         //     contestYear, rankings, "envw4g.gmckyjib.dod16f.ca7.bhq" // 2023 finals
@@ -79,33 +100,33 @@ export async function processAndUpdateRankings(
 
         const rankedCountries = rankedIds.map(
             (id: string) => {
-                    let countryContestant: CountryContestant | undefined = yearContestants.find(
-                        c => c.id === id
-                    );
-                    if (countryContestant) {
-                        return countryContestant;
+                let countryContestant: CountryContestant | undefined = yearContestants.find(
+                    c => c.id === id
+                );
+                if (countryContestant) {
+                    return countryContestant;
+                } else {
+                    const country = countries.find(c => c.id === id);
+                    if (country) {
+                        return new CountryContestant(country);
                     } else {
-                        const country = countries.find(c => c.id === id);
-                        if (country) {
-                            return new CountryContestant(country);
-                        } else {
-                            return;
-                        }
+                        return;
                     }
                 }
-            ).filter(Boolean) as CountryContestant[];
+            }
+        ).filter(Boolean) as CountryContestant[];
 
-            const unrankedCountries = yearContestants.filter(
-                countryContestant => !rankedIds.includes(countryContestant.id)
-            );
+        const unrankedCountries = yearContestants.filter(
+            countryContestant => !rankedIds.includes(countryContestant.id)
+        );
 
-            dispatch(
-                setRankedItems(rankedCountries)
-            );
+        dispatch(
+            setRankedItems(rankedCountries)
+        );
 
-            dispatch(
-                setUnrankedItems(unrankedCountries)
-            );
+        dispatch(
+            setUnrankedItems(unrankedCountries)
+        );
 
         return rankedIds;
     } else {
@@ -131,8 +152,9 @@ export async function decodeRankingsFromURL(
     updateStates(extractedParams, dispatch);
 
     return await processAndUpdateRankings(
-        extractedParams.contestYear || defaultYear, 
+        extractedParams.contestYear || defaultYear,
         extractedParams.rankings,
+        extractedParams.categoryRankings,
         extractedParams.voteCode,
         dispatch
     );
@@ -159,12 +181,12 @@ export function convertRankingsStrToArray(rankings: string): string[] {
                 rankedIds.push(rankings[i]);
                 i += 1;
             }
-        } 
+        }
         // check for the period and the next character
         else if (rankings[i] === '.' && i + 1 < rankings.length) {
             rankedIds.push(rankings.substring(i, i + 2));
             i += 2;
-        } 
+        }
         else {
             rankedIds.push(rankings[i]);
             i += 1;
@@ -180,23 +202,24 @@ export function convertRankingsStrToArray(rankings: string): string[] {
 
 export const extractParams = (params: URLSearchParams) => {
     return {
-        rankingName: params.get('n'), 
-        contestYear: params.get('y'), 
-        rankings: params.get('r'),   
+        rankingName: params.get('n'),
+        contestYear: params.get('y'),
+        rankings: params.get('r'),
+        categoryRankings: params.get('cr'),
         theme: params.get('t'),         // e.g. ab
         voteCode: params.get('v')       // e.g. {round}-{type}-{fromCountryKey} f-t-gb
     };
 };
 
-  /**
-   * Function to update the query parameters
-   */
-  export function updateQueryParams(params: { [key: string]: string }) {
+/**
+ * Function to update the query parameters
+ */
+export function updateQueryParams(params: { [key: string]: string }) {
     const searchParams = new URLSearchParams(window.location.search);
 
     // Set new or update existing parameters
     Object.keys(params).forEach(key => {
-      searchParams.set(key, params[key]);
+        searchParams.set(key, params[key]);
     });
 
     const newUrl = '?' + searchParams.toString();
@@ -206,4 +229,4 @@ export const extractParams = (params: URLSearchParams) => {
     if (newUrl !== currentUrl) {
         window.history.pushState(null, '', newUrl);
     }
-  }
+}

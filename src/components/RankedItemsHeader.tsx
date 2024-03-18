@@ -1,11 +1,11 @@
-import React, { Dispatch, useState } from 'react';
+import React, { Dispatch, useEffect, useState } from 'react';
 import { FaGlobe, FaTv } from 'react-icons/fa';
 import Dropdown from './Dropdown';
 import { CountryContestant } from '../data/CountryContestant';
 import { AnyIfEmpty, useDispatch } from 'react-redux';
 import { AppState } from '../redux/types';
 import { useSelector } from 'react-redux';
-import { setYear } from '../redux/actions';
+import { setActiveCategory, setYear } from '../redux/actions';
 import RankedHeaderMenu from './RankedHeaderMenu';
 import { Toaster } from 'react-hot-toast';
 import classNames from 'classnames';
@@ -31,9 +31,20 @@ const RankedItemsHeader: React.FC<IRankedItemsHeaderProps> = ({
     const showUnranked = useSelector((state: AppState) => state.showUnranked);
     const year = useSelector((state: AppState) => state.year);
     const name = useSelector((state: AppState) => state.name);
+    const activeCategory = useSelector((state: AppState) => state.activeCategory);
     const rankedItems = useSelector((state: AppState) => state.rankedItems);
     const categories = useSelector((state: AppState) => state.categories);
     const [activeTab, setActiveTab] = useState(0);
+
+    useEffect(() => {
+        setActiveTab(activeCategory);
+    }, [activeCategory]);
+    
+    useEffect(() => {
+        dispatch(
+            setActiveCategory(activeTab)
+        );
+    }, [activeTab]);
 
     return (
         <div className={classNames(

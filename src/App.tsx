@@ -43,6 +43,8 @@ const App: React.FC = () => {
   const year = useSelector((state: AppState) => state.year);
   const name = useSelector((state: AppState) => state.name);
   const theme = useSelector((state: AppState) => state.theme);
+  const categories = useSelector((state: AppState) => state.categories);
+  const activeCategory = useSelector((state: AppState) => state.activeCategory);
   const vote = useSelector((state: AppState) => state.vote);
   const rankedItems = useSelector((state: AppState) => state.rankedItems);
   const unrankedItems = useSelector((state: AppState) => state.unrankedItems);
@@ -262,8 +264,19 @@ const App: React.FC = () => {
    * @returns 
    */
   const encodeRankingsToURL = (rankedCountries: CountryContestant[]): string => {
-    const ids = rankedCountries.map(item => item.id);
-    return ids.join('');
+    if (categories.length > 0) {
+      const categoryRankings = rankedCountries.map((item, index) => {
+        if (!item.rankings) {
+          item.rankings = [];
+        }
+        const ranking = item.rankings?.[activeCategory] ?? (index + 1);
+        return `${item.country.key}~${ranking}`;
+      });
+      return categoryRankings.join('|');
+    } else {
+      const ids = rankedCountries.map(item => item.id);
+      return ids.join('');
+    }
   };
 
   useEffect(() => {
@@ -281,13 +294,20 @@ const App: React.FC = () => {
   }, [])
 
   useEffect(() => {
-    if (refreshUrl == 0) {
+    if (refreshUrl === 0) {
       return;
     }
-    updateQueryParams({ r: encodeRankingsToURL(rankedItems) });
+    if (categories.length > 0) {
+      updateQueryParams({ cr: encodeRankingsToURL(rankedItems) });
+      updateQueryParams({ r: '' }); // Remove the 'r' parameter
+    } else {
+      updateQueryParams({ r: encodeRankingsToURL(rankedItems) });
+      updateQueryParams({ cr: '' }); // Remove the 'cr' parameter
+    }
     updateQueryParams({ y: year.slice(-2) });
     updateQueryParams({ n: name });
   }, [refreshUrl]);
+  
 
   useEffect(() => {
     const handleYearUpdate = async () => {
@@ -343,17 +363,23 @@ const App: React.FC = () => {
     // moving between lists
     if (destination.droppableId !== source.droppableId) {
       let destinationItems = Array.from(otherList);
-      destinationItems.splice(destination.index, 0, reorderedItem);
-      dispatch(
-        setOtherList(destinationItems)
-      );
+      const [removedItem] = destinationItems.splice(destination.index, 1);
+
+      if (removedItem.rankings === undefined) {
+        removedItem.rankings = [];
+      }
+      removedItem.rankings[activeCategory] = destination.index + 1;
+      destinationItems.splice(destination.index, 0, removedItem);
+      dispatch(setOtherList(destinationItems));
     } else {
-      items.splice(
-        destination.index, 0, reorderedItem
-      );
-      dispatch(
-        setActiveList(items)
-      );
+      items.splice(destination.index, 0, reorderedItem);
+      items.forEach((item, index) => {
+        if (item.rankings === undefined) {
+          item.rankings = [];
+        }
+        item.rankings[activeCategory] = index + 1;
+      });
+      dispatch(setActiveList(items));
     }
 
     dispatch(setActiveList(items));

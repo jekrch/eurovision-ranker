@@ -11,6 +11,7 @@ export interface AppState {
     rankedItems: CountryContestant[];
     unrankedItems: CountryContestant[];
     categories: Category[];
+    activeCategory: number;
     theme: string;
     vote: string;
   }
@@ -73,4 +74,9 @@ export interface AppState {
   export interface SetCategories extends Action {
     type: 'SET_CATEGORIES';
     payload: Category[];
+  }
+
+  export interface SetActiveCategory extends Action {
+    type: 'SET_ACTIVE_CATEGORY';
+    payload: number;
   }

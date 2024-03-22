@@ -8,6 +8,7 @@ import { assignVotesByCode, voteCodeHasSourceCountry } from "./VoteProcessor";
 import { cachedYear, initialCountryContestantCache } from "../data/InitialContestants";
 import { SongDetails } from "../data/SongDetails";
 
+
 export async function fetchCountryContestantsByYear(
   year: string,
   voteCode: string = '',
@@ -66,14 +67,12 @@ export async function fetchAndProcessCountryContestants(
         id: '_' + country.id,
         country: countryB,
         contestant: contestant,
-        rankings: []
       };
     } else {
       return {
         id: country.id,
         country: country,
         contestant: contestant,
-        rankings: []
       };
     }
   }).sort((a, b) => a.country.name.localeCompare(b.country.name));

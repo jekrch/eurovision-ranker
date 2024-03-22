@@ -34,7 +34,6 @@ describe('generateYoutubePlaylistUrl', () => {
             {
                 id: "test1",
                 country: {} as Country,
-                rankings: [],
                 contestant:
                     {
                         countryKey: 'country1',
@@ -48,7 +47,6 @@ describe('generateYoutubePlaylistUrl', () => {
             {
                 id: "test1",
                 country: {} as Country,
-                rankings: [],
                 contestant:
                     {
                         countryKey: 'country1',

@@ -11,7 +11,7 @@ export interface AppState {
     rankedItems: CountryContestant[];
     unrankedItems: CountryContestant[];
     categories: Category[];
-    activeCategory: number;
+    activeCategory: number | undefined;
     theme: string;
     vote: string;
   }

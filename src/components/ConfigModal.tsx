@@ -14,8 +14,7 @@ import { assignVotesByCode, hasAnyJuryVotes, hasAnyTeleVotes, sortByVotes, updat
 import { countries } from '../data/Countries';
 import { setContestants, setTheme, setVote } from '../redux/actions';
 import { updateQueryParams } from '../utilities/UrlUtil';
-import { copyDataToClipboard, copyToClipboard, copyUrlToClipboard, downloadFile, getExportDataString } from '../utilities/export/ExportUtil';
-import toast, { Toaster } from 'react-hot-toast';
+import { copyToClipboard, copyUrlToClipboard, downloadFile, getExportDataString } from '../utilities/export/ExportUtil';
 import { EXPORT_TYPE, EXPORT_TYPES, getExportType } from '../utilities/export/ExportType';
 import Checkbox from './Checkbox';
 import IconButton from './IconButton';

@@ -15,7 +15,7 @@ const initialState: AppState = {
   rankedItems: [],
   unrankedItems: [],
   categories: [],
-  activeCategory: 0
+  activeCategory: undefined
 };
 
 const rootReducer = (state = initialState, action: Action): AppState => {

@@ -15,7 +15,7 @@ import { generateYoutubePlaylistUrl, rankedHasAnyYoutubeLinks } from './utilitie
 import { AppState } from './redux/types';
 import { useDispatch, useSelector } from 'react-redux';
 import { setName, setYear, setRankedItems, setUnrankedItems, setShowUnranked, setContestants, setHeaderMenuOpen } from './redux/actions';
-import { decodeRankingsFromURL, updateQueryParams } from './utilities/UrlUtil';
+import { decodeRankingsFromURL, getOrderedContestantsByCategory, updateQueryParams } from './utilities/UrlUtil';
 import { Dispatch } from 'redux';
 import MapModal from './components/MapModal';
 import Joyride, { ACTIONS, CallBackProps, EVENTS, STATUS } from 'react-joyride';
@@ -28,6 +28,8 @@ import WelcomeOverlay from './components/WelcomeOverlay';
 import { DetailsCard } from './components/DetailsCard';
 import SongModal from './components/LyricsModal';
 import { Toaster } from 'react-hot-toast';
+import { toastOptions } from './utilities/ToasterUtil';
+import { joyrideOptions } from './utilities/JoyrideUtil';
 
 const App: React.FC = () => {
   const [mainModalShow, setMainModalShow] = useState(false);
@@ -69,13 +71,16 @@ const App: React.FC = () => {
   const [joyrideStepIndex, setJoyrideStepIndex] = useState(0);
 
   const handleGetStarted = () => {
+
     setIsOverlayExit(true);
     const overlayDiv = document.querySelector('.overlay')!;
     overlayDiv.classList.add('slide-left');
+
     setTimeout(() => {
       setShowOverlay(false)
-    }, 500); // 500ms for the animation duration
+    }, 500); // for the animation duration
   };
+
 
   const handleJoyrideCallback = useCallback((data: CallBackProps) => {
     const { action, index, status, type } = data;
@@ -125,6 +130,7 @@ const App: React.FC = () => {
       // User clicked back (or forward) button
       const decodeFromUrl = async () => {
         const rankingsExist = await decodeRankingsFromURL(
+          activeCategory,
           dispatch
         );
         // Set showUnranked based on whether rankings exist
@@ -219,11 +225,11 @@ const App: React.FC = () => {
           setRankedItems(rankedItems)
         );
         setRefreshUrl(Math.random());
-        
+
         dispatch(
           setHeaderMenuOpen(true)
         );
-        
+
         break;
 
       case 6:
@@ -258,21 +264,37 @@ const App: React.FC = () => {
     }
   }
 
+  useEffect(() => {
+
+    if (refreshUrl === 0) return;
+
+    const updateLists = async () => {
+
+      // Update the URL with the new active category
+      if (categories?.length > 0 && activeCategory !== undefined) {
+        updateQueryParams({ [`r${activeCategory + 1}`]: encodeRankingsToURL(rankedItems, activeCategory) });
+      } else {
+        updateQueryParams({ r: encodeRankingsToURL(rankedItems) });
+      }
+    };
+
+    updateLists();
+  }, [refreshUrl]);
+
+  useEffect(() => {
+
+    console.log(rankedItems)
+  }, [rankedItems]);
+
   /**
    * Encode rankings to csv for URL
    * @param rankedCountries 
    * @returns 
    */
-  const encodeRankingsToURL = (rankedCountries: CountryContestant[]): string => {
-    if (categories.length > 0) {
-      const categoryRankings = rankedCountries.map((item, index) => {
-        if (!item.rankings) {
-          item.rankings = [];
-        }
-        const ranking = item.rankings?.[activeCategory] ?? (index + 1);
-        return `${item.country.key}~${ranking}`;
-      });
-      return categoryRankings.join('|');
+  const encodeRankingsToURL = (rankedCountries: CountryContestant[], categoryIndex?: number): string => {
+    if (categories.length > 0 && categoryIndex !== undefined) {
+      const ids = rankedCountries.map(item => item.id);
+      return ids.join('');
     } else {
       const ids = rankedCountries.map(item => item.id);
       return ids.join('');
@@ -281,8 +303,8 @@ const App: React.FC = () => {
 
   useEffect(() => {
     const decodeFromUrl = async () => {
-
       const rankingsExist = await decodeRankingsFromURL(
+        activeCategory,
         dispatch
       );
       // Set showUnranked based on whether rankings exist
@@ -294,20 +316,32 @@ const App: React.FC = () => {
   }, [])
 
   useEffect(() => {
-    if (refreshUrl === 0) {
-      return;
-    }
-    if (categories.length > 0) {
-      updateQueryParams({ cr: encodeRankingsToURL(rankedItems) });
-      updateQueryParams({ r: '' }); // Remove the 'r' parameter
-    } else {
-      updateQueryParams({ r: encodeRankingsToURL(rankedItems) });
-      updateQueryParams({ cr: '' }); // Remove the 'cr' parameter
-    }
-    updateQueryParams({ y: year.slice(-2) });
-    updateQueryParams({ n: name });
-  }, [refreshUrl]);
-  
+    const updateRankedItems = async () => {
+
+      const rankingsExist = await decodeRankingsFromURL(
+        activeCategory,
+        dispatch
+      );
+
+      // console.log(rankedItems);
+      // const { rankedIds, rankedCountries } = getOrderedContestantsByCategory(activeCategory, rankedItems);
+
+      // console.log(rankedCountries);
+
+      // if (rankedCountries) {
+      //   // Reorder the rankedItems based on the active category
+      //   const reorderedRankedItems = rankingsExist?.map(id => {
+      //     return rankedItems.find(item => item.id === id);
+      //   }).filter(Boolean) as CountryContestant[];
+
+      //   dispatch(setRankedItems(rankedCountries));
+      //   //setRefreshUrl(Math.random())
+      // }
+    };
+
+    updateRankedItems();
+  }, [activeCategory]);
+
 
   useEffect(() => {
     const handleYearUpdate = async () => {
@@ -320,6 +354,7 @@ const App: React.FC = () => {
       // }
       updateQueryParams({ y: year.slice(-2) });
       await decodeRankingsFromURL(
+        activeCategory,
         dispatch
       );
     }
@@ -332,12 +367,12 @@ const App: React.FC = () => {
 
 
   /**
-   * Handler for the drop event. Either reposition an item within 
-   * its source array or move it to the other array 
-   * 
-   * @param result 
-   * @returns 
-   */
+     * Handler for the drop event. Either reposition an item within 
+     * its source array or move it to the other array 
+     * 
+     * @param result 
+     * @returns 
+     */
   const handleOnDragEnd = (result: DropResult) => {
     const { source, destination } = result;
 
@@ -363,35 +398,40 @@ const App: React.FC = () => {
     // moving between lists
     if (destination.droppableId !== source.droppableId) {
       let destinationItems = Array.from(otherList);
-      const [removedItem] = destinationItems.splice(destination.index, 1);
 
-      if (removedItem.rankings === undefined) {
-        removedItem.rankings = [];
-      }
-      removedItem.rankings[activeCategory] = destination.index + 1;
-      destinationItems.splice(destination.index, 0, removedItem);
+      destinationItems.splice(destination.index, 0, reorderedItem);
+
       dispatch(setOtherList(destinationItems));
+
+      // Update the URL parameters for all categories
+      categories.forEach((_, index) => {
+        const categoryParam = `r${index + 1}`;
+        const currentRanking = new URLSearchParams(window.location.search).get(categoryParam) || '';
+        const updatedRanking = `${currentRanking}${reorderedItem.country.id}`;
+        updateQueryParams({ [categoryParam]: updatedRanking });
+      });
+
     } else {
       items.splice(destination.index, 0, reorderedItem);
-      items.forEach((item, index) => {
-        if (item.rankings === undefined) {
-          item.rankings = [];
-        }
-        item.rankings[activeCategory] = index + 1;
-      });
       dispatch(setActiveList(items));
     }
 
     dispatch(setActiveList(items));
-    setRefreshUrl(Math.random())
+    setRefreshUrl(Math.random());
   };
 
   async function clearRanking(year: string) {
+    let yearContestants = await fetchCountryContestantsByYear(
+      year, '', dispatch
+    );
 
-    let yearContestants = await fetchCountryContestantsByYear(year, '', dispatch);
+    dispatch(
+      setContestants(yearContestants)
+    );
+    dispatch(
+      setUnrankedItems(yearContestants)
+    );
 
-    dispatch(setContestants(yearContestants));
-    dispatch(setUnrankedItems(yearContestants));
     dispatch(setRankedItems([]));
     setRefreshUrl(Math.random());
   }
@@ -546,7 +586,7 @@ const App: React.FC = () => {
                         supportedYears={supportedYears}
                         openNameModal={() => setNameModalShow(true)}
                         openConfig={openConfigModal}
-                        className={showUnranked ? "min-w-[9em] max-w-50vw-6em" : "w-[80vw] max-w-[30em] min-w-[20em]"}
+                        className={showUnranked ? "min-w-[9em] max-w-50vw-6em" : "w-[80vw] max-w-[30.5em] min-w-[20.5em]"}
                       />
 
                       <div className="px-1 overflow-y-auto h-full">
@@ -682,21 +722,25 @@ const App: React.FC = () => {
           }}
         />
       </div>
+
       <NameModal
         isOpen={nameModalShow}
         onClose={() => {
           setNameModalShow(false);
         }}
       />
+
       <MapModal
         isOpen={mapModalShow}
         onClose={() => { setMapModalShow(false) }}
       />
+
       <SongModal
         isOpen={isSongModalOpen}
         countryContestant={selectedCountryContestant}
         onClose={() => setIsSongModalOpen(false)}
       />
+
       <ConfigModal
         tab={configModalTab}
         isOpen={configModalShow}
@@ -708,6 +752,7 @@ const App: React.FC = () => {
           setRunTour(true);
         }}
       />
+
       <Joyride
         disableScrolling={true}
         disableScrollParentFix={true}
@@ -718,48 +763,14 @@ const App: React.FC = () => {
         callback={handleJoyrideCallback}
         showProgress={true}
         disableOverlay={false}
-        styles={{
-          overlay: { height: '100vh' },
-          buttonNext: {
-            backgroundColor: '#3c82f6',
-            color: '#dfe4eb'
-          },
-          buttonBack: {
-            color: '#cbd5e1',
-          },
-          options: {
-            zIndex: 10000,
-            arrowColor: '#333',
-            backgroundColor: '#333',
-            primaryColor: '#f04',
-            textColor: '#cbd5e1',
-          }
-        }}
+        styles={joyrideOptions}
       />
+
       <Toaster
-        toastOptions={{
-          success: {
-            style: {
-              color: '#E8E7E6',
-              background: '#474575',
-            },
-            iconTheme: {
-              primary: 'green',
-              secondary: 'white',
-            },
-          },
-          error: {
-            style: {
-              color: '#E8E7E6',
-              background: '#474575',
-            },
-            iconTheme: {
-              primary: 'red',
-              secondary: 'white',
-            },
-          },
-        }}
-        position="top-center" />
+        toastOptions={toastOptions}
+        position="top-center" 
+      />
+
     </div>
   );
 };

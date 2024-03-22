@@ -5,7 +5,7 @@ import { CountryContestant } from '../data/CountryContestant';
 import { countries } from '../data/Countries';
 import { defaultYear, sanitizeYear } from '../data/Contestants';
 import { getRankingComparison } from './RankAnalyzer';
-
+import { Category } from './CategoryUtil';
 
 /**
  * Updates states based on extracted parameters using Redux.
@@ -54,7 +54,6 @@ export const updateStates = (
 export async function processAndUpdateRankings(
     contestYear: string,
     rankings: string | null,
-    categoryRankings: string | null,
     voteCode: string | null,
     dispatch: Dispatch<any>
 ): Promise<string[] | undefined> {
@@ -69,52 +68,10 @@ export async function processAndUpdateRankings(
         setContestants(yearContestants)
     );
 
-    if (categoryRankings) {
-        const rankedCountries = categoryRankings.split('|').map(ranking => {
-            const [countryKey, rankingsStr] = ranking.split('~');
-            const rankings = rankingsStr.split('~').map(Number);
-            const country = countries.find(c => c.key === countryKey);
-            if (country) {
-                const countryContestant = yearContestants.find(c => c.country.key === countryKey);
-                if (countryContestant) {
-                    countryContestant.rankings = rankings;
-                    return countryContestant;
-                }
-            }
-        }).filter(Boolean) as CountryContestant[];
-
-        const unrankedCountries = yearContestants.filter(
-            countryContestant => !rankedCountries.some(c => c.id === countryContestant.id)
+    if (rankings) {
+        const { rankedIds, rankedCountries } = orderContestantsByRankingStr(
+            rankings, yearContestants
         );
-
-        dispatch(setRankedItems(rankedCountries));
-        dispatch(setUnrankedItems(unrankedCountries));
-    } else if (rankings) {
-
-        // let compare = getRankingComparison(
-        //     contestYear, rankings, "envw4g.gmckyjib.dod16f.ca7.bhq" // 2023 finals
-        // );
-        // console.log(compare);
-
-        const rankedIds = convertRankingsStrToArray(rankings);
-
-        const rankedCountries = rankedIds.map(
-            (id: string) => {
-                let countryContestant: CountryContestant | undefined = yearContestants.find(
-                    c => c.id === id
-                );
-                if (countryContestant) {
-                    return countryContestant;
-                } else {
-                    const country = countries.find(c => c.id === id);
-                    if (country) {
-                        return new CountryContestant(country);
-                    } else {
-                        return;
-                    }
-                }
-            }
-        ).filter(Boolean) as CountryContestant[];
 
         const unrankedCountries = yearContestants.filter(
             countryContestant => !rankedIds.includes(countryContestant.id)
@@ -139,22 +96,65 @@ export async function processAndUpdateRankings(
     }
 };
 
+export function getOrderedContestantsByCategory(
+    activeCategory: number | undefined,
+    countryContestants: CountryContestant[]
+) {
+    const params = new URLSearchParams(window.location.search);
+    const extractedParams = extractParams(params, activeCategory);
+
+    return orderContestantsByRankingStr(
+        extractedParams.rankings ?? '',
+        countryContestants
+    );
+}
+
+export function orderContestantsByRankingStr(
+    rankings: string,
+    yearContestants: CountryContestant[],
+) {
+    const rankedIds = convertRankingsStrToArray(rankings);
+
+    const rankedCountries = rankedIds.map(
+        (id: string) => {
+            let countryContestant: CountryContestant | undefined = yearContestants.find(
+                c => c.id === id
+            );
+            if (countryContestant) {
+                return countryContestant;
+            } else {
+                const country = countries.find(c => c.id === id);
+                if (country) {
+                    const newContestant = new CountryContestant(country);
+                    return newContestant;
+                } else {
+                    return;
+                }
+            }
+        }
+    ).filter(Boolean) as CountryContestant[];
+    return { rankedIds, rankedCountries };
+}
+
 /**
  * Decodes rankings from URL and updates Redux store accordingly.
  */
 export async function decodeRankingsFromURL(
+    activeCategory: number | undefined,
     dispatch: Dispatch<any>
 ): Promise<string[] | undefined> {
 
     const params = new URLSearchParams(window.location.search);
+    const extractedParams = extractParams(params, activeCategory);
 
-    const extractedParams = extractParams(params);
+    console.log(window.location.search)
+    console.log(extractedParams.rankings)
+    console.log(extractedParams.contestYear)
     updateStates(extractedParams, dispatch);
 
     return await processAndUpdateRankings(
         extractedParams.contestYear || defaultYear,
         extractedParams.rankings,
-        extractedParams.categoryRankings,
         extractedParams.voteCode,
         dispatch
     );
@@ -200,12 +200,11 @@ export function convertRankingsStrToArray(rankings: string): string[] {
     return rankedIds;
 }
 
-export const extractParams = (params: URLSearchParams) => {
+export const extractParams = (params: URLSearchParams, activeCategory: number | undefined) => {
     return {
         rankingName: params.get('n'),
         contestYear: params.get('y'),
-        rankings: params.get('r'),
-        categoryRankings: params.get('cr'),
+        rankings: params.get(`r${activeCategory !== undefined  ? activeCategory + 1 : ''}`),
         theme: params.get('t'),         // e.g. ab
         voteCode: params.get('v')       // e.g. {round}-{type}-{fromCountryKey} f-t-gb
     };

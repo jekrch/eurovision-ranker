@@ -40,7 +40,7 @@ describe('extractParams', () => {
         mockWindowLocationSearch('?y=2023&r=abc&t=ab&v=f-tv&n=test');
 
         const params = new URLSearchParams(window.location.search);
-        const result = extractParams(params);
+        const result = extractParams(params, undefined);
 
         expect(result).toEqual({
             rankingName: 'test',
@@ -56,7 +56,7 @@ describe('extractParams', () => {
         mockWindowLocationSearch('?y=2023&r=abc');
 
         const params = new URLSearchParams(window.location.search);
-        const result = extractParams(params);
+        const result = extractParams(params, undefined);
 
         expect(result).toEqual({
             rankingName: null,

@@ -36,13 +36,17 @@ const RankedItemsHeader: React.FC<IRankedItemsHeaderProps> = ({
     const categories = useSelector((state: AppState) => state.categories);
     const [activeTab, setActiveTab] = useState(0);
 
-    useEffect(() => {
-        setActiveTab(activeCategory);
-    }, [activeCategory]);
+    // useEffect(() => {
+    //     setActiveTab(activeCategory);
+    // }, [activeCategory]);
     
     useEffect(() => {
+        if (activeTab === 0) {
+            return;
+        }
+        console.log(activeTab);
         dispatch(
-            setActiveCategory(activeTab)
+            setActiveCategory(activeTab - 1)
         );
     }, [activeTab]);
 

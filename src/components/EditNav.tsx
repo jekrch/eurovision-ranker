@@ -20,7 +20,8 @@ const EditNav: React.FC<EditNavProps> = ({ setNameModalShow, setRefreshUrl }) =>
     const rankedItems = useSelector((state: AppState) => state.rankedItems);
     const unrankedItems = useSelector((state: AppState) => state.unrankedItems);
     const isDeleteMode = useSelector((state: AppState) => state.isDeleteMode);
-
+    const categories = useSelector((state: AppState) => state.categories);
+    
     /**
    * Clear rankedItems and fill unrankedItems with the relevant year's contestants
    */

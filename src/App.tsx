@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { DragDropContext, Draggable, DropResult } from 'react-beautiful-dnd';
 import { Card } from './components/Card';
 import { StrictModeDroppable } from './components/StrictModeDroppable';
@@ -14,13 +14,10 @@ import IntroColumn from './components/IntroColumn';
 import { generateYoutubePlaylistUrl } from './utilities/YoutubeUtil';
 import { AppState } from './redux/types';
 import { useDispatch, useSelector } from 'react-redux';
-import { setName, setYear, setRankedItems, setUnrankedItems, setShowUnranked, setContestants, setHeaderMenuOpen, setActiveCategory, setShowTotalRank } from './redux/actions';
-import { clearAllRankingParams, convertRankingsStrToArray, decodeRankingsFromURL, getOrderedContestantsByCategory, updateQueryParams } from './utilities/UrlUtil';
+import { setRankedItems, setUnrankedItems, setShowUnranked, setActiveCategory, setShowTotalRank } from './redux/actions';
+import { decodeRankingsFromURL, updateQueryParams } from './utilities/UrlUtil';
 import { Dispatch } from 'redux';
 import MapModal from './components/MapModal';
-import Joyride, { ACTIONS, CallBackProps, EVENTS, STATUS } from 'react-joyride';
-import { fetchCountryContestantsByYear } from './utilities/ContestantRepository';
-import { tourSteps } from './tour/steps';
 import ConfigModal from './components/ConfigModal';
 import IconButton from './components/IconButton';
 import RankedItemsHeader from './components/RankedItemsHeader';
@@ -29,9 +26,9 @@ import { DetailsCard } from './components/DetailsCard';
 import SongModal from './components/LyricsModal';
 import { Toaster } from 'react-hot-toast';
 import { toastOptions } from './utilities/ToasterUtil';
-import { joyrideOptions } from './utilities/JoyrideUtil';
-import { areCategoriesSet, categoryRankingsExist, removeCountryFromUrlCategoryRankings, reorderByAllWeightedRankings } from './utilities/CategoryUtil';
+import { areCategoriesSet, categoryRankingsExist, clearCategories, removeCountryFromUrlCategoryRankings, reorderByAllWeightedRankings } from './utilities/CategoryUtil';
 import { isArrayEqual } from './utilities/RankAnalyzer';
+import JoyrideTour from './tour/JoyrideTour';
 
 const App: React.FC = () => {
   const [mainModalShow, setMainModalShow] = useState(false);
@@ -63,7 +60,6 @@ const App: React.FC = () => {
   const [showOverlay, setShowOverlay] = useState(!areRankingsSet());
   const [isOverlayExit, setIsOverlayExit] = useState(false);
   const [runTour, setRunTour] = useState(false);
-  const [joyrideStepIndex, setJoyrideStepIndex] = useState(0);
 
   /**
    * Determines whether any rankings are set in the url
@@ -93,23 +89,6 @@ const App: React.FC = () => {
       setShowOverlay(false)
     }, 500); // for the animation duration
   };
-
-
-  const handleJoyrideCallback = useCallback((data: CallBackProps) => {
-    const { action, index, status, type } = data;
-
-    if (type === EVENTS.STEP_BEFORE && index === 0) {
-      clearRanking(year);
-    }
-
-    if ([STATUS.FINISHED, STATUS.SKIPPED].includes(status as any) || (action === ACTIONS.CLOSE && type === EVENTS.STEP_AFTER)) {
-      setRunTour(false); // End the tour
-      setJoyrideStepIndex(0);
-    } else if (type === EVENTS.STEP_AFTER || type === EVENTS.TARGET_NOT_FOUND) {
-      setJoyrideStepIndex(index + (action === ACTIONS.PREV ? -1 : 1));
-    }
-  }, []);
-
 
   useEffect(() => {
     const setVh = () => {
@@ -162,121 +141,6 @@ const App: React.FC = () => {
       window.removeEventListener('popstate', handlePopState);
     };
   }, []);
-
-  useEffect(() => {
-    const executeJoyRideStep = async () => {
-      await executeTourStepActions(joyrideStepIndex);
-    }
-    executeJoyRideStep();
-  }, [joyrideStepIndex])
-
-  /**
-   * Each case statement corresponds to a step in the tour
-   * @param index 
-   */
-  async function executeTourStepActions(
-    index: number
-  ) {
-    switch (index) {
-
-      case 1:
-        if (year !== '2023') {
-          dispatch(setYear('2023'));
-          setRefreshUrl(Math.random());
-        }
-
-        await clearRanking(year);
-        dispatch(
-          setShowUnranked(true)
-        );
-
-        break;
-
-      case 2:
-        const specificCountryCodes = ['fi', 'hr', 'es', 'cz', 'no', 'is'];
-
-        // Filter out the specific items based on country codes
-        const specificItems = unrankedItems.filter(
-          item => specificCountryCodes.includes(item.country.key.toLowerCase())
-        );
-
-        // Remove these items from unrankedItems
-        const remainingUnrankedItems = unrankedItems.filter(
-          item => !specificCountryCodes.includes(item.country.key.toLowerCase())
-        );
-
-        // Sort the specific items in the desired order
-        const sortedSpecificItems = specificCountryCodes.map(code =>
-          specificItems.find(
-            item => item.country.key.toLowerCase() === code
-          )
-        ).filter(item => item !== undefined) as CountryContestant[];
-
-        const newRankedItems = [...sortedSpecificItems, ...rankedItems];
-
-        dispatch(setRankedItems(newRankedItems));
-        dispatch(setUnrankedItems(remainingUnrankedItems));
-        dispatch(setName("Sigrit's Top Picks"));
-        setRefreshUrl(Math.random())
-
-        break;
-
-      case 4:
-        dispatch(
-          setShowUnranked(false)
-        );
-
-        break;
-
-      case 5:
-        if (rankedItems.length >= 2) {
-          // swap the first two elements
-          const temp = rankedItems[0];
-          rankedItems[0] = rankedItems[1];
-          rankedItems[1] = temp;
-        }
-        dispatch(
-          setRankedItems(rankedItems)
-        );
-        setRefreshUrl(Math.random());
-
-        dispatch(
-          setHeaderMenuOpen(true)
-        );
-
-        break;
-
-      case 6:
-        dispatch(
-          setHeaderMenuOpen(true)
-        );
-        break;
-
-      case 9:
-        dispatch(
-          setShowUnranked(true)
-        );
-        //openModal('rankings');
-        break;
-
-      case 11:
-        openConfigModal('rankings');
-        break;
-
-      case 12:
-        setConfigModalShow(false);
-        break;
-
-      case 14:
-        setConfigModalShow(false);
-        dispatch(setName(""));
-        await clearRanking(year);
-        dispatch(
-          setShowUnranked(true)
-        );
-        break;
-    }
-  }
 
   useEffect(() => {
 
@@ -473,24 +337,6 @@ const App: React.FC = () => {
     setRefreshUrl(Math.random());
   };
 
-  async function clearRanking(year: string) {
-    let yearContestants = await fetchCountryContestantsByYear(
-      year, '', dispatch
-    );
-
-    dispatch(
-      setContestants(yearContestants)
-    );
-    dispatch(
-      setUnrankedItems(yearContestants)
-    );
-
-    dispatch(setRankedItems([]));
-
-    clearAllRankingParams(categories);
-
-    setRefreshUrl(Math.random());
-  }
 
   /**
    * Identify country with the provided Id in the rankedItems array, and 
@@ -552,7 +398,6 @@ const App: React.FC = () => {
           }}
         />
       )}
-
 
       <div
         className={classNames(
@@ -820,19 +665,14 @@ const App: React.FC = () => {
         }}
       />
 
-      <Joyride
-        disableScrolling={true}
-        disableScrollParentFix={true}
-        continuous
-        run={runTour}
-        steps={tourSteps}
-        stepIndex={joyrideStepIndex}
-        callback={handleJoyrideCallback}
-        showProgress={true}
-        disableOverlay={false}
-        styles={joyrideOptions}
+      <JoyrideTour         
+        setRefreshUrl={setRefreshUrl}
+        openConfigModal={openConfigModal}
+        setConfigModalShow={setConfigModalShow}
+        setRunTour={setRunTour}
+        runTour={runTour}
       />
-
+      
       <Toaster
         toastOptions={toastOptions}
         position="top-center"

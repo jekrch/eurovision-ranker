@@ -2,7 +2,7 @@ import toast from "react-hot-toast";
 import { convertRankingsStrToArray, updateQueryParams } from "./UrlUtil";
 import { CountryContestant } from "../data/CountryContestant";
 import { Dispatch } from "react";
-import { setRankedItems } from "../redux/actions";
+import { setActiveCategory, setCategories, setRankedItems, setShowTotalRank } from "../redux/actions";
 import { Country } from "../data/Country";
 
 export type Category = {
@@ -76,6 +76,46 @@ export function removeCountryFromUrlCategoryRankings(
 
   const newUrl = `${window.location.pathname}?${searchParams.toString()}`;
   window.history.replaceState(null, '', newUrl);
+}
+
+/**
+ * Clear all categories and category rankings, and then make rankingsToSet
+ * the new main ranking 
+ * 
+ * @param rankingToSet 
+ * @param categories 
+ * @param dispatch 
+ */
+export function clearCategories(
+  rankingToSet: string, 
+  categories: Category[], 
+  dispatch: Dispatch<any>
+) {
+    
+  const searchParams = new URLSearchParams(window.location.search);
+  searchParams.set('r', rankingToSet);
+
+  searchParams.delete('c');
+
+  for (let i = 1; i <= categories.length; i++) {
+      searchParams.delete(`r${i}`);
+  }
+
+  const newUrl = `${window.location.pathname}?${searchParams.toString()}`;
+  window.history.replaceState(null, '', newUrl);
+
+  dispatch(
+    setActiveCategory(undefined)
+  );
+
+  // if there are no more categories, make sure that showTotalRank is false 
+  dispatch(
+      setShowTotalRank(false)
+  );
+
+  dispatch(
+    setCategories([])
+  );
 }
 
 export function parseCategoriesUrlParam(categoriesParam: string) {
@@ -345,3 +385,5 @@ export const areCategoriesSet = () => {
   const rParam = urlParams.get('c');
   return rParam !== null && rParam !== '';
 };
+
+

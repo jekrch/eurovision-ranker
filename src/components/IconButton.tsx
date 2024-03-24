@@ -33,9 +33,8 @@ function rippleEffect(event: any) {
 
     setTimeout(() => {
         circle.remove();
-    }, 600); 
+    }, 600);
 }
-
 
 export const IconButton: React.FC<IconButtonProps> = ({ icon, onClick, className, disabled = false, title, iconClassName }) => {
     const handleClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {

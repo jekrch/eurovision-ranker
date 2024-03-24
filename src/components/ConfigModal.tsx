@@ -19,7 +19,7 @@ import { EXPORT_TYPE, EXPORT_TYPES, getExportType } from '../utilities/export/Ex
 import Checkbox from './Checkbox';
 import IconButton from './IconButton';
 import { setCategories as setStateCategories } from '../redux/actions';
-import { Category, isValidCategoryName, parseCategoriesUrlParam, saveCategoriesToUrl } from '../utilities/CategoryUtil';
+import { Category, clearCategories, isValidCategoryName, parseCategoriesUrlParam, saveCategoriesToUrl } from '../utilities/CategoryUtil';
 
 type ConfigModalProps = {
     isOpen: boolean;
@@ -136,10 +136,6 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
     function saveCategories(updatedCategories: Category[]) {
 
         setCategories(updatedCategories);
-
-        dispatch(
-            setStateCategories(updatedCategories)
-        );
     
         if (updatedCategories.length === 0) {
 
@@ -163,24 +159,18 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
                     }
                 }
             }
-
-            searchParams.delete('c');
-    
-            // Set the ranking to r= and remove all rx params
-            searchParams.set('r', rankingToSet);
-            for (let i = 1; i <= categories.length; i++) {
-                searchParams.delete(`r${i}`);
-            }
-    
-            const newUrl = `${window.location.pathname}?${searchParams.toString()}`;
-            window.history.replaceState(null, '', newUrl);
-    
-            dispatch(setActiveCategory(undefined));
-            // if there are no more categories, make sure that showTotalRank is false 
-            dispatch(
-                setShowTotalRank(false)
+                
+            // Set the current ranking to r= and remove all rx params
+            clearCategories(
+                rankingToSet,
+                categories, 
+                dispatch
             );
+
         } else {
+            dispatch(
+                setStateCategories(updatedCategories)
+            )
             saveCategoriesToUrl(updatedCategories);
         }
     }
@@ -199,6 +189,21 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
             )
         }
     }, []);
+
+    /**
+     * If the global state categories are cleared elsewhere, make sure
+     * to reflect that in the category list here 
+     */
+    useEffect(() => {
+
+        if (
+            !stateCategories?.length && 
+            categories?.length
+        ) {
+            setCategories([]);
+        }
+  
+    }, [stateCategories]);
 
     function onThemeInputChanged(newTheme: string) {
         if (newTheme == 'Auroral') {
@@ -359,8 +364,7 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
 
     useEffect(() => {
         setActiveTab(props.tab);
-
-        setActiveTab('categories');
+        //setActiveTab('categories');
     }, [props.tab, props.isOpen]);
 
     useEffect(() => {

@@ -57,6 +57,22 @@ const EditNav: React.FC<EditNavProps> = ({ setNameModalShow, setRefreshUrl }) =>
         dispatch(
             setRankedItems(rankedItems.concat(unrankedItems))
         );
+    
+        // Append unranked items to all existing category rankings (via rx parameters)
+        if (categories.length > 0) {
+            const searchParams = new URLSearchParams(window.location.search);
+    
+            categories.forEach((_, index) => {
+                const categoryParam = `r${index + 1}`;
+                const currentRanking = searchParams.get(categoryParam) || '';
+                const updatedRanking = `${currentRanking}${unrankedItems.map(item => item.country.id).join('')}`;
+                searchParams.set(categoryParam, updatedRanking);
+            });
+    
+            const newUrl = `${window.location.pathname}?${searchParams.toString()}`;
+            window.history.replaceState(null, '', newUrl);
+        }
+    
         setRefreshUrl(Math.random());
     }
 

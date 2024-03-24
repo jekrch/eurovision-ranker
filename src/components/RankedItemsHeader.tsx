@@ -27,13 +27,13 @@ const RankedItemsHeader: React.FC<IRankedItemsHeaderProps> = ({
     className
 }) => {
     const dispatch: Dispatch<any> = useDispatch();
-    const showUnranked = useSelector((state: AppState) => state.showUnranked);
     const year = useSelector((state: AppState) => state.year);
     const name = useSelector((state: AppState) => state.name);
-    const activeCategory = useSelector((state: AppState) => state.activeCategory);
     const rankedItems = useSelector((state: AppState) => state.rankedItems);
     const showTotalRank = useSelector((state: AppState) => state.showTotalRank);
     const categories = useSelector((state: AppState) => state.categories);
+    const showUnranked = useSelector((state: AppState) => state.showUnranked);
+    const activeCategory = useSelector((state: AppState) => state.activeCategory);
     const [activeTab, setActiveTab] = useState(categories?.length > 0 ? 1 : 0);
     
     useEffect(() => {

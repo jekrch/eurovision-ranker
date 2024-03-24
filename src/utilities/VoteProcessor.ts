@@ -246,3 +246,20 @@ export function hasAnyTeleVotes(yearContestants: CountryContestant[]) {
     );
 }
 
+export function getVoteTypeOption(voteCode: string) {
+    if (!voteCode?.length || voteCode == 'loading') {
+        return 'None';
+    }
+
+    let codes = voteCode.split("-");
+
+    switch (codes[1]) {
+        case 'tv':
+            return 'Tele'
+        case 'j':
+        case 'jury':
+            return 'Jury';
+        default:
+            return 'Total';
+    }
+}

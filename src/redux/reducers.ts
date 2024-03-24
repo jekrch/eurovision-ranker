@@ -1,6 +1,6 @@
 import { Category } from "../utilities/CategoryUtil";
 import { CountryContestant } from '../data/CountryContestant';
-import { SET_NAME, SET_YEAR, SET_RANKED_ITEMS, SET_UNRANKED_ITEMS, SET_SHOW_UNRANKED, SET_CONTESTANTS, SET_IS_DELETE_MODE, SET_THEME, SET_VOTE, SET_HEADER_MENU_OPEN, SET_CATEGORIES, SET_ACTIVE_CATEGORY } from './actions';
+import { SET_NAME, SET_YEAR, SET_RANKED_ITEMS, SET_UNRANKED_ITEMS, SET_SHOW_UNRANKED, SET_CONTESTANTS, SET_IS_DELETE_MODE, SET_THEME, SET_VOTE, SET_HEADER_MENU_OPEN, SET_CATEGORIES, SET_ACTIVE_CATEGORY, SET_SHOW_TOTAL_RANK } from './actions';
 import { Action, AppState } from './types';
 
 const initialState: AppState = {
@@ -15,7 +15,8 @@ const initialState: AppState = {
   rankedItems: [],
   unrankedItems: [],
   categories: [],
-  activeCategory: undefined
+  activeCategory: undefined,
+  showTotalRank: false
 };
 
 const rootReducer = (state = initialState, action: Action): AppState => {
@@ -43,7 +44,9 @@ const rootReducer = (state = initialState, action: Action): AppState => {
     case SET_CATEGORIES:
       return { ...state, categories: action.payload as Category[] };
     case SET_ACTIVE_CATEGORY:
-      return { ...state, activeCategory: action.payload as number };
+      return { ...state, activeCategory: action.payload as number | undefined };
+    case SET_SHOW_TOTAL_RANK:
+      return { ...state, showTotalRank: action.payload as boolean };
     default:
       return state;
   }

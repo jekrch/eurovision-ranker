@@ -8,6 +8,7 @@ import { AppState, SetContestantsAction } from '../redux/types';
 import { SetIsDeleteMode, setContestants, setRankedItems, setUnrankedItems } from '../redux/actions';
 import { fetchCountryContestantsByYear } from '../utilities/ContestantRepository';
 import { Dispatch } from 'redux';
+import { clearAllRankingParams } from '../utilities/UrlUtil';
 
 type EditNavProps = {
     setNameModalShow: React.Dispatch<SetStateAction<boolean>>;
@@ -21,7 +22,7 @@ const EditNav: React.FC<EditNavProps> = ({ setNameModalShow, setRefreshUrl }) =>
     const unrankedItems = useSelector((state: AppState) => state.unrankedItems);
     const isDeleteMode = useSelector((state: AppState) => state.isDeleteMode);
     const categories = useSelector((state: AppState) => state.categories);
-    
+
     /**
    * Clear rankedItems and fill unrankedItems with the relevant year's contestants
    */
@@ -41,7 +42,8 @@ const EditNav: React.FC<EditNavProps> = ({ setNameModalShow, setRefreshUrl }) =>
         dispatch(
             setRankedItems([])
         );
-        
+
+        clearAllRankingParams(categories);
         setRefreshUrl(Math.random());
     }
 

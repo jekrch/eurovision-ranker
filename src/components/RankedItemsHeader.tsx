@@ -1,14 +1,13 @@
 import React, { Dispatch, useEffect, useState } from 'react';
-import { FaGlobe, FaTv } from 'react-icons/fa';
 import Dropdown from './Dropdown';
 import { CountryContestant } from '../data/CountryContestant';
-import { AnyIfEmpty, useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { AppState } from '../redux/types';
 import { useSelector } from 'react-redux';
-import { setActiveCategory, setYear } from '../redux/actions';
+import { setActiveCategory, setRankedItems, setShowTotalRank, setYear } from '../redux/actions';
 import RankedHeaderMenu from './RankedHeaderMenu';
-import { Toaster } from 'react-hot-toast';
 import classNames from 'classnames';
+import { reorderByAllWeightedRankings } from '../utilities/CategoryUtil';
 
 interface IRankedItemsHeaderProps {
     setMapModalShow: () => void;
@@ -33,22 +32,39 @@ const RankedItemsHeader: React.FC<IRankedItemsHeaderProps> = ({
     const name = useSelector((state: AppState) => state.name);
     const activeCategory = useSelector((state: AppState) => state.activeCategory);
     const rankedItems = useSelector((state: AppState) => state.rankedItems);
+    const showTotalRank = useSelector((state: AppState) => state.showTotalRank);
     const categories = useSelector((state: AppState) => state.categories);
-    const [activeTab, setActiveTab] = useState(0);
-
-    // useEffect(() => {
-    //     setActiveTab(activeCategory);
-    // }, [activeCategory]);
+    const [activeTab, setActiveTab] = useState(categories?.length > 0 ? 1 : 0);
     
     useEffect(() => {
+
+        // if we're setting the tab to 0 this is the 'Total' rank
         if (activeTab === 0) {
+            // set the state flag if it's not already set and exit
+            if (!showTotalRank) {
+                dispatch(
+                    setShowTotalRank(true)
+                );
+            }
             return;
+
+        // if we're not switching to the total rank tab, make sure the state
+        // flag is set to false
+        } else if (showTotalRank) {
+            dispatch(
+                setShowTotalRank(false)
+            );
         }
-        console.log(activeTab);
+
         dispatch(
             setActiveCategory(activeTab - 1)
         );
     }, [activeTab]);
+
+    useEffect(() => {
+        console.log(activeCategory)
+        setActiveTab(activeCategory !== undefined ? activeCategory + 1 : 0);
+    }, [activeCategory]);
 
     return (
         <div className={classNames(
@@ -90,6 +106,7 @@ const RankedItemsHeader: React.FC<IRankedItemsHeaderProps> = ({
             {(!showUnranked && categories.length > 0) && (
                 <div className="flex bg-gray-800 bg-opacity-40 border-gray-200 mt-1 -mb-[0.2em] overflow-x-auto">
                     <button
+                        key="total-tab"
                         className={classNames(
                             "px-4 py-[0.2em] text-sm font-medium flex-shrink-0",
                             activeTab === 0 ? "text-blue-400 border-b-0 border-blue-400" : "text-gray-500 hover:text-blue-500"
@@ -100,7 +117,7 @@ const RankedItemsHeader: React.FC<IRankedItemsHeaderProps> = ({
                     </button>
                     {categories.map((category, index) => (
                         <button
-                            key={index}
+                            key={index + 1}
                             className={classNames(
                                 "px-4 py-[0.2em] text-sm font-medium flex-shrink-0",
                                 activeTab === index + 1 ? "text-blue-400 border-b-0 border-blue-400" : "text-gray-500 hover:text-blue-500"

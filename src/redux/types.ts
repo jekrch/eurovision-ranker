@@ -12,6 +12,7 @@ export interface AppState {
     unrankedItems: CountryContestant[];
     categories: Category[];
     activeCategory: number | undefined;
+    showTotalRank: boolean;
     theme: string;
     vote: string;
   }
@@ -78,5 +79,10 @@ export interface AppState {
 
   export interface SetActiveCategory extends Action {
     type: 'SET_ACTIVE_CATEGORY';
-    payload: number;
+    payload: number | undefined;
+  }
+
+  export interface SetShowTotalRank extends Action {
+    type: 'SHOW_TOTAL_RANK';
+    payload: boolean;
   }

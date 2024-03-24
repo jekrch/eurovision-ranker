@@ -144,12 +144,12 @@ export async function decodeRankingsFromURL(
     dispatch: Dispatch<any>
 ): Promise<string[] | undefined> {
 
-    const params = new URLSearchParams(window.location.search);
-    const extractedParams = extractParams(params, activeCategory);
+    const extractedParams = getUrlParams(activeCategory);
 
-    console.log(window.location.search)
-    console.log(extractedParams.rankings)
-    console.log(extractedParams.contestYear)
+    // console.log(activeCategory)
+    // console.log(window.location.search)
+    // console.log(extractedParams.rankings)
+    // console.log(extractedParams.contestYear)
     updateStates(extractedParams, dispatch);
 
     return await processAndUpdateRankings(
@@ -159,6 +159,12 @@ export async function decodeRankingsFromURL(
         dispatch
     );
 };
+
+export function getUrlParams(activeCategory: number | undefined) {
+    const params = new URLSearchParams(window.location.search);
+    const extractedParams = extractParams(params, activeCategory);
+    return extractedParams;
+}
 
 export function convertRankingsStrToArray(rankings: string): string[] {
     let rankedIds: string[] = [];
@@ -200,11 +206,31 @@ export function convertRankingsStrToArray(rankings: string): string[] {
     return rankedIds;
 }
 
+/**
+ * Clear all the category rankings (rx parameters) from the URL
+ * @param categories 
+ */
+export function clearAllRankingParams(categories: Category[]) {
+
+    const searchParams = new URLSearchParams(window.location.search);
+
+    categories.forEach((_, index) => {
+        const categoryParam = `r${index + 1}`;
+        searchParams.delete(categoryParam);
+    });
+
+    // Clear the main ranking (r parameter) from the URL
+    searchParams.delete('r');
+
+    const newUrl = `${window.location.pathname}?${searchParams.toString()}`;
+    window.history.replaceState(null, '', newUrl);
+}
+
 export const extractParams = (params: URLSearchParams, activeCategory: number | undefined) => {
     return {
         rankingName: params.get('n'),
         contestYear: params.get('y'),
-        rankings: params.get(`r${activeCategory !== undefined  ? activeCategory + 1 : ''}`),
+        rankings: params.get(`r${activeCategory !== undefined ? activeCategory + 1 : ''}`),
         theme: params.get('t'),         // e.g. ab
         voteCode: params.get('v')       // e.g. {round}-{type}-{fromCountryKey} f-t-gb
     };

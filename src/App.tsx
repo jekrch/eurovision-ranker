@@ -7,15 +7,15 @@ import { CountryContestant } from './data/CountryContestant';
 import MainModal from './components/MainModal';
 import { supportedYears } from './data/Contestants';
 import NameModal from './components/NameModal';
-import { FaChevronRight, FaGlobe, FaList, FaTv } from 'react-icons/fa';
+import { FaChevronRight } from 'react-icons/fa';
 import Navbar from './components/NavBar';
 import EditNav from './components/EditNav';
 import IntroColumn from './components/IntroColumn';
-import { generateYoutubePlaylistUrl, rankedHasAnyYoutubeLinks } from './utilities/YoutubeUtil';
+import { generateYoutubePlaylistUrl } from './utilities/YoutubeUtil';
 import { AppState } from './redux/types';
 import { useDispatch, useSelector } from 'react-redux';
-import { setName, setYear, setRankedItems, setUnrankedItems, setShowUnranked, setContestants, setHeaderMenuOpen } from './redux/actions';
-import { decodeRankingsFromURL, getOrderedContestantsByCategory, updateQueryParams } from './utilities/UrlUtil';
+import { setName, setYear, setRankedItems, setUnrankedItems, setShowUnranked, setContestants, setHeaderMenuOpen, setActiveCategory } from './redux/actions';
+import { clearAllRankingParams, convertRankingsStrToArray, decodeRankingsFromURL, getOrderedContestantsByCategory, updateQueryParams } from './utilities/UrlUtil';
 import { Dispatch } from 'redux';
 import MapModal from './components/MapModal';
 import Joyride, { ACTIONS, CallBackProps, EVENTS, STATUS } from 'react-joyride';
@@ -30,6 +30,8 @@ import SongModal from './components/LyricsModal';
 import { Toaster } from 'react-hot-toast';
 import { toastOptions } from './utilities/ToasterUtil';
 import { joyrideOptions } from './utilities/JoyrideUtil';
+import { areCategoriesSet, categoryRankingsExist, reorderByAllWeightedRankings } from './utilities/CategoryUtil';
+import { isArrayEqual } from './utilities/RankAnalyzer';
 
 const App: React.FC = () => {
   const [mainModalShow, setMainModalShow] = useState(false);
@@ -47,6 +49,7 @@ const App: React.FC = () => {
   const theme = useSelector((state: AppState) => state.theme);
   const categories = useSelector((state: AppState) => state.categories);
   const activeCategory = useSelector((state: AppState) => state.activeCategory);
+  const showTotalRank = useSelector((state: AppState) => state.showTotalRank);
   const vote = useSelector((state: AppState) => state.vote);
   const rankedItems = useSelector((state: AppState) => state.rankedItems);
   const unrankedItems = useSelector((state: AppState) => state.unrankedItems);
@@ -61,7 +64,12 @@ const App: React.FC = () => {
   const areRankingsSet = () => {
     const urlParams = new URLSearchParams(window.location.search);
     const rParam = urlParams.get('r');
-    return rParam !== null && rParam !== '';
+
+    if (rParam !== null && rParam !== '') {
+      return true;
+    }
+
+    return categoryRankingsExist(urlParams)
   };
 
   const [showOverlay, setShowOverlay] = useState(!areRankingsSet());
@@ -128,6 +136,7 @@ const App: React.FC = () => {
   useEffect(() => {
     const handlePopState = (event: PopStateEvent) => {
       // User clicked back (or forward) button
+
       const decodeFromUrl = async () => {
         const rankingsExist = await decodeRankingsFromURL(
           activeCategory,
@@ -281,11 +290,6 @@ const App: React.FC = () => {
     updateLists();
   }, [refreshUrl]);
 
-  useEffect(() => {
-
-    console.log(rankedItems)
-  }, [rankedItems]);
-
   /**
    * Encode rankings to csv for URL
    * @param rankedCountries 
@@ -303,10 +307,14 @@ const App: React.FC = () => {
 
   useEffect(() => {
     const decodeFromUrl = async () => {
+
+      let category = areCategoriesSet() && !activeCategory ? 0 : activeCategory;
+
       const rankingsExist = await decodeRankingsFromURL(
-        activeCategory,
+        category,
         dispatch
       );
+
       // Set showUnranked based on whether rankings exist
       dispatch(
         setShowUnranked(!rankingsExist)
@@ -318,40 +326,46 @@ const App: React.FC = () => {
   useEffect(() => {
     const updateRankedItems = async () => {
 
-      const rankingsExist = await decodeRankingsFromURL(
-        activeCategory,
-        dispatch
-      );
+      console.log('load ' + showTotalRank)
+      if (!showTotalRank) {
 
-      // console.log(rankedItems);
-      // const { rankedIds, rankedCountries } = getOrderedContestantsByCategory(activeCategory, rankedItems);
-
-      // console.log(rankedCountries);
-
-      // if (rankedCountries) {
-      //   // Reorder the rankedItems based on the active category
-      //   const reorderedRankedItems = rankingsExist?.map(id => {
-      //     return rankedItems.find(item => item.id === id);
-      //   }).filter(Boolean) as CountryContestant[];
-
-      //   dispatch(setRankedItems(rankedCountries));
-      //   //setRefreshUrl(Math.random())
-      // }
+        const rankingsExist = await decodeRankingsFromURL(
+          activeCategory,
+          dispatch
+        );
+      }
     };
 
     updateRankedItems();
-  }, [activeCategory]);
+  }, [activeCategory, showTotalRank]);
 
+  useEffect(() => {
+    const updateRankedItems = async () => {
+
+      console.log(activeCategory)
+      if (showTotalRank) {
+
+        let totalOrderRankings = reorderByAllWeightedRankings(categories, rankedItems);
+
+        // if it's already correctly ordered don't reset rankedItems
+        if (isArrayEqual(totalOrderRankings, rankedItems)) {
+          return;
+        }
+
+        dispatch(
+          setRankedItems(totalOrderRankings)
+        );
+      }
+    };
+
+    updateRankedItems();
+  }, [showTotalRank, rankedItems, categories]);
 
   useEffect(() => {
     const handleYearUpdate = async () => {
       if (!year?.length) {
         return;
       }
-      // if (year.substring(2,4) === params.get('y')) {
-      //   console.log('already set');
-      //   return;
-      // }
       updateQueryParams({ y: year.slice(-2) });
       await decodeRankingsFromURL(
         activeCategory,
@@ -365,6 +379,37 @@ const App: React.FC = () => {
     updateQueryParams({ n: name });
   }, [name]);
 
+
+  useEffect(() => {
+
+    if (categories.length > 0) {
+      // Add new category to the URL with the appropriate rx param
+      categories.forEach((_, index) => {
+        const categoryParam = `r${index + 1}`;
+        const currentRanking = new URLSearchParams(window.location.search).get(categoryParam);
+
+        if (!currentRanking) {
+          const updatedRanking = encodeRankingsToURL(rankedItems, index);
+          updateQueryParams({ [categoryParam]: updatedRanking });
+        }
+      });
+
+      // Remove the r= ranking URL param if it exists
+      const searchParams = new URLSearchParams(window.location.search);
+      if (searchParams.has('r')) {
+        searchParams.delete('r');
+        const newUrl = `${window.location.pathname}?${searchParams.toString()}`;
+        window.history.replaceState(null, '', newUrl);
+      }
+
+      // Set activeCategory to 0 if it's currently undefined
+      if (activeCategory === undefined) {
+        dispatch(
+          setActiveCategory(0)
+        );
+      }
+    }
+  }, [categories]);
 
   /**
      * Handler for the drop event. Either reposition an item within 
@@ -433,6 +478,9 @@ const App: React.FC = () => {
     );
 
     dispatch(setRankedItems([]));
+
+    clearAllRankingParams(categories);
+
     setRefreshUrl(Math.random());
   }
 
@@ -461,7 +509,28 @@ const App: React.FC = () => {
     dispatch(
       setUnrankedItems(unrankedItems)
     );
-    setRefreshUrl(Math.random())
+
+    // Remove the country from each category ranking in the URL parameters
+    const searchParams = new URLSearchParams(window.location.search);
+    categories.forEach((_, index) => {
+      const categoryParam = `r${index + 1}`;
+      const currentRanking = searchParams.get(categoryParam);
+      if (currentRanking) {
+        const rankingArray = convertRankingsStrToArray(currentRanking);
+        const updatedRankingArray = rankingArray.filter(countryId => countryId !== id);
+        const updatedRanking = updatedRankingArray.join('');
+        if (updatedRanking) {
+          searchParams.set(categoryParam, updatedRanking);
+        } else {
+          searchParams.delete(categoryParam);
+        }
+      }
+    });
+
+    const newUrl = `${window.location.pathname}?${searchParams.toString()}`;
+    window.history.replaceState(null, '', newUrl);
+
+    setRefreshUrl(Math.random());
   }
 
   function openMainModal(tabName: string): void {
@@ -768,7 +837,7 @@ const App: React.FC = () => {
 
       <Toaster
         toastOptions={toastOptions}
-        position="top-center" 
+        position="top-center"
       />
 
     </div>

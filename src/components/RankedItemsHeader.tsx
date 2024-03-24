@@ -7,7 +7,6 @@ import { useSelector } from 'react-redux';
 import { setActiveCategory, setRankedItems, setShowTotalRank, setYear } from '../redux/actions';
 import RankedHeaderMenu from './RankedHeaderMenu';
 import classNames from 'classnames';
-import { reorderByAllWeightedRankings } from '../utilities/CategoryUtil';
 
 interface IRankedItemsHeaderProps {
     setMapModalShow: () => void;
@@ -41,7 +40,7 @@ const RankedItemsHeader: React.FC<IRankedItemsHeaderProps> = ({
         // if we're setting the tab to 0 this is the 'Total' rank
         if (activeTab === 0) {
             // set the state flag if it's not already set and exit
-            if (!showTotalRank) {
+            if (!showTotalRank && categories?.length) {
                 dispatch(
                     setShowTotalRank(true)
                 );
@@ -62,7 +61,6 @@ const RankedItemsHeader: React.FC<IRankedItemsHeaderProps> = ({
     }, [activeTab]);
 
     useEffect(() => {
-        console.log(activeCategory)
         setActiveTab(activeCategory !== undefined ? activeCategory + 1 : 0);
     }, [activeCategory]);
 
@@ -95,6 +93,7 @@ const RankedItemsHeader: React.FC<IRankedItemsHeaderProps> = ({
                             <span className="font-bold text-slate-400 text-md"> - {name}</span>
                         )}
                     </div>
+                    
                     <RankedHeaderMenu
                         openNameModal={openNameModal}
                         openConfig={openConfig}
@@ -108,8 +107,8 @@ const RankedItemsHeader: React.FC<IRankedItemsHeaderProps> = ({
                     <button
                         key="total-tab"
                         className={classNames(
-                            "px-4 py-[0.2em] text-sm font-medium flex-shrink-0",
-                            activeTab === 0 ? "text-blue-400 border-b-0 border-blue-400" : "text-gray-500 hover:text-blue-500"
+                            "px-4 py-[0.2em] text-sm font-strong flex-shrink-0",
+                            activeTab === 0 ? "text-blue-400 border-b-0 border-blue-400" : "text-gray-400 hover:text-blue-500"
                         )}
                         onClick={() => setActiveTab(0)}
                     >

@@ -14,7 +14,7 @@ import IntroColumn from './components/IntroColumn';
 import { generateYoutubePlaylistUrl } from './utilities/YoutubeUtil';
 import { AppState } from './redux/types';
 import { useDispatch, useSelector } from 'react-redux';
-import { setName, setYear, setRankedItems, setUnrankedItems, setShowUnranked, setContestants, setHeaderMenuOpen, setActiveCategory } from './redux/actions';
+import { setName, setYear, setRankedItems, setUnrankedItems, setShowUnranked, setContestants, setHeaderMenuOpen, setActiveCategory, setShowTotalRank } from './redux/actions';
 import { clearAllRankingParams, convertRankingsStrToArray, decodeRankingsFromURL, getOrderedContestantsByCategory, updateQueryParams } from './utilities/UrlUtil';
 import { Dispatch } from 'redux';
 import MapModal from './components/MapModal';
@@ -30,7 +30,7 @@ import SongModal from './components/LyricsModal';
 import { Toaster } from 'react-hot-toast';
 import { toastOptions } from './utilities/ToasterUtil';
 import { joyrideOptions } from './utilities/JoyrideUtil';
-import { areCategoriesSet, categoryRankingsExist, reorderByAllWeightedRankings } from './utilities/CategoryUtil';
+import { areCategoriesSet, categoryRankingsExist, removeCountryFromUrlCategoryRankings, reorderByAllWeightedRankings } from './utilities/CategoryUtil';
 import { isArrayEqual } from './utilities/RankAnalyzer';
 
 const App: React.FC = () => {
@@ -56,12 +56,20 @@ const App: React.FC = () => {
   const isDeleteMode = useSelector((state: AppState) => state.isDeleteMode);
   const [isSongModalOpen, setIsSongModalOpen] = useState(false);
   const [selectedCountryContestant, setSelectedCountryContestant] = useState<CountryContestant | undefined>(undefined);
+  /**
+   * used to synchronize the horizontal scrollbar on detail cards across all ranked items
+   */
+  const [categoryScrollPosition, setCategoryScrollPosition] = useState(0);
+  const [showOverlay, setShowOverlay] = useState(!areRankingsSet());
+  const [isOverlayExit, setIsOverlayExit] = useState(false);
+  const [runTour, setRunTour] = useState(false);
+  const [joyrideStepIndex, setJoyrideStepIndex] = useState(0);
 
   /**
    * Determines whether any rankings are set in the url
    * @returns 
    */
-  const areRankingsSet = () => {
+  function areRankingsSet() { 
     const urlParams = new URLSearchParams(window.location.search);
     const rParam = urlParams.get('r');
 
@@ -72,14 +80,11 @@ const App: React.FC = () => {
     return categoryRankingsExist(urlParams)
   };
 
-  const [showOverlay, setShowOverlay] = useState(!areRankingsSet());
-  const [isOverlayExit, setIsOverlayExit] = useState(false);
-
-  const [runTour, setRunTour] = useState(false);
-  const [joyrideStepIndex, setJoyrideStepIndex] = useState(0);
+  const handleCategoryScroll = (event: React.UIEvent<HTMLDivElement>) => {
+    setCategoryScrollPosition(event.currentTarget.scrollLeft);
+  };
 
   const handleGetStarted = () => {
-
     setIsOverlayExit(true);
     const overlayDiv = document.querySelector('.overlay')!;
     overlayDiv.classList.add('slide-left');
@@ -326,7 +331,6 @@ const App: React.FC = () => {
   useEffect(() => {
     const updateRankedItems = async () => {
 
-      console.log('load ' + showTotalRank)
       if (!showTotalRank) {
 
         const rankingsExist = await decodeRankingsFromURL(
@@ -342,7 +346,6 @@ const App: React.FC = () => {
   useEffect(() => {
     const updateRankedItems = async () => {
 
-      console.log(activeCategory)
       if (showTotalRank) {
 
         let totalOrderRankings = reorderByAllWeightedRankings(categories, rankedItems);
@@ -408,6 +411,11 @@ const App: React.FC = () => {
           setActiveCategory(0)
         );
       }
+    } else {
+      // if there are no categories, make sure showTotalRank is false
+      dispatch(
+        setShowTotalRank(false)
+    );        
     }
   }, [categories]);
 
@@ -511,24 +519,7 @@ const App: React.FC = () => {
     );
 
     // Remove the country from each category ranking in the URL parameters
-    const searchParams = new URLSearchParams(window.location.search);
-    categories.forEach((_, index) => {
-      const categoryParam = `r${index + 1}`;
-      const currentRanking = searchParams.get(categoryParam);
-      if (currentRanking) {
-        const rankingArray = convertRankingsStrToArray(currentRanking);
-        const updatedRankingArray = rankingArray.filter(countryId => countryId !== id);
-        const updatedRanking = updatedRankingArray.join('');
-        if (updatedRanking) {
-          searchParams.set(categoryParam, updatedRanking);
-        } else {
-          searchParams.delete(categoryParam);
-        }
-      }
-    });
-
-    const newUrl = `${window.location.pathname}?${searchParams.toString()}`;
-    window.history.replaceState(null, '', newUrl);
+    removeCountryFromUrlCategoryRankings(categories, id);
 
     setRefreshUrl(Math.random());
   }
@@ -584,7 +575,7 @@ const App: React.FC = () => {
         <div className="flex-grow overflow-auto overflow-x-hidden bg-[#040241] flex justify-center bg-opacity-0">
           <DragDropContext
             onDragEnd={handleOnDragEnd}
-            key={`drag-drop-context`}
+            key={`drag-drop-context`}            
             onDragStart={() => {
               if (window.navigator.vibrate) {
                 window.navigator.vibrate(100);
@@ -679,7 +670,12 @@ const App: React.FC = () => {
                             />
                           )}
                           {rankedItems.map((item, index) => (
-                            <Draggable key={`draggable-${item.id.toString()}`} draggableId={item.id.toString()} index={index}>
+                            <Draggable 
+                              key={`draggable-${item.id.toString()}`} 
+                              draggableId={item.id.toString()} 
+                              index={index}
+                              isDragDisabled={showTotalRank}
+                            >
                               {(provided, snapshot) => {
                                 return (
                                   <li
@@ -707,6 +703,8 @@ const App: React.FC = () => {
                                         countryContestant={item}
                                         openSongModal={() => openSongModal(item)}
                                         isDragging={snapshot.isDragging}
+                                        categoryScrollPosition={categoryScrollPosition}
+                                        onCategoryScroll={handleCategoryScroll}
                                       />
 
                                     }

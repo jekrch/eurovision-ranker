@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, Dispatch } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEllipsisH, faGlobe, faTv, faCopy, faLink, faFile, faFileCode, faList, faEdit, faPen } from '@fortawesome/free-solid-svg-icons';
+import { faEllipsisH, faGlobe, faTv, faCopy, faLink, faFile, faFileCode, faList, faEdit, faPen, faSlidersH } from '@fortawesome/free-solid-svg-icons';
 import { CSSTransition } from 'react-transition-group';
 import classNames from 'classnames';
 import MenuItem from './MenuItem';
@@ -131,6 +131,13 @@ const RankedHeaderMenu: React.FC<RankedHeaderMenuProps> = (props: RankedHeaderMe
             icon={faPen}
             text="Edit Name"
             onClick={() => props.openNameModal()}
+            afterClick={close}
+          />
+
+          <MenuItem 
+            icon={faSlidersH} 
+            text="Categories" 
+            onClick={() => props.openConfig("categories")} 
             afterClick={close}
           />
 

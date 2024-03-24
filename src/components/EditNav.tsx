@@ -5,7 +5,7 @@ import { CountryContestant } from '../data/CountryContestant';
 import IconButton from './IconButton';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState, SetContestantsAction } from '../redux/types';
-import { SetIsDeleteMode, setContestants, setRankedItems, setUnrankedItems } from '../redux/actions';
+import { SetIsDeleteMode, setContestants, setRankedItems, setShowTotalRank, setUnrankedItems } from '../redux/actions';
 import { fetchCountryContestantsByYear } from '../utilities/ContestantRepository';
 import { Dispatch } from 'redux';
 import { clearAllRankingParams } from '../utilities/UrlUtil';

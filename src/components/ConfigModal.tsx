@@ -12,7 +12,7 @@ import { fetchCountryContestantsByYear } from '../utilities/ContestantRepository
 import { CountryContestant } from '../data/CountryContestant';
 import { assignVotesByCode, hasAnyJuryVotes, hasAnyTeleVotes, sortByVotes, updateVoteTypeCode, voteCodeHasType } from '../utilities/VoteProcessor';
 import { countries } from '../data/Countries';
-import { setActiveCategory, setContestants, setTheme, setVote } from '../redux/actions';
+import { setActiveCategory, setContestants, setTheme, setVote, setShowTotalRank } from '../redux/actions';
 import { updateQueryParams } from '../utilities/UrlUtil';
 import { copyToClipboard, copyUrlToClipboard, downloadFile, getExportDataString } from '../utilities/export/ExportUtil';
 import { EXPORT_TYPE, EXPORT_TYPES, getExportType } from '../utilities/export/ExportType';
@@ -59,7 +59,7 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
 
     const addCategory = () => {
         if (newCategoryName.trim() !== '') {
-            if (!isValidCategoryName(newCategoryName)) {
+            if (!isValidCategoryName(newCategoryName, categories)) {
                 return;
             }
             const updatedCategories = [...categories, { name: newCategoryName, weight: 5 }];
@@ -69,7 +69,7 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
     };
 
     const updateCategoryName = (index: number, name: string) => {
-        if (!isValidCategoryName(newCategoryName)) {
+        if (!isValidCategoryName(newCategoryName, categories)) {
             return;
         }
         const updatedCategories = [...categories];
@@ -96,7 +96,6 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
           // If no categories left, convert the current rx param to an r param
           if (ranking) {
             searchParams.set('r', ranking);
-            console.log(ranking)
           }
         } else {
           // Renumber the remaining rx URL params to ensure they are sequential
@@ -135,12 +134,15 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
     };
 
     function saveCategories(updatedCategories: Category[]) {
+
         setCategories(updatedCategories);
+
         dispatch(
             setStateCategories(updatedCategories)
         );
     
         if (updatedCategories.length === 0) {
+
             // if we're clearing categories, set the currently selected or first 
             // available category ranking to r=
             const searchParams = new URLSearchParams(window.location.search);
@@ -174,6 +176,10 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
             window.history.replaceState(null, '', newUrl);
     
             dispatch(setActiveCategory(undefined));
+            // if there are no more categories, make sure that showTotalRank is false 
+            dispatch(
+                setShowTotalRank(false)
+            );
         } else {
             saveCategoriesToUrl(updatedCategories);
         }
@@ -775,14 +781,14 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
                                     className="px-2.5 py-1.5 ml-1 mr-3 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
                                 />
                                 <IconButton
-                                    className="ml-0 bg-blue-500 hover:bg-blue-700 text-white font-normal pl-[0.7em] rounded-md text-xs py-[0.5em] pr-[1em]"
+                                    className="ml-1 bg-blue-500 hover:bg-blue-700 text-white font-normal pl-[0.7em] rounded-md text-xs py-[0.5em] pr-[1em]"
                                     onClick={addCategory}
                                     icon={undefined}
                                     title='Add'
                                 />
                                 {categories?.length > 0 &&
                                     <IconButton
-                                        className="ml-3 bg-rose-800 hover:bg-rose-700 text-white font-normal pl-[0.7em] rounded-md text-xs py-[0.5em] pr-[1em]"
+                                        className="ml-3 mt-2 bg-rose-800 hover:bg-rose-700 text-white font-normal pl-[0.7em] rounded-md text-xs py-[0.5em] pr-[1em]"
                                         onClick={() => { 
                                             saveCategories([]); 
                                         }}

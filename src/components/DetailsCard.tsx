@@ -1,19 +1,24 @@
 import classNames from 'classnames';
-import { useState, type FC } from 'react';
-import { FaBook, FaFile, FaFileAlt, FaFileWord, FaTv } from 'react-icons/fa';
+import { useState, type FC, useRef, useEffect } from 'react';
+import { FaFileAlt, FaFileWord, FaTv } from 'react-icons/fa';
 import Flag from "react-world-flags"
 import { CountryContestant } from '../data/CountryContestant';
 import { useSelector } from 'react-redux';
-import { AppState, SetShowTotalRank } from '../redux/types';
+import { AppState } from '../redux/types';
 import { voteCodeHasType } from '../utilities/VoteProcessor';
-import SongModal from './LyricsModal';
 import { convertRankingsStrToArray } from '../utilities/UrlUtil';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faAngleDoubleDown, faAngleDoubleUp, faAngleDown, faAngleUp } from '@fortawesome/free-solid-svg-icons';
+import { Country } from '../data/Country';
+import { getCountryCategoryRankingsFromUrl } from '../utilities/CategoryUtil';
 
 export interface DetailsCardProps {
   rank?: number;
   countryContestant: CountryContestant;
   className: string;
   isDragging: boolean;
+  categoryScrollPosition: number;
+  onCategoryScroll: (callback: React.UIEvent<HTMLDivElement>) => void;
   openSongModal: () => void;
 }
 
@@ -23,25 +28,42 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
   const showTotalRank = useSelector((state: AppState) => state.showTotalRank);
   const contestant = props.countryContestant.contestant;
   const country = props.countryContestant.country;
+  const categoryRankingsRef = useRef<HTMLDivElement>(null);
 
-  const getCategoryRankings = () => {
-    const params = new URLSearchParams(window.location.search);
-    const categoryRankings: { [key: string]: number } = {};
+  useEffect(() => {
+    if (categoryRankingsRef.current) {
+      categoryRankingsRef.current.scrollLeft = props.categoryScrollPosition;
+    }
+  }, [props.categoryScrollPosition]);
+  
+  function getCategoryRankings() {
+    if (!showTotalRank) return undefined;
 
-    categories.forEach((category, index) => {
-      const categoryParam = `r${index + 1}`;
-      const ranking = params.get(categoryParam);
-      if (ranking) {
-        const rankedIds = convertRankingsStrToArray(ranking);
-        const categoryRank = rankedIds.indexOf(country.id) + 1;
-        categoryRankings[category.name] = categoryRank;
-      }
-    });
-
-    return categoryRankings;
-  };
+    return getCountryCategoryRankingsFromUrl(categories, country);
+  }
 
   const categoryRankings = getCategoryRankings();
+
+  /**
+   * Returns the difference between the provided category rank and the actualRank along 
+   * with an up/down angle icon to represent the diff. 
+   * 
+   * @param props 
+   * @param categoryRank 
+   * @returns 
+   */
+  function getRankIconaAndDiff(actualRank: number | undefined, categoryRank: number | undefined) {
+    const rankDifference = actualRank && categoryRank ? categoryRank - actualRank : 0;
+  
+    let arrowIcon = null;
+    if (rankDifference < 0) {
+      arrowIcon = Math.abs(rankDifference) >= 3 ? faAngleDoubleUp : faAngleUp;
+  
+    } else if (rankDifference > 0) {
+      arrowIcon = rankDifference >= 3 ? faAngleDoubleDown : faAngleDown;
+    }
+    return { arrowIcon, rankDifference };
+  }
 
   return (
     <div>
@@ -146,20 +168,41 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
 
       </div>
       {showTotalRank && (
-        <div className="mt-0 mx-[0.6em] rounded-b-md bg-[#212039]  bg-opacity-100 border-gray-200 overflow-x-auto relative">
+        <div 
+          ref={categoryRankingsRef}
+          className="mt-0 mx-[0.6em] shadow-lg rounded-b-md bg-[#1c214c] bg-[#240b4d] bg-opacity-100 border-gray-600 border-x-[0.01em] border-b-[0.01em] overflow-x-auto relative"
+          onScroll={props.onCategoryScroll}  
+        >
           <div className="flex">
-            {categories.map((category, index) => (
-              <div
-                key={index}
-                className="px-2 py-1 text-xs flex-shrink-0 text-slate-400"
-              >
-                <span className="">{category.name}:</span>{' '}
-                <span className="ml-1 font-bold text-slate-300">{categoryRankings[category.name] || 'N/A'}</span>
-              </div>
-            ))}
+            {categories.map((category, index) => {
+              
+              const categoryRankName = categoryRankings?.[category.name];
+              
+              var { arrowIcon, rankDifference } = getRankIconaAndDiff(
+                props.rank, categoryRankName
+              );
+
+              return (
+                <div
+                  key={index}
+                  className="px-2 py-1 text-xs flex-shrink-0 text-slate-400"
+                  title={`weight: ${category.weight}`}
+                >
+                  <span className="">{category.name}:</span>{' '}
+                  <span className="ml-1 font-medium text-slate-300">{categoryRankName || 'N/A'}</span>
+                  {arrowIcon &&
+                    <FontAwesomeIcon
+                      icon={arrowIcon}
+                      className={classNames("pt-[0.2em] ml-1 inline-block text-sm text-opacity-40", rankDifference < 0 ? 'text-green-500' : 'text-red-500')}
+                    /> 
+                  }
+                </div>
+              );
+            })}
           </div>
         </div>
       )}
     </div>
   );
 };
+

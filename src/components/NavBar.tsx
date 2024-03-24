@@ -41,7 +41,7 @@ const Navbar: React.FC<NavbarProps> = ({ openModal, openConfigModal }) => {
                             <IconButton
                                 className={
                                     classNames(
-                                        "tour-step-9 bg-blue-600 hover:bg-blue-700 text-white font-normal py-1 pl-[0.7em] pr-[0.9em] rounded-full text-xs mr-0 w-[5em]",
+                                        "tour-step-10 bg-blue-600 hover:bg-blue-700 text-white font-normal py-1 pl-[0.7em] pr-[0.9em] rounded-full text-xs mr-0 w-[5em]",
                                         //{"tada-animation" : showUnranked && rankedItems?.length}
                                     )
                                 }
@@ -49,12 +49,12 @@ const Navbar: React.FC<NavbarProps> = ({ openModal, openConfigModal }) => {
                                 title={showUnranked ? 'Details' : 'Select'}
                             />
                             <FontAwesomeIcon
-                                className="tour-step-10 houseUser mr-1 mb-1 ml-3 text-xl"
+                                className="tour-step-11 houseUser mr-1 mb-1 ml-3 text-xl"
                                 icon={faHouseUser}
                                 onClick={() => openModal('about')}
                             />
 
-                            <div className="tour-step-11">
+                            <div className="tour-step-12">
                                 <FontAwesomeIcon
                                     className="configCog ml-2 mr-1 mb-0 text-xl float-right"
                                     icon={faCog}

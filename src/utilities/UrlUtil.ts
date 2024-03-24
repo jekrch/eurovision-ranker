@@ -136,6 +136,11 @@ export function orderContestantsByRankingStr(
     return { rankedIds, rankedCountries };
 }
 
+export function urlHasRankings(activeCategory: number | undefined) {
+    const extractedParams = getUrlParams(activeCategory);
+    return extractedParams.rankings?.length;
+}
+
 /**
  * Decodes rankings from URL and updates Redux store accordingly.
  */

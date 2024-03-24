@@ -15,7 +15,7 @@ import { generateYoutubePlaylistUrl } from './utilities/YoutubeUtil';
 import { AppState } from './redux/types';
 import { useDispatch, useSelector } from 'react-redux';
 import { setRankedItems, setUnrankedItems, setShowUnranked, setActiveCategory, setShowTotalRank } from './redux/actions';
-import { decodeRankingsFromURL, updateQueryParams } from './utilities/UrlUtil';
+import { decodeRankingsFromURL, updateQueryParams, urlHasRankings } from './utilities/UrlUtil';
 import { Dispatch } from 'redux';
 import MapModal from './components/MapModal';
 import ConfigModal from './components/ConfigModal';
@@ -26,7 +26,7 @@ import { DetailsCard } from './components/DetailsCard';
 import SongModal from './components/LyricsModal';
 import { Toaster } from 'react-hot-toast';
 import { toastOptions } from './utilities/ToasterUtil';
-import { areCategoriesSet, categoryRankingsExist, clearCategories, removeCountryFromUrlCategoryRankings, reorderByAllWeightedRankings } from './utilities/CategoryUtil';
+import { areCategoriesSet, categoryRankingsExist, removeCountryFromUrlCategoryRankings, reorderByAllWeightedRankings } from './utilities/CategoryUtil';
 import { isArrayEqual } from './utilities/RankAnalyzer';
 import JoyrideTour from './tour/JoyrideTour';
 
@@ -65,7 +65,7 @@ const App: React.FC = () => {
    * Determines whether any rankings are set in the url
    * @returns 
    */
-  function areRankingsSet() { 
+  function areRankingsSet() {
     const urlParams = new URLSearchParams(window.location.search);
     const rParam = urlParams.get('r');
 
@@ -119,11 +119,14 @@ const App: React.FC = () => {
    */
   useEffect(() => {
     const handlePopState = (event: PopStateEvent) => {
-      // User clicked back (or forward) button
 
+      // User clicked back (or forward) button
       const decodeFromUrl = async () => {
+
+        let category = areCategoriesSet() && !activeCategory ? 0 : activeCategory;
+
         const rankingsExist = await decodeRankingsFromURL(
-          activeCategory,
+          category,
           dispatch
         );
         // Set showUnranked based on whether rankings exist
@@ -174,22 +177,51 @@ const App: React.FC = () => {
     }
   };
 
+  /**
+   * This loads any URL provided ranking on first page load
+   */
+  // useEffect(() => {
+  //   const decodeFromUrl = async () => {
+
+  //     let category = areCategoriesSet() && !activeCategory ? 0 : activeCategory;
+
+  //     const rankingsExist = await decodeRankingsFromURL(
+  //       category,
+  //       dispatch
+  //     );
+
+  //     // console.log(category)
+  //     // if (category !== undefined) {
+  //     //   dispatch(
+  //     //     setShowTotalRank(true)
+  //     //   )
+  //     // }
+
+  //     // Set showUnranked based on whether rankings exist
+  //     dispatch(
+  //       setShowUnranked(!rankingsExist)
+  //     );
+  //   }
+  //   decodeFromUrl();
+  // }, [])
+
+  /**
+   * Determines whether to display the list view on first page load. If there 
+   * are rankings in the URL show the list view, otherwise default to the select view
+   */
   useEffect(() => {
-    const decodeFromUrl = async () => {
 
-      let category = areCategoriesSet() && !activeCategory ? 0 : activeCategory;
+    let category = areCategoriesSet() && !activeCategory ? 0 : activeCategory;
 
-      const rankingsExist = await decodeRankingsFromURL(
-        category,
-        dispatch
-      );
+    const rankingsExist = urlHasRankings(
+      category
+    );
 
-      // Set showUnranked based on whether rankings exist
-      dispatch(
-        setShowUnranked(!rankingsExist)
-      );
-    }
-    decodeFromUrl();
+    // Set showUnranked based on whether rankings exist
+    dispatch(
+      setShowUnranked(!rankingsExist)
+    );
+
   }, [])
 
   useEffect(() => {
@@ -227,6 +259,7 @@ const App: React.FC = () => {
 
     updateRankedItems();
   }, [showTotalRank, rankedItems, categories]);
+
 
   useEffect(() => {
     const handleYearUpdate = async () => {
@@ -279,7 +312,7 @@ const App: React.FC = () => {
       // if there are no categories, make sure showTotalRank is false
       dispatch(
         setShowTotalRank(false)
-    );        
+      );
     }
   }, [categories]);
 
@@ -401,7 +434,7 @@ const App: React.FC = () => {
 
       <div
         className={classNames(
-          "site-content flex flex-col h-screen tour-step-13 tour-step-14 tour-step-15 normal-bg",
+          "site-content flex flex-col h-screen tour-step-14 tour-step-15 tour-step-16 normal-bg",
           { 'star-sky': theme.includes('ab') }
         )}>
 
@@ -420,7 +453,7 @@ const App: React.FC = () => {
         <div className="flex-grow overflow-auto overflow-x-hidden bg-[#040241] flex justify-center bg-opacity-0">
           <DragDropContext
             onDragEnd={handleOnDragEnd}
-            key={`drag-drop-context`}            
+            key={`drag-drop-context`}
             onDragStart={() => {
               if (window.navigator.vibrate) {
                 window.navigator.vibrate(100);
@@ -515,9 +548,9 @@ const App: React.FC = () => {
                             />
                           )}
                           {rankedItems.map((item, index) => (
-                            <Draggable 
-                              key={`draggable-${item.id.toString()}`} 
-                              draggableId={item.id.toString()} 
+                            <Draggable
+                              key={`draggable-${item.id.toString()}`}
+                              draggableId={item.id.toString()}
                               index={index}
                               isDragDisabled={showTotalRank}
                             >
@@ -653,26 +686,27 @@ const App: React.FC = () => {
         onClose={() => setIsSongModalOpen(false)}
       />
 
-      <ConfigModal
-        tab={configModalTab}
-        isOpen={configModalShow}
-        onClose={() => setConfigModalShow(false)}
-        startTour={() => {
-          dispatch(
-            setShowUnranked(true)
-          );
-          setRunTour(true);
-        }}
-      />
-
-      <JoyrideTour         
+      <div className="tour-step-13">
+        <ConfigModal
+          tab={configModalTab}
+          isOpen={configModalShow}
+          onClose={() => setConfigModalShow(false)}
+          startTour={() => {
+            dispatch(
+              setShowUnranked(true)
+            );
+            setRunTour(true);
+          }}
+        />
+      </div>
+      <JoyrideTour
         setRefreshUrl={setRefreshUrl}
         openConfigModal={openConfigModal}
         setConfigModalShow={setConfigModalShow}
         setRunTour={setRunTour}
         runTour={runTour}
       />
-      
+
       <Toaster
         toastOptions={toastOptions}
         position="top-center"

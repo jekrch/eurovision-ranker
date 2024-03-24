@@ -128,6 +128,7 @@ describe('reorderByAllWeightedRankings', () => {
 });
 
 describe('isValidCategoryName', () => {
+    
     it('should return false if the category name contains "|"', () => {
         const categories: Category[] = [];
         const result = isValidCategoryName('Invalid|Name', categories);

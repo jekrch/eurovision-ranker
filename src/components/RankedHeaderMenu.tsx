@@ -137,6 +137,7 @@ const RankedHeaderMenu: React.FC<RankedHeaderMenuProps> = (props: RankedHeaderMe
           <MenuItem 
             icon={faSlidersH} 
             text="Categories" 
+            className="tour-step-9"
             onClick={() => props.openConfig("categories")} 
             afterClick={close}
           />

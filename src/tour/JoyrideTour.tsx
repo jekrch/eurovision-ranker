@@ -175,22 +175,22 @@ const JoyrideTour: React.FC<JoyrideTourProps> = (props: JoyrideTourProps) => {
         );
         break;
 
-      case 9:
+      case 10:
         dispatch(
           setShowUnranked(true)
         );
         //openModal('rankings');
         break;
 
-      case 11:
+      case 12:
         props.openConfigModal('rankings');
         break;
 
-      case 12:
+      case 13:
         props.setConfigModalShow(false);
         break;
 
-      case 14:
+      case 15:
         props.setConfigModalShow(false);
         dispatch(setName(""));
         await clearRanking(year);

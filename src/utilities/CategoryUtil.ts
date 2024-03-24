@@ -169,6 +169,7 @@ export function categoryRankingsExist(urlParams?: URLSearchParams) {
 export function reorderByAllWeightedRankings(
   categories: Category[],
   rankedItems: CountryContestant[],
+  searchParams?: URLSearchParams | undefined
 ): CountryContestant[] {
 
   // if there are no competing category ranks to aggregate
@@ -177,7 +178,8 @@ export function reorderByAllWeightedRankings(
     return rankedItems;
   }
 
-  const searchParams = new URLSearchParams(window.location.search);
+  searchParams = searchParams ?? new URLSearchParams(window.location.search);
+  
   const categoryRankings: { [key: string]: string[]; } = getAllCategoryRankingsFromUrl(categories, searchParams);
 
   // Calculate the weighted scores for each country

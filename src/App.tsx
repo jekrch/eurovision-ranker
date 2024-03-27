@@ -547,6 +547,21 @@ const App: React.FC = () => {
                               setRunTour={setRunTour}
                             />
                           )}
+                          {!showUnranked && rankedItems.length === 0 && (
+                            <div className="flex items-center justify-center h-full">
+
+                              <span className="text-center mb-40 min-mt-5 text-slate-500 mx-10 text-sm">
+                                <div>Click 'Select' to choose</div> countries to rank
+                                <div>
+                                  <img
+                                    src={`${process.env.PUBLIC_URL}/eurovision-heart.svg`}
+                                    alt="Heart"
+                                    style={{ display: 'inline', verticalAlign: 'middle' }}
+                                    className="ml-[0.2em] mt-3 w-5 h-5 opacity-70" />
+                                </div>
+                              </span>
+                            </div>
+                          )}
                           {rankedItems.map((item, index) => (
                             <Draggable
                               key={`draggable-${item.id.toString()}`}
@@ -593,6 +608,7 @@ const App: React.FC = () => {
                           ))}
                           {provided.placeholder}
                         </ul>
+                        
                       </div>
                       {(showUnranked && rankedItems?.length > 0) &&
                         <div className="pl-2 rounded-b-md h-8 bg-blue-900 ranked-bar-background text-slate-300 items-center flex shadow-md gradient-background">

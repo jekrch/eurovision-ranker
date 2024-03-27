@@ -1,15 +1,13 @@
 import classNames from 'classnames';
 import { useState, type FC, useRef, useEffect } from 'react';
-import { FaFileAlt, FaFileWord, FaTv } from 'react-icons/fa';
+import { FaFileAlt, FaTv } from 'react-icons/fa';
 import Flag from "react-world-flags"
 import { CountryContestant } from '../data/CountryContestant';
 import { useSelector } from 'react-redux';
 import { AppState } from '../redux/types';
 import { voteCodeHasType } from '../utilities/VoteProcessor';
-import { convertRankingsStrToArray } from '../utilities/UrlUtil';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAngleDoubleDown, faAngleDoubleUp, faAngleDown, faAngleUp } from '@fortawesome/free-solid-svg-icons';
-import { Country } from '../data/Country';
 import { getCountryCategoryRankingsFromUrl } from '../utilities/CategoryUtil';
 
 export interface DetailsCardProps {
@@ -170,7 +168,7 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
       {showTotalRank && (
         <div 
           ref={categoryRankingsRef}
-          className="mt-0 mx-[0.6em] shadow-lg rounded-b-md bg-[#1c214c] bg-[#240b4d] bg-opacity-100 border-gray-600 border-x-[0.01em] border-b-[0.01em] overflow-x-auto relative"
+          className="mt-0 mx-[0.6em] shadow-lg rounded-b-md bg-[#1c214c] bg-opacity-100 border-gray-600 border-x-[0.01em] border-b-[0.01em] overflow-x-auto relative"
           onScroll={props.onCategoryScroll}  
         >
           <div className="flex">

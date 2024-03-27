@@ -7,6 +7,7 @@ import { useSelector } from 'react-redux';
 import { setActiveCategory, setRankedItems, setShowTotalRank, setYear } from '../redux/actions';
 import RankedHeaderMenu from './RankedHeaderMenu';
 import classNames from 'classnames';
+import Ripples from 'react-ripples';
 
 interface IRankedItemsHeaderProps {
     setMapModalShow: () => void;
@@ -104,29 +105,33 @@ const RankedItemsHeader: React.FC<IRankedItemsHeaderProps> = ({
             )}
             {(!showUnranked && categories.length > 0) && (
                 <div className="flex bg-gray-800 bg-opacity-40 border-gray-200 mt-1 -mb-[0.2em] overflow-x-auto">
+                <Ripples placeholder={<></>}>
+                  <button
+                    key="total-tab"
+                    className={classNames(
+                      "px-4 py-[0.2em] text-sm font-strong flex-shrink-0",
+                      activeTab === 0 ? "text-blue-400 border-b-0 border-blue-400" : "text-gray-400 hover:text-blue-500"
+                    )}
+                    onClick={() => setActiveTab(0)}
+                  >
+                    Total
+                  </button>
+                </Ripples>
+                {categories.map((category, index) => (
+                  <Ripples placeholder={<></>}>
                     <button
-                        key="total-tab"
-                        className={classNames(
-                            "px-4 py-[0.2em] text-sm font-strong flex-shrink-0",
-                            activeTab === 0 ? "text-blue-400 border-b-0 border-blue-400" : "text-gray-400 hover:text-blue-500"
-                        )}
-                        onClick={() => setActiveTab(0)}
+                        key={index + 1}
+                      className={classNames(
+                        "px-4 py-[0.2em] text-sm font-medium flex-shrink-0",
+                        activeTab === index + 1 ? "text-blue-400 border-b-0 border-blue-400" : "text-gray-500 hover:text-blue-500"
+                      )}
+                      onClick={() => setActiveTab(index + 1)}
                     >
-                        Total
+                      {category.name}
                     </button>
-                    {categories.map((category, index) => (
-                        <button
-                            key={index + 1}
-                            className={classNames(
-                                "px-4 py-[0.2em] text-sm font-medium flex-shrink-0",
-                                activeTab === index + 1 ? "text-blue-400 border-b-0 border-blue-400" : "text-gray-500 hover:text-blue-500"
-                            )}
-                            onClick={() => setActiveTab(index + 1)}
-                        >
-                            {category.name}
-                        </button>
-                    ))}
-                </div>
+                  </Ripples>
+                ))}
+              </div>
             )}
         </div>
     );

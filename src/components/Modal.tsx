@@ -67,7 +67,7 @@ const Modal: React.FC<ModalContainerProps> = (props: ModalContainerProps) => {
             <div ref={modalRef}
                 className={
                     classNames(
-                        "relative bg-[#272557]x bg-[#2b2a47]x bg-[#1c214c] m-4 max-h-[80vh] text-slate-400 p-6 rounded-lg shadow-lg max-w-lg w-full flex flex-col transform transition-transform duration-300",
+                        "relative bg-[#272557]x bg-[#2b2a47]x bg-[#1c214c] gradient-background-modalx m-4 max-h-[80vh] text-slate-400 p-6 rounded-lg shadow-lg max-w-lg w-full flex flex-col transform transition-transform duration-300",
                         transitionStyles.transform,
                         props.className
                     )}

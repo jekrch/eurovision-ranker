@@ -556,8 +556,8 @@ const App: React.FC = () => {
                                   <img
                                     src={`${process.env.PUBLIC_URL}/eurovision-heart.svg`}
                                     alt="Heart"
-                                    style={{ display: 'inline', verticalAlign: 'middle' }}
-                                    className="ml-[0.2em] mt-3 w-5 h-5 opacity-70" />
+                                    style={{ display: 'inline', verticalAlign: 'middle'}}
+                                    className="ml-[0.2em] mt-3 w-5 h-5 opacity-70 grayscale"/>
                                 </div>
                               </span>
                             </div>

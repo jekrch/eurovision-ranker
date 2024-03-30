@@ -34,7 +34,7 @@ const WelcomeOverlay: React.FC<WelcomeOverlayProps> = ({ handleGetStarted, handl
                 className={
                     classNames(
                         "flex flex-col justify-between z-50 overlay left-5 right-5 top-[3em] ",
-                        "bottom-[1em] rounded-xl absolute bg-[#1d2344] opacity-98 pb-6 pt-6",
+                        "bottom-[1em] rounded-xl absolute bg-[#1d2344] gradient-background-modalx opacity-98 pb-6 pt-6",
                         "m-auto shadow-lg max-w-[20em] max-h-[20em] text-slate-400 opacity-96"
                     )}
                 style={{ zIndex: 300 }}

@@ -100,7 +100,7 @@ const SongModal: React.FC<SongModalProps> = (props: SongModalProps) => {
         <Modal
             isOpen={props.isOpen}
             onClose={props.onClose}
-            className="z-50 select-text min-h-[20em]">
+            className="z-50 select-text min-h-[20em] gradient-background-modal">
 
             <div className="-mt-[0.5em] mr-[1.2em] mb-3 font-semibold text-base text-slate-[400px]">
                 <span>

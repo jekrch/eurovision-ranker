@@ -79,8 +79,8 @@ code {
   background: linear-gradient(155deg, #3d76cb, #1a2a45, #9e33ea);
 }
 
-.gradient-backgroundd {
-  background: linear-gradient(155deg, #3d76cb, #1a2a45, #9e33ea), url(/public/noise.svg);
+.gradient-background-modal {
+  background: linear-gradient(155deg, #1d2344, #1d2344, #4b2764), url(/public/noise.svg);
   filter: contrast(100%) brightness(100%);
 }
 
@@ -479,4 +479,12 @@ https://codepen.io/chris22smith/pen/RZogMa */
   100% {
       transform: translateX(0);
   }
+}
+
+.flag {
+  width: 24px;
+  height: 18px;
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 8px;
 }

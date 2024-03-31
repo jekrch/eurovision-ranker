@@ -20,6 +20,13 @@ export interface DetailsCardProps {
   openSongModal: () => void;
 }
 
+/**
+ * The country contestant card that is displayed per ranked item in the 
+ * details view 
+ * 
+ * @param props 
+ * @returns 
+ */
 export const DetailsCard: FC<DetailsCardProps> = (props) => {
   const vote = useSelector((state: AppState) => state.vote);
   const categories = useSelector((state: AppState) => state.categories);

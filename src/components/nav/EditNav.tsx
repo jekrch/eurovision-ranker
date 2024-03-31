@@ -4,8 +4,8 @@ import classNames from 'classnames';
 import { CountryContestant } from '../../data/CountryContestant';
 import IconButton from '../IconButton';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppState, SetContestantsAction } from '../../redux/types';
-import { SetIsDeleteMode, setContestants, setRankedItems, setShowTotalRank, setUnrankedItems } from '../../redux/actions';
+import { AppState } from '../../redux/types';
+import { SetIsDeleteMode, setContestants, setRankedItems, setUnrankedItems } from '../../redux/actions';
 import { fetchCountryContestantsByYear } from '../../utilities/ContestantRepository';
 import { Dispatch } from 'redux';
 import { clearAllRankingParams } from '../../utilities/UrlUtil';
@@ -15,6 +15,13 @@ type EditNavProps = {
     setRefreshUrl: React.Dispatch<SetStateAction<number>>;
 };
 
+/**
+ * This navbar is displayed on the bottom edge of the select view. It provides general 
+ * list-editing options. 
+ * 
+ * @param param0 
+ * @returns 
+ */
 const EditNav: React.FC<EditNavProps> = ({ setNameModalShow, setRefreshUrl }) => {
     const dispatch: Dispatch<any> = useDispatch();
     const year = useSelector((state: AppState) => state.year);

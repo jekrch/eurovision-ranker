@@ -9,6 +9,14 @@ type NameModalProps = {
     onClose: () => void;
 };
 
+/**
+ * This is where users can provide a custom name for their ranked list which is 
+ * displayed in the ranked items header. This is opened from the either the 
+ * headers menu or the edit nav
+ * 
+ * @param props 
+ * @returns 
+ */
 const NameModal: React.FC<NameModalProps> = (props: NameModalProps) => {
     const dispatch: Dispatch<any> = useDispatch();
     const name = useSelector((state: AppState) => state.name);

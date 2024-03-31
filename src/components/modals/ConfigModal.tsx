@@ -28,6 +28,14 @@ type ConfigModalProps = {
     startTour: () => void;
 };
 
+/**
+ * This modal provides various advanced setting options to the user. It is opened 
+ * either from the main nav or individual tabs can be directly opened from other 
+ * locations: e.g. the ranked items header or the intro column in the ranked items list. 
+ * 
+ * @param props 
+ * @returns 
+ */
 const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
     const dispatch: Dispatch<any> = useDispatch();
     const year = useSelector((state: AppState) => state.year);

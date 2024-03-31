@@ -12,6 +12,12 @@ type NavbarProps = {
     openConfigModal: (tabName: string) => void;
 };
 
+/**
+ * This is the main navbar that is displayed at the top of the screen in all views. 
+ * 
+ * @param 
+ * @returns 
+ */
 const Navbar: React.FC<NavbarProps> = ({ openModal, openConfigModal }) => {
     const dispatch: Dispatch<any> = useDispatch();
     const showUnranked = useSelector((state: AppState) => state.showUnranked);

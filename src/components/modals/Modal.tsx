@@ -9,6 +9,13 @@ type ModalContainerProps = {
     children: ReactNode;
 };
 
+/**
+ * A shared modal component that provides a general style and standard 
+ * open/close functionality 
+ * 
+ * @param props 
+ * @returns 
+ */
 const Modal: React.FC<ModalContainerProps> = (props: ModalContainerProps) => {
     const modalRef = useRef<HTMLDivElement>(null);
     const [showModal, setShowModal] = useState(false);

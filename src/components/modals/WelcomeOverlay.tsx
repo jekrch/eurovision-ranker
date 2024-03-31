@@ -10,6 +10,14 @@ interface WelcomeOverlayProps {
     handleTakeTour: () => void;
 }
 
+/**
+ * An overlay modal that is displayed when first loading the site if no ranking is 
+ * encoded in the URL yet. The goal here is to provide some initial info to the user 
+ * and provide them with the option to take the app tour
+ * 
+ * @param param0 
+ * @returns 
+ */
 const WelcomeOverlay: React.FC<WelcomeOverlayProps> = ({ handleGetStarted, handleTakeTour, exiting }) => {
 
     const overlayContentRef = useRef<HTMLDivElement>(null);

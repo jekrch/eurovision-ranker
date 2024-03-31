@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { ComposableMap, Geographies, Geography } from 'react-simple-maps';
 import geoJson from '../../data/geoJson.json';
-import { useDispatch, useSelector } from 'react-redux';
-import { Dispatch } from 'redux';
+import { useSelector } from 'react-redux';
 import { AppState } from '../../redux/types';
 import { ZoomableGroup } from 'react-simple-maps';
 import { Tooltip as ReactTooltip } from "react-tooltip";
@@ -18,7 +17,12 @@ interface TooltipData {
     rank: string;
 }
 
-
+/**
+ * Modal displaying a heat map of the users ranking. Opened from the ranked items header menu
+ * 
+ * @param
+ * @returns 
+ */
 const MapModal: React.FC<MapModalProps> = ({ isOpen, onClose }) => {
     const rankedItems = useSelector((state: AppState) => state.rankedItems);
 

@@ -11,6 +11,11 @@ type SongModalProps = {
     onClose: () => void;
 };
 
+/**
+ * A modal for displaying song lyrics which is opened from the detailsCard
+ * @param  
+ * @returns 
+ */
 const SongModal: React.FC<SongModalProps> = (props: SongModalProps) => {
     const year = useSelector((state: AppState) => state.year);
     const [lyrics, setLyrics] = useState<string | undefined>('');

@@ -1,5 +1,5 @@
 import { CountryContestant } from "../../data/CountryContestant";
-import { hasAnyJuryVotes, hasAnyTeleVotes } from "../VoteProcessor";
+import { hasAnyJuryVotes, hasAnyTeleVotes } from "../VoteUtil";
 import Papa from 'papaparse';
 import { EXPORT_TYPE } from "./ExportType";
 import toast from 'react-hot-toast';

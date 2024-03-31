@@ -20,7 +20,6 @@ interface TooltipData {
 
 
 const MapModal: React.FC<MapModalProps> = ({ isOpen, onClose }) => {
-    const dispatch: Dispatch<any> = useDispatch();
     const rankedItems = useSelector((state: AppState) => state.rankedItems);
 
     let countryCodes = rankedItems.map(i => i.country.key.toUpperCase());
@@ -81,8 +80,8 @@ const MapModal: React.FC<MapModalProps> = ({ isOpen, onClose }) => {
                                             data-tooltip-id="country-tooltip"
                                             onMouseEnter={(evt: any) => {
                                                 const name = geo.properties.name; // Adjust if the property name is different
-                                                const x = evt.clientX;
-                                                const y = evt.clientY;
+                                                // const x = evt.clientX;
+                                                // const y = evt.clientY;
                                                 setTooltipData({ name: name, rank: rank?.toString() });
                                             }}
                                             onMouseLeave={() => {

@@ -210,7 +210,7 @@ export async function assignVotesByCode(
     let fromCountryKey = codes[2];
 
     let round = processVotingRound(roundCode);
-    let voteTypeFieldName: string = getVoteTypeFieldName(voteTypeCode);
+    //let voteTypeFieldName: string = getVoteTypeFieldName(voteTypeCode);
 
     let votes: Vote[] = await fetchVotesForYear(year, fromCountryKey, round)
 
@@ -232,34 +232,4 @@ function processVotingRound(round: string) {
     return round;
 }
 
-export function hasAnyJuryVotes(yearContestants: CountryContestant[]) {
-    return yearContestants.some(cc =>
-        cc?.contestant?.votes?.juryPoints &&
-        cc?.contestant?.votes?.juryPoints > 0
-    );
-}
 
-export function hasAnyTeleVotes(yearContestants: CountryContestant[]) {
-    return yearContestants.some(cc =>
-        cc?.contestant?.votes?.telePoints &&
-        cc?.contestant?.votes?.telePoints > 0
-    );
-}
-
-export function getVoteTypeOption(voteCode: string) {
-    if (!voteCode?.length || voteCode == 'loading') {
-        return 'None';
-    }
-
-    let codes = voteCode.split("-");
-
-    switch (codes[1]) {
-        case 'tv':
-            return 'Tele'
-        case 'j':
-        case 'jury':
-            return 'Jury';
-        default:
-            return 'Total';
-    }
-}

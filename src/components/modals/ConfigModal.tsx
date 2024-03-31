@@ -1,4 +1,3 @@
-import classNames from 'classnames';
 import React, { useEffect, useState } from 'react';
 import { Dispatch } from 'redux';
 import Dropdown from '../Dropdown';
@@ -10,16 +9,17 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '../../redux/types';
 import { fetchCountryContestantsByYear } from '../../utilities/ContestantRepository';
 import { CountryContestant } from '../../data/CountryContestant';
-import { assignVotesByCode, hasAnyJuryVotes, hasAnyTeleVotes, sortByVotes, updateVoteTypeCode, voteCodeHasType } from '../../utilities/VoteProcessor';
+import { assignVotesByCode, sortByVotes, updateVoteTypeCode, voteCodeHasType } from '../../utilities/VoteProcessor';
+import { getVoteCode, hasAnyJuryVotes, hasAnyTeleVotes } from "../../utilities/VoteUtil";
 import { countries } from '../../data/Countries';
-import { setActiveCategory, setContestants, setTheme, setVote, setShowTotalRank } from '../../redux/actions';
-import { updateQueryParams } from '../../utilities/UrlUtil';
+import { setContestants, setTheme, setVote } from '../../redux/actions';
+import { goToUrl, updateQueryParams } from '../../utilities/UrlUtil';
 import { copyToClipboard, copyUrlToClipboard, downloadFile, getExportDataString } from '../../utilities/export/ExportUtil';
 import { EXPORT_TYPE, EXPORT_TYPES, getExportType } from '../../utilities/export/ExportType';
 import Checkbox from '../Checkbox';
 import IconButton from '../IconButton';
-import { setCategories as setStateCategories } from '../../redux/actions';
-import { Category, clearCategories, isValidCategoryName, parseCategoriesUrlParam, saveCategoriesToUrl } from '../../utilities/CategoryUtil';
+import { setCategories } from '../../redux/actions';
+import { deleteCategory, isValidCategoryName, parseCategoriesUrlParam, saveCategories } from '../../utilities/CategoryUtil';
 
 type ConfigModalProps = {
     isOpen: boolean;
@@ -33,7 +33,7 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
     const year = useSelector((state: AppState) => state.year);
     const vote = useSelector((state: AppState) => state.vote);
     const theme = useSelector((state: AppState) => state.theme);
-    const stateCategories = useSelector((state: AppState) => state.categories);
+    const categories = useSelector((state: AppState) => state.categories);
     const activeCategory = useSelector((state: AppState) => state.activeCategory);
     const rankedItems = useSelector((state: AppState) => state.rankedItems);
     const contestants = useSelector((state: AppState) => state.contestants);
@@ -51,10 +51,7 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
     const [voteDisplaySourceOptions, setVoteDisplaySourceOptions] = useState<string[]>(
         ['All', ...countries.sort((a, b) => a.name.localeCompare(b.name)).map(c => c.name)]
     );
-    const currentDomain = window.location.origin;
-    const currentPath = window.location.pathname;
     const exportTypeOptions = Object.values(EXPORT_TYPES).map(exportType => exportType.name);
-    const [categories, setCategories] = useState<Category[]>([]);
     const [newCategoryName, setNewCategoryName] = useState('');
 
     const addCategory = () => {
@@ -64,7 +61,9 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
             }
             const updatedCategories = [...categories, { name: newCategoryName, weight: 5 }];
             setNewCategoryName('');
-            saveCategories(updatedCategories);
+            saveCategories(
+                updatedCategories, dispatch, categories, activeCategory
+            );
         }
     };
 
@@ -74,106 +73,18 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
         }
         const updatedCategories = [...categories];
         updatedCategories[index].name = name;
-        saveCategories(updatedCategories);
+        saveCategories(
+            updatedCategories, dispatch, categories, activeCategory
+        );
     };
-
-    const deleteCategory = (indexToDelete: number) => {
-        
-        if (categories?.length == 1) {
-            return saveCategories([]);
-        }
-        const updatedCategories = [...categories];
-        updatedCategories.splice(indexToDelete, 1);
-      
-        const searchParams = new URLSearchParams(window.location.search);
-      
-        // Remove the corresponding rx URL param
-        const categoryParam = `r${indexToDelete + 1}`;
-        const ranking = searchParams.get(categoryParam);
-        searchParams.delete(categoryParam);
-      
-        if (updatedCategories.length === 0) {
-          // If no categories left, convert the current rx param to an r param
-          if (ranking) {
-            searchParams.set('r', ranking);
-          }
-        } else {
-          // Renumber the remaining rx URL params to ensure they are sequential
-          for (let i = indexToDelete + 1; i < categories.length; i++) {
-            const oldCategoryParam = `r${i + 1}`;
-            const newCategoryParam = `r${i}`;
-            const ranking = searchParams.get(oldCategoryParam);
-            if (ranking) {
-              searchParams.set(newCategoryParam, ranking);
-              searchParams.delete(oldCategoryParam);
-            }
-          }
-        }
-      
-        const newUrl = `${window.location.pathname}?${searchParams.toString()}`;
-        window.history.replaceState(null, '', newUrl);
-      
-        // Update the activeCategory if necessary
-        if (activeCategory === indexToDelete) {
-          if (updatedCategories.length > 0) {
-            dispatch(setActiveCategory(0)); // Set to the next available index
-          } else {
-            dispatch(setActiveCategory(undefined)); // Set to undefined if no categories left
-          }
-        } else if (activeCategory !== undefined && activeCategory > indexToDelete) {
-          dispatch(setActiveCategory(activeCategory - 1)); // Adjust the activeCategory to match the renumbered category
-        }
-      
-        saveCategories(updatedCategories);
-      };
 
     const updateCategoryWeight = (index: number, weight: number) => {
         const updatedCategories = [...categories];
         updatedCategories[index].weight = weight;
-        saveCategories(updatedCategories);
+        saveCategories(
+            updatedCategories, dispatch, categories, activeCategory
+        );
     };
-
-    function saveCategories(updatedCategories: Category[]) {
-
-        setCategories(updatedCategories);
-    
-        if (updatedCategories.length === 0) {
-
-            // if we're clearing categories, set the currently selected or first 
-            // available category ranking to r=
-            const searchParams = new URLSearchParams(window.location.search);
-            let rankingToSet = '';
-    
-            if (activeCategory !== undefined) {
-                // if there is a currently selected category, use its ranking
-                const categoryParam = `r${activeCategory + 1}`;
-                rankingToSet = searchParams.get(categoryParam) || '';
-            } else {
-                // If no active category, use the first available category ranking
-                for (let i = 1; i <= categories.length; i++) {
-                    const categoryParam = `r${i}`;
-                    const ranking = searchParams.get(categoryParam);
-                    if (ranking) {
-                        rankingToSet = ranking;
-                        break;
-                    }
-                }
-            }
-                
-            // Set the current ranking to r= and remove all rx params
-            clearCategories(
-                rankingToSet,
-                categories, 
-                dispatch
-            );
-
-        } else {
-            dispatch(
-                setStateCategories(updatedCategories)
-            )
-            saveCategoriesToUrl(updatedCategories);
-        }
-    }
 
     /**
      * Load categories from the url
@@ -183,27 +94,12 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
         const categoriesParam = searchParams.get('c');
         if (categoriesParam) {
             const parsedCategories = parseCategoriesUrlParam(categoriesParam);
-            setCategories(parsedCategories);
+            //setCategories(parsedCategories);
             dispatch(
-                setStateCategories(parsedCategories)
+                setCategories(parsedCategories)
             )
         }
     }, []);
-
-    /**
-     * If the global state categories are cleared elsewhere, make sure
-     * to reflect that in the category list here 
-     */
-    useEffect(() => {
-
-        if (
-            !stateCategories?.length && 
-            categories?.length
-        ) {
-            setCategories([]);
-        }
-  
-    }, [stateCategories]);
 
     function onThemeInputChanged(newTheme: string) {
         if (newTheme == 'Auroral') {
@@ -227,7 +123,6 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
             vote, voteType, checked
         );
         if (newVote !== vote) {
-
             dispatch(
                 setVote(newVote)
             );
@@ -317,7 +212,6 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
             data,
             exportType?.fileExtension
         );
-        //toast.success('File downloaded');
     }
 
     function getVoteSourceCodeFromOption(
@@ -329,37 +223,6 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
         return countries.filter(
             c => c.name === optionName
         )?.[0]?.key;
-    }
-
-    function getVoteTypeCodeFromOption(
-        optionName: string
-    ) {
-        if (!optionName) {
-            return;
-        }
-
-        switch (optionName) {
-            case 'Jury':
-                return 'j'
-            case 'Total':
-                return 't';
-            case 'Tele':
-                return 'tv'
-            default:
-                return;
-        }
-    }
-
-    function getUrl(queryString: string) {
-        return `${currentDomain}${currentPath}${queryString}`;
-    }
-
-    function goToUrl(queryString: string) {
-        let url = getUrl(queryString);
-        if (theme) {
-            url += `&t=${theme}`;
-        }
-        window.location.href = url;
     }
 
     useEffect(() => {
@@ -392,11 +255,6 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
 
         handleYearUpdate();
     }, [rankingYear]);
-
-    function startTour() {
-        props.onClose();
-        props.startTour();
-    }
 
     async function getSortedRankingCode(
         voteYear: string,
@@ -457,18 +315,6 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
         return sortedContestants.map(cc => cc.id).join('');
     }
 
-    function getSourceCountryKey(voteSource: string) {
-
-        if (voteSource?.length && voteSource !== 'All') {
-            const sourceCountryKey = countries.find(c => c.name == voteSource)?.key;
-
-            if (!sourceCountryKey?.length) {
-                console.error('Source country not found for ' + voteSource);
-            }
-
-            return sourceCountryKey;
-        }
-    }
     async function openTotalRanking() {
         const voteYear = rankingYear ?? year;
 
@@ -480,7 +326,8 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
             `?r=${concatenatedIds}&` +
             `y=${voteYear.substring(2, 4)}&` +
             `n=Final${getSourceCountryPostfix(voteSource)}&` +
-            `v=${getVoteCode('f', 't', voteSource)}`
+            `v=${getVoteCode('f', 't', voteSource)}`,
+            theme
         )
     }
 
@@ -496,7 +343,8 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
             `?r=${concatenatedIds}&` +
             `y=${voteYear.substring(2, 4)}&` +
             `n=Final+Televote${getSourceCountryPostfix(voteSource)}&` +
-            `v=${getVoteCode('f', 'tv', voteSource)}`
+            `v=${getVoteCode('f', 'tv', voteSource)}`,
+            theme
         )
     }
 
@@ -512,34 +360,11 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
             `?r=${concatenatedIds}` +
             `&y=${voteYear.substring(2, 4)}&` +
             `n=Final+Jury+Vote${getSourceCountryPostfix(voteSource)}&` +
-            `v=${getVoteCode('f', 'j', voteSource)}`
+            `v=${getVoteCode('f', 'j', voteSource)}`,
+            theme
         )
     }
 
-    /**
-     * Returns the vote code param for the provided round, type, and source (country)
-     * 
-     * @param round 
-     * @param voteType 
-     * @param voteSource 
-     * @returns 
-     */
-    function getVoteCode(
-        round: string,
-        voteType: string,
-        voteSource: string
-    ) {
-
-        let voteCode = `${round}-${voteType}`;
-
-        const countryKey = getSourceCountryKey(voteSource);
-
-        if (countryKey?.length) {
-            voteCode += `-${countryKey}`;
-        }
-
-        return voteCode;
-    }
 
     function getSourceCountryPostfix(sourceCountry?: string) {
         if (!sourceCountry?.length || sourceCountry === 'All') {
@@ -794,7 +619,9 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
                                     <IconButton
                                         className="ml-3 mt-2 bg-rose-800 hover:bg-rose-700 text-white font-normal pl-[0.7em] rounded-md text-xs py-[0.5em] pr-[1em]"
                                         onClick={() => { 
-                                            saveCategories([]); 
+                                            saveCategories(
+                                                [], dispatch, categories, activeCategory
+                                            );
                                         }}
                                         disabled={!categories?.length}
                                         icon={faTrash}
@@ -839,7 +666,11 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
                                             </td>
                                             <td className="px-2">
                                                 <button
-                                                    onClick={() => deleteCategory(index)}
+                                                    onClick={() => 
+                                                        deleteCategory(
+                                                            index, dispatch, categories, activeCategory
+                                                        )
+                                                    }
                                                     className="bg-rose-700 hover:bg-rose-600 text-white rounded-md px-2 py-[0.1em]"
                                                 >
                                                     X

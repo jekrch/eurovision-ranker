@@ -133,6 +133,10 @@ const App: React.FC = () => {
 
   }, [])
 
+  /**
+   * Reload the rankings from the URL if the activeCategory changes or 
+   * if the user either displays or exits the totalRank tab
+   */
   useEffect(() => {
     const updateRankedItems = async () => {
 
@@ -147,6 +151,7 @@ const App: React.FC = () => {
     updateRankedItems();
   }, [activeCategory, showTotalRank]);
 
+  
   useEffect(() => {
     const updateRankedItems = async () => {
 

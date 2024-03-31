@@ -283,3 +283,18 @@ export function updateQueryParams(params: { [key: string]: string }) {
         window.history.pushState(null, '', newUrl);
     }
 }
+
+function getUrl(queryString: string) {
+    const currentDomain = window.location.origin;
+    const currentPath = window.location.pathname;
+    
+    return `${currentDomain}${currentPath}${queryString}`;
+}
+
+export function goToUrl(queryString: string, theme: string | undefined) {
+    let url = getUrl(queryString);
+    if (theme) {
+        url += `&t=${theme}`;
+    }
+    window.location.href = url;
+}

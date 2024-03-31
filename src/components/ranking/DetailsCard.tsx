@@ -2,13 +2,13 @@ import classNames from 'classnames';
 import { useState, type FC, useRef, useEffect } from 'react';
 import { FaFileAlt, FaTv } from 'react-icons/fa';
 import Flag from "react-world-flags"
-import { CountryContestant } from '../data/CountryContestant';
+import { CountryContestant } from '../../data/CountryContestant';
 import { useSelector } from 'react-redux';
-import { AppState } from '../redux/types';
-import { voteCodeHasType } from '../utilities/VoteProcessor';
+import { AppState } from '../../redux/types';
+import { voteCodeHasType } from '../../utilities/VoteProcessor';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAngleDoubleDown, faAngleDoubleUp, faAngleDown, faAngleUp } from '@fortawesome/free-solid-svg-icons';
-import { getCountryCategoryRankingsFromUrl } from '../utilities/CategoryUtil';
+import { getCountryCategoryRankingsFromUrl } from '../../utilities/CategoryUtil';
 
 export interface DetailsCardProps {
   rank?: number;

@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import { FaList, FaTv, FaGlobe, FaCog, FaHeart } from 'react-icons/fa';
-import IconButton from './IconButton';
+import IconButton from '../IconButton';
 import { faCheck, faGlasses } from '@fortawesome/free-solid-svg-icons';
 import classNames from 'classnames';
 

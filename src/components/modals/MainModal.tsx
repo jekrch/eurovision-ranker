@@ -1,12 +1,12 @@
 import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import { faHeart, faHouseUser, faList } from '@fortawesome/free-solid-svg-icons';
-import TabButton from './TabButton';
+import TabButton from '../TabButton';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppState } from '../redux/types';
+import { AppState } from '../../redux/types';
 import ReactDOM from 'react-dom';
-import { fetchCountryContestantsByYear } from '../utilities/ContestantRepository';
-import { CountryContestant } from '../data/CountryContestant';
-import { sortByVotes } from '../utilities/VoteProcessor';
+import { fetchCountryContestantsByYear } from '../../utilities/ContestantRepository';
+import { CountryContestant } from '../../data/CountryContestant';
+import { sortByVotes } from '../../utilities/VoteProcessor';
 import Modal from './Modal';
 
 type MainModalProps = {

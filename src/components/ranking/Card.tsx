@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import type { FC } from 'react';
-import { CountryContestant } from '../data/CountryContestant';
+import { CountryContestant } from '../../data/CountryContestant';
 
 export interface CardProps {
   rank?: number;

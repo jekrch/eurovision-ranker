@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { AppState } from '../redux/types';
+import { AppState } from '../../redux/types';
 import Modal from './Modal';
-import { CountryContestant } from '../data/CountryContestant';
-import { getSongDetails } from '../utilities/ContestantRepository';
+import { CountryContestant } from '../../data/CountryContestant';
+import { getSongDetails } from '../../utilities/ContestantRepository';
 
 type SongModalProps = {
     isOpen: boolean;

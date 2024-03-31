@@ -1,14 +1,14 @@
 import React, { SetStateAction } from 'react';
 import { faArrowRight, faTrashAlt, faSquare, faCheckSquare, faPenAlt } from '@fortawesome/free-solid-svg-icons';
 import classNames from 'classnames';
-import { CountryContestant } from '../data/CountryContestant';
-import IconButton from './IconButton';
+import { CountryContestant } from '../../data/CountryContestant';
+import IconButton from '../IconButton';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppState, SetContestantsAction } from '../redux/types';
-import { SetIsDeleteMode, setContestants, setRankedItems, setShowTotalRank, setUnrankedItems } from '../redux/actions';
-import { fetchCountryContestantsByYear } from '../utilities/ContestantRepository';
+import { AppState, SetContestantsAction } from '../../redux/types';
+import { SetIsDeleteMode, setContestants, setRankedItems, setShowTotalRank, setUnrankedItems } from '../../redux/actions';
+import { fetchCountryContestantsByYear } from '../../utilities/ContestantRepository';
 import { Dispatch } from 'redux';
-import { clearAllRankingParams } from '../utilities/UrlUtil';
+import { clearAllRankingParams } from '../../utilities/UrlUtil';
 
 type EditNavProps = {
     setNameModalShow: React.Dispatch<SetStateAction<boolean>>;

@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { ComposableMap, Geographies, Geography } from 'react-simple-maps';
-import geoJson from '../data/geoJson.json';
+import geoJson from '../../data/geoJson.json';
 import { useDispatch, useSelector } from 'react-redux';
 import { Dispatch } from 'redux';
-import { AppState } from '../redux/types';
+import { AppState } from '../../redux/types';
 import { ZoomableGroup } from 'react-simple-maps';
 import { Tooltip as ReactTooltip } from "react-tooltip";
 import Modal from './Modal';

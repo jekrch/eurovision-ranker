@@ -171,6 +171,16 @@ export function getUrlParams(activeCategory: number | undefined) {
     return extractedParams;
 }
 
+/**
+ * Encode rankings to csv for URL
+ * @param rankedCountries 
+ * @returns 
+ */
+export const encodeRankingsToURL = (rankedCountries: CountryContestant[]): string => {
+    const ids = rankedCountries.map(item => item.id);
+    return ids.join('');
+};
+
 export function convertRankingsStrToArray(rankings: string): string[] {
     let rankedIds: string[] = [];
     let i = 0;
@@ -240,6 +250,19 @@ export const extractParams = (params: URLSearchParams, activeCategory: number | 
         voteCode: params.get('v')       // e.g. {round}-{type}-{fromCountryKey} f-t-gb
     };
 };
+
+export  const updateUrlFromRankedItems = async (
+    activeCategory: number | undefined, 
+    categories: Category[], 
+    rankedItems: CountryContestant[]
+) => {
+    // Update the URL with the new active category
+    if (categories?.length > 0 && activeCategory !== undefined) {
+      updateQueryParams({ [`r${activeCategory + 1}`]: encodeRankingsToURL(rankedItems) });
+    } else {
+      updateQueryParams({ r: encodeRankingsToURL(rankedItems) });
+    }
+  };
 
 /**
  * Function to update the query parameters

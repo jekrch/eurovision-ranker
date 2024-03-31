@@ -3,14 +3,14 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEllipsisH, faGlobe, faTv, faCopy, faLink, faFile, faFileCode, faList, faEdit, faPen, faSlidersH } from '@fortawesome/free-solid-svg-icons';
 import { CSSTransition } from 'react-transition-group';
 import classNames from 'classnames';
-import MenuItem from './MenuItem';
-import SubmenuItem from './SubmenuItem';
-import {  copyToClipboard, copyUrlToClipboard } from '../utilities/export/ExportUtil';
+import MenuItem from '../MenuItem';
+import SubmenuItem from '../SubmenuItem';
+import {  copyToClipboard, copyUrlToClipboard } from '../../utilities/export/ExportUtil';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppState } from '../redux/types';
-import { EXPORT_TYPE } from '../utilities/export/ExportType';
-import { rankedHasAnyYoutubeLinks } from '../utilities/YoutubeUtil';
-import { setHeaderMenuOpen } from '../redux/actions';
+import { AppState } from '../../redux/types';
+import { EXPORT_TYPE } from '../../utilities/export/ExportType';
+import { rankedHasAnyYoutubeLinks } from '../../utilities/YoutubeUtil';
+import { setHeaderMenuOpen } from '../../redux/actions';
 
 interface RankedHeaderMenuProps {
   onMapClick?: () => void;

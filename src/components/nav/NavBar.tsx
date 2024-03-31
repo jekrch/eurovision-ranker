@@ -1,10 +1,10 @@
-import React, { Dispatch, SetStateAction } from 'react';
+import React, { Dispatch } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCog, faHouseUser } from '@fortawesome/free-solid-svg-icons';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppState } from '../redux/types';
-import { setShowUnranked } from '../redux/actions';
-import IconButton from './IconButton';
+import { AppState } from '../../redux/types';
+import { setShowUnranked } from '../../redux/actions';
+import IconButton from '../IconButton';
 import classNames from 'classnames';
 
 type NavbarProps = {

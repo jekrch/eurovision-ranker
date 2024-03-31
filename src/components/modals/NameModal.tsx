@@ -1,7 +1,7 @@
 import React, { Dispatch, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppState } from '../redux/types';
-import { setName } from '../redux/actions';
+import { AppState } from '../../redux/types';
+import { setName } from '../../redux/actions';
 import Modal from './Modal';
 
 type NameModalProps = {

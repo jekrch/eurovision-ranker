@@ -1,34 +1,28 @@
 import React, { useEffect, useState } from 'react';
-import { DragDropContext, Draggable, DropResult } from 'react-beautiful-dnd';
-import { Card } from './components/Card';
-import { StrictModeDroppable } from './components/StrictModeDroppable';
+import { DragDropContext, DropResult } from 'react-beautiful-dnd';
 import classNames from 'classnames';
 import { CountryContestant } from './data/CountryContestant';
-import MainModal from './components/MainModal';
-import { supportedYears } from './data/Contestants';
-import NameModal from './components/NameModal';
-import { FaChevronRight } from 'react-icons/fa';
-import Navbar from './components/NavBar';
-import EditNav from './components/EditNav';
-import IntroColumn from './components/IntroColumn';
-import { generateYoutubePlaylistUrl } from './utilities/YoutubeUtil';
+import MainModal from './components/modals/MainModal';
+import NameModal from './components/modals/NameModal';
+import Navbar from './components/nav/NavBar';
+import EditNav from './components/nav/EditNav';
 import { AppState } from './redux/types';
 import { useDispatch, useSelector } from 'react-redux';
 import { setRankedItems, setUnrankedItems, setShowUnranked, setActiveCategory, setShowTotalRank } from './redux/actions';
-import { decodeRankingsFromURL, updateQueryParams, urlHasRankings } from './utilities/UrlUtil';
+import { decodeRankingsFromURL, encodeRankingsToURL, updateQueryParams, updateUrlFromRankedItems, urlHasRankings } from './utilities/UrlUtil';
 import { Dispatch } from 'redux';
-import MapModal from './components/MapModal';
-import ConfigModal from './components/ConfigModal';
-import IconButton from './components/IconButton';
-import RankedItemsHeader from './components/RankedItemsHeader';
-import WelcomeOverlay from './components/WelcomeOverlay';
-import { DetailsCard } from './components/DetailsCard';
-import SongModal from './components/LyricsModal';
+import MapModal from './components/modals/MapModal';
+import ConfigModal from './components/modals/ConfigModal';
+import WelcomeOverlay from './components/modals/WelcomeOverlay';
+import SongModal from './components/modals/LyricsModal';
 import { Toaster } from 'react-hot-toast';
 import { toastOptions } from './utilities/ToasterUtil';
-import { areCategoriesSet, categoryRankingsExist, removeCountryFromUrlCategoryRankings, reorderByAllWeightedRankings } from './utilities/CategoryUtil';
+import { areCategoriesSet, categoryRankingsExist, reorderByAllWeightedRankings } from './utilities/CategoryUtil';
 import { isArrayEqual } from './utilities/RankAnalyzer';
 import JoyrideTour from './tour/JoyrideTour';
+import { addWindowEventListeners, handlePopState, removeWindowEventListeners, setVh } from './utilities/EventListenerUtil';
+import RankedCountriesList from './components/ranking/RankedCountriesList';
+import UnrankedCountriesList from './components/ranking/UnrankedCountriesList';
 
 const App: React.FC = () => {
   const [mainModalShow, setMainModalShow] = useState(false);
@@ -50,13 +44,8 @@ const App: React.FC = () => {
   const vote = useSelector((state: AppState) => state.vote);
   const rankedItems = useSelector((state: AppState) => state.rankedItems);
   const unrankedItems = useSelector((state: AppState) => state.unrankedItems);
-  const isDeleteMode = useSelector((state: AppState) => state.isDeleteMode);
   const [isSongModalOpen, setIsSongModalOpen] = useState(false);
   const [selectedCountryContestant, setSelectedCountryContestant] = useState<CountryContestant | undefined>(undefined);
-  /**
-   * used to synchronize the horizontal scrollbar on detail cards across all ranked items
-   */
-  const [categoryScrollPosition, setCategoryScrollPosition] = useState(0);
   const [showOverlay, setShowOverlay] = useState(!areRankingsSet());
   const [isOverlayExit, setIsOverlayExit] = useState(false);
   const [runTour, setRunTour] = useState(false);
@@ -76,10 +65,6 @@ const App: React.FC = () => {
     return categoryRankingsExist(urlParams)
   };
 
-  const handleCategoryScroll = (event: React.UIEvent<HTMLDivElement>) => {
-    setCategoryScrollPosition(event.currentTarget.scrollLeft);
-  };
-
   const handleGetStarted = () => {
     setIsOverlayExit(true);
     const overlayDiv = document.querySelector('.overlay')!;
@@ -90,125 +75,30 @@ const App: React.FC = () => {
     }, 500); // for the animation duration
   };
 
-  useEffect(() => {
-    const setVh = () => {
-      let vh = window.innerHeight * 0.01;
-      document.documentElement.style.setProperty('--vh', `${vh}px`);
-    };
-
-    window.addEventListener('resize', setVh);
-
-    setVh();
-
-    return () => {
-      window.removeEventListener('resize', setVh);
-    };
-  }, []);
-
   /**
-   * When the vote code updates, make sure to refresh the ranked 
-   * list so the new votes are displayed
-   */
+ * When the vote code updates, make sure to refresh the ranked 
+ * list so the new votes are displayed
+ */
   useEffect(() => {
     setRefreshRankedList(Math.random())
   }, [vote]);
 
-  /**
-   * load the url if the user navigates using back/forward. 
-   * this should provide and easier undo/redo workflow
-   */
-  useEffect(() => {
-    const handlePopState = (event: PopStateEvent) => {
-
-      // User clicked back (or forward) button
-      const decodeFromUrl = async () => {
-
-        let category = areCategoriesSet() && !activeCategory ? 0 : activeCategory;
-
-        const rankingsExist = await decodeRankingsFromURL(
-          category,
-          dispatch
-        );
-        // Set showUnranked based on whether rankings exist
-        dispatch(
-          setShowUnranked(!rankingsExist)
-        );
-      }
-      decodeFromUrl();
-    };
-
-    window.addEventListener('popstate', handlePopState);
-
-    // Clean up the event listener when the component unmounts
-    return () => {
-      window.removeEventListener('popstate', handlePopState);
-    };
-  }, []);
 
   useEffect(() => {
-
     if (refreshUrl === 0) return;
-
-    const updateLists = async () => {
-
-      // Update the URL with the new active category
-      if (categories?.length > 0 && activeCategory !== undefined) {
-        updateQueryParams({ [`r${activeCategory + 1}`]: encodeRankingsToURL(rankedItems, activeCategory) });
-      } else {
-        updateQueryParams({ r: encodeRankingsToURL(rankedItems) });
-      }
-    };
-
-    updateLists();
+    updateUrlFromRankedItems(
+      activeCategory, categories, rankedItems
+    );
   }, [refreshUrl]);
 
   /**
-   * Encode rankings to csv for URL
-   * @param rankedCountries 
-   * @returns 
-   */
-  const encodeRankingsToURL = (rankedCountries: CountryContestant[], categoryIndex?: number): string => {
-    if (categories.length > 0 && categoryIndex !== undefined) {
-      const ids = rankedCountries.map(item => item.id);
-      return ids.join('');
-    } else {
-      const ids = rankedCountries.map(item => item.id);
-      return ids.join('');
-    }
-  };
-
-  /**
-   * This loads any URL provided ranking on first page load
-   */
-  // useEffect(() => {
-  //   const decodeFromUrl = async () => {
-
-  //     let category = areCategoriesSet() && !activeCategory ? 0 : activeCategory;
-
-  //     const rankingsExist = await decodeRankingsFromURL(
-  //       category,
-  //       dispatch
-  //     );
-
-  //     // console.log(category)
-  //     // if (category !== undefined) {
-  //     //   dispatch(
-  //     //     setShowTotalRank(true)
-  //     //   )
-  //     // }
-
-  //     // Set showUnranked based on whether rankings exist
-  //     dispatch(
-  //       setShowUnranked(!rankingsExist)
-  //     );
-  //   }
-  //   decodeFromUrl();
-  // }, [])
-
-  /**
-   * Determines whether to display the list view on first page load. If there 
-   * are rankings in the URL show the list view, otherwise default to the select view
-   */
+    * First determines whether to display the list view on first page load. If there 
+    * are rankings in the URL show the list view, otherwise default to the select view
+    * 
+    * Then, on return, load the url if the user navigates using back/forward. This should 
+    * provide and easier undo/redo workflow. Also make sure the vertical height is correctly 
+    * measured via --vh.
+    */
   useEffect(() => {
 
     let category = areCategoriesSet() && !activeCategory ? 0 : activeCategory;
@@ -222,13 +112,31 @@ const App: React.FC = () => {
       setShowUnranked(!rankingsExist)
     );
 
+    // handle pop and vh event listners
+    const handlePopStateCallback = (event: PopStateEvent) => {
+      handlePopState(event, areCategoriesSet, activeCategory, dispatch);
+    };
+
+    addWindowEventListeners(
+      setVh,
+      handlePopStateCallback
+    );
+
+    setVh();
+
+    return () => {
+      removeWindowEventListeners(
+        setVh,
+        handlePopStateCallback
+      );
+    };
+
   }, [])
 
   useEffect(() => {
     const updateRankedItems = async () => {
 
       if (!showTotalRank) {
-
         const rankingsExist = await decodeRankingsFromURL(
           activeCategory,
           dispatch
@@ -260,7 +168,6 @@ const App: React.FC = () => {
     updateRankedItems();
   }, [showTotalRank, rankedItems, categories]);
 
-
   useEffect(() => {
     const handleYearUpdate = async () => {
       if (!year?.length) {
@@ -279,7 +186,6 @@ const App: React.FC = () => {
     updateQueryParams({ n: name });
   }, [name]);
 
-
   useEffect(() => {
 
     if (categories.length > 0) {
@@ -289,7 +195,7 @@ const App: React.FC = () => {
         const currentRanking = new URLSearchParams(window.location.search).get(categoryParam);
 
         if (!currentRanking) {
-          const updatedRanking = encodeRankingsToURL(rankedItems, index);
+          const updatedRanking = encodeRankingsToURL(rankedItems);
           updateQueryParams({ [categoryParam]: updatedRanking });
         }
       });
@@ -370,39 +276,6 @@ const App: React.FC = () => {
     setRefreshUrl(Math.random());
   };
 
-
-  /**
-   * Identify country with the provided Id in the rankedItems array, and 
-   * move them back into the unrankedItems array, alphabetically 
-   * 
-   * @param countryId 
-   */
-  function deleteRankedCountry(id: string) {
-    const index = rankedItems.findIndex(i => i.id === id);
-    const [objectToMove] = rankedItems.splice(index, 1);
-    const insertionIndex = unrankedItems.findIndex(
-      i => i.country.name > objectToMove.country.name
-    );
-    if (insertionIndex === -1) {
-      // If no country is found with a name greater than our object, append it at the end.
-      unrankedItems.push(objectToMove);
-    } else {
-      unrankedItems.splice(insertionIndex, 0, objectToMove); // Insert at the found index
-    }
-
-    dispatch(
-      setRankedItems(rankedItems)
-    );
-    dispatch(
-      setUnrankedItems(unrankedItems)
-    );
-
-    // Remove the country from each category ranking in the URL parameters
-    removeCountryFromUrlCategoryRankings(categories, id);
-
-    setRefreshUrl(Math.random());
-  }
-
   function openMainModal(tabName: string): void {
     setModalTab(tabName);
     setMainModalShow(true)
@@ -462,178 +335,20 @@ const App: React.FC = () => {
           >
 
             <div className="flex flex-row justify-center gap-4 px-4 py-2">
+
               {/* Unranked Countries List */}
               {showUnranked && (
-                <div className="max-w-[50vw] overflow-y-auto flex-grow mr-1" >
-                  <StrictModeDroppable droppableId="unrankedItems" key={`strict-md`}>
-                    {(provided) => (
-                      <ul
-                        key={`ranked-list-${refreshRankedList}`}
-                        {...provided.droppableProps}
-                        ref={provided.innerRef}
-                        className={classNames("pt-3 min-w-[10em] tour-step-2", "")}
-                      >
-                        {unrankedItems.map((item, index) => (
-                          <Draggable
-                            key={item.id.toString()}
-                            draggableId={item.id.toString()}
-                            index={index}
-                          >
-
-                            {(provided, snapshot) => {
-                              return (
-                                <li
-                                  key={item.id.toString()}
-                                  ref={provided.innerRef}
-                                  {...provided.draggableProps}
-                                  {...provided.dragHandleProps}
-                                  className="no-select m-2"
-                                >
-                                  <Card
-                                    key={item.id.toString()}
-                                    className="m-auto text-slate-400 bg-'blue' no-select"
-                                    countryContestant={item}
-                                    isDragging={snapshot.isDragging}
-                                  />
-                                </li>
-                              )
-                            }}
-                          </Draggable>
-                        ))}
-                        {provided.placeholder}
-                      </ul>
-                    )}
-                  </StrictModeDroppable>
-
-                </div>
+                <UnrankedCountriesList />
               )}
 
               {/* Ranked Countries List */}
-              <div className="tour-step-5 z-20">
-                <StrictModeDroppable droppableId="rankedItems">
-                  {(provided) => (
-                    <div
-                      className={
-                        classNames(
-                          "grid h-full max-h-full min-h-full grid-rows-[auto_1fr]",
-                        )}
-                    >
-                      <RankedItemsHeader
-                        setMapModalShow={() => setMapModalShow(true)}
-                        generateYoutubePlaylistUrl={generateYoutubePlaylistUrl}
-                        supportedYears={supportedYears}
-                        openNameModal={() => setNameModalShow(true)}
-                        openConfig={openConfigModal}
-                        className={showUnranked ? "min-w-[9em] max-w-50vw-6em" : "w-[80vw] max-w-[30.5em] min-w-[20.5em]"}
-                      />
-
-                      <div className="px-1 overflow-y-auto h-full">
-                        <ul
-                          {...provided.droppableProps}
-                          ref={provided.innerRef}
-                          className={
-                            classNames(
-                              "overflow-y-auto overflow-x-hidden pt-3 bg-[#1d1b54] ranked-items-background w-full h-full",
-                              showUnranked ? "min-w-[9em] max-w-50vw-6em" : "w-[80vw] max-w-[30em] min-w-[20em]",
-                              { "auroral-background": theme.includes("ab") }
-                            )}
-                        >
-
-
-                          {(rankedItems.length === 0 && showUnranked) && (
-                            <IntroColumn
-                              openModal={openMainModal}
-                              openConfigModal={openConfigModal}
-                              setRunTour={setRunTour}
-                            />
-                          )}
-                          {!showUnranked && rankedItems.length === 0 && (
-                            <div className="flex items-center justify-center h-full">
-
-                              <span className="text-center mb-40 min-mt-5 text-slate-500 mx-10 text-sm">
-                                <div>Click 'Select' to choose</div> countries to rank
-                                <div>
-                                  <img
-                                    src={`${process.env.PUBLIC_URL}/eurovision-heart.svg`}
-                                    alt="Heart"
-                                    style={{ display: 'inline', verticalAlign: 'middle'}}
-                                    className="ml-[0.2em] mt-3 w-5 h-5 opacity-70 grayscale"/>
-                                </div>
-                              </span>
-                            </div>
-                          )}
-                          {rankedItems.map((item, index) => (
-                            <Draggable
-                              key={`draggable-${item.id.toString()}`}
-                              draggableId={item.id.toString()}
-                              index={index}
-                              isDragDisabled={showTotalRank}
-                            >
-                              {(provided, snapshot) => {
-                                return (
-                                  <li
-                                    key={`li-${item.id.toString()}`}
-                                    ref={provided.innerRef}
-                                    {...provided.draggableProps}
-                                    {...provided.dragHandleProps}
-                                    className={classNames("no-select m-2", { "mt-0": (index === 0) })}
-                                  >
-                                    {showUnranked ? (
-                                      <Card
-                                        key={`card-${item.id.toString()}`}
-                                        className="m-auto text-slate-400 bg- bg-[#03022d] no-select"
-                                        rank={index + 1}
-                                        countryContestant={item}
-                                        isDeleteMode={showUnranked && isDeleteMode}
-                                        deleteCallBack={deleteRankedCountry}
-                                        isDragging={snapshot.isDragging}
-                                      />
-                                    ) :
-                                      <DetailsCard
-                                        key={`card-${item.id.toString()}`}
-                                        className="m-auto text-slate-400 bg- bg-[#03022d] no-select"
-                                        rank={index + 1}
-                                        countryContestant={item}
-                                        openSongModal={() => openSongModal(item)}
-                                        isDragging={snapshot.isDragging}
-                                        categoryScrollPosition={categoryScrollPosition}
-                                        onCategoryScroll={handleCategoryScroll}
-                                      />
-
-                                    }
-                                  </li>
-                                )
-                              }}
-                            </Draggable>
-                          ))}
-                          {provided.placeholder}
-                        </ul>
-                        
-                      </div>
-                      {(showUnranked && rankedItems?.length > 0) &&
-                        <div className="pl-2 rounded-b-md h-8 bg-blue-900 ranked-bar-background text-slate-300 items-center flex shadow-md gradient-background">
-                          <IconButton
-                            className={
-                              classNames(
-                                "tour-step-4 ml-auto bg-blue-600 hover:bg-blue-700 text-white font-normal py-1 pl-[0.7em] pr-[0.9em] rounded-md text-xs mr-0 w-[6em]",
-                                { "tada-animation": showUnranked && rankedItems?.length }
-                              )}
-                            onClick={() => dispatch(setShowUnranked(!showUnranked))}
-                            title={'View List'}
-                          />
-                          <FaChevronRight
-                            className={
-                              classNames(
-                                "ml-2 mr-auto text-lg justify-center align-center bounce-right text-blue-300",
-                                { "tada-animation": showUnranked && rankedItems?.length }
-                              )}
-                          />
-                        </div>
-                      }
-                    </div>
-                  )}
-                </StrictModeDroppable>
-              </div>
+              <RankedCountriesList
+                openSongModal={openSongModal}
+                openModal={openMainModal}
+                openConfigModal={openConfigModal}
+                setRunTour={setRunTour}
+                openNameModal={() => setNameModalShow(true)}
+              />
             </div>
           </DragDropContext>
         </div>

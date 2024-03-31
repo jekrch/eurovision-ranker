@@ -24,6 +24,7 @@ interface RankedCountriesListProps {
     openConfigModal: (tabName: string) => void;
     setRunTour: (run: boolean) => void;
     openNameModal: () => void;
+    openMapModal: () => void;
 }
 
 /**
@@ -39,6 +40,7 @@ const RankedCountriesList: React.FC<RankedCountriesListProps> = ({
     openConfigModal,
     setRunTour,
     openNameModal,
+    openMapModal
 }) => {
     const dispatch: Dispatch<any> = useDispatch();
     const [refreshUrl, setRefreshUrl] = useState(0);
@@ -117,7 +119,7 @@ const RankedCountriesList: React.FC<RankedCountriesListProps> = ({
                         )}
                     >
                         <RankedItemsHeader
-                            setMapModalShow={() => openModal('map')}
+                            setMapModalShow={() => openMapModal()}
                             generateYoutubePlaylistUrl={() =>
                                 generateYoutubePlaylistUrl(rankedItems)
                             }

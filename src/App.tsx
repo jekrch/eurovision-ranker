@@ -353,6 +353,7 @@ const App: React.FC = () => {
                 openConfigModal={openConfigModal}
                 setRunTour={setRunTour}
                 openNameModal={() => setNameModalShow(true)}
+                openMapModal={() => setMapModalShow(true)}
               />
             </div>
           </DragDropContext>

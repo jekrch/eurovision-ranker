@@ -3,7 +3,7 @@
 
 [https://www.eurovision-ranker.com/](https://www.eurovision-ranker.com/)
 
-Eurovision Ranker is a web app for ranking Eurovision Song Contestant participants. It draws on data from the [Eurovision-Dataset](https://github.com/Spijkervet/eurovision-dataset) for each contest year going back to 1956. [Eurovisionworld](www.Eurovisionworld.com) is the original source of much of the dataset. The've done an outstanding job of maintaining accurate records from each contest.   
+Eurovision Ranker is a web app for ranking Eurovision Song Contestant participants. It draws on data from the [Eurovision-Dataset](https://github.com/Spijkervet/eurovision-dataset) for each contest year going back to 1956. [Eurovisionworld](https:www.Eurovisionworld.com) is the original source of much of the dataset. The've done an outstanding job of maintaining accurate records from each contest.   
 
 A user's ranking is stored in the URL so it can be easily saved for later reference or shared with friends. [React Joyride](https://react-joyride.com/) is used to provide a tour that demos other features: e.g. generating YouTube playlists and exploring official voting results from previous years. 
 

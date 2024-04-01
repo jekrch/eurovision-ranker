@@ -40,9 +40,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "predeploy": "npm run build && npx babel build --out-dir dist --extensions \".js,.jsx,.ts,.tsx\" && npm run build:css",
-    "build:css": "npx postcss build/static/css/*.css -d dist/static/css",
-    "deploy": "gh-pages -d dist"
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "eslintConfig": {
     "extends": [
@@ -63,11 +62,6 @@
     ]
   },
   "devDependencies": {
-    "@babel/cli": "^7.24.1",
-    "@babel/core": "^7.24.3",
-    "@babel/preset-env": "^7.24.3",
-    "@babel/preset-react": "^7.24.1",
-    "@babel/preset-typescript": "^7.24.1",
     "@testing-library/react": "^14.2.2",
     "@types/papaparse": "^5.3.14",
     "@types/react-datepicker": "^4.19.4",

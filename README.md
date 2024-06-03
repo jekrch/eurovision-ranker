@@ -1,4 +1,4 @@
-![Version](https://img.shields.io/badge/version-3.2-blue)
+![Version](https://img.shields.io/badge/version-3.3-blue)
 ![Run Tests](https://github.com/jekrch/eurovision-ranker/actions/workflows/test_on_push.yml/badge.svg)
 
 # Eurovision Ranker :yellow_heart:

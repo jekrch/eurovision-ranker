@@ -161,7 +161,7 @@ const RankedCountriesList: React.FC<RankedCountriesListProps> = ({
                                                     src={`${process.env.PUBLIC_URL}/eurovision-heart.svg`}
                                                     alt="Heart"
                                                     style={{ display: 'inline', verticalAlign: 'middle' }}
-                                                    className="ml-[0.2em] mt-3 w-5 h-5 opacity-70 grayscale"
+                                                    className="ml-[0.5em] mt-3 w-5 h-5 opacity-70 grayscale"
                                                 />
                                             </div>
                                         </span>

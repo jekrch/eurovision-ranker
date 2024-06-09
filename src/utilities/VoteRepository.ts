@@ -38,11 +38,11 @@ export function fetchVotesForYear(
                   row.year === year && 
                   (
                     !countryKey || 
-                    row.from_country_id == countryKey
+                    row.from_country_id === countryKey
                   )  && 
                   (
                     !round || 
-                    row.round == round
+                    row.round === round
                   )                
               ).map((row: any) => ({
                 year: row.year,

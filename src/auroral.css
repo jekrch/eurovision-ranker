@@ -35,7 +35,7 @@
   height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
   overflow: hidden;
   max-height: -webkit-fill-available;
-  background: radial-gradient(ellipse at bottom, #28355E 0%, #090a0f 100%);
+  background: radial-gradient(ellipse at bottom, #28355E 0%, #06070d 100%);
   background-size: 100% 100%;
   background-repeat: no-repeat;
   animation: bg-pulse 10s infinite ease-in-out;
@@ -46,7 +46,7 @@
     height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
     overflow: hidden;
     max-height: -webkit-fill-available;
-    background: radial-gradient(ellipse at bottom, #1b2735 0%,#090a0f 100%);
+    background: radial-gradient(ellipse at bottom, #090a0f 0%,#090a0f 100%);
 }
 
 .star-container {

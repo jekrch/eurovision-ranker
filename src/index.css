@@ -62,17 +62,17 @@ code {
 
 /* Styling the scrollbar handle */
 ::-webkit-scrollbar-thumb {
-  background: #888;
+  background: #7d7aa5;
   border-radius: 5px;
 }
 
 /* Handle hover */
 ::-webkit-scrollbar-thumb:hover {
-  background: #555;
+  background: #52506c;
 }
 
 .custom-scrollbar::-webkit-scrollbar {
-  background-color: rgb(88, 103, 123);
+  background-color: rgb(86, 103, 125);
 }
 
 .gradient-background2 {
@@ -88,7 +88,7 @@ code {
   /* Define the gradient and a CSS-generated grid in the same background */
   background: 
     /* Grid overlay */
-    linear-gradient(155deg, #3d76cb, #1a2a45, #9e33ea);
+    linear-gradient(155deg, #517cbc, #1a2a45, #9e33ea);
   
   /* Preserve the aspect of the gradient under filter effects */
   filter: contrast(100%) brightness(100%);
@@ -100,7 +100,7 @@ code {
 
 .gradient-text {
   /* background: linear-gradient(45deg, #729fe8, #3b82f6, #9333ea); */
-  background: linear-gradient(155deg, #729fe8, #729fe8, #9e33ea);
+  background: linear-gradient(155deg, #abcbff, #6a91d1, #9e33ea);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;

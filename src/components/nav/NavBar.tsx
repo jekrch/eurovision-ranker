@@ -35,7 +35,7 @@ const Navbar: React.FC<NavbarProps> = ({ openModal, openConfigModal }) => {
                             src={`${process.env.PUBLIC_URL}/eurovision-heart.svg`}
                             alt="Heart"
                             style={{ display: 'inline', verticalAlign: 'middle' }}
-                            className="ml-[0.2em] mb-1 w-5 h-5 pulse-on-load" />
+                            className="ml-[0.5em] mb-1 w-5 h-5 pulse-on-load" />
                     </div>
 
                 </div>

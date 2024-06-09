@@ -27,11 +27,13 @@ const SongModal: React.FC<SongModalProps> = (props: SongModalProps) => {
 
     useEffect(() => {
         if (year && contestant?.song) {
+
             setShowEngLyrics(false);
             setLyricists('');
             setComposers('');
             setLyrics(undefined);
             setEngLyrics(undefined);
+            
             getSongDetails(year, contestant.song)
                 .then(fetchedSongDetails => {
                     assignLyrics(

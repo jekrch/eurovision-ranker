@@ -81,7 +81,7 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
           props.rank ? "border-solid border-gray" : "border-dashed",
         )}
       >
-        <div className="-my-2 flex-shrink-0 pb-[1px] mr-3 font-bold w-8 border-r-2 border-blue-900 bg-blue-900 bg-opacity-80 text-slate-300 tracking-tighter items-center justify-center flex text-xl rounded-sm">
+        <div className="-my-2 flex-shrink-0 pb-[1px] mr-3 font-bold w-8 pr-[0.01em] border-r-[0.01em] border-[#334678]x border-gray-400 bg-[#283a6d] bg-opacity-100 text-slate-300 tracking-tighter items-center justify-center flex text-lg font-monox rounded-sm">
           {props.rank}
         </div>
 
@@ -165,7 +165,7 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
         </div>
 
 
-        <div id="right-edge" className="mb-[0.2em] absolute bottom-0 right-0 flex-shrink-0 flex flex-row justify-between text-xl text-slate-500">
+        <div id="right-edge" className="mb-[0.2em] absolute bottom-0 right-0 flex-shrink-0 flex flex-row justify-between text-xl font-bold text-slate-500">
           <div id="gripper" className="text-right pl-[0.3em] mr-[0.3em]">
             &#8942;&#8942;
           </div>

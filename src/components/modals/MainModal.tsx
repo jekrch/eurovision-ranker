@@ -88,13 +88,13 @@ const MainModal: React.FC<MainModalProps> = (props: MainModalProps) => {
                     </div>}
 
             </div>
-            <div className="flex text-xs w-full -mb-4 mt-2 text-slate-500">
+            <div className="flex text-xs w-full -mb-2 mt-2 text-slate-500">
                 <span className="flex-grow mr-2">
                     <a className="text-link"
                         target="_blank"
                         rel="noopener noreferrer"
                         href="https://github.com/jekrch/eurovision-ranker/releases"
-                    >v3.3</a>
+                    >v3.4</a>
                 </span>
                 <span className="text-right">
                     {`Copyright (c) 2023${new Date().getFullYear()?.toString() !== '2023' ? '-' + new Date().getFullYear() : ''} `}
@@ -104,7 +104,8 @@ const MainModal: React.FC<MainModalProps> = (props: MainModalProps) => {
                         target="_blank"
                         rel="noopener noreferrer"
                     > Jacob Krch
-                    </a>. <span className="whitespace-nowrap">All rights reserved</span>
+                    </a>. 
+                    {/* <span className="whitespace-nowrap">All rights reserved</span> */}
                 </span>
             </div>
         </Modal>

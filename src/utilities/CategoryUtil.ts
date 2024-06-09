@@ -2,7 +2,7 @@ import toast from "react-hot-toast";
 import { convertRankingsStrToArray, updateQueryParams } from "./UrlUtil";
 import { CountryContestant } from "../data/CountryContestant";
 import { Dispatch } from "react";
-import { setActiveCategory, setCategories, setRankedItems, setShowTotalRank } from "../redux/actions";
+import { setActiveCategory, setCategories, setShowTotalRank } from "../redux/actions";
 import { Country } from "../data/Country";
 
 export type Category = {
@@ -25,7 +25,7 @@ export function isValidCategoryName(
     toast.error('Category names cannot contain "|"');
     return false;
   }
-  if (newCategoryName.trim().toLowerCase() == 'total') {
+  if (newCategoryName.trim().toLowerCase() === 'total') {
     toast.error('"Total" cannot be used as a category name');
     return false;
   }
@@ -453,7 +453,7 @@ export const deleteCategory = (
   activeCategory: number | undefined
 ) => {
         
-  if (categories?.length == 1) {
+  if (categories?.length === 1) {
       return saveCategories(
           [], dispatch, categories, activeCategory
       );

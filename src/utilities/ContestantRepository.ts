@@ -1,7 +1,7 @@
 import { Contestant } from "../data/Contestant";
 import { CountryContestant } from "../data/CountryContestant";
 import { countries } from '../data/Countries';
-import { contestants2019, contestants2021, contestants2022, contestants2023, contestants2024, defaultYear, sanitizeYear } from '../data/Contestants';
+import { contestants2019, contestants2021, contestants2022, contestants2023, contestants2024, sanitizeYear } from '../data/Contestants';
 import { Dispatch } from 'redux';
 import Papa from 'papaparse';
 import { assignVotesByCode, voteCodeHasSourceCountry } from "./VoteProcessor";

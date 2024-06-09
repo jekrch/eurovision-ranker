@@ -7,6 +7,7 @@ import Papa from 'papaparse';
 import { assignVotesByCode, voteCodeHasSourceCountry } from "./VoteProcessor";
 import { cachedYear, initialCountryContestantCache } from "../data/InitialContestants";
 import { SongDetails } from "../data/SongDetails";
+import { fetchContestantCsv } from "./CsvCache";
 
 
 export async function fetchCountryContestantsByYear(
@@ -189,8 +190,8 @@ async function getContestantsByYear(
  */
 export function getContestantsForYear(year: string): Promise<Contestant[]> {
   return new Promise((resolve, reject) => {
-    fetch('/contestants.csv')
-      .then(response => response.text())
+      fetchContestantCsv()
+      .then(response => response)
       .then(csvString => {
         Papa.parse(csvString, {
           header: true,

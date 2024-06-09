@@ -1,7 +1,7 @@
 import Papa from 'papaparse';
 import { Vote } from "../data/Vote";
 import { sanitizeYear } from '../data/Contestants';
-
+import { fetchVoteCsv } from './CsvCache';
 
 /**
  * Return vote data for the provided year. If a countryKey is provided, 
@@ -25,8 +25,8 @@ export function fetchVotesForYear(
     round = convertRoundToShortName(round);
 
   return new Promise((resolve, reject) => {
-    fetch('/votes.csv')
-      .then(response => response.text())
+    fetchVoteCsv()
+      .then(response => response)
       .then(csvString => {
         Papa.parse(csvString, {
           header: true,

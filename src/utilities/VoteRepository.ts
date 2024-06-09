@@ -20,6 +20,9 @@ export function fetchVotesForYear(
 
   year = sanitizeYear(year);
   countryKey = countryKey?.toLowerCase();
+  
+  if (round)
+    round = convertRoundToShortName(round);
 
   return new Promise((resolve, reject) => {
     fetch('/votes.csv')
@@ -43,7 +46,7 @@ export function fetchVotesForYear(
                   )                
               ).map((row: any) => ({
                 year: row.year,
-                round: row.round,
+                round: convertRoundToLongName(row.round),
                 fromCountryKey: row.from_country_id,
                 toCountryKey: row.to_country_id,
                 totalPoints: row.total_points ?? parseInt(row.total_points),
@@ -59,6 +62,35 @@ export function fetchVotesForYear(
   });
 }
 
+const convertRoundToLongName = (round: string) => {
+  switch (round) {
+    case 'f':
+      return 'Final'
+    case 'sf':
+      return 'Semi-Final';
+    case 'sf1': 
+      return 'Semi-Final-1'
+    case 'sf2': 
+      return 'Semi-Final-2'
+    default:
+      throw new Error(round + ' not supported');
+  }
+}
+
+const convertRoundToShortName = (fullRound: string) => {
+  switch (fullRound?.toLowerCase()) {
+    case 'final':
+      return 'f';
+    case 'semi-final':
+      return 'sf';
+    case 'semi-final-1':
+      return 'sf1';
+    case 'semi-final-2':
+      return 'sf2';
+    default:
+      throw new Error(fullRound + ' not supported');
+  }
+};
 
 export function fetchDistinctFromCountryIdsForYear(
   year: string

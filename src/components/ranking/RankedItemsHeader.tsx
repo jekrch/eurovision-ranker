@@ -4,7 +4,7 @@ import { CountryContestant } from '../../data/CountryContestant';
 import { useDispatch } from 'react-redux';
 import { AppState } from '../../redux/types';
 import { useSelector } from 'react-redux';
-import { setActiveCategory, setRankedItems, setShowTotalRank, setYear } from '../../redux/actions';
+import { setActiveCategory, setShowTotalRank, setYear } from '../../redux/actions';
 import RankedHeaderMenu from './RankedHeaderMenu';
 import classNames from 'classnames';
 import Ripples from 'react-ripples';

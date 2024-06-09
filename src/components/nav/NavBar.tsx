@@ -21,7 +21,6 @@ type NavbarProps = {
 const Navbar: React.FC<NavbarProps> = ({ openModal, openConfigModal }) => {
     const dispatch: Dispatch<any> = useDispatch();
     const showUnranked = useSelector((state: AppState) => state.showUnranked);
-    const rankedItems = useSelector((state: AppState) => state.rankedItems);
 
     return (
         <nav className="nav-diagonal-split-bg bg-gray-800 text-white py-1 px-4 sticky top-0 z-50">

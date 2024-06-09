@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { useState, type FC, useRef, useEffect } from 'react';
+import { type FC, useRef, useEffect } from 'react';
 import { FaFileAlt, FaTv } from 'react-icons/fa';
 import Flag from "react-world-flags"
 import { CountryContestant } from '../../data/CountryContestant';
@@ -73,7 +73,7 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
   return (
     <div>
       <div
-        key={props.rank ? 'ranked-' : 'unranked-' + 'card-' + country.name}
+        key={props.rank ? 'ranked-' : `unranked-card-${country.name}`}
         className={classNames(
           props.className, "relative mx-[.5rem] min-h-[2.5em] py-[0.4em] flex flex-row items-stretch !cursor-grabber whitespace-normal text-sm overflow-hidden shadow rounded border border-0.5 border-gray-400",
           props.isDragging ? "shadow-slate-400 shadow-sm border-solid" : "",
@@ -164,12 +164,17 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
 
         </div>
 
-
-        <div id="right-edge" className="mb-[0.2em] absolute bottom-0 right-0 flex-shrink-0 flex flex-row justify-between text-xl font-bold text-slate-500">
-          <div id="gripper" className="text-right pl-[0.3em] mr-[0.3em]">
-            &#8942;&#8942;
+        {/* 
+          if we are not in the immutable, categorized total rank mode,
+          show a gripper indicating that the cards can be dragged
+        */}
+        {!showTotalRank &&
+          <div id="right-edge" className="mb-[0.2em] absolute bottom-0 right-0 flex-shrink-0 flex flex-row justify-between text-xl font-bold text-slate-500">
+            <div id="gripper" className="text-right pl-[0.3em] mr-[0.3em]">
+              &#8942;&#8942;
+            </div>
           </div>
-        </div>
+        }
 
       </div>
       {showTotalRank && (

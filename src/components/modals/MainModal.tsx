@@ -1,29 +1,21 @@
-import React, { Dispatch, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { faHeart, faHouseUser } from '@fortawesome/free-solid-svg-icons';
 import TabButton from '../TabButton';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppState } from '../../redux/types';
 import Modal from './Modal';
 
 type MainModalProps = {
-    isOpen: boolean;
+    isOpen: boolean; 
     tab: string;
     onClose: () => void;
     startTour: () => void;
 };
 
 const MainModal: React.FC<MainModalProps> = (props: MainModalProps) => {
-    const year = useSelector((state: AppState) => state.year);
     const [activeTab, setActiveTab] = useState(props.tab);
-    const [rankingYear, setRankingYear] = useState(year);
 
     useEffect(() => {
         setActiveTab(props.tab);
     }, [props.tab, props.isOpen]);
-
-    useEffect(() => {
-        setRankingYear(year);
-    }, [year]);
 
     function startTour() {
         props.onClose();

@@ -12,13 +12,12 @@ import { CountryContestant } from '../../data/CountryContestant';
 import { assignVotesByCode, sortByVotes, updateVoteTypeCode, voteCodeHasType } from '../../utilities/VoteProcessor';
 import { getVoteCode, hasAnyJuryVotes, hasAnyTeleVotes } from "../../utilities/VoteUtil";
 import { countries } from '../../data/Countries';
-import { setContestants, setTheme, setVote } from '../../redux/actions';
+import { setContestants, setTheme, setVote, setCategories } from '../../redux/actions';
 import { goToUrl, updateQueryParams } from '../../utilities/UrlUtil';
 import { copyToClipboard, copyUrlToClipboard, downloadFile, getExportDataString } from '../../utilities/export/ExportUtil';
 import { EXPORT_TYPE, EXPORT_TYPES, getExportType } from '../../utilities/export/ExportType';
 import Checkbox from '../Checkbox';
 import IconButton from '../IconButton';
-import { setCategories } from '../../redux/actions';
 import { deleteCategory, isValidCategoryName, parseCategoriesUrlParam, saveCategories } from '../../utilities/CategoryUtil';
 
 type ConfigModalProps = {

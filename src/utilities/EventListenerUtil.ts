@@ -32,6 +32,7 @@ export const addWindowEventListeners = (
   handlePopStateCallback: (event: PopStateEvent) => void
 ) => {
   window.addEventListener('resize', setVhCallback);
+  window.addEventListener('orientationchange', setVhCallback);
   window.addEventListener('popstate', handlePopStateCallback);
 };
 

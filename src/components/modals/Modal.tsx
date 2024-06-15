@@ -29,13 +29,18 @@ const Modal: React.FC<ModalContainerProps> = (props: ModalContainerProps) => {
 
         // delays to enable open and close transition animations
         if (props.isOpen) {
+            setShowModal(false)
+            setTransitionStyles({
+                opacity: 'opacity-0',
+                transform: 'translate-y-20'
+            });
             setShowModal(true);
             timeoutId = setTimeout(() => {
                 setTransitionStyles({
                     opacity: 'opacity-100',
                     transform: 'translate-y-0'
                 });
-            }, 10);
+            }, 90);
         } else {
             setTransitionStyles({
                 opacity: 'opacity-0',

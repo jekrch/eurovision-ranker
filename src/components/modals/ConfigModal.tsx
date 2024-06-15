@@ -110,7 +110,7 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
     }, []);
 
     function onThemeInputChanged(newTheme: string) {
-        if (newTheme == 'Auroral') {
+        if (newTheme === 'Auroral') {
             dispatch(
                 setTheme('ab')
             )
@@ -148,7 +148,7 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
 
     function getVoteSourceOption(voteCode: string) {
 
-        if (!voteCode?.length || voteCode == 'loading') {
+        if (!voteCode?.length || voteCode === 'loading') {
             return 'All';
         }
 
@@ -274,7 +274,7 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
         let sourceCountryKey = undefined;
 
         if (voteSource?.length && voteSource !== 'All') {
-            sourceCountryKey = countries.find(c => c.name == voteSource)?.key;
+            sourceCountryKey = countries.find(c => c.name === voteSource)?.key;
 
             if (!sourceCountryKey) {
                 console.error('Unable to find vote source: ' + voteSource);

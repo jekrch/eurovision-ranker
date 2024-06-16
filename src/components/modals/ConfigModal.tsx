@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Dispatch } from 'redux';
 import Dropdown from '../Dropdown';
-import { faCopy, faDownload, faEdit, faFileExport, faList, faSlidersH, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faChartLine, faChartPie, faCopy, faDownload, faEdit, faFileExport, faList, faSlidersH, faTrash } from '@fortawesome/free-solid-svg-icons';
 import Modal from './Modal';
 import TabButton from '../TabButton';
 import { sanitizeYear, supportedYears } from '../../data/Contestants';
@@ -234,7 +234,7 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
 
     useEffect(() => {
         setActiveTab(props.tab);
-        //setActiveTab('categories');
+        //setActiveTab('analyze');
     }, [props.tab, props.isOpen]);
 
     useEffect(() => {
@@ -338,36 +338,47 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
         )
     }
 
-    async function openTotalTelevoteRanking() {
-
-        const voteYear = rankingYear ?? year;
-
-        let concatenatedIds = await getSortedRankingCode(
-            voteYear, 'televote', 'final', voteSource
-        );
-
-        goToUrl(
-            `?r=${concatenatedIds}&` +
-            `y=${voteYear.substring(2, 4)}&` +
-            `n=Final+Televote${getSourceCountryPostfix(voteSource)}&` +
-            `v=${getVoteCode('f', 'tv', voteSource)}`,
-            theme
-        )
-    }
-
-    async function openTotalJuryRanking() {
-
+    async function getTotalJuryRankingCode(voteSource: string) {
         const voteYear = rankingYear ?? year;
 
         let concatenatedIds = await getSortedRankingCode(
             voteYear, 'jury', 'final', voteSource
         );
 
+        return `?r=${concatenatedIds}&` +
+            `y=${voteYear.substring(2, 4)}&` +
+            `n=Final+Jury${getSourceCountryPostfix(voteSource)}&` +
+            `v=${getVoteCode('f', 'j', voteSource)}`;
+    }
+
+    async function getTotalTelevoteRankingCode(voteSource: string) {
+        const voteYear = rankingYear ?? year;
+
+        let concatenatedIds = await getSortedRankingCode(
+            voteYear, 'televote', 'final', voteSource
+        );
+
+        return `?r=${concatenatedIds}&` +
+            `y=${voteYear.substring(2, 4)}&` +
+            `n=Final+Televote${getSourceCountryPostfix(voteSource)}&` +
+            `v=${getVoteCode('f', 'tv', voteSource)}`;
+    }
+
+    async function openTotalTelevoteRanking() {
+
+        const rankCode = await getTotalTelevoteRankingCode(voteSource);
+
         goToUrl(
-            `?r=${concatenatedIds}` +
-            `&y=${voteYear.substring(2, 4)}&` +
-            `n=Final+Jury+Vote${getSourceCountryPostfix(voteSource)}&` +
-            `v=${getVoteCode('f', 'j', voteSource)}`,
+            rankCode,
+            theme
+        )
+    }
+
+    async function openTotalJuryRanking() {
+        const rankCode = await getTotalJuryRankingCode(voteSource);
+
+        goToUrl(
+            rankCode,
             theme
         )
     }
@@ -380,6 +391,11 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
 
         return `+from+${sourceCountry.replaceAll(' ', '+')}`;
     }
+
+    function findMostSimilarVote() {
+       return;
+    }
+
     //if (!props.isOpen) return null;
 
     return (
@@ -414,6 +430,13 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
                         icon={faSlidersH}
                         label="Categories"
                     />
+
+                    {/* <TabButton
+                        isActive={activeTab === 'analyze'}
+                        onClick={() => setActiveTab('analyze')}
+                        icon={faChartLine}
+                        label="Analyze"
+                    /> */}
                 </ul>
             </div>
 
@@ -687,6 +710,20 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
                                     ))}
                                 </tbody>
                             </table>
+                        </div>
+                    </div>
+                }
+
+                {activeTab === 'analyze' &&
+                    <div className="mb-0">
+                        <p className="relative mb-[1em] mt-2 text-sm">Compare your current ranking with others, including the Jury and/or Tele vote from each participating country</p>
+                        <div className="mt-5 mb-[1.5em]">
+                            <IconButton
+                                className="ml-1 font-normal pl-[0.7em] rounded-md text-xs py-[0.5em] pr-[1em]"
+                                onClick={findMostSimilarVote}
+                                icon={undefined}
+                                title='Most similar'
+                            />
                         </div>
                     </div>
                 }

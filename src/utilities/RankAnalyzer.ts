@@ -110,10 +110,15 @@ export async function getRankingComparison(
     rankingComparison.list2Code = list2Code;
     rankingComparison.year = year;
 
-    let { list1, list2 } = getIntersectedLists(list1Code, list2Code);
+    let list1 = convertRankingsStrToArray(list1Code);
+    let list2 = convertRankingsStrToArray(list2Code);
+    
+    const listSize = Math.min(list1.length, list2.length);
+    list1 = list1.slice(0, listSize);
+    list2 = list2.slice(0, listSize);
+
     rankingComparison.filteredList1 = getRankedContestants(list1, contestants);
 
-    const listSize = list1.length;
     let totalScore = 0;
 
     let biggestDifferences: RankingDifference[] = [];
@@ -121,17 +126,44 @@ export async function getRankingComparison(
 
     list1.forEach((item, indexInList1) => {
         const indexInList2 = list2.indexOf(item);
+        let songScore1 = getSongScore(indexInList1, listSize);
+        let songScore2;
+
         if (indexInList2 !== -1) {
-            let songScore1 = getSongScore(indexInList1, listSize);
+            songScore2 = getSongScore(indexInList2, listSize);
+        } else {
+            // If we can't find the song in list2, give it a score of 0
+            songScore2 = 0.001;
+        }
+
+        let similarityScore = (1 - Math.abs(songScore1 - songScore2));
+        totalScore += similarityScore;
+
+        let rankDifference = Math.abs(indexInList1 - (indexInList2 !== -1 ? indexInList2 : list2.length));
+        let newDifference: RankingDifference = {
+            id: item,
+            difference: rankDifference,
+            rankInList1: indexInList1 + 1,
+            rankInList2: indexInList2 !== -1 ? indexInList2 + 1 : list2.length + 1
+        };
+
+        updateRankingDifferences(biggestDifferences, newDifference, true);
+        updateRankingDifferences(smallestDifferences, newDifference, false);
+    });
+
+    list2.forEach((item, indexInList2) => {
+        if (!list1.includes(item)) {
+            let songScore1 = getSongScore(list1.length, listSize);
             let songScore2 = getSongScore(indexInList2, listSize);
+
             let similarityScore = (1 - Math.abs(songScore1 - songScore2));
             totalScore += similarityScore;
 
-            let rankDifference = Math.abs(indexInList1 - indexInList2);
-            let newDifference: RankingDifference = { 
-                id: item, 
-                difference: rankDifference, 
-                rankInList1: indexInList1 + 1,
+            let rankDifference = Math.abs(list1.length - indexInList2);
+            let newDifference: RankingDifference = {
+                id: item,
+                difference: rankDifference,
+                rankInList1: list1.length + 1,
                 rankInList2: indexInList2 + 1
             };
 
@@ -152,7 +184,7 @@ export async function getRankingComparison(
     // song comparison has a max score of 1
     rankingComparison.percentSimilarity = (totalScore / listSize) * 100;
 
-    return rankingComparison
+    return rankingComparison;
 }
 
 function convertDiffToCountryComparison(smallestDifferences: RankingDifference[], contestants: CountryContestant[]) {

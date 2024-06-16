@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Dispatch } from 'redux';
 import Dropdown from '../Dropdown';
-import { faChartLine, faChartPie, faCopy, faDownload, faEdit, faFileExport, faList, faSlidersH, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faCopy, faDownload, faEdit, faFileExport, faList, faSlidersH, faTrash } from '@fortawesome/free-solid-svg-icons';
 import Modal from './Modal';
 import TabButton from '../TabButton';
 import { sanitizeYear, supportedYears } from '../../data/Contestants';
@@ -47,6 +47,7 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
     const [themeSelection, setThemeSelection] = useState('None');
     const [hasJuryVotes, setHasJuryVotes] = useState(false);
     const [hasTeleVotes, setHasTeleVotes] = useState(false);
+    const [loadRankAsCategory, setLoadRankAsCategory] = useState(false);
     const [activeTab, setActiveTab] = useState(props.tab);
     const [exportTypeSelection, setExportTypeSelection] = useState('Text');
     const [rankingYear, setRankingYear] = useState(year);
@@ -393,7 +394,7 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
     }
 
     function findMostSimilarVote() {
-       return;
+        return;
     }
 
     //if (!props.isOpen) return null;
@@ -514,32 +515,44 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
                 {activeTab === 'rankings' &&
                     <div className="mb-0">
                         <p className="relative mb-[1em] mt-2 text-sm">Select a year and voting country, then click one of the buttons to see official final rankings</p>
-                        <div className="mt-5 mb-[1.5em]">
+                        <div className="mt-5">
 
                             <span className="font-bold ml-0 whitespace-nowrap">ESC final rankings</span>
 
                             {/* <div className="mt-[0.7em] font-semibold ml-0 whitespace-nowrap">Contest year and voting country</div> */}
                             <div className="relative mt-[0.7em]">
-                                <Dropdown
-                                    className="z-50 w-20 mx-auto mb-2"
-                                    menuClassName=""
-                                    value={rankingYear ?? year}
-                                    onChange={y => { setRankingYear(y); }}
-                                    options={supportedYears.filter(i => i !== '2024' && i !== '2020')}
-                                    showSearch={true}
-                                />
-                                <span className="ml-2 text-sm">{'from'}</span>
+                                <div>
+                                    <Dropdown
+                                        className="z-50 w-20 mx-auto mb-2"
+                                        menuClassName=""
+                                        value={rankingYear ?? year}
+                                        onChange={y => { setRankingYear(y); }}
+                                        options={supportedYears.filter(i => i !== '2024' && i !== '2020')}
+                                        showSearch={true}
+                                    />
+                                    <span className="ml-2 text-sm">{'from'}</span>
 
-                                <Dropdown
-                                    key="country-selector"
-                                    className="z-50 ml-3 mx-auto mb-2"
-                                    menuClassName="w-auto"
-                                    value={voteSource}
-                                    onChange={s => { setVoteSource(s); }}
-                                    options={voteSourceOptions}
-                                    showSearch={true}
-                                />
+                                    <Dropdown
+                                        key="country-selector"
+                                        className="z-50 ml-3 mx-auto mb-2"
+                                        menuClassName="w-auto"
+                                        value={voteSource}
+                                        onChange={s => { setVoteSource(s); }}
+                                        options={voteSourceOptions}
+                                        showSearch={true}
+                                    />
 
+                                </div>
+
+                                {/* <div className="bg-redd-200 -ml-3">
+                                    <Checkbox
+                                        id="load-as-cat-btn"
+                                        className=""
+                                        checked={loadRankAsCategory}
+                                        onChange={c => setLoadRankAsCategory(c)}
+                                        label="load as category"
+                                    />
+                                </div> */}
 
                                 <div className="mt-2 ml-0">
 
@@ -648,7 +661,7 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
                                 {categories?.length > 0 &&
                                     <IconButton
                                         className="ml-3 mt-2 bg-rose-800 hover:bg-rose-700 text-white font-normal pl-[0.7em] rounded-md text-xs py-[0.5em] pr-[1em]"
-                                        onClick={() => { 
+                                        onClick={() => {
                                             saveCategories(
                                                 [], dispatch, categories, activeCategory
                                             );
@@ -696,7 +709,7 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
                                             </td>
                                             <td className="px-2">
                                                 <button
-                                                    onClick={() => 
+                                                    onClick={() =>
                                                         deleteCategory(
                                                             index, dispatch, categories, activeCategory
                                                         )

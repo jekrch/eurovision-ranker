@@ -35,6 +35,62 @@ export class CountryComparison {
     }
 };
 
+/**
+ * Identifies the code from list2Codes that is most similar to the list1code. If there 
+ * are ties, all of the tied list2Codes are returned
+ * 
+ * @param year 
+ * @param list1Code 
+ * @param list2Codes 
+ * @returns 
+ */
+async function findMostSimilarLists(
+    year: string,
+    list1Code: string,
+    list2Codes: string[]
+): Promise<RankingComparison[]> {
+    const comparisons: RankingComparison[] = await Promise.all(
+        list2Codes.map(
+            list2Code => getRankingComparison(
+                year, list1Code, list2Code
+            )
+        )
+    );
+
+    const maxSimilarity = Math.max(...comparisons.map(c => c.percentSimilarity));
+
+    return comparisons
+        .filter(c => c.percentSimilarity === maxSimilarity);
+}
+
+/**
+ * Identifies the code from list2Codes that is least similar to the list1code. If there 
+ * are ties, all of the tied list2Codes are returned
+ * 
+ * @param year 
+ * @param list1Code 
+ * @param list2Codes 
+ * @returns 
+ */
+async function findLeastSimilarLists(
+    year: string,
+    list1Code: string,
+    list2Codes: string[]
+): Promise<RankingComparison[]> {
+    const comparisons: RankingComparison[] = await Promise.all(
+        list2Codes.map(
+            list2Code => getRankingComparison(
+                year, list1Code, list2Code
+            )
+        )
+    );
+
+    const maxSimilarity = Math.max(...comparisons.map(c => c.percentSimilarity));
+
+    return comparisons
+        .filter(c => c.percentSimilarity === maxSimilarity);
+}
+
 export async function getRankingComparison(
     year: string,
     list1Code: string,

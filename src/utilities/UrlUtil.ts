@@ -171,6 +171,11 @@ export function getUrlParams(activeCategory: number | undefined) {
     return extractedParams;
 }
 
+export function getUrlParam(paramName: string): string | null {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get(paramName);
+  }
+
 /**
  * Encode rankings to csv for URL
  * @param rankedCountries 

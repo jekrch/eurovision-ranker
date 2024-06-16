@@ -44,11 +44,12 @@ export class CountryComparison {
  * @param list2Codes 
  * @returns 
  */
-async function findMostSimilarLists(
+export async function findMostSimilarLists(
     year: string,
     list1Code: string,
     list2Codes: string[]
 ): Promise<RankingComparison[]> {
+
     const comparisons: RankingComparison[] = await Promise.all(
         list2Codes.map(
             list2Code => getRankingComparison(
@@ -57,7 +58,12 @@ async function findMostSimilarLists(
         )
     );
 
-    const maxSimilarity = Math.max(...comparisons.map(c => c.percentSimilarity));
+    const maxSimilarity = Math.max(
+            ...comparisons
+                .filter(c => !isNaN(c.percentSimilarity))
+                .map(c => c.percentSimilarity)
+        );
+
 
     return comparisons
         .filter(c => c.percentSimilarity === maxSimilarity);
@@ -72,7 +78,7 @@ async function findMostSimilarLists(
  * @param list2Codes 
  * @returns 
  */
-async function findLeastSimilarLists(
+export async function findLeastSimilarLists(
     year: string,
     list1Code: string,
     list2Codes: string[]

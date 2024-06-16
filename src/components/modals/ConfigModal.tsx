@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Dispatch } from 'redux';
 import Dropdown from '../Dropdown';
-import { faCopy, faDownload, faEdit, faFileExport, faList, faSlidersH, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faChartLine, faCopy, faDownload, faEdit, faFileExport, faList, faSlidersH, faTrash } from '@fortawesome/free-solid-svg-icons';
 import Modal from './Modal';
 import TabButton from '../TabButton';
 import { sanitizeYear, supportedYears } from '../../data/Contestants';
@@ -13,12 +13,14 @@ import { assignVotesByCode, sortByVotes, updateVoteTypeCode, voteCodeHasType } f
 import { getVoteCode, hasAnyJuryVotes, hasAnyTeleVotes } from "../../utilities/VoteUtil";
 import { countries } from '../../data/Countries';
 import { setContestants, setTheme, setVote, setCategories } from '../../redux/actions';
-import { goToUrl, updateQueryParams } from '../../utilities/UrlUtil';
+import { getUrlParam, goToUrl, updateQueryParams } from '../../utilities/UrlUtil';
 import { copyToClipboard, copyUrlToClipboard, downloadFile, getExportDataString } from '../../utilities/export/ExportUtil';
 import { EXPORT_TYPE, EXPORT_TYPES, getExportType } from '../../utilities/export/ExportType';
 import Checkbox from '../Checkbox';
 import IconButton from '../IconButton';
 import { deleteCategory, isValidCategoryName, parseCategoriesUrlParam, saveCategories } from '../../utilities/CategoryUtil';
+import { Country } from '../../data/Country';
+import { findMostSimilarLists } from '../../utilities/RankAnalyzer';
 
 type ConfigModalProps = {
     isOpen: boolean;
@@ -393,7 +395,46 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
         return `+from+${sourceCountry.replaceAll(' ', '+')}`;
     }
 
-    function findMostSimilarVote() {
+    async function findMostSimilarVoteByCountry() {
+
+        const voteYear = rankingYear ?? year;
+        let codeCountryNameMap = new Map<string, Country[]>();
+        let countryRankCodes = [];
+
+        let currentRankingCode = getUrlParam('r');
+
+        for (const country of countries) {
+            let concatenatedIds = await getSortedRankingCode(
+                voteYear, 'televote', 'final', country.name
+            );
+
+            countryRankCodes.push(concatenatedIds);
+            
+            if (codeCountryNameMap.has(concatenatedIds)) {
+                codeCountryNameMap.get(concatenatedIds)?.push(country);
+            } else {
+                codeCountryNameMap.set(concatenatedIds, [country])
+            }
+        }
+
+        const mostSimilarComparisons = await findMostSimilarLists(voteYear, currentRankingCode!, countryRankCodes);
+        
+        console.log(mostSimilarComparisons)
+
+        let countryNames = '';
+
+        for (const comparison of mostSimilarComparisons) {
+
+            let countries = codeCountryNameMap.get(comparison.list2Code);
+
+            for (const country of countries!)
+                countryNames += `${country.name}, `;
+        }
+
+        console.log(currentRankingCode)
+        console.log(countryRankCodes)
+ 
+        console.log(countryNames);
         return;
     }
 
@@ -432,12 +473,12 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
                         label="Categories"
                     />
 
-                    {/* <TabButton
+                    <TabButton
                         isActive={activeTab === 'analyze'}
                         onClick={() => setActiveTab('analyze')}
                         icon={faChartLine}
                         label="Analyze"
-                    /> */}
+                    />
                 </ul>
             </div>
 
@@ -733,7 +774,7 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
                         <div className="mt-5 mb-[1.5em]">
                             <IconButton
                                 className="ml-1 font-normal pl-[0.7em] rounded-md text-xs py-[0.5em] pr-[1em]"
-                                onClick={findMostSimilarVote}
+                                onClick={async () => await findMostSimilarVoteByCountry()}
                                 icon={undefined}
                                 title='Most similar'
                             />

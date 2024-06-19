@@ -325,6 +325,56 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
         return sortedContestants.map(cc => cc.id).join('');
     }
 
+    async function getAllCountryRankCodes(voteType: string, round: string, voteYear: string) {
+        
+        let codeCountryNameMap = new Map<string, Country[]>();
+        
+        let countryContestants: CountryContestant[] = await fetchCountryContestantsByYear(
+            voteYear,
+            ''
+        );
+
+        for (const country of countries) {
+            let concatenatedIds = await getRankingIds(
+                voteYear, 'televote', 'final', 
+                countryContestants, country.key
+            );
+
+            if (codeCountryNameMap.has(concatenatedIds)) {
+                codeCountryNameMap.get(concatenatedIds)?.push(country);
+            } else {
+                codeCountryNameMap.set(concatenatedIds, [country])
+            }
+        }
+
+        return codeCountryNameMap;
+    }
+
+    async function getRankingIds(
+        voteYear: string,
+        voteType: string,
+        round: string,
+        countryContestants: CountryContestant[],
+        sourceCountryKey: string
+    ) {
+
+
+        countryContestants = await sortByVotes(
+            countryContestants,
+            voteYear,
+            voteType,
+            round,
+            sourceCountryKey
+        );
+
+        const sortedContestants = countryContestants.filter(
+            cc => cc?.contestant?.votes !== undefined
+        );
+
+        // generate the ranking param
+        return sortedContestants.map(cc => cc.id).join('');
+    }
+
     async function openTotalRanking() {
         const voteYear = rankingYear ?? year;
 
@@ -398,27 +448,19 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
     async function findMostSimilarVoteByCountry() {
 
         const voteYear = rankingYear ?? year;
-        let codeCountryNameMap = new Map<string, Country[]>();
-        let countryRankCodes = [];
-
+        
         let currentRankingCode = getUrlParam('r');
 
-        for (const country of countries) {
-            let concatenatedIds = await getSortedRankingCode(
-                voteYear, 'televote', 'final', country.name
-            );
+        let codeCountryNameMap: Map<string, Country[]> = await getAllCountryRankCodes(
+            'televote', 'final', voteYear
+        );
 
-            countryRankCodes.push(concatenatedIds);
-            
-            if (codeCountryNameMap.has(concatenatedIds)) {
-                codeCountryNameMap.get(concatenatedIds)?.push(country);
-            } else {
-                codeCountryNameMap.set(concatenatedIds, [country])
-            }
-        }
+        const codeArrays = Array.from(codeCountryNameMap.keys());
 
-        const mostSimilarComparisons = await findMostSimilarLists(voteYear, currentRankingCode!, countryRankCodes);
-        
+        const mostSimilarComparisons = await findMostSimilarLists(
+            voteYear, currentRankingCode!, codeArrays
+        );
+
         console.log(mostSimilarComparisons)
 
         let countryNames = '';
@@ -432,8 +474,6 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
         }
 
         console.log(currentRankingCode)
-        console.log(countryRankCodes)
- 
         console.log(countryNames);
         return;
     }
@@ -788,3 +828,5 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
 };
 
 export default ConfigModal;
+
+

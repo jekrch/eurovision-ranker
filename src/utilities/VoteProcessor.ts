@@ -3,6 +3,44 @@ import { CountryContestant } from '../data/CountryContestant';
 import { ContestantVotes, Vote } from "../data/Vote";
 import { fetchVotesForYear } from "./VoteRepository";
 
+let cachedVoteYear: string;
+let cachedVoteRound: string; 
+let cachedVotes: Vote[];
+
+/**
+ * Fetches voting records for the provided params. If these were just previously 
+ * fetched for the same year and round, use a cached list. This improves performance 
+ * in cases where we need to fetch votes for many countries (see RankAnalyzer)
+ * 
+ * @param year 
+ * @param fromCountryKey 
+ * @param round 
+ * @returns 
+ */
+export async function getVotes(
+    year: string,
+    fromCountryKey: string | undefined, 
+    round: string
+): Promise<Vote[]> {
+
+    if (
+        cachedVoteRound !== round ||
+        cachedVoteYear !== year
+    ) {
+        cachedVotes = await fetchVotesForYear(
+            year, undefined, round
+        );
+        cachedVoteRound = round;
+        cachedVoteYear = year;
+        console.log('caching')
+    }
+
+    return cachedVotes.filter(v => 
+        !fromCountryKey || 
+        v.fromCountryKey == fromCountryKey
+    );
+}
+
 export async function sortByVotes(
     countryContestants: CountryContestant[],
     year: string,
@@ -13,7 +51,7 @@ export async function sortByVotes(
 
     year = sanitizeYear(year);
 
-    let votes: Vote[] = await fetchVotesForYear(year, fromCountryKey, round)
+    let votes: Vote[] = await getVotes(year, fromCountryKey, round)
 
     let voteTypeFieldName: string = getVoteTypeFieldName(voteType);
 

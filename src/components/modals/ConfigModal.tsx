@@ -357,8 +357,6 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
         countryContestants: CountryContestant[],
         sourceCountryKey: string
     ) {
-
-
         countryContestants = await sortByVotes(
             countryContestants,
             voteYear,

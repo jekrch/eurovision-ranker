@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
-import IconButton from '../IconButton';
+import IconButton from '../../IconButton';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppState } from '../../redux/types';
-import { setCategories } from '../../redux/actions';
-import { deleteCategory, isValidCategoryName, saveCategories } from '../../utilities/CategoryUtil';
+import { AppState } from '../../../redux/types';
+import { setCategories } from '../../../redux/actions';
+import { deleteCategory, isValidCategoryName, saveCategories } from '../../../utilities/CategoryUtil';
 
 const CategoriesTab: React.FC = () => {
   const dispatch = useDispatch();

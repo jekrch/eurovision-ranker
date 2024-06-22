@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { faChartLine, faEdit, faFileExport, faList, faSlidersH } from '@fortawesome/free-solid-svg-icons';
-import Modal from './Modal';
-import TabButton from '../TabButton';
+import Modal from '../Modal';
 import ExportTab from './ExportTab';
 import CategoriesTab from './CategoriesTab';
 import RankingsTab from './RankingsTab';
 import DisplayTab from './DisplayTab';
 import AnalyzeTab from './AnalyzeTab';
+import TabButton from '../../TabButton';
 
 type ConfigModalProps = {
     isOpen: boolean;

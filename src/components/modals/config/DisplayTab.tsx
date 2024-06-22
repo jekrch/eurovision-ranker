@@ -1,12 +1,12 @@
 import React, { Dispatch, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppState } from '../../redux/types';
-import { setTheme, setVote, setContestants } from '../../redux/actions';
-import { assignVotesByCode, updateVoteTypeCode, voteCodeHasType } from '../../utilities/VoteProcessor';
-import { countries } from '../../data/Countries';
-import Dropdown from '../Dropdown';
-import Checkbox from '../Checkbox';
-import { updateQueryParams } from '../../utilities/UrlUtil';
+import { AppState } from '../../../redux/types';
+import { setTheme, setVote, setContestants } from '../../../redux/actions';
+import { assignVotesByCode, updateVoteTypeCode, voteCodeHasType } from '../../../utilities/VoteProcessor';
+import { countries } from '../../../data/Countries';
+import Dropdown from '../../Dropdown';
+import Checkbox from '../../Checkbox';
+import { updateQueryParams } from '../../../utilities/UrlUtil';
 
 const DisplayTab: React.FC = () => {
     const dispatch: Dispatch<any> = useDispatch();

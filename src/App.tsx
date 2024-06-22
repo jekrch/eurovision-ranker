@@ -12,7 +12,7 @@ import { setRankedItems, setUnrankedItems, setShowUnranked, setActiveCategory, s
 import { decodeRankingsFromURL, encodeRankingsToURL, updateQueryParams, updateUrlFromRankedItems, urlHasRankings } from './utilities/UrlUtil';
 import { Dispatch } from 'redux';
 import MapModal from './components/modals/MapModal';
-import ConfigModal from './components/modals/ConfigModal';
+import ConfigModal from './components/modals/config/ConfigModal';
 import WelcomeOverlay from './components/modals/WelcomeOverlay';
 import SongModal from './components/modals/LyricsModal';
 import { Toaster } from 'react-hot-toast';

@@ -1,14 +1,14 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { AppState } from '../../redux/types';
-import { countries } from '../../data/Countries';
-import { fetchCountryContestantsByYear } from '../../utilities/ContestantRepository';
-import { sortByVotes } from '../../utilities/VoteProcessor';
-import { findMostSimilarLists } from '../../utilities/RankAnalyzer';
-import { getUrlParam } from '../../utilities/UrlUtil';
-import IconButton from '../IconButton';
-import { Country } from '../../data/Country';
-import { CountryContestant } from '../../data/CountryContestant';
+import { AppState } from '../../../redux/types';
+import { countries } from '../../../data/Countries';
+import { fetchCountryContestantsByYear } from '../../../utilities/ContestantRepository';
+import { sortByVotes } from '../../../utilities/VoteProcessor';
+import { findMostSimilarLists } from '../../../utilities/RankAnalyzer';
+import { getUrlParam } from '../../../utilities/UrlUtil';
+import IconButton from '../../IconButton';
+import { Country } from '../../../data/Country';
+import { CountryContestant } from '../../../data/CountryContestant';
 
 const AnalyzeTab: React.FC = () => {
   const year = useSelector((state: AppState) => state.year);

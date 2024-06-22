@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppState } from '../../redux/types';
-import { sortByVotes } from '../../utilities/VoteProcessor';
-import { getVoteCode, hasAnyJuryVotes, hasAnyTeleVotes } from '../../utilities/VoteUtil';
-import { fetchCountryContestantsByYear } from '../../utilities/ContestantRepository';
-import { sanitizeYear, supportedYears } from '../../data/Contestants';
-import { countries } from '../../data/Countries';
-import Dropdown from '../Dropdown';
-import IconButton from '../IconButton';
-import { goToUrl } from '../../utilities/UrlUtil';
+import { AppState } from '../../../redux/types';
+import { sortByVotes } from '../../../utilities/VoteProcessor';
+import { getVoteCode, hasAnyJuryVotes, hasAnyTeleVotes } from '../../../utilities/VoteUtil';
+import { fetchCountryContestantsByYear } from '../../../utilities/ContestantRepository';
+import { sanitizeYear, supportedYears } from '../../../data/Contestants';
+import { countries } from '../../../data/Countries';
+import Dropdown from '../../Dropdown';
+import IconButton from '../../IconButton';
+import { goToUrl } from '../../../utilities/UrlUtil';
 
 const RankingsTab: React.FC = () => {
     const dispatch = useDispatch();

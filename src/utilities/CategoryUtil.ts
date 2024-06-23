@@ -385,6 +385,9 @@ function calculateCountryScores(ranking: string[]): { [key: string]: number } {
 export const areCategoriesSet = () => {
   const urlParams = new URLSearchParams(window.location.search);
   const rParam = urlParams.get('c');
+  console.log(urlParams)
+  console.log(window.location.search)
+  console.log(rParam)
   return rParam !== null && rParam !== '';
 };
 

@@ -60,7 +60,7 @@ const MainModal: React.FC<MainModalProps> = (props: MainModalProps) => {
 
                             <div className="aspect-ratio-box mb-5">
                                 <img
-                                    src={`${process.env.PUBLIC_URL}/mnay.png`}
+                                    src={`/mnay.png`}
                                     alt="Heart"
                                     className="w-full shadow-lg rounded mb-5" />
                             </div>

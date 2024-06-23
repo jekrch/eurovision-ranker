@@ -52,7 +52,7 @@ const WelcomeOverlay: React.FC<WelcomeOverlayProps> = ({ handleGetStarted, handl
                         Welcome to
                         <div className="mt-0">
                             <span className="text-xl gradient-text font-bold">Eurovision Ranker <img
-                                src={`${process.env.PUBLIC_URL}/eurovision-heart.svg`}
+                                src={`/eurovision-heart.svg`}
                                 alt="Heart"
                                 className="w-5 h-5 ml-0 mb-1 ml-[0.2em] inline pulse-on-load" /></span>
                         </div>

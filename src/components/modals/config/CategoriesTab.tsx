@@ -1,17 +1,16 @@
-import React, { useState } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import React, { Dispatch, useEffect, useState } from 'react';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import IconButton from '../../IconButton';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '../../../redux/types';
-import { setCategories } from '../../../redux/actions';
-import { deleteCategory, isValidCategoryName, saveCategories } from '../../../utilities/CategoryUtil';
+import { deleteCategory, isValidCategoryName, parseCategoriesUrlParam, saveCategories } from '../../../utilities/CategoryUtil';
 
 const CategoriesTab: React.FC = () => {
-  const dispatch = useDispatch();
+  const dispatch: Dispatch<any> = useDispatch();
   const categories = useSelector((state: AppState) => state.categories);
   const activeCategory = useSelector((state: AppState) => state.activeCategory);
   const [newCategoryName, setNewCategoryName] = useState('');
+
 
   const addCategory = () => {
     if (newCategoryName.trim() !== '') {

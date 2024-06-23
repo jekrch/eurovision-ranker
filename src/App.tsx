@@ -8,7 +8,7 @@ import Navbar from './components/nav/NavBar';
 import EditNav from './components/nav/EditNav';
 import { AppState } from './redux/types';
 import { useDispatch, useSelector } from 'react-redux';
-import { setRankedItems, setUnrankedItems, setShowUnranked, setActiveCategory, setShowTotalRank } from './redux/actions';
+import { setRankedItems, setUnrankedItems, setShowUnranked, setActiveCategory, setShowTotalRank, setCategories } from './redux/actions';
 import { decodeRankingsFromURL, encodeRankingsToURL, updateQueryParams, updateUrlFromRankedItems, urlHasRankings } from './utilities/UrlUtil';
 import { Dispatch } from 'redux';
 import MapModal from './components/modals/MapModal';
@@ -17,7 +17,7 @@ import WelcomeOverlay from './components/modals/WelcomeOverlay';
 import SongModal from './components/modals/LyricsModal';
 import { Toaster } from 'react-hot-toast';
 import { toastOptions } from './utilities/ToasterUtil';
-import { areCategoriesSet, categoryRankingsExist, reorderByAllWeightedRankings } from './utilities/CategoryUtil';
+import { areCategoriesSet, categoryRankingsExist, parseCategoriesUrlParam, reorderByAllWeightedRankings } from './utilities/CategoryUtil';
 import { isArrayEqual } from './utilities/RankAnalyzer';
 import JoyrideTour from './tour/JoyrideTour';
 import { addWindowEventListeners, handlePopState, removeWindowEventListeners, setVh } from './utilities/EventListenerUtil';
@@ -151,7 +151,20 @@ const App: React.FC = () => {
     updateRankedItems();
   }, [activeCategory, showTotalRank]);
 
-  
+  /**
+ * Load categories from the url
+ */
+  useEffect(() => {
+    const searchParams = new URLSearchParams(window.location.search);
+    const categoriesParam = searchParams.get('c');
+    if (categoriesParam) {
+      const parsedCategories = parseCategoriesUrlParam(categoriesParam);
+      dispatch(
+        setCategories(parsedCategories)
+      )
+    }
+  }, []);
+
   useEffect(() => {
     const updateRankedItems = async () => {
 

@@ -2,6 +2,7 @@ import { CountryContestant } from "../../data/CountryContestant";
 import { convertToCSV, convertToJSON, copyDataToClipboard } from './ExportUtil';
 import { Contestant } from '../../data/Contestant';
 import { Country } from '../../data/Country';
+import { JSDOM } from 'jsdom';
 
 const mockCountryContestants = [
     {
@@ -63,11 +64,16 @@ describe('convertToJSON', () => {
 
 
 describe('copyDataToClipboard', () => {
+    beforeEach(() => {
+        const dom = new JSDOM();
+        global.navigator = dom.window.navigator;
+      });
+
     it('copies text to clipboard', async () => {
         const text = 'Sample text';
         Object.assign(navigator, {
             clipboard: {
-                writeText: jest.fn().mockResolvedValue(undefined)
+                writeText: vi.fn().mockResolvedValue(undefined as never)
             }
         });
 

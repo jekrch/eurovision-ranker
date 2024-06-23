@@ -3,16 +3,16 @@ import { CountryContestant } from '../data/CountryContestant';
 import { Category } from './CategoryUtil';
 import { convertRankingsStrToArray, updateQueryParams } from './UrlUtil';
 
-jest.mock('./UrlUtil', () => ({
-    convertRankingsStrToArray: jest.fn(),
-    updateQueryParams: jest.fn(),
+vi.mock('./UrlUtil', () => ({
+    convertRankingsStrToArray: vi.fn(),
+    updateQueryParams: vi.fn(),
 }));
 
-jest.mock('../redux/actions', () => ({
-    setActiveCategory: jest.fn(),
-    setCategories: jest.fn(),
-    setRankedItems: jest.fn(),
-    setShowTotalRank: jest.fn(),
+vi.mock('../redux/actions', () => ({
+    setActiveCategory: vi.fn(),
+    setCategories: vi.fn(),
+    setRankedItems: vi.fn(),
+    setShowTotalRank: vi.fn(),
 }));
 
 describe('reorderByAllWeightedRankings', () => {
@@ -45,8 +45,8 @@ describe('reorderByAllWeightedRankings', () => {
 
 
     beforeEach(() => {
-        jest.clearAllMocks();
-        (convertRankingsStrToArray as jest.Mock).mockImplementation((ranking) => ranking.split(''));
+        vi.clearAllMocks();
+        (convertRankingsStrToArray as any).mockImplementation((ranking: any) => ranking.split(''));
     });
 
 

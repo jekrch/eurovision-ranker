@@ -1,15 +1,16 @@
 import { convertRankingsStrToArray, extractParams, updateStates } from "./UrlUtil";
 import { setName, setYear, setTheme, setVote } from '../redux/actions';
 import { defaultYear } from "../data/Contestants";
+import { JSDOM } from 'jsdom';
 
 
 // mocks for dependencies
-jest.mock('redux', () => ({
-    Dispatch: jest.fn()
+vi.mock('redux', () => ({
+    Dispatch: vi.fn()
 }));
 
-jest.mock('./ContestantRepository', () => ({
-    fetchCountryContestantsByYear: jest.fn()
+vi.mock('./ContestantRepository', () => ({
+    fetchCountryContestantsByYear: vi.fn()
 }));
 
 function mockWindowLocationSearch(search: string) {
@@ -24,22 +25,31 @@ function mockWindowLocationSearch(search: string) {
 
 // reset window.location to its original state after each test
 afterEach(() => {
-    jest.restoreAllMocks();
-    // Reset window.location to its original state
-    Object.defineProperty(window, 'location', {
-        value: originalLocation,
-        writable: true
-    });
+
+    const dom = new JSDOM();
+    global.navigator = dom.window.navigator;
+
+    vi.restoreAllMocks();
 });
 
-const originalLocation = window.location;
-
-
 describe('extractParams', () => {
-    it('should extract parameters for a specific search string', () => {
-        mockWindowLocationSearch('?y=2023&r=abc&t=ab&v=f-tv&n=test');
+    let mockWindow: Window;
 
-        const params = new URLSearchParams(window.location.search);
+    beforeEach(() => {
+        mockWindow = {
+            location: {
+                search: '',
+                href: 'http://localhost',
+            },
+        } as unknown as Window;
+    });
+
+    it('should extract parameters for a specific search string', () => {
+        const searchString = '?y=2023&r=abc&t=ab&v=f-tv&n=test';
+        mockWindow.location.search = searchString;
+        mockWindow.location.href = 'http://localhost' + searchString;
+
+        const params = new URLSearchParams(mockWindow.location.search);
         const result = extractParams(params, undefined);
 
         expect(result).toEqual({
@@ -52,10 +62,11 @@ describe('extractParams', () => {
     });
 
     it('should extract parameters partial search string', () => {
+        const searchString = '?y=2023&r=abc';
+        mockWindow.location.search = searchString;
+        mockWindow.location.href = 'http://localhost' + searchString;
 
-        mockWindowLocationSearch('?y=2023&r=abc');
-
-        const params = new URLSearchParams(window.location.search);
+        const params = new URLSearchParams(mockWindow.location.search);
         const result = extractParams(params, undefined);
 
         expect(result).toEqual({
@@ -68,26 +79,25 @@ describe('extractParams', () => {
     });
 });
 
-
-jest.mock('../redux/actions', () => ({
-    setName: jest.fn(),
-    setYear: jest.fn(),
-    setTheme: jest.fn(),
-    setVote: jest.fn()
+vi.mock('../redux/actions', () => ({
+    setName: vi.fn(),
+    setYear: vi.fn(),
+    setTheme: vi.fn(),
+    setVote: vi.fn()
 }));
 
 
 // Create a mock dispatch function
-const mockDispatch = jest.fn();
+const mockDispatch = vi.fn();
 
 describe('updateStates', () => {
     beforeEach(() => {
         // Clear all mocks before each test
         mockDispatch.mockClear();
-        (setName as jest.Mock).mockClear();
-        (setYear as jest.Mock).mockClear();
-        (setTheme as jest.Mock).mockClear();
-        (setVote as jest.Mock).mockClear();
+        (setName as any).mockClear();
+        (setYear as any).mockClear();
+        (setTheme as any).mockClear();
+        (setVote as any).mockClear();
     });
 
     it('should dispatch setName when rankingName is provided', () => {

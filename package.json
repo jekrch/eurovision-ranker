@@ -36,7 +36,6 @@
     "typescript": "^5.5.2",
     "vite": "^5.3.1",
     "vite-tsconfig-paths": "^4.3.2",
-    "vitest": "^1.6.0",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
@@ -48,7 +47,8 @@
     "deploy": "gh-pages -d dist"
   },
   "devDependencies": {
-    "@testing-library/react": "^14.2.2",
+    "@testing-library/react": "^14.3.1",
+    "@types/jsdom": "^21.1.7",
     "@types/papaparse": "^5.3.14",
     "@types/react-datepicker": "^4.19.4",
     "@types/react-simple-maps": "^3.0.4",
@@ -60,6 +60,7 @@
     "jsdom": "^24.1.0",
     "postcss": "^8.4.38",
     "postcss-cli": "^11.0.0",
-    "tailwindcss": "^3.3.2"
+    "tailwindcss": "^3.3.2",
+    "vitest": "^1.6.0"
   }
 }

@@ -1,7 +1,7 @@
 import { updateVoteTypeCode, voteCodeHasType, voteCodeHasSourceCountry } from "./VoteProcessor";
 
-jest.mock("./VoteRepository", () => ({
-    fetchVotesForYear: jest.fn()
+vi.mock("./VoteRepository", () => ({
+    fetchVotesForYear: vi.fn()
   }));
   
 

@@ -5,7 +5,7 @@ export function fetchVoteCsv(): Promise<string> {
         return cachedVoteCsvPromise;
     }
 
-    const promise = fetch('/votes.csv')
+    const promise = fetch(`${import.meta.env.BASE_URL}votes.csv`)
         .then(response => response.text());
 
     cachedVoteCsvPromise = promise;
@@ -16,12 +16,11 @@ export function fetchVoteCsv(): Promise<string> {
 let cachedContestantCsvPromise: Promise<string> | null = null;
 
 export function fetchContestantCsv(): Promise<string> {
-
     if (cachedContestantCsvPromise) {
         return cachedContestantCsvPromise;
     }
 
-    const promise = fetch('/contestants.csv')
+    const promise = fetch(`${import.meta.env.BASE_URL}contestants.csv`)
         .then(response => response.text());
 
     cachedContestantCsvPromise = promise;

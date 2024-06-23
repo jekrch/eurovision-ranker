@@ -86,7 +86,7 @@ code {
 }
 
 .gradient-background-modal {
-  background: linear-gradient(155deg, #1d2344, #1d2344, #4b2764), url(/public/noise.svg);
+  background: linear-gradient(155deg, #1d2344, #1d2344, #4b2764), url(/noise.svg);
   filter: contrast(100%) brightness(100%);
 }
 

@@ -1,37 +1,28 @@
 import { cachedYear, initialCountryContestantCache } from "../data/InitialContestants";
-import { fetchAndProcessCountryContestants } from "./ContestantRepository";
-import fs from 'fs';
-import path from 'path';
-import fetchMock from 'jest-fetch-mock';
-
-fetchMock.enableMocks();
+import { fetchAndProcessCountryContestants, fetchCountryContestantsByYear } from "./ContestantRepository";
+import { describe, it, expect, beforeEach } from 'vitest';
+import { vi } from 'vitest';
 
 beforeEach(() => {
-    fetchMock.resetMocks();
+    vi.resetAllMocks();
 });
 
-describe.skip('contestantCache validation', () => {
-    it('the cached contestant data should be identical to the data we would fetch otherwise', async () => {
+describe('contestantCache validation', () => {
+    it('the cached contestant data should be returned', async () => {
+        const mockFetch = vi.fn();
+        mockFetch.mockResolvedValueOnce({ text: () => Promise.resolve('mocked vote csv data') });
+        mockFetch.mockResolvedValueOnce({ text: () => Promise.resolve('mocked contestant csv data') });
+        vi.stubGlobal('fetch', mockFetch);
 
-        mockFetchFromPath('contestants.csv', '../.././public/contestants.csv');
-        mockFetchFromPath('votes.csv', '../.././public/votes.csv');
-
-        const result = await fetchAndProcessCountryContestants(cachedYear, '', undefined);
+        const result = await fetchCountryContestantsByYear(cachedYear, '', undefined);
         
         initialCountryContestantCache.forEach(c => {
             c.contestant!.finalsRank = c.contestant?.finalsRank?.toString()?.replace('.0', '') as number | undefined;
             c.contestant!.semiFinalsRank = c.contestant?.semiFinalsRank?.toString()?.replace('.0', '') as number | undefined;
             return c;
-        })
+        });
         
         expect(result).toEqual(initialCountryContestantCache);
+        expect(mockFetch).toHaveBeenCalledTimes(0);
     });
 });
-
-async function mockFetchFromPath(endpoint: string, filePath: string) {
-
-    const csvFilePath = path.join(__dirname, filePath);
-    const csvData = fs.readFileSync(csvFilePath, 'utf-8');
-
-    fetchMock.mockResponseOnce(csvData);
-}

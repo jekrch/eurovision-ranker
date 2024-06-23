@@ -68,7 +68,7 @@ const Dropdown: React.FC<DropdownProps> = ({ value, onChange, options, className
       </div>
 
       <Transition
-        //as={React.Fragment}
+        as="div"
         //show={isOpen} 
         enter="transition ease-out duration-100"
         enterFrom="transform opacity-0 scale-95"

@@ -2,11 +2,6 @@
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-
 html {
    padding: env(safe-area-inset); 
   /* padding-left: env(safe-area-inset-left);

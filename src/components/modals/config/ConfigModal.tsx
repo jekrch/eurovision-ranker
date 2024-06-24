@@ -64,12 +64,12 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
                         label="Categories"
                     />
 
-                    <TabButton
+                    {/* <TabButton
                         isActive={activeTab === 'analyze'}
                         onClick={() => setActiveTab('analyze')}
                         icon={faChartLine}
                         label="Analyze"
-                    />
+                    /> */}
                 </ul>
             </div>
 
@@ -91,9 +91,9 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
                    <CategoriesTab/>
                 }
 
-                {activeTab === 'analyze' &&
+                {/* {activeTab === 'analyze' &&
                     <AnalyzeTab/>
-                }
+                } */}
             </div>
 
         </Modal>

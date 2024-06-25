@@ -66,7 +66,7 @@ describe('convertToJSON', () => {
 describe('copyDataToClipboard', () => {
     beforeEach(() => {
         const dom = new JSDOM();
-        global.navigator = dom.window.navigator;
+        //global.navigator = dom.window.navigator;
       });
 
     it('copies text to clipboard', async () => {

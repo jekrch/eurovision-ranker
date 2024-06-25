@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import { Draggable } from 'react-beautiful-dnd';
 import { StrictModeDroppable } from './StrictModeDroppable';
 import classNames from 'classnames';
@@ -6,7 +6,6 @@ import { CountryContestant } from '../../data/CountryContestant';
 import { Card } from './Card';
 import { DetailsCard } from './DetailsCard';
 import RankedItemsHeader from './RankedItemsHeader';
-import IntroColumn from './IntroColumn';
 import { FaChevronRight } from 'react-icons/fa';
 import IconButton from '../IconButton';
 import { useDispatch, useSelector } from 'react-redux';
@@ -17,6 +16,7 @@ import { supportedYears } from '../../data/Contestants';
 import { generateYoutubePlaylistUrl } from '../../utilities/YoutubeUtil';
 import { removeCountryFromUrlCategoryRankings } from '../../utilities/CategoryUtil';
 import { updateUrlFromRankedItems } from '../../utilities/UrlUtil';
+import { IntroColumnWrapper } from './IntroColumnWrapper';
 
 interface RankedCountriesListProps {
     openSongModal: (countryContestant: CountryContestant) => void;
@@ -52,7 +52,7 @@ const RankedCountriesList: React.FC<RankedCountriesListProps> = ({
     const unrankedItems = useSelector((state: AppState) => state.unrankedItems);
     const categories = useSelector((state: AppState) => state.categories);
     const activeCategory = useSelector((state: AppState) => state.activeCategory);
-
+      
     /**
    * used to synchronize the horizontal scrollbar on detail cards across all ranked items
    */
@@ -146,7 +146,7 @@ const RankedCountriesList: React.FC<RankedCountriesListProps> = ({
                                 )}
                             >
                                 {rankedItems.length === 0 && showUnranked && (
-                                    <IntroColumn
+                                    <IntroColumnWrapper
                                         openModal={openModal}
                                         openConfigModal={openConfigModal}
                                         setRunTour={setRunTour}

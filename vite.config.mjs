@@ -1,6 +1,9 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import viteTsconfigPaths from 'vite-tsconfig-paths'
+import postcss from 'postcss';
+import tailwindcss from 'tailwindcss';
+import autoprefixer from 'autoprefixer';
 
 export default defineConfig({
     // depending on your application, base can also be "/"
@@ -17,5 +20,14 @@ export default defineConfig({
         environment: 'jsdom',
         setupFiles: './src/setupTests.ts',
     },
-    
+    css: {
+        postcss: {
+          plugins: [
+            postcss([
+              tailwindcss(),
+              autoprefixer(),
+            ]),
+          ],
+        },
+      },
 })

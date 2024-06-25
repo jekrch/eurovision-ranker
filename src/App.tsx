@@ -50,6 +50,16 @@ const App: React.FC = () => {
   const [isOverlayExit, setIsOverlayExit] = useState(false);
   const [runTour, setRunTour] = useState(false);
 
+  const loadAuroralCSS = () => {
+    return import('./auroral.css');
+  };
+
+  useEffect(() => {
+    if (theme.includes('ab')) {
+      loadAuroralCSS();
+    }
+  }, [theme]);
+
   /**
    * Determines whether any rankings are set in the url
    * @returns 

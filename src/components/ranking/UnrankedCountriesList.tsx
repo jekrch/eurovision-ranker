@@ -17,7 +17,7 @@ const UnrankedCountriesList: React.FC = ({
     const unrankedItems = useSelector((state: AppState) => state.unrankedItems);
 
     return (
-        <div className="max-w-[50vw] overflow-y-auto flex-grow mr-1">
+        <div className="min-w-[10em] max-w-[50vw] overflow-y-auto flex-grow mr-1">
             <StrictModeDroppable droppableId="unrankedItems" key={`strict-md`}>
                 {(provided) => (
                     <ul

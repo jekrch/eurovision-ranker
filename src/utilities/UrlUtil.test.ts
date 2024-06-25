@@ -13,6 +13,8 @@ vi.mock('./ContestantRepository', () => ({
     fetchCountryContestantsByYear: vi.fn()
 }));
 
+
+
 function mockWindowLocationSearch(search: string) {
     Object.defineProperty(window, 'location', {
         value: {
@@ -26,8 +28,8 @@ function mockWindowLocationSearch(search: string) {
 // reset window.location to its original state after each test
 afterEach(() => {
 
-    const dom = new JSDOM();
-    global.navigator = dom.window.navigator;
+    // const dom = new JSDOM();
+    // global.navigator = dom.window.navigator;
 
     vi.restoreAllMocks();
 });

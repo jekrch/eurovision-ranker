@@ -244,10 +244,14 @@ code {
 }
 
 .pulse-on-load:hover {
+  transform-origin: center center;
+  will-change: transform;
   animation: pulse 1s ease-in-out infinite;
 }
 
 .pulse-on-load {
+  transform-origin: center center;
+  will-change: transform;
   animation: pulse 1s ease-in-out 2;
 }
 

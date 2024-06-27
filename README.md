@@ -21,6 +21,6 @@ Run unit tests `npm test`
 
 ## Automated Testing with GitHub Actions
 ### Run Tests Workflow
-This project uses GitHub Actions to automate running tests. The workflow is defined in the ``.github/workflows`` directory and is named "Run Tests" (`test_on_push.yml`). This workflow is triggered on every push to the `main` and `dev` branches. 
+This project uses GitHub Actions to automate running tests. The workflow is defined in the ``.github/workflows`` directory and is named "Run Tests" ([test_on_push.yml](https://github.com/jekrch/eurovision-ranker/blob/main/.github/workflows/test_on_push.yml)). This workflow is triggered on every push to the `main` and `dev` branches. 
 
 

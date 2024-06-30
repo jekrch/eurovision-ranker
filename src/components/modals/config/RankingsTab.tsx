@@ -11,11 +11,8 @@ import IconButton from '../../IconButton';
 import { goToUrl } from '../../../utilities/UrlUtil';
 
 const RankingsTab: React.FC = () => {
-    const dispatch = useDispatch();
     const year = useSelector((state: AppState) => state.year);
-    const vote = useSelector((state: AppState) => state.vote);
     const theme = useSelector((state: AppState) => state.theme);
-    const contestants = useSelector((state: AppState) => state.contestants);
     const [rankingYear, setRankingYear] = useState(year);
     const [voteSource, setVoteSource] = useState('All');
     const [voteSourceOptions, setVoteSourceOptions] = useState<string[]>([
@@ -29,6 +26,7 @@ const RankingsTab: React.FC = () => {
     useEffect(() => {
         const updateVoteSourceOptions = async () => {
             const yearContestants = await fetchCountryContestantsByYear(rankingYear);
+            console.log(yearContestants)
             setVoteSourceOptions([
                 'All',
                 ...yearContestants.map((cc) => cc.country).sort((a, b) => a.name.localeCompare(b.name)).map((c) => c.name),
@@ -136,7 +134,7 @@ const RankingsTab: React.FC = () => {
                             menuClassName=""
                             value={rankingYear ?? year}
                             onChange={(y) => setRankingYear(y)}
-                            options={supportedYears.filter((i) => i !== '2024' && i !== '2020')}
+                            options={supportedYears.filter((i) => i !== '2020')}
                             showSearch={true}
                         />
                         <span className="ml-2 text-sm">{'from'}</span>

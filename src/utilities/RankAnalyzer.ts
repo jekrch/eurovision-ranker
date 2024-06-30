@@ -70,6 +70,38 @@ export async function findMostSimilarLists(
 }
 
 /**
+ * Identifies the code from list2Codes that is most dissimilar to the list1code. If there 
+ * are ties, all of the tied list2Codes are returned
+ * 
+ * @param year 
+ * @param list1Code 
+ * @param list2Codes 
+ * @returns 
+ */
+export async function findMostDissimilarLists(
+    year: string,
+    list1Code: string,
+    list2Codes: string[]
+): Promise<RankingComparison[]> {
+    const comparisons: RankingComparison[] = await Promise.all(
+        list2Codes.map(
+            list2Code => getRankingComparison(
+                year, list1Code, list2Code
+            )
+        )
+    );
+
+    const minSimilarity = Math.min(
+        ...comparisons
+            .filter(c => !isNaN(c.percentSimilarity))
+            .map(c => c.percentSimilarity)
+    );
+
+    return comparisons
+        .filter(c => c.percentSimilarity === minSimilarity);
+}
+
+/**
  * Identifies the code from list2Codes that is least similar to the list1code. If there 
  * are ties, all of the tied list2Codes are returned
  * 
@@ -211,7 +243,7 @@ function processRankComparisonForContestant(
 
     let similarityScore = calculateSimilarityScore(
         indexInList1,
-        indexInList2, 
+        indexInList2,
         listSize
     );
 

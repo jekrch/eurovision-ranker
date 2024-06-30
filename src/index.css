@@ -286,6 +286,7 @@ code {
 
 .tada-animation {
   animation: tada 12s ease-in-out infinite;
+  will-change: transform;
 }
 
 @keyframes bounceRight {
@@ -327,6 +328,7 @@ code {
   align-items: center;
   z-index: 100;
   transition: transform 0.4s ease-in-out, opacity 0.4s ease-in-out;
+  will-change: transform;
   opacity: 1;
 }
 
@@ -454,6 +456,7 @@ https://codepen.io/chris22smith/pen/RZogMa */
 .lyrics-container {
   width: 100%;
   transition: transform 0.3s ease-in-out;
+  will-change: transform;
 }
 
 .slide-out-left {

@@ -22,7 +22,7 @@ export async function fetchCountryContestantsByYear(
       sanitizeYear(year) === cachedYear && 
       !voteCodeHasSourceCountry(voteCode)
     ) {
-    return initialCountryContestantCache;
+    return JSON.parse(JSON.stringify(initialCountryContestantCache));;
   } 
   
   return await fetchAndProcessCountryContestants(

@@ -32,7 +32,7 @@ export async function getVotes(
         );
         cachedVoteRound = round;
         cachedVoteYear = year;
-        console.log('caching')
+        //console.log('caching')
     }
 
     return cachedVotes.filter(v => 

@@ -3,6 +3,8 @@ import { Vote } from "../data/Vote";
 import { sanitizeYear } from '../data/Contestants';
 import { fetchVoteCsv } from './CsvCache';
 
+const voteCache: { [key: string]: Vote[] } = {};
+
 /**
  * Return vote data for the provided year. If a countryKey is provided, 
  * only return the votes from that country on that year, otherwise return 
@@ -17,12 +19,17 @@ export function fetchVotesForYear(
   countryKey?: string,
   round?: string,
 ): Promise<Vote[]> {
-
   year = sanitizeYear(year);
   countryKey = countryKey?.toLowerCase();
   
   if (round)
     round = convertRoundToShortName(round);
+
+  const cacheKey = `${year}-${countryKey}-${round}`;
+
+  if (voteCache[cacheKey]) {
+    return Promise.resolve(voteCache[cacheKey]);
+  }
 
   return new Promise((resolve, reject) => {
     fetchVoteCsv()
@@ -53,6 +60,8 @@ export function fetchVotesForYear(
                 telePoints: row.tele_points ?? parseInt(row.tele_points),
                 juryPoints: row.jury_points ?? parseInt(row.jury_points),
               }));
+            
+            voteCache[cacheKey] = votes;
             resolve(votes);
           },
           error: (error: any) => reject(error)

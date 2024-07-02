@@ -1,24 +1,30 @@
-import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '../../../redux/types';
 import { countries } from '../../../data/Countries';
 import { fetchCountryContestantsByYear } from '../../../utilities/ContestantRepository';
 import { sortByVotes } from '../../../utilities/VoteProcessor';
 import { RankingComparison, findMostDissimilarLists, findMostSimilarLists } from '../../../utilities/RankAnalyzer';
-import { getUrlParam } from '../../../utilities/UrlUtil';
+import { getUrlParam, getUrlParams, updateQueryParams } from '../../../utilities/UrlUtil';
 import IconButton from '../../IconButton';
 import { Country } from '../../../data/Country';
 import { CountryContestant } from '../../../data/CountryContestant';
 import Dropdown from '../../Dropdown';
+import { saveCategories } from '../../../utilities/CategoryUtil';
+import { setActiveCategory } from '../../../redux/actions';
 
 const AnalyzeTab: React.FC = () => {
+  const dispatch = useDispatch<any>();
   const year = useSelector((state: AppState) => state.year);
+  const categories = useSelector((state: AppState) => state.categories);
+  const activeCategory = useSelector((state: AppState) => state.activeCategory);
   const [voteType, setVoteType] = useState('televote');
   const [mostSimilarComparisons, setMostSimilarComparisons] = useState<RankingComparison[]>([]);
   const [mostDissimilarComparisons, setMostDissimilarComparisons] = useState<RankingComparison[]>([]);
   const [codeCountryNameMap, setCodeCountryNameMap] = useState<Map<string, Country[]>>(new Map());
 
 
+  
   // Get all country rank codes for the selected year and vote type
   const getAllCountryRankCodes = async (voteType: string, round: string, voteYear: string) => {
     const codeCountryNameMap = new Map<string, Country[]>();
@@ -55,7 +61,8 @@ const AnalyzeTab: React.FC = () => {
 
     // Find the most similar vote by country for the current ranking
   const findMostSimilarVoteByCountry = async () => {
-    const currentRankingCode = getUrlParam('r');
+    const extractedParams = getUrlParams(activeCategory);
+    const currentRankingCode = extractedParams.rankings;
     const codeCountryMap: Map<string, Country[]> = await getAllCountryRankCodes(voteType, 'final', year);
     setCodeCountryNameMap(codeCountryMap);
     const codeArrays = Array.from(codeCountryMap.keys());
@@ -65,7 +72,8 @@ const AnalyzeTab: React.FC = () => {
 
   // Find the most dissimilar vote by country for the current ranking
   const findMostDissimilarVoteByCountry = async () => {
-    const currentRankingCode = getUrlParam('r');
+    const extractedParams = getUrlParams(activeCategory);
+    const currentRankingCode = extractedParams.rankings;
     const codeCountryMap: Map<string, Country[]> = await getAllCountryRankCodes(voteType, 'final', year);
     setCodeCountryNameMap(codeCountryMap);
     const codeArrays = Array.from(codeCountryMap.keys());
@@ -99,6 +107,39 @@ const AnalyzeTab: React.FC = () => {
     return roundedPercent % 1 === 0 ? roundedPercent.toFixed(0) : roundedPercent.toFixed(1);
   };
 
+  const addRankingAsCategory = (rankingCode: string, rankingTitle: string) => {
+    const currentNonCatRanking = getUrlParam('r');
+
+    let updatedCategories = [...categories];
+
+    // if there's an uncategorized ranking create a cat for it 
+    if (currentNonCatRanking) {
+
+      const currentRankingTitle = 'Original Ranking';
+      const originalRanking = {
+        name: currentRankingTitle,
+        weight: 5,
+      };
+      updatedCategories = [...updatedCategories, originalRanking];
+   
+    }
+
+    const newCategory = {
+      name: rankingTitle,
+      weight: 5,
+    };
+
+    const categoriesWithNewRanking = [...updatedCategories, newCategory];
+    saveCategories(categoriesWithNewRanking, dispatch, updatedCategories, activeCategory);
+
+    // add param for new ranking based on the category index
+    const categoryIndex = categoriesWithNewRanking.length;
+    updateQueryParams({
+      [`r${categoryIndex}`]: rankingCode,
+    });
+  };
+
+  
   return (
     <div className="mb-0">
       <p className="relative mb-[1em] mt-2 text-sm">
@@ -133,26 +174,33 @@ const AnalyzeTab: React.FC = () => {
       </div>
       {mostSimilarComparisons.length > 0 && (
         <div className="mt-4">
-          <p className="text-sm">
-            Most similar {voteType} rankings:
-          </p>
+          <p className="text-sm">Most similar {voteType} rankings:</p>
           <ul>
             {mostSimilarComparisons.map((comparison, index) => (
               <li key={index}>
-                {getCountryNamesFromComparisons([comparison], codeCountryNameMap).map((countryName, countryIndex) => (
-                  <React.Fragment key={countryIndex}>
-                    <a
-                      href={getRankingUrl(comparison, countryName)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-500 hover:underline"
-                      title={getRankingTitle(voteType, countryName)}
-                    >
-                      {countryName} ({formatPercentSimilarity(comparison.percentSimilarity)}%)
-                    </a>
-                    {countryIndex < getCountryNamesFromComparisons([comparison], codeCountryNameMap).length - 1 && ', '}
-                  </React.Fragment>
-                ))}
+                {getCountryNamesFromComparisons([comparison], codeCountryNameMap).map((countryName, countryIndex) => {
+                  const rankingTitle = getRankingTitle(voteType, countryName);
+                  return (
+                    <React.Fragment key={countryIndex}>
+                      <a
+                        href={getRankingUrl(comparison, countryName)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-500 hover:underline"
+                        title={rankingTitle}
+                      >
+                        {countryName} ({formatPercentSimilarity(comparison.percentSimilarity)}%)
+                      </a>
+                      <IconButton
+                        className="ml-2 bg-blue-500 hover:bg-blue-700 text-white font-normal pl-[0.7em] rounded-md text-xs py-[0.5em] pr-[1em]"
+                        onClick={() => addRankingAsCategory(comparison.list2Code, rankingTitle, true)}
+                        icon={undefined}
+                        title="Add as Category"
+                      />
+                      {countryIndex < getCountryNamesFromComparisons([comparison], codeCountryNameMap).length - 1 && ', '}
+                    </React.Fragment>
+                  );
+                })}
               </li>
             ))}
           </ul>
@@ -160,26 +208,33 @@ const AnalyzeTab: React.FC = () => {
       )}
       {mostDissimilarComparisons.length > 0 && (
         <div className="mt-4">
-          <p className="text-sm">
-            Most dissimilar {voteType} rankings:
-          </p>
+          <p className="text-sm">Most dissimilar {voteType} rankings:</p>
           <ul>
             {mostDissimilarComparisons.map((comparison, index) => (
               <li key={index}>
-                {getCountryNamesFromComparisons([comparison], codeCountryNameMap).map((countryName, countryIndex) => (
-                  <React.Fragment key={countryIndex}>
-                    <a
-                      href={getRankingUrl(comparison, countryName)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-500 hover:underline"
-                      title={getRankingTitle(voteType, countryName)}
-                    >
-                      {countryName} ({formatPercentSimilarity(comparison.percentSimilarity)}%)
-                    </a>
-                    {countryIndex < getCountryNamesFromComparisons([comparison], codeCountryNameMap).length - 1 && ', '}
-                  </React.Fragment>
-                ))}
+                {getCountryNamesFromComparisons([comparison], codeCountryNameMap).map((countryName, countryIndex) => {
+                  const rankingTitle = getRankingTitle(voteType, countryName);
+                  return (
+                    <React.Fragment key={countryIndex}>
+                      <a
+                        href={getRankingUrl(comparison, countryName)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-500 hover:underline"
+                        title={rankingTitle}
+                      >
+                        {countryName} ({formatPercentSimilarity(comparison.percentSimilarity)}%)
+                      </a>
+                      <IconButton
+                        className="ml-2 bg-blue-500 hover:bg-blue-700 text-white font-normal pl-[0.7em] rounded-md text-xs py-[0.5em] pr-[1em]"
+                        onClick={() => addRankingAsCategory(comparison.list2Code, rankingTitle, true)}
+                        icon={undefined}
+                        title="Add as Category"
+                      />
+                      {countryIndex < getCountryNamesFromComparisons([comparison], codeCountryNameMap).length - 1 && ', '}
+                    </React.Fragment>
+                  );
+                })}
               </li>
             ))}
           </ul>

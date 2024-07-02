@@ -9,6 +9,7 @@ import { cachedYear, initialCountryContestantCache } from "../data/InitialContes
 import { SongDetails } from "../data/SongDetails";
 import { fetchContestantCsv } from "./CsvCache";
 
+const contestantCache: { [year: string]: Contestant[] } = {};
 
 export async function fetchCountryContestantsByYear(
   year: string,
@@ -184,13 +185,19 @@ async function getContestantsByYear(
 }
 
 /**
- * Returns all contestants for the provided year 
+ * Returns all contestants for the provided year. Caches each result 
+ * set by year. 
+ * 
  * @param year 
  * @returns 
  */
 export function getContestantsForYear(year: string): Promise<Contestant[]> {
+  if (contestantCache[year]) {
+    return Promise.resolve(contestantCache[year]);
+  }
+
   return new Promise((resolve, reject) => {
-      fetchContestantCsv()
+    fetchContestantCsv()
       .then(response => response)
       .then(csvString => {
         Papa.parse(csvString, {
@@ -240,6 +247,7 @@ export function getContestantsForYear(year: string): Promise<Contestant[]> {
               });
 
             const contestants = Array.from(tempStorage.values());
+            contestantCache[year] = contestants;
             resolve(contestants);
           },
           error: (error: any) => reject(error)

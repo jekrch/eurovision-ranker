@@ -26,7 +26,7 @@ const RankingsTab: React.FC = () => {
     useEffect(() => {
         const updateVoteSourceOptions = async () => {
             const yearContestants = await fetchCountryContestantsByYear(rankingYear);
-            console.log(yearContestants)
+
             setVoteSourceOptions([
                 'All',
                 ...yearContestants.map((cc) => cc.country).sort((a, b) => a.name.localeCompare(b.name)).map((c) => c.name),

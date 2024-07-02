@@ -103,9 +103,10 @@ const RankedItemsHeader: React.FC<IRankedItemsHeaderProps> = ({
                     />
                 </div>
             )}
+
             {(!showUnranked && categories.length > 0) && (
-                <div className="flex bg-gray-800 bg-opacity-40 border-gray-200 mt-1 -mb-[0.2em] overflow-x-auto">
-                <Ripples placeholder={<></>} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                <div key={`total-tab-container`} className="flex bg-gray-800 bg-opacity-40 border-gray-200 mt-1 -mb-[0.2em] overflow-x-auto">
+                <Ripples key="total-ripple" placeholder={<></>}>
                   <button
                     key="total-tab"
                     className={classNames(
@@ -118,9 +119,9 @@ const RankedItemsHeader: React.FC<IRankedItemsHeaderProps> = ({
                   </button>
                 </Ripples>
                 {categories.map((category, index) => (
-                  <Ripples placeholder={<></>} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+                  <Ripples key={`ripple-${index + 1}`} placeholder={<></>}>
                     <button
-                        key={index + 1}
+                      key={`cat-btn-${index + 1}`}
                       className={classNames(
                         "px-4 py-[0.2em] text-sm font-medium flex-shrink-0",
                         activeTab === index + 1 ? "text-blue-400 border-b-0 border-blue-400" : "text-gray-500 hover:text-blue-500"

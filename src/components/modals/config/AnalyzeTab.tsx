@@ -193,7 +193,7 @@ const AnalyzeTab: React.FC = () => {
                       </a>
                       <IconButton
                         className="ml-2 bg-blue-500 hover:bg-blue-700 text-white font-normal pl-[0.7em] rounded-md text-xs py-[0.5em] pr-[1em]"
-                        onClick={() => addRankingAsCategory(comparison.list2Code, rankingTitle, true)}
+                        onClick={() => addRankingAsCategory(comparison.list2Code, rankingTitle)}
                         icon={undefined}
                         title="Add as Category"
                       />
@@ -227,7 +227,7 @@ const AnalyzeTab: React.FC = () => {
                       </a>
                       <IconButton
                         className="ml-2 bg-blue-500 hover:bg-blue-700 text-white font-normal pl-[0.7em] rounded-md text-xs py-[0.5em] pr-[1em]"
-                        onClick={() => addRankingAsCategory(comparison.list2Code, rankingTitle, true)}
+                        onClick={() => addRankingAsCategory(comparison.list2Code, rankingTitle)}
                         icon={undefined}
                         title="Add as Category"
                       />

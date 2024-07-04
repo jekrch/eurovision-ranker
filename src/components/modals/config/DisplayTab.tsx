@@ -7,6 +7,8 @@ import { countries } from '../../../data/Countries';
 import Dropdown from '../../Dropdown';
 import Checkbox from '../../Checkbox';
 import { updateQueryParams } from '../../../utilities/UrlUtil';
+import { faQuestionCircle } from '@fortawesome/free-solid-svg-icons';
+import TooltipHelp from '../../TooltipHelp';
 
 const DisplayTab: React.FC = () => {
     const dispatch: Dispatch<any> = useDispatch();
@@ -74,15 +76,15 @@ const DisplayTab: React.FC = () => {
         }
     };
 
-     // Handle vote type input change
-     const onShowComparisonChange = (checked: boolean) => {
+    // Handle vote type input change
+    const onShowComparisonChange = (checked: boolean) => {
 
-        updateQueryParams({cm: checked === true ? 't' : 'f'})
+        updateQueryParams({ cm: checked === true ? 't' : 'f' })
         dispatch(
             setShowComparison(checked === true)
         );
 
-    
+
     };
 
     // Get vote source code from option
@@ -130,10 +132,19 @@ const DisplayTab: React.FC = () => {
 
     return (
         <div className="mb-0">
-            <div>                
+            <div>
                 <div className="mb-[0.5em] border-slate-700 border-b-[1px] pb-2 -mt-2">
                     <span className="flex items-center ml-2">
-                        <span className="ml-3 text-sm font-semibold">Show Votes:</span>
+                    <TooltipHelp
+                                icon={faQuestionCircle}
+                                tooltipContent="Select which types of votes to display with each ranked country"
+                                place="bottom-start"
+                            />
+                        <span className="ml-3 text-sm font-semibold">
+
+                            Show Votes:
+
+                        </span>
                         <Checkbox
                             id="total-checkbox"
                             checked={voteCodeHasType(vote, 't')}
@@ -159,10 +170,18 @@ const DisplayTab: React.FC = () => {
                     </span>
 
                     <div className="mt-[0.5em]">
-                        <span className="ml-5 text-sm font-semibold">{'From:'}</span>
+                    <TooltipHelp
+                                icon={faQuestionCircle}
+                                tooltipContent="Select the country to display votes from"
+                                place="bottom-start"
+                                className="ml-4"
+                            />
+                        <span className="ml-3 text-sm font-semibold">
+                            From:
+                        </span>
                         <Dropdown
                             key="country-selector-2"
-                            className="z-50 ml-5 min-w[6em] mx-auto mb-2"
+                            className="ml-5 min-w[6em] mx-auto mb-2"
                             menuClassName="w-auto"
                             value={displayVoteSource}
                             onChange={(s) => setDisplayVoteSource(s)}
@@ -174,10 +193,10 @@ const DisplayTab: React.FC = () => {
             </div>
 
             <div>
-                
+
                 <div className="mt-4">
                     <div>
-                    <div className="mb-2">
+                        <div className="mb-2">
                             <Checkbox
                                 id="total-checkbox"
                                 className="ml-2"

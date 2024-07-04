@@ -48,7 +48,7 @@ const Dropdown: React.FC<DropdownProps> = ({ value, onChange, options, className
   
 
   return (
-    <Menu as="div" className={classNames("relative inline-block text-left z-50", className)}>
+    <Menu as="div" className={classNames("relative inline-block text-left z-40", className)}>
       <div>
         <Menu.Button 
           ref={buttonRef}

@@ -27,7 +27,8 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
     const [activeTab, setActiveTab] = useState(props.tab);
 
     useEffect(() => {
-        setActiveTab(props.tab);
+        if (props.isOpen)
+            setActiveTab(props.tab);
         //setActiveTab('analyze');
     }, [props.tab, props.isOpen]);
 

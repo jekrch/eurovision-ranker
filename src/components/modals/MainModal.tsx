@@ -14,7 +14,9 @@ const MainModal: React.FC<MainModalProps> = (props: MainModalProps) => {
     const [activeTab, setActiveTab] = useState(props.tab);
 
     useEffect(() => {
-        setActiveTab(props.tab);
+        if (props.isOpen)
+            setActiveTab(props.tab);
+
     }, [props.tab, props.isOpen]);
 
     function startTour() {

@@ -1,5 +1,5 @@
-import { convertRankingsStrToArray, extractParams, updateStates } from "./UrlUtil";
-import { setName, setYear, setTheme, setVote } from '../redux/actions';
+import { UrlParams, convertRankingsStrToArray, extractParams, updateStates } from "./UrlUtil";
+import { setName, setYear, setTheme, setVote, setShowComparison } from '../redux/actions';
 import { defaultYear } from "../data/Contestants";
 import { JSDOM } from 'jsdom';
 
@@ -59,7 +59,8 @@ describe('extractParams', () => {
             contestYear: '2023',
             rankings: 'abc',
             theme: 'ab',
-            voteCode: 'f-tv'
+            voteCode: 'f-tv',
+            comparisonMode: null
         });
     });
 
@@ -77,6 +78,7 @@ describe('extractParams', () => {
             rankings: 'abc',
             theme: null,
             voteCode: null,
+            comparisonMode: null
         });
     });
 });
@@ -85,7 +87,8 @@ vi.mock('../redux/actions', () => ({
     setName: vi.fn(),
     setYear: vi.fn(),
     setTheme: vi.fn(),
-    setVote: vi.fn()
+    setVote: vi.fn(),
+    setShowComparison: vi.fn()
 }));
 
 
@@ -103,19 +106,45 @@ describe('updateStates', () => {
     });
 
     it('should dispatch setName when rankingName is provided', () => {
-        updateStates({ rankingName: 'Test Name', contestYear: null, theme: null, voteCode: null }, mockDispatch);
+        updateStates(
+            { 
+                rankingName: 'Test Name', 
+                contestYear: null, 
+                theme: null, 
+                voteCode: null, 
+                comparisonMode: null 
+            } as UrlParams, mockDispatch
+        );
         expect(setName).toHaveBeenCalledWith('Test Name');
         expect(mockDispatch).toHaveBeenCalledWith(setName('Test Name'));
     });
 
     it('should dispatch setYear with defaultYear when contestYear is not provided', () => {
-        updateStates({ rankingName: null, contestYear: null, theme: null, voteCode: null }, mockDispatch);
+        updateStates(
+            { 
+                rankingName: null, 
+                contestYear: null,
+                 theme: null, 
+                 voteCode: null, 
+                 comparisonMode: null 
+            } as UrlParams, 
+            mockDispatch
+        );
         expect(setYear).toHaveBeenCalledWith(defaultYear);
         expect(mockDispatch).toHaveBeenCalledWith(setYear(defaultYear));
     });
 
     it('should dispatch setTheme and setVote with empty strings when they are not provided', () => {
-        updateStates({ rankingName: null, contestYear: null, theme: null, voteCode: null }, mockDispatch);
+        updateStates(
+            { 
+                rankingName: null, 
+                contestYear: null,
+                 theme: null, 
+                 voteCode: null, 
+                 comparisonMode: null 
+            } as UrlParams, 
+            mockDispatch
+        );
         expect(setTheme).toHaveBeenCalledWith('');
         expect(setVote).toHaveBeenCalledWith('');
         expect(mockDispatch).toHaveBeenCalledWith(setTheme(''));

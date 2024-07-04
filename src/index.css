@@ -316,6 +316,21 @@ code {
   width: clamp(6em, 45vw, 10.5em);
 }
 
+
+/* .opaque {
+  opacity: 1 !important;
+}
+
+show {
+  opacity: 100 !important;
+  transition: 0;
+} */
+
+/* .react-tooltip {
+  opacity: 1 !important;
+  --rt-opacity: 1 !important;
+  background-color: red !important;
+} */
 .overlay {
   /* position: fixed;
   left: 0;

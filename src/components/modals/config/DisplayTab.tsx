@@ -1,7 +1,7 @@
 import React, { Dispatch, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '../../../redux/types';
-import { setTheme, setVote, setContestants } from '../../../redux/actions';
+import { setTheme, setVote, setContestants, setShowComparison } from '../../../redux/actions';
 import { assignVotesByCode, updateVoteTypeCode, voteCodeHasType } from '../../../utilities/VoteProcessor';
 import { countries } from '../../../data/Countries';
 import Dropdown from '../../Dropdown';
@@ -12,6 +12,7 @@ const DisplayTab: React.FC = () => {
     const dispatch: Dispatch<any> = useDispatch();
     const vote = useSelector((state: AppState) => state.vote);
     const theme = useSelector((state: AppState) => state.theme);
+    const showComparison = useSelector((state: AppState) => state.showComparison);
     const contestants = useSelector((state: AppState) => state.contestants);
 
     const year = useSelector((state: AppState) => state.year);
@@ -33,7 +34,6 @@ const DisplayTab: React.FC = () => {
 
         return countries.filter((c) => c.key === sourceCountryKey)?.[0]?.name;
     };
-
 
     const [displayVoteSource, setDisplayVoteSource] = useState(() => getVoteSourceOption(vote));
     const [voteDisplaySourceOptions, setVoteDisplaySourceOptions] = useState<string[]>([
@@ -72,6 +72,17 @@ const DisplayTab: React.FC = () => {
             dispatch(setVote(newVote));
             updateQueryParams({ v: newVote });
         }
+    };
+
+     // Handle vote type input change
+     const onShowComparisonChange = (checked: boolean) => {
+
+        updateQueryParams({cm: checked === true ? 't' : 'f'})
+        dispatch(
+            setShowComparison(checked === true)
+        );
+
+    
     };
 
     // Get vote source code from option
@@ -119,11 +130,10 @@ const DisplayTab: React.FC = () => {
 
     return (
         <div className="mb-0">
-            <div>
-                <h4 className="font-bold mb-[0.2em]">Show Votes</h4>
-
-                <div className="mb-[0.5em] border-slate-700 border-y-[1px]">
+            <div>                
+                <div className="mb-[0.5em] border-slate-700 border-b-[1px] pb-2 -mt-2">
                     <span className="flex items-center ml-2">
+                        <span className="ml-3 text-sm font-semibold">Show Votes:</span>
                         <Checkbox
                             id="total-checkbox"
                             checked={voteCodeHasType(vote, 't')}
@@ -149,10 +159,10 @@ const DisplayTab: React.FC = () => {
                     </span>
 
                     <div className="mt-[0.5em]">
-                        <span className="ml-5 text-sm">{'From'}</span>
+                        <span className="ml-5 text-sm font-semibold">{'From:'}</span>
                         <Dropdown
                             key="country-selector-2"
-                            className="z-50 ml-4 min-w[6em] mx-auto mb-2"
+                            className="z-50 ml-5 min-w[6em] mx-auto mb-2"
                             menuClassName="w-auto"
                             value={displayVoteSource}
                             onChange={(s) => setDisplayVoteSource(s)}
@@ -164,18 +174,29 @@ const DisplayTab: React.FC = () => {
             </div>
 
             <div>
-                <h4 className="font-bold mb-[0.7em] mt-[0em]">Theme</h4>
-
-                <div className="">
-                    <Dropdown
-                        key="theme-selector"
-                        className="ml-5 z-50 w-30 mx-auto mb-3"
-                        menuClassName=""
-                        value={themeSelection}
-                        onChange={(v) => onThemeInputChanged(v)}
-                        options={['None', 'Auroral']}
-                        showSearch={false}
-                    />
+                
+                <div className="mt-4">
+                    <div>
+                    <div className="mb-2">
+                            <Checkbox
+                                id="total-checkbox"
+                                className="ml-2"
+                                checked={showComparison}
+                                onChange={(c) => onShowComparisonChange(c)}
+                                label="Show Category Comparisons"
+                            />
+                        </div>
+                        <span className="ml-5 font-semibold text-sm mb-[0.7em]">Theme:</span>
+                        <Dropdown
+                            key="theme-selector"
+                            className="ml-5 z-50 w-30 mx-auto mb-3"
+                            menuClassName=""
+                            value={themeSelection}
+                            onChange={(v) => onThemeInputChanged(v)}
+                            options={['None', 'Auroral']}
+                            showSearch={false}
+                        />
+                    </div>
                 </div>
             </div>
         </div>

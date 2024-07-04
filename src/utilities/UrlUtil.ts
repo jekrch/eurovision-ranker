@@ -1,31 +1,39 @@
 import { Dispatch } from 'redux';
-import { setName, setYear, setRankedItems, setUnrankedItems, setContestants, setTheme, setVote } from '../redux/actions';
+import { setName, setYear, setRankedItems, setUnrankedItems, setContestants, setTheme, setVote, setShowComparison } from '../redux/actions';
 import { fetchCountryContestantsByYear } from './ContestantRepository';
 import { CountryContestant } from '../data/CountryContestant';
 import { countries } from '../data/Countries';
 import { defaultYear, sanitizeYear } from '../data/Contestants';
-import { getRankingComparison } from './RankAnalyzer';
+
 import { Category } from './CategoryUtil';
+
+export type UrlParams = {
+    rankingName: string | null;     // n
+    contestYear: string | null;     // y
+    rankings: string | null;        // r
+    theme: string | null;           // t: ab
+    voteCode: string | null;        // v: {round}-{type}-{fromCountryKey} f-t-gb
+    comparisonMode: string | null;  // cm: t/f
+}
 
 /**
  * Updates states based on extracted parameters using Redux.
  */
 export const updateStates = (
-    params: {
-        rankingName: string | null,
-        contestYear: string | null,
-        theme: string | null,
-        voteCode: string | null
-    },
+    params: UrlParams,
     dispatch: Dispatch<any>
 ) => {
-    let { rankingName, contestYear, theme, voteCode } = params;
+    let { rankingName, contestYear, theme, voteCode, comparisonMode } = params;
 
     if (rankingName) {
         dispatch(
             setName(rankingName)
         );
     }
+
+    dispatch(
+        setShowComparison(comparisonMode === 't')
+    );
 
     dispatch(
         setTheme(theme ?? "")
@@ -149,7 +157,7 @@ export async function decodeRankingsFromURL(
     dispatch: Dispatch<any>
 ): Promise<string[] | undefined> {
 
-    const extractedParams = getUrlParams(activeCategory);
+    const extractedParams: UrlParams = getUrlParams(activeCategory);
 
     // console.log(activeCategory)
     // console.log(window.location.search)
@@ -165,10 +173,9 @@ export async function decodeRankingsFromURL(
     );
 };
 
-export function getUrlParams(activeCategory: number | undefined) {
+export function getUrlParams(activeCategory: number | undefined): UrlParams {
     const params = new URLSearchParams(window.location.search);
-    const extractedParams = extractParams(params, activeCategory);
-    return extractedParams;
+    return extractParams(params, activeCategory);
 }
 
 export function getUrlParam(paramName: string): string | null {
@@ -246,14 +253,15 @@ export function clearAllRankingParams(categories: Category[]) {
     window.history.replaceState(null, '', newUrl);
 }
 
-export const extractParams = (params: URLSearchParams, activeCategory: number | undefined) => {
+export const extractParams = (params: URLSearchParams, activeCategory: number | undefined): UrlParams => {
     return {
         rankingName: params.get('n'),
         contestYear: params.get('y'),
         rankings: params.get(`r${activeCategory !== undefined ? activeCategory + 1 : ''}`),
-        theme: params.get('t'),         // e.g. ab
-        voteCode: params.get('v')       // e.g. {round}-{type}-{fromCountryKey} f-t-gb
-    };
+        theme: params.get('t'),           // e.g. ab
+        voteCode: params.get('v'),        // e.g. {round}-{type}-{fromCountryKey} f-t-gb
+        comparisonMode: params.get('cm')  // e.g. t/f
+    } as UrlParams;
 };
 
 export  const updateUrlFromRankedItems = async (

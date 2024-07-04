@@ -13,6 +13,7 @@ export interface AppState {
     categories: Category[];
     activeCategory: number | undefined;
     showTotalRank: boolean;
+    showComparison: boolean;
     theme: string;
     vote: string;
   }
@@ -84,5 +85,10 @@ export interface AppState {
 
   export interface SetShowTotalRank extends Action {
     type: 'SHOW_TOTAL_RANK';
+    payload: boolean;
+  }
+
+  export interface SetShowComparison extends Action {
+    type: 'SHOW_COMPARISON';
     payload: boolean;
   }

@@ -1,6 +1,6 @@
 import { Category } from "../utilities/CategoryUtil";
 import { CountryContestant } from '../data/CountryContestant';
-import { SetNameAction, SetYearAction, SetRankedItemsAction, SetUnrankedItemsAction, SetShowUnrankedAction, SetContestantsAction, SetIsDeleteModeAction, SetThemeAction, SetVoteAction, SetHeaderMenuOpen, SetCategories, SetActiveCategory, SetShowTotalRank } from './types';
+import { SetNameAction, SetYearAction, SetRankedItemsAction, SetUnrankedItemsAction, SetShowUnrankedAction, SetContestantsAction, SetIsDeleteModeAction, SetThemeAction, SetVoteAction, SetHeaderMenuOpen, SetCategories, SetActiveCategory, SetShowTotalRank, SetShowComparison } from './types';
 
 export const SET_NAME = 'SET_NAME';
 export const SET_YEAR = 'SET_YEAR';
@@ -15,6 +15,7 @@ export const SET_UNRANKED_ITEMS = 'SET_UNRANKED_ITEMS';
 export const SET_CATEGORIES = 'SET_CATEGORIES';
 export const SET_ACTIVE_CATEGORY = 'SET_ACTIVE_CATEGORY';
 export const SET_SHOW_TOTAL_RANK = 'SHOW_TOTAL_RANK'
+export const SET_SHOW_COMPARISON = 'SHOW_COMPARISON';
 
 export const setName = (name: string): SetNameAction => (
     { type: SET_NAME, payload: name }
@@ -66,4 +67,8 @@ export const setActiveCategory = (index: number | undefined): SetActiveCategory 
 
 export const setShowTotalRank = (show: boolean): SetShowTotalRank => (
     { type: SET_SHOW_TOTAL_RANK, payload: show }
+);
+
+export const setShowComparison = (show: boolean): SetShowComparison => (
+    { type: SET_SHOW_COMPARISON, payload: show }
 );

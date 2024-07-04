@@ -30,7 +30,9 @@ export interface DetailsCardProps {
 export const DetailsCard: FC<DetailsCardProps> = (props) => {
   const vote = useSelector((state: AppState) => state.vote);
   const categories = useSelector((state: AppState) => state.categories);
+  const activeCategory = useSelector((state: AppState) => state.activeCategory);
   const showTotalRank = useSelector((state: AppState) => state.showTotalRank);
+  const showComparison = useSelector((state: AppState) => state.showComparison);
   const contestant = props.countryContestant.contestant;
   const country = props.countryContestant.country;
   const categoryRankingsRef = useRef<HTMLDivElement>(null);
@@ -42,7 +44,7 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
   }, [props.categoryScrollPosition]);
   
   function getCategoryRankings() {
-    if (!showTotalRank) return undefined;
+    if (!showTotalRank && !showComparison) return undefined;
 
     return getCountryCategoryRankingsFromUrl(categories, country);
   }
@@ -177,7 +179,7 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
         }
 
       </div>
-      {showTotalRank && (
+      {categories?.length && (showTotalRank || showComparison) && (
         <div 
           ref={categoryRankingsRef}
           className="mt-0 mx-[0.6em] shadow-lg rounded-b-md bg-[#1c214c] bg-opacity-100 border-gray-600 border-x-[0.01em] border-b-[0.01em] overflow-x-auto relative"
@@ -186,10 +188,14 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
           <div className="flex">
             {categories.map((category, index) => {
               
-              const categoryRankName = categoryRankings?.[category.name];
+              if (!showTotalRank && index === activeCategory) {
+                return;
+              }
+
+              const categoryRankIndex = categoryRankings?.[category.name];
               
               var { arrowIcon, rankDifference } = getRankIconaAndDiff(
-                props.rank, categoryRankName
+                props.rank, categoryRankIndex
               );
 
               return (
@@ -199,7 +205,7 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
                   title={`weight: ${category.weight}`}
                 >
                   <span className="">{category.name}:</span>{' '}
-                  <span className="ml-1 font-medium text-slate-300">{categoryRankName || 'N/A'}</span>
+                  <span className="ml-1 font-medium text-slate-300">{categoryRankIndex || 'N/A'}</span>
                   {arrowIcon &&
                     <FontAwesomeIcon
                       icon={arrowIcon}

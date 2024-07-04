@@ -93,7 +93,7 @@ const AnalyzeTab: React.FC = () => {
 
   // Get the title for the ranking link based on the vote type and country name
   const getRankingTitle = (voteType: string, countryName: string) => {
-    return `Final ${voteType.charAt(0).toUpperCase() + voteType.slice(1)} from ${countryName}`;
+    return `${voteType.charAt(0).toUpperCase() + voteType.slice(1)}: ${countryName}`;
   };
 
   // Get the URL for the ranking link based on the comparison, year, vote type, and country name
@@ -115,7 +115,7 @@ const AnalyzeTab: React.FC = () => {
     // if there's an uncategorized ranking create a cat for it 
     if (currentNonCatRanking) {
 
-      const currentRankingTitle = 'Original Ranking';
+      const currentRankingTitle = 'Original';
       const originalRanking = {
         name: currentRankingTitle,
         weight: 5,
@@ -124,13 +124,20 @@ const AnalyzeTab: React.FC = () => {
    
     }
 
+    // comparison categories should have no weight so that the total 
+    // ranking reflect the original
     const newCategory = {
       name: rankingTitle,
-      weight: 5,
+      weight: 0,
     };
 
     const categoriesWithNewRanking = [...updatedCategories, newCategory];
-    saveCategories(categoriesWithNewRanking, dispatch, updatedCategories, activeCategory);
+    saveCategories(
+      categoriesWithNewRanking, 
+      dispatch, 
+      updatedCategories, 
+      activeCategory
+    );
 
     // add param for new ranking based on the category index
     const categoryIndex = categoriesWithNewRanking.length;

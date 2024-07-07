@@ -12,14 +12,17 @@ import { CountryContestant } from '../../../data/CountryContestant';
 import Dropdown from '../../Dropdown';
 import { saveCategories } from '../../../utilities/CategoryUtil';
 import { setActiveCategory } from '../../../redux/actions';
-import { getSourceCountryKey, getVoteTypeCodeFromOption } from '../../../utilities/VoteUtil';
+import { getSourceCountryKey, getVoteTypeCodeFromOption, getVoteTypeOptionsByYear } from '../../../utilities/VoteUtil';
 
 const AnalyzeTab: React.FC = () => {
   const dispatch = useDispatch<any>();
   const year = useSelector((state: AppState) => state.year);
   const categories = useSelector((state: AppState) => state.categories);
   const activeCategory = useSelector((state: AppState) => state.activeCategory);
-  const [voteType, setVoteType] = useState('Televote');
+  const [voteType, setVoteType] = useState(
+      // if we have all 3 vote types for this year, use Televote as the default, else use Total
+      getVoteTypeOptionsByYear(year)?.length > 1 ? 'Televote' : 'Total'
+  );
   const [mostSimilarComparisons, setMostSimilarComparisons] = useState<RankingComparison[]>([]);
   const [mostDissimilarComparisons, setMostDissimilarComparisons] = useState<RankingComparison[]>([]);
   const [codeCountryNameMap, setCodeCountryNameMap] = useState<Map<string, Country[]>>(new Map());
@@ -168,7 +171,7 @@ const AnalyzeTab: React.FC = () => {
               setMostSimilarComparisons([]);
               setMostDissimilarComparisons([]);
             }}
-            options={['Total', 'Televote', 'Jury']}
+            options={getVoteTypeOptionsByYear(year)}
             showSearch={false}
           />
         </div>

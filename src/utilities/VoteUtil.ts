@@ -1,5 +1,6 @@
 import { countries } from "../data/Countries";
 import { CountryContestant } from "../data/CountryContestant";
+import { sanitizeYear } from '../data/Contestants';
 
 export function getSourceCountryKey(voteSource: string) {
 
@@ -13,6 +14,7 @@ export function getSourceCountryKey(voteSource: string) {
         return sourceCountryKey;
     }
 }
+
 export function hasAnyJuryVotes(yearContestants: CountryContestant[]) {
     return yearContestants.some(cc => cc?.contestant?.votes?.juryPoints &&
         cc?.contestant?.votes?.juryPoints > 0
@@ -23,6 +25,14 @@ export function hasAnyTeleVotes(yearContestants: CountryContestant[]) {
     return yearContestants.some(cc => cc?.contestant?.votes?.telePoints &&
         cc?.contestant?.votes?.telePoints > 0
     );
+}
+
+export function getVoteTypeOptionsByYear(year: string): string[] {
+    year = sanitizeYear(year);
+    if (parseInt(year) > 2016)
+        return ['Total', 'Televote', 'Jury'];
+    else
+        return ['Total']
 }
 
 export function getVoteTypeOption(voteCode: string) {
@@ -63,27 +73,27 @@ export function getVoteTypeCodeFromOption(
     }
 }
 
-    /**
-     * Returns the vote code param for the provided round, type, and source (country)
-     * 
-     * @param round 
-     * @param voteType 
-     * @param voteSource 
-     * @returns 
-     */
-    export function getVoteCode(
-        round: string,
-        voteType: string,
-        voteSource: string
-    ) {
+/**
+ * Returns the vote code param for the provided round, type, and source (country)
+ * 
+ * @param round 
+ * @param voteType 
+ * @param voteSource 
+ * @returns 
+ */
+export function getVoteCode(
+    round: string,
+    voteType: string,
+    voteSource: string
+) {
 
-        let voteCode = `${round}-${voteType}`;
+    let voteCode = `${round}-${voteType}`;
 
-        const countryKey = getSourceCountryKey(voteSource);
+    const countryKey = getSourceCountryKey(voteSource);
 
-        if (countryKey?.length) {
-            voteCode += `-${countryKey}`;
-        }
-
-        return voteCode;
+    if (countryKey?.length) {
+        voteCode += `-${countryKey}`;
     }
+
+    return voteCode;
+}

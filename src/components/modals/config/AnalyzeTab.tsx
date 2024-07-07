@@ -15,6 +15,10 @@ import { setActiveCategory, setShowComparison } from '../../../redux/actions';
 import { getSourceCountryKey, getVoteTypeCodeFromOption, getVoteTypeOptionsByYear } from '../../../utilities/VoteUtil';
 import TooltipHelp from '../../TooltipHelp';
 import Checkbox from '../../Checkbox';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faNewspaper } from '@fortawesome/free-solid-svg-icons';
+import BetaBadge from '../../BetaBadge';
+import classNames from 'classnames';
 
 const AnalyzeTab: React.FC = () => {
   const dispatch = useDispatch<any>();
@@ -167,9 +171,14 @@ const AnalyzeTab: React.FC = () => {
 
   return (
     <div className="mb-0">
-      <p className="relative mb-[1em] mt-2 text-sm">
-        Compare your current ranking with the Jury or Tele vote from each participating country
-      </p>
+      <div className="relative mb-[1em] mt-2 flex items-center">
+    <div className="flex justify-center items-center mr-3 ml-3">
+      <BetaBadge className="flex-shrink-0" />
+    </div>
+    <p className="text-sm mr-1">
+      Compare your current ranking with the Jury or Tele vote from each participating country
+    </p>
+  </div>
       <div className="mt-5 mb-[1.5em]">
         <div>
           <Dropdown

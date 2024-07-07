@@ -76,15 +76,15 @@ const DisplayTab: React.FC = () => {
         }
     };
 
-    // Handle vote type input change
+    /**
+     * Handle click even on show category comparison checkbox
+     * @param checked 
+     */
     const onShowComparisonChange = (checked: boolean) => {
-
         updateQueryParams({ cm: checked === true ? 't' : 'f' })
         dispatch(
             setShowComparison(checked === true)
         );
-
-
     };
 
     // Get vote source code from option
@@ -135,11 +135,9 @@ const DisplayTab: React.FC = () => {
             <div>
                 <div className="mb-[0.5em] border-slate-700 border-b-[1px] pb-2 -mt-2">
                     <span className="flex items-center ml-2">
-                    <TooltipHelp
-                                icon={faQuestionCircle}
-                                tooltipContent="Select which types of votes to display with each ranked country"
-                                place="bottom-start"
-                            />
+                        <TooltipHelp                        
+                            tooltipContent="Select which types of votes to display with each ranked country"
+                        />
                         <span className="ml-3 text-sm font-semibold">
 
                             Show Votes:
@@ -170,12 +168,10 @@ const DisplayTab: React.FC = () => {
                     </span>
 
                     <div className="mt-[0.5em]">
-                    <TooltipHelp
-                                icon={faQuestionCircle}
-                                tooltipContent="Select the country to display votes from"
-                                place="bottom-start"
-                                className="ml-4"
-                            />
+                        <TooltipHelp
+                            tooltipContent="Choose which country to display voting counts from. 'All' will show the total vote count"
+                            className="ml-4"
+                        />
                         <span className="ml-3 text-sm font-semibold">
                             From:
                         </span>
@@ -197,6 +193,10 @@ const DisplayTab: React.FC = () => {
                 <div className="mt-4">
                     <div>
                         <div className="mb-2">
+                            <TooltipHelp
+                                tooltipContent="When viewing a category ranking, also display the contestant's rank in each other category"
+                                className="ml-4 pb-1"
+                            />
                             <Checkbox
                                 id="total-checkbox"
                                 className="ml-2"
@@ -208,7 +208,7 @@ const DisplayTab: React.FC = () => {
                         <span className="ml-5 font-semibold text-sm mb-[0.7em]">Theme:</span>
                         <Dropdown
                             key="theme-selector"
-                            className="ml-5 z-50 w-30 mx-auto mb-3"
+                            className="ml-5 w-30 mx-auto mb-3"
                             menuClassName=""
                             value={themeSelection}
                             onChange={(v) => onThemeInputChanged(v)}

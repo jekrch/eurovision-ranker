@@ -43,19 +43,20 @@ export function getVoteTypeOption(voteCode: string) {
     }
 }
 
-function getVoteTypeCodeFromOption(
+export function getVoteTypeCodeFromOption(
     optionName: string
 ) {
     if (!optionName) {
         return;
     }
 
-    switch (optionName) {
-        case 'Jury':
+    switch (optionName?.toLowerCase()) {
+        case 'jury':
             return 'j'
-        case 'Total':
+        case 'total':
             return 't';
-        case 'Tele':
+        case 'tele':
+        case 'televote':
             return 'tv'
         default:
             return;

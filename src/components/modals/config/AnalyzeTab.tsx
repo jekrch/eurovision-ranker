@@ -12,19 +12,20 @@ import { CountryContestant } from '../../../data/CountryContestant';
 import Dropdown from '../../Dropdown';
 import { saveCategories } from '../../../utilities/CategoryUtil';
 import { setActiveCategory } from '../../../redux/actions';
+import { getSourceCountryKey, getVoteTypeCodeFromOption } from '../../../utilities/VoteUtil';
 
 const AnalyzeTab: React.FC = () => {
   const dispatch = useDispatch<any>();
   const year = useSelector((state: AppState) => state.year);
   const categories = useSelector((state: AppState) => state.categories);
   const activeCategory = useSelector((state: AppState) => state.activeCategory);
-  const [voteType, setVoteType] = useState('televote');
+  const [voteType, setVoteType] = useState('Televote');
   const [mostSimilarComparisons, setMostSimilarComparisons] = useState<RankingComparison[]>([]);
   const [mostDissimilarComparisons, setMostDissimilarComparisons] = useState<RankingComparison[]>([]);
   const [codeCountryNameMap, setCodeCountryNameMap] = useState<Map<string, Country[]>>(new Map());
 
 
-  
+
   // Get all country rank codes for the selected year and vote type
   const getAllCountryRankCodes = async (voteType: string, round: string, voteYear: string) => {
     const codeCountryNameMap = new Map<string, Country[]>();
@@ -59,7 +60,7 @@ const AnalyzeTab: React.FC = () => {
     return sortedContestants.map((cc) => cc.id).join('');
   };
 
-    // Find the most similar vote by country for the current ranking
+  // Find the most similar vote by country for the current ranking
   const findMostSimilarVoteByCountry = async () => {
     const extractedParams = getUrlParams(activeCategory);
     const currentRankingCode = extractedParams.rankings;
@@ -81,9 +82,9 @@ const AnalyzeTab: React.FC = () => {
     setMostDissimilarComparisons(dissimilarComparisons);
   };
 
-  
+
   function getCountryNamesFromComparisons(
-    mostSimilarComparisons: RankingComparison[], 
+    mostSimilarComparisons: RankingComparison[],
     codeCountryNameMap: Map<string, Country[]>
   ): string[] {
     return mostSimilarComparisons
@@ -98,7 +99,10 @@ const AnalyzeTab: React.FC = () => {
 
   // Get the URL for the ranking link based on the comparison, year, vote type, and country name
   const getRankingUrl = (comparison: RankingComparison, countryName: string) => {
-    return `?r=${comparison.list2Code}&y=${year.substring(2, 4)}&n=${getRankingTitle(voteType, countryName).replaceAll(' ', '+')}&v=${voteType === 'televote' ? 'tv' : 'j'}`;
+    return `?r=${comparison.list2Code}` + 
+           `&y=${year.substring(2, 4)}` +
+           `&n=${getRankingTitle(voteType, countryName).replaceAll(' ', '+')}` + 
+           `&v=f-${getVoteTypeCodeFromOption(voteType)}-${getSourceCountryKey(countryName)}`;
   };
 
   // Format the percent similarity to the nearest tenth percent or percent if it's .0
@@ -121,7 +125,7 @@ const AnalyzeTab: React.FC = () => {
         weight: 5,
       };
       updatedCategories = [...updatedCategories, originalRanking];
-   
+
     }
 
     // comparison categories should have no weight so that the total 
@@ -133,9 +137,9 @@ const AnalyzeTab: React.FC = () => {
 
     const categoriesWithNewRanking = [...updatedCategories, newCategory];
     saveCategories(
-      categoriesWithNewRanking, 
-      dispatch, 
-      updatedCategories, 
+      categoriesWithNewRanking,
+      dispatch,
+      updatedCategories,
       activeCategory
     );
 
@@ -146,26 +150,28 @@ const AnalyzeTab: React.FC = () => {
     });
   };
 
-  
+
   return (
     <div className="mb-0">
       <p className="relative mb-[1em] mt-2 text-sm">
         Compare your current ranking with the Jury or Tele vote from each participating country
       </p>
       <div className="mt-5 mb-[1.5em]">
-        <Dropdown
-          key="vote-type-selector"
-          className="z-50 ml-3 mx-auto mb-2"
-          menuClassName="w-auto"
-          value={voteType}
-          onChange={(v) => {
-            setVoteType(v);
-            setMostSimilarComparisons([]);
-            setMostDissimilarComparisons([]);
-          }}
-          options={['televote', 'jury']}
-          showSearch={false}
-        />
+        <div className="mb-1">
+          <Dropdown
+            key="vote-type-selector"
+            className="z-50 ml-3 mx-auto mb-2"
+            menuClassName="w-auto"
+            value={voteType}
+            onChange={(v) => {
+              setVoteType(v);
+              setMostSimilarComparisons([]);
+              setMostDissimilarComparisons([]);
+            }}
+            options={['Total', 'Televote', 'Jury']}
+            showSearch={false}
+          />
+        </div>
         <IconButton
           className="ml-3 font-normal pl-[0.7em] rounded-md text-xs py-[0.5em] pr-[1em]"
           onClick={async () => await findMostSimilarVoteByCountry()}
@@ -184,7 +190,7 @@ const AnalyzeTab: React.FC = () => {
           <p className="text-sm">Most similar {voteType} rankings:</p>
           <ul>
             {mostSimilarComparisons.map((comparison, index) => (
-              <li key={index}>
+              <li key={index} className="mt-4">
                 {getCountryNamesFromComparisons([comparison], codeCountryNameMap).map((countryName, countryIndex) => {
                   const rankingTitle = getRankingTitle(voteType, countryName);
                   return (
@@ -218,7 +224,7 @@ const AnalyzeTab: React.FC = () => {
           <p className="text-sm">Most dissimilar {voteType} rankings:</p>
           <ul>
             {mostDissimilarComparisons.map((comparison, index) => (
-              <li key={index}>
+              <li key={index} className="mt-4">
                 {getCountryNamesFromComparisons([comparison], codeCountryNameMap).map((countryName, countryIndex) => {
                   const rankingTitle = getRankingTitle(voteType, countryName);
                   return (

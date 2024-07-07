@@ -4,12 +4,17 @@ import IconButton from '../../IconButton';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '../../../redux/types';
 import { deleteCategory, isValidCategoryName, parseCategoriesUrlParam, saveCategories } from '../../../utilities/CategoryUtil';
+import TooltipHelp from '../../TooltipHelp';
+import Checkbox from '../../Checkbox';
+import { setShowComparison } from '../../../redux/actions';
+import { updateQueryParams } from '../../../utilities/UrlUtil';
 
 const CategoriesTab: React.FC = () => {
   const dispatch: Dispatch<any> = useDispatch();
   const categories = useSelector((state: AppState) => state.categories);
   const activeCategory = useSelector((state: AppState) => state.activeCategory);
   const [newCategoryName, setNewCategoryName] = useState('');
+  const showComparison = useSelector((state: AppState) => state.showComparison);
 
 
   const addCategory = () => {
@@ -37,6 +42,17 @@ const CategoriesTab: React.FC = () => {
     updatedCategories[index].weight = weight;
     saveCategories(updatedCategories, dispatch, categories, activeCategory);
   };
+
+    /**
+     * Handle check even on show category comparison checkbox
+     * @param checked 
+     */
+      const onShowComparisonChange = (checked: boolean) => {
+        updateQueryParams({ cm: checked === true ? 't' : 'f' })
+        dispatch(
+            setShowComparison(checked === true)
+        );
+    };
 
   return (
     <div className="mb-0">
@@ -74,6 +90,18 @@ const CategoriesTab: React.FC = () => {
               title="Clear"
             />
           )}
+        </div>
+        <div className="mt-1">
+            <TooltipHelp
+                tooltipContent="When viewing a category ranking, also display the contestant's rank in each other category"
+                className="ml-2 pb-1"
+            />
+            <Checkbox
+                id="total-checkbox"      
+                checked={showComparison}
+                onChange={(c) => onShowComparisonChange(c)}
+                label="Show Category Comparisons"
+            />
         </div>
         <table className="mt-4 w-full table-auto">
           {categories?.length > 0 && (

@@ -179,7 +179,7 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
         }
 
       </div>
-      {categories?.length && (showTotalRank || showComparison) && (
+      {categories?.length > 0 && (showTotalRank || showComparison) && (
         <div 
           ref={categoryRankingsRef}
           className="mt-0 mx-[0.6em] shadow-lg rounded-b-md bg-[#1c214c] bg-opacity-100 border-gray-600 border-x-[0.01em] border-b-[0.01em] overflow-x-auto relative"

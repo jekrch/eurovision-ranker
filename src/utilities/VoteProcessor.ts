@@ -159,8 +159,9 @@ export function updateVoteTypeCode(
 } 
 
 function getVoteTypeFieldName(voteType: string) {
-    switch (voteType) {
+    switch (voteType?.toLowerCase()) {
         case 'tv':
+        case 'tele':
         case 'tele-vote':
         case 'televote':
             return 'telePoints';

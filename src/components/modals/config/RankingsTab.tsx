@@ -9,6 +9,7 @@ import { countries } from '../../../data/Countries';
 import Dropdown from '../../Dropdown';
 import IconButton from '../../IconButton';
 import { goToUrl } from '../../../utilities/UrlUtil';
+import TooltipHelp from '../../TooltipHelp';
 
 const RankingsTab: React.FC = () => {
     const year = useSelector((state: AppState) => state.year);
@@ -137,8 +138,11 @@ const RankingsTab: React.FC = () => {
                             options={supportedYears.filter((i) => i !== '2020')}
                             showSearch={true}
                         />
-                        <span className="ml-2 text-sm">{'from'}</span>
-
+                        <span className="ml-2 text-sm">from</span>
+                        <TooltipHelp
+                            tooltipContent="Choose which country to display voting counts from. 'All' will show the total vote count"
+                            className="ml-4"
+                        />
                         <Dropdown
                             key="country-selector"
                             className="z-50 ml-3 mx-auto mb-2"

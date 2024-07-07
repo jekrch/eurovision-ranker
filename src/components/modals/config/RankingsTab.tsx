@@ -131,7 +131,7 @@ const RankingsTab: React.FC = () => {
                 <div className="relative mt-[0.7em]">
                     <div>
                         <Dropdown
-                            className="z-50 w-20 mx-auto mb-2"
+                            className="w-20 mx-auto mb-2"
                             menuClassName=""
                             value={rankingYear ?? year}
                             onChange={(y) => setRankingYear(y)}
@@ -145,7 +145,7 @@ const RankingsTab: React.FC = () => {
                         />
                         <Dropdown
                             key="country-selector"
-                            className="z-50 ml-3 mx-auto mb-2"
+                            className="ml-3 mx-auto mb-2"
                             menuClassName="w-auto"
                             value={voteSource}
                             onChange={(s) => setVoteSource(s)}

@@ -43,16 +43,16 @@ const CategoriesTab: React.FC = () => {
     saveCategories(updatedCategories, dispatch, categories, activeCategory);
   };
 
-    /**
-     * Handle check even on show category comparison checkbox
-     * @param checked 
-     */
-      const onShowComparisonChange = (checked: boolean) => {
-        updateQueryParams({ cm: checked === true ? 't' : 'f' })
-        dispatch(
-            setShowComparison(checked === true)
-        );
-    };
+  /**
+   * Handle check even on show category comparison checkbox
+   * @param checked 
+   */
+  const onShowComparisonChange = (checked: boolean) => {
+    updateQueryParams({ cm: checked === true ? 't' : 'f' })
+    dispatch(
+      setShowComparison(checked === true)
+    );
+  };
 
   return (
     <div className="mb-0">
@@ -92,16 +92,16 @@ const CategoriesTab: React.FC = () => {
           )}
         </div>
         <div className="mt-1">
-            <TooltipHelp
-                tooltipContent="When viewing a category ranking, also display the contestant's rank in each other category"
-                className="ml-2 pb-1"
-            />
-            <Checkbox
-                id="total-checkbox"      
-                checked={showComparison}
-                onChange={(c) => onShowComparisonChange(c)}
-                label="Show Category Comparisons"
-            />
+          <TooltipHelp
+            tooltipContent="When viewing a category ranking, also display the contestant's rank in each other category"
+            className="ml-2 pb-1"
+          />
+          <Checkbox
+            id="total-checkbox"
+            checked={showComparison}
+            onChange={(c) => onShowComparisonChange(c)}
+            label="Show Category Comparisons"
+          />
         </div>
         <table className="mt-4 w-full table-auto">
           {categories?.length > 0 && (

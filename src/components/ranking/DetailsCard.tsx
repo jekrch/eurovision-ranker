@@ -205,7 +205,7 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
                   title={`weight: ${category.weight}`}
                 >
                   <span className="">{category.name}:</span>{' '}
-                  <span className="ml-1 font-medium text-slate-300">{categoryRankIndex || 'N/A'}</span>
+                  <span className="ml-1 font-medium text-slate-300">{categoryRankIndex || '--'}</span>
                   {arrowIcon &&
                     <FontAwesomeIcon
                       icon={arrowIcon}

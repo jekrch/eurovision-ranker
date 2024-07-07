@@ -11,8 +11,10 @@ import { Country } from '../../../data/Country';
 import { CountryContestant } from '../../../data/CountryContestant';
 import Dropdown from '../../Dropdown';
 import { saveCategories } from '../../../utilities/CategoryUtil';
-import { setActiveCategory } from '../../../redux/actions';
+import { setActiveCategory, setShowComparison } from '../../../redux/actions';
 import { getSourceCountryKey, getVoteTypeCodeFromOption, getVoteTypeOptionsByYear } from '../../../utilities/VoteUtil';
+import TooltipHelp from '../../TooltipHelp';
+import Checkbox from '../../Checkbox';
 
 const AnalyzeTab: React.FC = () => {
   const dispatch = useDispatch<any>();
@@ -20,14 +22,13 @@ const AnalyzeTab: React.FC = () => {
   const categories = useSelector((state: AppState) => state.categories);
   const activeCategory = useSelector((state: AppState) => state.activeCategory);
   const [voteType, setVoteType] = useState(
-      // if we have all 3 vote types for this year, use Televote as the default, else use Total
-      getVoteTypeOptionsByYear(year)?.length > 1 ? 'Televote' : 'Total'
+    // if we have all 3 vote types for this year, use Televote as the default, else use Total
+    getVoteTypeOptionsByYear(year)?.length > 1 ? 'Televote' : 'Total'
   );
   const [mostSimilarComparisons, setMostSimilarComparisons] = useState<RankingComparison[]>([]);
   const [mostDissimilarComparisons, setMostDissimilarComparisons] = useState<RankingComparison[]>([]);
   const [codeCountryNameMap, setCodeCountryNameMap] = useState<Map<string, Country[]>>(new Map());
-
-
+  const showComparison = useSelector((state: AppState) => state.showComparison);
 
   // Get all country rank codes for the selected year and vote type
   const getAllCountryRankCodes = async (voteType: string, round: string, voteYear: string) => {
@@ -102,10 +103,10 @@ const AnalyzeTab: React.FC = () => {
 
   // Get the URL for the ranking link based on the comparison, year, vote type, and country name
   const getRankingUrl = (comparison: RankingComparison, countryName: string) => {
-    return `?r=${comparison.list2Code}` + 
-           `&y=${year.substring(2, 4)}` +
-           `&n=${getRankingTitle(voteType, countryName).replaceAll(' ', '+')}` + 
-           `&v=f-${getVoteTypeCodeFromOption(voteType)}-${getSourceCountryKey(countryName)}`;
+    return `?r=${comparison.list2Code}` +
+      `&y=${year.substring(2, 4)}` +
+      `&n=${getRankingTitle(voteType, countryName).replaceAll(' ', '+')}` +
+      `&v=f-${getVoteTypeCodeFromOption(voteType)}-${getSourceCountryKey(countryName)}`;
   };
 
   // Format the percent similarity to the nearest tenth percent or percent if it's .0
@@ -153,6 +154,16 @@ const AnalyzeTab: React.FC = () => {
     });
   };
 
+  /**
+   * Handle check even on show category comparison checkbox
+   * @param checked 
+   */
+  const onShowComparisonChange = (checked: boolean) => {
+    updateQueryParams({ cm: checked === true ? 't' : 'f' })
+    dispatch(
+      setShowComparison(checked === true)
+    );
+  };
 
   return (
     <div className="mb-0">
@@ -160,7 +171,7 @@ const AnalyzeTab: React.FC = () => {
         Compare your current ranking with the Jury or Tele vote from each participating country
       </p>
       <div className="mt-5 mb-[1.5em]">
-        <div className="mb-1">
+        <div>
           <Dropdown
             key="vote-type-selector"
             className="z-50 ml-3 mx-auto mb-2"
@@ -173,6 +184,18 @@ const AnalyzeTab: React.FC = () => {
             }}
             options={getVoteTypeOptionsByYear(year)}
             showSearch={false}
+          />
+        </div>
+        <div className="mb-1">
+          <TooltipHelp
+            tooltipContent="When viewing a category ranking, also display the contestant's rank in each other category"
+            className="ml-2 pb-1"
+          />
+          <Checkbox
+            id="total-checkbox"
+            checked={showComparison}
+            onChange={(c) => onShowComparisonChange(c)}
+            label="Show Category Comparisons"
           />
         </div>
         <IconButton

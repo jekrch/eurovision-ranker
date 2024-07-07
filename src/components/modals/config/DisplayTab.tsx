@@ -77,7 +77,7 @@ const DisplayTab: React.FC = () => {
     };
 
     /**
-     * Handle click even on show category comparison checkbox
+     * Handle check even on show category comparison checkbox
      * @param checked 
      */
     const onShowComparisonChange = (checked: boolean) => {
@@ -199,7 +199,6 @@ const DisplayTab: React.FC = () => {
                             />
                             <Checkbox
                                 id="total-checkbox"
-                                className="ml-2"
                                 checked={showComparison}
                                 onChange={(c) => onShowComparisonChange(c)}
                                 label="Show Category Comparisons"

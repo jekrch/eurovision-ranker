@@ -25,7 +25,7 @@ const TooltipHelp: React.FC<TooltipHelpProps> = ({
                 <FontAwesomeIcon icon={icon} className={className} />
             </a>
             <Tooltip
-                className="z-50 max-w-[40vw]"
+                className="z-50 max-w-[40vw] !bg-[#3068ba] !text-slate-300"
                 id={tooltipId}
                 place={place as any}
                 variant="info"

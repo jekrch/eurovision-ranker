@@ -1,20 +1,20 @@
 import React, { Dispatch, useEffect, useState } from 'react';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import IconButton from '../../IconButton';
-import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '../../../redux/types';
-import { deleteCategory, isValidCategoryName, parseCategoriesUrlParam, saveCategories } from '../../../utilities/CategoryUtil';
+import { deleteCategory, isValidCategoryName, saveCategories } from '../../../utilities/CategoryUtil';
 import TooltipHelp from '../../TooltipHelp';
 import Checkbox from '../../Checkbox';
-import { setShowComparison } from '../../../redux/actions';
+import { setShowComparison } from '../../../redux/rootSlice';
 import { updateQueryParams } from '../../../utilities/UrlUtil';
+import { useAppDispatch, useAppSelector } from '../../../utilities/hooks';
 
 const CategoriesTab: React.FC = () => {
-  const dispatch: Dispatch<any> = useDispatch();
-  const categories = useSelector((state: AppState) => state.categories);
-  const activeCategory = useSelector((state: AppState) => state.activeCategory);
+  const dispatch: Dispatch<any> = useAppDispatch();
+  const categories = useAppSelector((state: AppState) => state.categories);
+  const activeCategory = useAppSelector((state: AppState) => state.activeCategory);
   const [newCategoryName, setNewCategoryName] = useState('');
-  const showComparison = useSelector((state: AppState) => state.showComparison);
+  const showComparison = useAppSelector((state: AppState) => state.showComparison);
 
 
   const addCategory = () => {

@@ -1,23 +1,24 @@
-import React, { Dispatch, useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useEffect, useState } from 'react';
 import { AppState } from '../../../redux/types';
-import { setTheme, setVote, setContestants, setShowComparison } from '../../../redux/actions';
+import { setTheme, setVote, setContestants, setShowComparison, setRankedItems } from '../../../redux/rootSlice';
 import { assignVotesByCode, updateVoteTypeCode, voteCodeHasType } from '../../../utilities/VoteProcessor';
 import { countries } from '../../../data/Countries';
 import Dropdown from '../../Dropdown';
 import Checkbox from '../../Checkbox';
 import { updateQueryParams } from '../../../utilities/UrlUtil';
-import { faQuestionCircle } from '@fortawesome/free-solid-svg-icons';
 import TooltipHelp from '../../TooltipHelp';
+import { useAppDispatch, useAppSelector } from '../../../utilities/hooks';
+import { Dispatch } from '@reduxjs/toolkit';
+import { CountryContestant } from '../../../data/CountryContestant';
 
 const DisplayTab: React.FC = () => {
-    const dispatch: Dispatch<any> = useDispatch();
-    const vote = useSelector((state: AppState) => state.vote);
-    const theme = useSelector((state: AppState) => state.theme);
-    const showComparison = useSelector((state: AppState) => state.showComparison);
-    const contestants = useSelector((state: AppState) => state.contestants);
-
-    const year = useSelector((state: AppState) => state.year);
+    const dispatch: Dispatch<any> = useAppDispatch();
+    const vote = useAppSelector((state: AppState) => state.vote);
+    const theme = useAppSelector((state: AppState) => state.theme);
+    const showComparison = useAppSelector((state: AppState) => state.showComparison);
+    const contestants = useAppSelector((state: AppState) => state.contestants);
+    const rankedItems = useAppSelector((state: AppState) => state.rankedItems);
+    const year = useAppSelector((state: AppState) => state.year);
     const [themeSelection, setThemeSelection] = useState('None');
 
     // Get vote source option based on vote code
@@ -110,6 +111,7 @@ const DisplayTab: React.FC = () => {
             let newVote = `f-${voteTypeCode}-${countryCode}`;
 
             let newContestants = await assignVotesByCode(
+                dispatch,
                 contestants,
                 year,
                 newVote
@@ -118,6 +120,18 @@ const DisplayTab: React.FC = () => {
             dispatch(
                 setContestants(newContestants)
             )
+
+            let newRankedItems: CountryContestant[] = [];
+            
+            for (const rankedItem of rankedItems) {
+                const newRankedItem = newContestants.find(c => c.id === rankedItem.id);
+                newRankedItems.push(newRankedItem ?? rankedItem);
+            }
+            console.log(newRankedItems);
+            dispatch(
+                setRankedItems(newRankedItems)
+            );
+            console.log(newContestants)
 
             if (newVote !== vote) {
                 updateQueryParams({ v: newVote });
@@ -135,7 +149,7 @@ const DisplayTab: React.FC = () => {
             <div>
                 <div className="mb-[0.5em] border-slate-700 border-b-[1px] pb-2 -mt-2">
                     <span className="flex items-center ml-2">
-                        <TooltipHelp                        
+                        <TooltipHelp
                             tooltipContent="Select which types of votes to display with each ranked country"
                         />
                         <span className="ml-3 text-sm font-semibold">

@@ -1,8 +1,8 @@
 import React, { Dispatch, useEffect, useRef, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '../../redux/types';
-import { setName } from '../../redux/actions';
+import { setName } from '../../redux/rootSlice';
 import Modal from './Modal';
+import { useAppDispatch, useAppSelector } from '../../utilities/hooks';
 
 type NameModalProps = {
     isOpen: boolean;
@@ -18,8 +18,8 @@ type NameModalProps = {
  * @returns 
  */
 const NameModal: React.FC<NameModalProps> = (props: NameModalProps) => {
-    const dispatch: Dispatch<any> = useDispatch();
-    const name = useSelector((state: AppState) => state.name);
+    const dispatch: Dispatch<any> = useAppDispatch();
+    const name = useAppSelector((state: AppState) => state.name);
     const [inputValue, setInputValue] = useState(name); 
     const inputRef = useRef<HTMLInputElement>(null);
     

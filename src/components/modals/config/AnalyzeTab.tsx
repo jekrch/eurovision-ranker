@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useState } from 'react';
 import { AppState } from '../../../redux/types';
 import { countries } from '../../../data/Countries';
 import { fetchCountryContestantsByYear } from '../../../utilities/ContestantRepository';
@@ -11,20 +10,18 @@ import { Country } from '../../../data/Country';
 import { CountryContestant } from '../../../data/CountryContestant';
 import Dropdown from '../../Dropdown';
 import { saveCategories } from '../../../utilities/CategoryUtil';
-import { setActiveCategory, setShowComparison } from '../../../redux/actions';
+import {  setShowComparison } from '../../../redux/rootSlice';
 import { getSourceCountryKey, getVoteTypeCodeFromOption, getVoteTypeOptionsByYear } from '../../../utilities/VoteUtil';
 import TooltipHelp from '../../TooltipHelp';
 import Checkbox from '../../Checkbox';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faNewspaper } from '@fortawesome/free-solid-svg-icons';
 import BetaBadge from '../../BetaBadge';
-import classNames from 'classnames';
+import { useAppDispatch, useAppSelector } from '../../../utilities/hooks';
 
 const AnalyzeTab: React.FC = () => {
-  const dispatch = useDispatch<any>();
-  const year = useSelector((state: AppState) => state.year);
-  const categories = useSelector((state: AppState) => state.categories);
-  const activeCategory = useSelector((state: AppState) => state.activeCategory);
+  const dispatch = useAppDispatch();
+  const year = useAppSelector((state: AppState) => state.year);
+  const categories = useAppSelector((state: AppState) => state.categories);
+  const activeCategory = useAppSelector((state: AppState) => state.activeCategory);
   const [voteType, setVoteType] = useState(
     // if we have all 3 vote types for this year, use Televote as the default, else use Total
     getVoteTypeOptionsByYear(year)?.length > 1 ? 'Televote' : 'Total'
@@ -32,7 +29,7 @@ const AnalyzeTab: React.FC = () => {
   const [mostSimilarComparisons, setMostSimilarComparisons] = useState<RankingComparison[]>([]);
   const [mostDissimilarComparisons, setMostDissimilarComparisons] = useState<RankingComparison[]>([]);
   const [codeCountryNameMap, setCodeCountryNameMap] = useState<Map<string, Country[]>>(new Map());
-  const showComparison = useSelector((state: AppState) => state.showComparison);
+  const showComparison = useAppSelector((state: AppState) => state.showComparison);
 
   // Get all country rank codes for the selected year and vote type
   const getAllCountryRankCodes = async (voteType: string, round: string, voteYear: string) => {

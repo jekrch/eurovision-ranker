@@ -2,7 +2,7 @@ import toast from "react-hot-toast";
 import { convertRankingsStrToArray, updateQueryParams } from "./UrlUtil";
 import { CountryContestant } from "../data/CountryContestant";
 import { Dispatch } from "react";
-import { setActiveCategory, setCategories, setShowTotalRank } from "../redux/actions";
+import { setActiveCategory, setCategories, setShowTotalRank } from "../redux/rootSlice";
 import { Country } from "../data/Country";
 
 export type Category = {

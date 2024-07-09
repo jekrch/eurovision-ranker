@@ -3,8 +3,8 @@ import { Draggable } from 'react-beautiful-dnd';
 import { StrictModeDroppable } from './StrictModeDroppable';
 import classNames from 'classnames';
 import { Card } from './Card';
-import { useSelector } from 'react-redux';
 import { AppState } from '../../redux/types';
+import { useAppSelector } from '../../utilities/hooks';
 
 /**
  * Displays all ranked countries in the left column list on the select view
@@ -14,7 +14,7 @@ import { AppState } from '../../redux/types';
 const UnrankedCountriesList: React.FC = ({
 }) => {
 
-    const unrankedItems = useSelector((state: AppState) => state.unrankedItems);
+    const unrankedItems = useAppSelector((state: AppState) => state.unrankedItems);
 
     return (
         <div className="min-w-[10em] max-w-[50vw] overflow-y-auto flex-grow mr-1">

@@ -2,7 +2,6 @@ import { CountryContestant } from "../../data/CountryContestant";
 import { convertToCSV, convertToJSON, copyDataToClipboard } from './ExportUtil';
 import { Contestant } from '../../data/Contestant';
 import { Country } from '../../data/Country';
-import { JSDOM } from 'jsdom';
 
 const mockCountryContestants = [
     {

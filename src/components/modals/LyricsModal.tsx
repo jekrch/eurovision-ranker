@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
 import { AppState } from '../../redux/types';
 import Modal from './Modal';
 import { CountryContestant } from '../../data/CountryContestant';
 import { getSongDetails } from '../../utilities/ContestantRepository';
+import { useAppSelector } from '../../utilities/hooks';
 
 type SongModalProps = {
     isOpen: boolean;
@@ -17,7 +17,7 @@ type SongModalProps = {
  * @returns 
  */
 const SongModal: React.FC<SongModalProps> = (props: SongModalProps) => {
-    const year = useSelector((state: AppState) => state.year);
+    const year = useAppSelector((state: AppState) => state.year);
     const [lyrics, setLyrics] = useState<string | undefined>('');
     const [engLyrics, setEngLyrics] = useState<string | undefined>('');
     const [composers, setComposers] = useState('');

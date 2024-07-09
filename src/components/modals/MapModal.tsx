@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { ComposableMap, Geographies, Geography } from 'react-simple-maps';
 import geoJson from '../../data/geoJson.json';
-import { useSelector } from 'react-redux';
 import { AppState } from '../../redux/types';
 import { ZoomableGroup } from 'react-simple-maps';
 import { Tooltip as ReactTooltip } from "react-tooltip";
 import Modal from './Modal';
+import { useAppSelector } from '../../utilities/hooks';
 
 interface MapModalProps {
     isOpen: boolean;
@@ -24,7 +24,7 @@ interface TooltipData {
  * @returns 
  */
 const MapModal: React.FC<MapModalProps> = ({ isOpen, onClose }) => {
-    const rankedItems = useSelector((state: AppState) => state.rankedItems);
+    const rankedItems = useAppSelector((state: AppState) => state.rankedItems);
 
     let countryCodes = rankedItems.map(i => i.country.key.toUpperCase());
     const isHighlighted = (countryCode: string) => countryCodes.includes(countryCode);

@@ -1,11 +1,11 @@
 import React, { Dispatch } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCog, faHouseUser } from '@fortawesome/free-solid-svg-icons';
-import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '../../redux/types';
-import { setShowUnranked } from '../../redux/actions';
+import { setShowUnranked } from '../../redux/rootSlice';
 import IconButton from '../IconButton';
 import classNames from 'classnames';
+import { useAppDispatch, useAppSelector } from '../../utilities/hooks';
 
 type NavbarProps = {
     openModal: (tabName: string) => void;
@@ -19,8 +19,8 @@ type NavbarProps = {
  * @returns 
  */
 const Navbar: React.FC<NavbarProps> = ({ openModal, openConfigModal }) => {
-    const dispatch: Dispatch<any> = useDispatch();
-    const showUnranked = useSelector((state: AppState) => state.showUnranked);
+    const dispatch: Dispatch<any> = useAppDispatch();
+    const showUnranked = useAppSelector((state: AppState) => state.showUnranked);
 
     return (
         <nav className="nav-diagonal-split-bg bg-gray-800 text-white py-1 px-4 sticky top-0 z-50">

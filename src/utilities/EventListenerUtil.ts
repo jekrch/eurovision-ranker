@@ -1,6 +1,6 @@
 import { Dispatch } from 'redux';
 import { decodeRankingsFromURL } from './UrlUtil';
-import { setShowUnranked } from '../redux/actions';
+import { setShowUnranked } from '../redux/rootSlice';
 
 
 export const setVh = () => {

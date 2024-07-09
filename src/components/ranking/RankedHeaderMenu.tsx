@@ -6,11 +6,11 @@ import classNames from 'classnames';
 import MenuItem from '../MenuItem';
 import SubmenuItem from '../SubmenuItem';
 import {  copyToClipboard, copyUrlToClipboard } from '../../utilities/export/ExportUtil';
-import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '../../redux/types';
 import { EXPORT_TYPE } from '../../utilities/export/ExportType';
 import { rankedHasAnyYoutubeLinks } from '../../utilities/YoutubeUtil';
-import { setHeaderMenuOpen } from '../../redux/actions';
+import { setHeaderMenuOpen } from '../../redux/rootSlice';
+import { useAppDispatch, useAppSelector } from '../../utilities/hooks';
 
 interface RankedHeaderMenuProps {
   onMapClick?: () => void;
@@ -22,9 +22,9 @@ interface RankedHeaderMenuProps {
 const RankedHeaderMenu: React.FC<RankedHeaderMenuProps> = (props: RankedHeaderMenuProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
-  const rankedItems = useSelector((state: AppState) => state.rankedItems);
-  const globalMenuOpenTrigger = useSelector((state: AppState) => state.headerMenuOpen);
-  const dispatch: Dispatch<any> = useDispatch();
+  const rankedItems = useAppSelector((state: AppState) => state.rankedItems);
+  const globalMenuOpenTrigger = useAppSelector((state: AppState) => state.headerMenuOpen);
+  const dispatch: Dispatch<any> = useAppDispatch();
   const CLOSING_DURATION = 300;
 
   const toggleMenu = () => {

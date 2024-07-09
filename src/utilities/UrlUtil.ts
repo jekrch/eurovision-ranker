@@ -1,11 +1,12 @@
-import { Dispatch } from 'redux';
-import { setName, setYear, setRankedItems, setUnrankedItems, setContestants, setTheme, setVote, setShowComparison } from '../redux/actions';
+
+import { setName, setYear, setRankedItems, setUnrankedItems, setContestants, setTheme, setVote, setShowComparison } from '../redux/rootSlice';
 import { fetchCountryContestantsByYear } from './ContestantRepository';
 import { CountryContestant } from '../data/CountryContestant';
 import { countries } from '../data/Countries';
 import { defaultYear, sanitizeYear } from '../data/Contestants';
 
 import { Category } from './CategoryUtil';
+import { Dispatch } from '@reduxjs/toolkit';
 
 export type UrlParams = {
     rankingName: string | null;     // n

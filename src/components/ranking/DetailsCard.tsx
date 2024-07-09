@@ -3,12 +3,12 @@ import { type FC, useRef, useEffect } from 'react';
 import { FaFileAlt, FaTv } from 'react-icons/fa';
 import Flag from "react-world-flags"
 import { CountryContestant } from '../../data/CountryContestant';
-import { useSelector } from 'react-redux';
 import { AppState } from '../../redux/types';
 import { voteCodeHasType } from '../../utilities/VoteProcessor';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAngleDoubleDown, faAngleDoubleUp, faAngleDown, faAngleUp } from '@fortawesome/free-solid-svg-icons';
 import { getCountryCategoryRankingsFromUrl } from '../../utilities/CategoryUtil';
+import { useAppSelector } from '../../utilities/hooks';
 
 export interface DetailsCardProps {
   rank?: number;
@@ -28,11 +28,11 @@ export interface DetailsCardProps {
  * @returns 
  */
 export const DetailsCard: FC<DetailsCardProps> = (props) => {
-  const vote = useSelector((state: AppState) => state.vote);
-  const categories = useSelector((state: AppState) => state.categories);
-  const activeCategory = useSelector((state: AppState) => state.activeCategory);
-  const showTotalRank = useSelector((state: AppState) => state.showTotalRank);
-  const showComparison = useSelector((state: AppState) => state.showComparison);
+  const vote = useAppSelector((state: AppState) => state.vote);
+  const categories = useAppSelector((state: AppState) => state.categories);
+  const activeCategory = useAppSelector((state: AppState) => state.activeCategory);
+  const showTotalRank = useAppSelector((state: AppState) => state.showTotalRank);
+  const showComparison = useAppSelector((state: AppState) => state.showComparison);
   const contestant = props.countryContestant.contestant;
   const country = props.countryContestant.country;
   const categoryRankingsRef = useRef<HTMLDivElement>(null);

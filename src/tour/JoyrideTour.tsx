@@ -1,9 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { CallBackProps, EVENTS, ACTIONS, STATUS } from 'react-joyride';
-import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '../redux/types';
-import { Dispatch } from 'redux';
-import { setYear, setName, setShowUnranked, setRankedItems, setUnrankedItems, setShowTotalRank, setHeaderMenuOpen, setContestants } from '../redux/actions';
+import { setYear, setName, setShowUnranked, setRankedItems, setUnrankedItems, setShowTotalRank, setHeaderMenuOpen, setContestants } from '../redux/rootSlice';
 import { fetchCountryContestantsByYear } from '../utilities/ContestantRepository';
 import { tourSteps } from '../tour/steps';
 import { joyrideOptions } from '../utilities/JoyrideUtil';
@@ -11,6 +9,8 @@ import Joyride from 'react-joyride';
 import { clearCategories, clearCategories as clearCategoriesUtil } from '../utilities/CategoryUtil';
 import { CountryContestant } from '../data/CountryContestant';
 import { clearAllRankingParams } from '../utilities/UrlUtil';
+import { useAppDispatch, useAppSelector } from '../utilities/hooks';
+import { Dispatch } from '@reduxjs/toolkit';
 
 interface JoyrideTourProps {
   setRefreshUrl: (num: number) => void;
@@ -21,13 +21,13 @@ interface JoyrideTourProps {
 }
 
 const JoyrideTour: React.FC<JoyrideTourProps> = (props: JoyrideTourProps) => {
-    const dispatch: Dispatch<any> = useDispatch();
-    const year = useSelector((state: AppState) => state.year);
-    const categories = useSelector((state: AppState) => state.categories);
-    const activeCategory = useSelector((state: AppState) => state.activeCategory);
-    const showTotalRank = useSelector((state: AppState) => state.showTotalRank);
-    const rankedItems = useSelector((state: AppState) => state.rankedItems);
-    const unrankedItems = useSelector((state: AppState) => state.unrankedItems);
+    const dispatch: Dispatch<any> = useAppDispatch();
+    const year = useAppSelector((state: AppState) => state.year);
+    const categories = useAppSelector((state: AppState) => state.categories);
+    const activeCategory = useAppSelector((state: AppState) => state.activeCategory);
+    const showTotalRank = useAppSelector((state: AppState) => state.showTotalRank);
+    const rankedItems = useAppSelector((state: AppState) => state.rankedItems);
+    const unrankedItems = useAppSelector((state: AppState) => state.unrankedItems);
 
     const [joyrideStepIndex, setJoyrideStepIndex] = useState(0);
   

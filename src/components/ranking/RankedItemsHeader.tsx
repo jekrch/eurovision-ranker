@@ -1,13 +1,12 @@
 import React, { Dispatch, useEffect, useState } from 'react';
 import Dropdown from '../Dropdown';
 import { CountryContestant } from '../../data/CountryContestant';
-import { useDispatch } from 'react-redux';
 import { AppState } from '../../redux/types';
-import { useSelector } from 'react-redux';
-import { setActiveCategory, setShowTotalRank, setYear } from '../../redux/actions';
+import { setActiveCategory, setShowTotalRank, setYear } from '../../redux/rootSlice';
 import RankedHeaderMenu from './RankedHeaderMenu';
 import classNames from 'classnames';
 import Ripples from 'react-ripples';
+import { useAppDispatch, useAppSelector } from '../../utilities/hooks';
 
 interface IRankedItemsHeaderProps {
     setMapModalShow: () => void;
@@ -26,14 +25,14 @@ const RankedItemsHeader: React.FC<IRankedItemsHeaderProps> = ({
     supportedYears,
     className
 }) => {
-    const dispatch: Dispatch<any> = useDispatch();
-    const year = useSelector((state: AppState) => state.year);
-    const name = useSelector((state: AppState) => state.name);
-    const rankedItems = useSelector((state: AppState) => state.rankedItems);
-    const showTotalRank = useSelector((state: AppState) => state.showTotalRank);
-    const categories = useSelector((state: AppState) => state.categories);
-    const showUnranked = useSelector((state: AppState) => state.showUnranked);
-    const activeCategory = useSelector((state: AppState) => state.activeCategory);
+    const dispatch: Dispatch<any> = useAppDispatch();
+    const year = useAppSelector((state: AppState) => state.year);
+    const name = useAppSelector((state: AppState) => state.name);
+    const rankedItems = useAppSelector((state: AppState) => state.rankedItems);
+    const showTotalRank = useAppSelector((state: AppState) => state.showTotalRank);
+    const categories = useAppSelector((state: AppState) => state.categories);
+    const showUnranked = useAppSelector((state: AppState) => state.showUnranked);
+    const activeCategory = useAppSelector((state: AppState) => state.activeCategory);
     const [activeTab, setActiveTab] = useState(categories?.length > 0 ? 1 : 0);
     
     useEffect(() => {

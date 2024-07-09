@@ -3,12 +3,12 @@ import { faArrowRight, faTrashAlt, faSquare, faCheckSquare, faPenAlt } from '@fo
 import classNames from 'classnames';
 import { CountryContestant } from '../../data/CountryContestant';
 import IconButton from '../IconButton';
-import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '../../redux/types';
-import { SetIsDeleteMode, setContestants, setRankedItems, setUnrankedItems } from '../../redux/actions';
+import { setIsDeleteMode, setContestants, setRankedItems, setUnrankedItems } from '../../redux/rootSlice';
 import { fetchCountryContestantsByYear } from '../../utilities/ContestantRepository';
 import { Dispatch } from 'redux';
 import { clearAllRankingParams } from '../../utilities/UrlUtil';
+import { useAppDispatch, useAppSelector } from '../../utilities/hooks';
 
 type EditNavProps = {
     setNameModalShow: React.Dispatch<SetStateAction<boolean>>;
@@ -23,12 +23,12 @@ type EditNavProps = {
  * @returns 
  */
 const EditNav: React.FC<EditNavProps> = ({ setNameModalShow, setRefreshUrl }) => {
-    const dispatch: Dispatch<any> = useDispatch();
-    const year = useSelector((state: AppState) => state.year);
-    const rankedItems = useSelector((state: AppState) => state.rankedItems);
-    const unrankedItems = useSelector((state: AppState) => state.unrankedItems);
-    const isDeleteMode = useSelector((state: AppState) => state.isDeleteMode);
-    const categories = useSelector((state: AppState) => state.categories);
+    const dispatch: Dispatch<any> = useAppDispatch();
+    const year = useAppSelector((state: AppState) => state.year);
+    const rankedItems = useAppSelector((state: AppState) => state.rankedItems);
+    const unrankedItems = useAppSelector((state: AppState) => state.unrankedItems);
+    const isDeleteMode = useAppSelector((state: AppState) => state.isDeleteMode);
+    const categories = useAppSelector((state: AppState) => state.categories);
 
     /**
    * Clear rankedItems and fill unrankedItems with the relevant year's contestants
@@ -117,7 +117,7 @@ const EditNav: React.FC<EditNavProps> = ({ setNameModalShow, setRefreshUrl }) =>
                                 iconClassName='mr-[0.3em]'
                                 onClick={() => {
                                     dispatch(
-                                        SetIsDeleteMode(!isDeleteMode)
+                                        setIsDeleteMode(!isDeleteMode)
                                     );
                                 }}
                                 title="Delete"

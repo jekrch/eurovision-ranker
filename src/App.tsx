@@ -7,8 +7,7 @@ import NameModal from './components/modals/NameModal';
 import Navbar from './components/nav/NavBar';
 import EditNav from './components/nav/EditNav';
 import { AppState } from './redux/types';
-import { useDispatch, useSelector } from 'react-redux';
-import { setRankedItems, setUnrankedItems, setShowUnranked, setActiveCategory, setShowTotalRank, setCategories } from './redux/actions';
+import { setRankedItems, setUnrankedItems, setShowUnranked, setActiveCategory, setShowTotalRank, setCategories } from './redux/rootSlice';
 import { decodeRankingsFromURL, encodeRankingsToURL, updateQueryParams, updateUrlFromRankedItems, urlHasRankings } from './utilities/UrlUtil';
 import { Dispatch } from 'redux';
 import MapModal from './components/modals/MapModal';
@@ -23,6 +22,7 @@ import JoyrideTour from './tour/JoyrideTour';
 import { addWindowEventListeners, handlePopState, removeWindowEventListeners, setVh } from './utilities/EventListenerUtil';
 import RankedCountriesList from './components/ranking/RankedCountriesList';
 import UnrankedCountriesList from './components/ranking/UnrankedCountriesList';
+import { useAppDispatch, useAppSelector } from './utilities/hooks';
 
 const App: React.FC = () => {
   const [mainModalShow, setMainModalShow] = useState(false);
@@ -33,17 +33,17 @@ const App: React.FC = () => {
   const [refreshRankedList, setRefreshRankedList] = useState(0);
   const [modalTab, setModalTab] = useState('about')
   const [configModalTab, setConfigModalTab] = useState('display')
-  const dispatch: Dispatch<any> = useDispatch();
-  const showUnranked = useSelector((state: AppState) => state.showUnranked);
-  const year = useSelector((state: AppState) => state.year);
-  const name = useSelector((state: AppState) => state.name);
-  const theme = useSelector((state: AppState) => state.theme);
-  const categories = useSelector((state: AppState) => state.categories);
-  const activeCategory = useSelector((state: AppState) => state.activeCategory);
-  const showTotalRank = useSelector((state: AppState) => state.showTotalRank);
-  const vote = useSelector((state: AppState) => state.vote);
-  const rankedItems = useSelector((state: AppState) => state.rankedItems);
-  const unrankedItems = useSelector((state: AppState) => state.unrankedItems);
+  const dispatch: Dispatch<any> = useAppDispatch();
+  const showUnranked = useAppSelector((state: AppState) => state.showUnranked);
+  const year = useAppSelector((state: AppState) => state.year);
+  const name = useAppSelector((state: AppState) => state.name);
+  const theme = useAppSelector((state: AppState) => state.theme);
+  const categories = useAppSelector((state: AppState) => state.categories);
+  const activeCategory = useAppSelector((state: AppState) => state.activeCategory);
+  const showTotalRank = useAppSelector((state: AppState) => state.showTotalRank);
+  const vote = useAppSelector((state: AppState) => state.vote);
+  const rankedItems = useAppSelector((state: AppState) => state.rankedItems);
+  const unrankedItems = useAppSelector((state: AppState) => state.unrankedItems);
   const [isSongModalOpen, setIsSongModalOpen] = useState(false);
   const [selectedCountryContestant, setSelectedCountryContestant] = useState<CountryContestant | undefined>(undefined);
   const [showOverlay, setShowOverlay] = useState(!areRankingsSet());

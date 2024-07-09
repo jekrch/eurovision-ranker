@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '../../../redux/types';
 import { sortByVotes } from '../../../utilities/VoteProcessor';
 import { getVoteCode, hasAnyJuryVotes, hasAnyTeleVotes } from '../../../utilities/VoteUtil';
@@ -10,10 +9,11 @@ import Dropdown from '../../Dropdown';
 import IconButton from '../../IconButton';
 import { goToUrl } from '../../../utilities/UrlUtil';
 import TooltipHelp from '../../TooltipHelp';
+import { useAppSelector } from '../../../utilities/hooks';
 
 const RankingsTab: React.FC = () => {
-    const year = useSelector((state: AppState) => state.year);
-    const theme = useSelector((state: AppState) => state.theme);
+    const year = useAppSelector((state: AppState) => state.year);
+    const theme = useAppSelector((state: AppState) => state.theme);
     const [rankingYear, setRankingYear] = useState(year);
     const [voteSource, setVoteSource] = useState('All');
     const [voteSourceOptions, setVoteSourceOptions] = useState<string[]>([

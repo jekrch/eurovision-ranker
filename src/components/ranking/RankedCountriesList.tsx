@@ -8,15 +8,15 @@ import { DetailsCard } from './DetailsCard';
 import RankedItemsHeader from './RankedItemsHeader';
 import { FaChevronRight } from 'react-icons/fa';
 import IconButton from '../IconButton';
-import { useDispatch, useSelector } from 'react-redux';
-import { setRankedItems, setShowUnranked, setUnrankedItems } from '../../redux/actions';
-import { Dispatch } from 'redux';
+import { setRankedItems, setShowUnranked, setUnrankedItems } from '../../redux/rootSlice';
 import { AppState } from '../../redux/types';
 import { supportedYears } from '../../data/Contestants';
 import { generateYoutubePlaylistUrl } from '../../utilities/YoutubeUtil';
 import { removeCountryFromUrlCategoryRankings } from '../../utilities/CategoryUtil';
 import { updateUrlFromRankedItems } from '../../utilities/UrlUtil';
 import { IntroColumnWrapper } from './IntroColumnWrapper';
+import { useAppDispatch, useAppSelector } from '../../utilities/hooks';
+import { Dispatch } from '@reduxjs/toolkit';
 
 interface RankedCountriesListProps {
     openSongModal: (countryContestant: CountryContestant) => void;
@@ -42,16 +42,16 @@ const RankedCountriesList: React.FC<RankedCountriesListProps> = ({
     openNameModal,
     openMapModal
 }) => {
-    const dispatch: Dispatch<any> = useDispatch();
+    const dispatch: Dispatch<any> = useAppDispatch();
     const [refreshUrl, setRefreshUrl] = useState(0);
-    const showUnranked = useSelector((state: AppState) => state.showUnranked);
-    const theme = useSelector((state: AppState) => state.theme);
-    const showTotalRank = useSelector((state: AppState) => state.showTotalRank);
-    const isDeleteMode = useSelector((state: AppState) => state.isDeleteMode);
-    const rankedItems = useSelector((state: AppState) => state.rankedItems);
-    const unrankedItems = useSelector((state: AppState) => state.unrankedItems);
-    const categories = useSelector((state: AppState) => state.categories);
-    const activeCategory = useSelector((state: AppState) => state.activeCategory);
+    const showUnranked = useAppSelector((state: AppState) => state.showUnranked);
+    const theme = useAppSelector((state: AppState) => state.theme);
+    const showTotalRank = useAppSelector((state: AppState) => state.showTotalRank);
+    const isDeleteMode = useAppSelector((state: AppState) => state.isDeleteMode);
+    const rankedItems = useAppSelector((state: AppState) => state.rankedItems);
+    const unrankedItems = useAppSelector((state: AppState) => state.unrankedItems);
+    const categories = useAppSelector((state: AppState) => state.categories);
+    const activeCategory = useAppSelector((state: AppState) => state.activeCategory);
       
     /**
    * used to synchronize the horizontal scrollbar on detail cards across all ranked items
@@ -109,6 +109,8 @@ const RankedCountriesList: React.FC<RankedCountriesListProps> = ({
         setRefreshUrl(Math.random());
     }
 
+    console.log('test')
+    console.log(rankedItems);
     return (
         <div className="tour-step-5 z-20">
             <StrictModeDroppable droppableId="rankedItems">
@@ -167,16 +169,16 @@ const RankedCountriesList: React.FC<RankedCountriesListProps> = ({
                                         </span>
                                     </div>
                                 )}
-                                {rankedItems.map((item, index) => (
+                                {rankedItems.map((countryContestant, index) => (
                                     <Draggable
-                                        key={`draggable-${item.id.toString()}`}
-                                        draggableId={item.id.toString()}
+                                        key={`draggable-${countryContestant.id.toString()}`}
+                                        draggableId={countryContestant.id.toString()}
                                         index={index}
                                         isDragDisabled={showTotalRank}
                                     >
                                         {(provided, snapshot) => (
                                             <li
-                                                key={`li-${item.id.toString()}`}
+                                                key={`li-${countryContestant.id.toString()}`}
                                                 ref={provided.innerRef}
                                                 {...provided.draggableProps}
                                                 {...provided.dragHandleProps}
@@ -186,21 +188,21 @@ const RankedCountriesList: React.FC<RankedCountriesListProps> = ({
                                             >
                                                 {showUnranked ? (
                                                     <Card
-                                                        key={`card-${item.id.toString()}`}
+                                                        key={`card-${countryContestant.id.toString()}`}
                                                         className="m-auto text-slate-400 bg- bg-[#03022d] no-select"
                                                         rank={index + 1}
-                                                        countryContestant={item}
+                                                        countryContestant={countryContestant}
                                                         isDeleteMode={showUnranked && isDeleteMode}
                                                         deleteCallBack={deleteRankedCountry}
                                                         isDragging={snapshot.isDragging}
                                                     />
                                                 ) : (
                                                     <DetailsCard
-                                                        key={`card-${item.id.toString()}`}
+                                                        key={`card-${countryContestant.id.toString()}`}
                                                         className="m-auto text-slate-400 bg- bg-[#03022d] no-select"
                                                         rank={index + 1}
-                                                        countryContestant={item}
-                                                        openSongModal={() => openSongModal(item)}
+                                                        countryContestant={countryContestant}
+                                                        openSongModal={() => openSongModal(countryContestant)}
                                                         isDragging={snapshot.isDragging}
                                                         categoryScrollPosition={categoryScrollPosition}
                                                         onCategoryScroll={handleCategoryScroll}

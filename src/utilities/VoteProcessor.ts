@@ -1,7 +1,9 @@
 import { sanitizeYear } from "../data/Contestants";
 import { CountryContestant } from '../data/CountryContestant';
 import { ContestantVotes, Vote } from "../data/Vote";
+import { assignVotesToContestants } from "../redux/rootSlice";
 import { fetchVotesForYear } from "./VoteRepository";
+import { Dispatch } from '@reduxjs/toolkit';
 
 let cachedVoteYear: string;
 let cachedVoteRound: string; 
@@ -42,6 +44,7 @@ export async function getVotes(
 }
 
 export async function sortByVotes(
+    dispatch: Dispatch,
     countryContestants: CountryContestant[],
     year: string,
     voteType: string,
@@ -56,7 +59,7 @@ export async function sortByVotes(
     let voteTypeFieldName: string = getVoteTypeFieldName(voteType);
 
     countryContestants = assignVotesToCountryContestants(
-        votes, countryContestants
+        dispatch, votes, countryContestants
     );
 
     // Sorting country contestants by votes in descending order
@@ -174,6 +177,7 @@ function getVoteTypeFieldName(voteType: string) {
 }
 
 function assignVotesToCountryContestants(
+    dispatch: Dispatch<any>,
     votes: Vote[],
     countryContestants: CountryContestant[]
 ): CountryContestant[] {
@@ -212,10 +216,9 @@ function assignVotesToCountryContestants(
     });
 
     // assigning summed votes to corresponding country contestants
-    countryContestants.forEach(cc => {
-        if (cc.contestant)
-            cc.contestant.votes = voteSums[cc.country.key];
-    });
+    dispatch(
+        assignVotesToContestants({ voteSums })
+    );
 
     return countryContestants;
 }
@@ -237,16 +240,17 @@ function getContestantVoteFieldValue(
 }
 
 export async function assignVotesByCode(
+    dispatch: Dispatch<any>,
     countryContestants: CountryContestant[],
     year: string,
     voteCode: string
 ): Promise<CountryContestant[]> {
 
-    let codes = voteCode.split("-");
+    let codes = voteCode?.split("-");
 
-    let roundCode = codes[0];
-    let voteTypeCode = codes[1];
-    let fromCountryKey = codes[2];
+    let roundCode = codes?.[0];
+    let voteTypeCode = codes?.[1];
+    let fromCountryKey = codes?.[2];
 
     let round = processVotingRound(roundCode);
     //let voteTypeFieldName: string = getVoteTypeFieldName(voteTypeCode);
@@ -254,6 +258,7 @@ export async function assignVotesByCode(
     let votes: Vote[] = await fetchVotesForYear(year, fromCountryKey, round)
 
     return assignVotesToCountryContestants(
+        dispatch,
         votes,
         countryContestants
     );

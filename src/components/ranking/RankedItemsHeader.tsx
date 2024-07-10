@@ -1,7 +1,7 @@
 import React, { Dispatch, useEffect, useState } from 'react';
 import Dropdown from '../Dropdown';
 import { CountryContestant } from '../../data/CountryContestant';
-import { AppState } from '../../redux/types';
+import { AppState } from '../../redux/store';
 import { setActiveCategory, setShowTotalRank, setYear } from '../../redux/rootSlice';
 import RankedHeaderMenu from './RankedHeaderMenu';
 import classNames from 'classnames';

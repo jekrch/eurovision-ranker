@@ -6,7 +6,7 @@ import MainModal from './components/modals/MainModal';
 import NameModal from './components/modals/NameModal';
 import Navbar from './components/nav/NavBar';
 import EditNav from './components/nav/EditNav';
-import { AppState } from './redux/types';
+import { AppState } from './redux/store';
 import { setRankedItems, setUnrankedItems, setShowUnranked, setActiveCategory, setShowTotalRank, setCategories } from './redux/rootSlice';
 import { decodeRankingsFromURL, encodeRankingsToURL, updateQueryParams, updateUrlFromRankedItems, urlHasRankings } from './utilities/UrlUtil';
 import { Dispatch } from 'redux';

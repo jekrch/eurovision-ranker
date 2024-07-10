@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { AppState } from '../../../redux/types';
+import { AppState } from '../../../redux/store';
 import { sortByVotes } from '../../../utilities/VoteProcessor';
 import { getVoteCode, hasAnyJuryVotes, hasAnyTeleVotes } from '../../../utilities/VoteUtil';
 import { fetchCountryContestantsByYear } from '../../../utilities/ContestantRepository';
@@ -9,9 +9,10 @@ import Dropdown from '../../Dropdown';
 import IconButton from '../../IconButton';
 import { goToUrl } from '../../../utilities/UrlUtil';
 import TooltipHelp from '../../TooltipHelp';
-import { useAppSelector } from '../../../utilities/hooks';
+import { useAppDispatch, useAppSelector } from '../../../utilities/hooks';
 
 const RankingsTab: React.FC = () => {
+    const dispatch = useAppDispatch();
     const year = useAppSelector((state: AppState) => state.year);
     const theme = useAppSelector((state: AppState) => state.theme);
     const [rankingYear, setRankingYear] = useState(year);
@@ -26,7 +27,7 @@ const RankingsTab: React.FC = () => {
     // Update vote source options based on the selected year
     useEffect(() => {
         const updateVoteSourceOptions = async () => {
-            const yearContestants = await fetchCountryContestantsByYear(rankingYear);
+            const yearContestants = await fetchCountryContestantsByYear(rankingYear, undefined, dispatch);
 
             setVoteSourceOptions([
                 'All',
@@ -52,13 +53,13 @@ const RankingsTab: React.FC = () => {
             }
         }
 
-        let countryContestants = await fetchCountryContestantsByYear(voteYear, voteCode);
+        let countryContestants = await fetchCountryContestantsByYear(voteYear, voteCode, dispatch);
 
         if (sanitizeYear(year) === '1956') {
             return countryContestants.filter((cc) => cc.contestant?.finalsRank!.toString() === '1').map((cc) => cc.id).join('');
         }
 
-        countryContestants = await sortByVotes(countryContestants, voteYear, voteType, round, sourceCountryKey);
+        countryContestants = await sortByVotes(dispatch, countryContestants, voteYear, voteType, round, sourceCountryKey);
         const sortedContestants = countryContestants.filter((cc) => cc?.contestant?.votes !== undefined);
 
         return sortedContestants.map((cc) => cc.id).join('');

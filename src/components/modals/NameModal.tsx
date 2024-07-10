@@ -1,5 +1,5 @@
 import React, { Dispatch, useEffect, useRef, useState } from 'react';
-import { AppState } from '../../redux/types';
+import { AppState } from '../../redux/store';
 import { setName } from '../../redux/rootSlice';
 import Modal from './Modal';
 import { useAppDispatch, useAppSelector } from '../../utilities/hooks';

@@ -4,7 +4,7 @@ import Dropdown from '../../Dropdown';
 import IconButton from '../../IconButton';
 import { EXPORT_TYPE, getExportType } from '../../../utilities/export/ExportType';
 import { copyToClipboard, copyUrlToClipboard, downloadFile, getExportDataString } from '../../../utilities/export/ExportUtil';
-import { AppState } from '../../../redux/types';
+import { AppState } from '../../../redux/store';
 import { useAppSelector } from '../../../utilities/hooks';
 
 const ExportTab: React.FC = () => {

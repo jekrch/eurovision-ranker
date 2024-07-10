@@ -1,7 +1,7 @@
 import React, { Dispatch, useEffect, useState } from 'react';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import IconButton from '../../IconButton';
-import { AppState } from '../../../redux/types';
+import { AppState } from '../../../redux/store';
 import { deleteCategory, isValidCategoryName, saveCategories } from '../../../utilities/CategoryUtil';
 import TooltipHelp from '../../TooltipHelp';
 import Checkbox from '../../Checkbox';

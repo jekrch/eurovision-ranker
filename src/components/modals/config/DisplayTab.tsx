@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { AppState } from '../../../redux/types';
+import { AppState } from '../../../redux/store';
 import { setTheme, setVote, setContestants, setShowComparison, setRankedItems } from '../../../redux/rootSlice';
 import { assignVotesByCode, updateVoteTypeCode, voteCodeHasType } from '../../../utilities/VoteProcessor';
 import { countries } from '../../../data/Countries';

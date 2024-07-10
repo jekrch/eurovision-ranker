@@ -6,7 +6,7 @@ import classNames from 'classnames';
 import MenuItem from '../MenuItem';
 import SubmenuItem from '../SubmenuItem';
 import {  copyToClipboard, copyUrlToClipboard } from '../../utilities/export/ExportUtil';
-import { AppState } from '../../redux/types';
+import { AppState } from '../../redux/store';
 import { EXPORT_TYPE } from '../../utilities/export/ExportType';
 import { rankedHasAnyYoutubeLinks } from '../../utilities/YoutubeUtil';
 import { setHeaderMenuOpen } from '../../redux/rootSlice';

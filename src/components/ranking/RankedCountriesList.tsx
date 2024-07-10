@@ -9,7 +9,7 @@ import RankedItemsHeader from './RankedItemsHeader';
 import { FaChevronRight } from 'react-icons/fa';
 import IconButton from '../IconButton';
 import { setRankedItems, setShowUnranked, setUnrankedItems } from '../../redux/rootSlice';
-import { AppState } from '../../redux/types';
+import { AppState } from '../../redux/store';
 import { supportedYears } from '../../data/Contestants';
 import { generateYoutubePlaylistUrl } from '../../utilities/YoutubeUtil';
 import { removeCountryFromUrlCategoryRankings } from '../../utilities/CategoryUtil';

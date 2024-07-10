@@ -3,7 +3,7 @@ import { faArrowRight, faTrashAlt, faSquare, faCheckSquare, faPenAlt } from '@fo
 import classNames from 'classnames';
 import { CountryContestant } from '../../data/CountryContestant';
 import IconButton from '../IconButton';
-import { AppState } from '../../redux/types';
+import { AppState } from '../../redux/store';
 import { setIsDeleteMode, setContestants, setRankedItems, setUnrankedItems } from '../../redux/rootSlice';
 import { fetchCountryContestantsByYear } from '../../utilities/ContestantRepository';
 import { Dispatch } from 'redux';

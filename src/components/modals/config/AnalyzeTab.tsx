@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { AppState } from '../../../redux/types';
+import { AppState } from '../../../redux/store';
 import { countries } from '../../../data/Countries';
 import { fetchCountryContestantsByYear } from '../../../utilities/ContestantRepository';
 import { sortByVotes } from '../../../utilities/VoteProcessor';
@@ -35,7 +35,7 @@ const AnalyzeTab: React.FC = () => {
   const getAllCountryRankCodes = async (voteType: string, round: string, voteYear: string) => {
     const codeCountryNameMap = new Map<string, Country[]>();
 
-    const countryContestants = await fetchCountryContestantsByYear(voteYear, '');
+    const countryContestants = await fetchCountryContestantsByYear(voteYear, '', dispatch);
 
     for (const country of countries) {
       const concatenatedIds = await getRankingIds(voteYear, voteType, 'final', countryContestants, country.key);
@@ -58,7 +58,7 @@ const AnalyzeTab: React.FC = () => {
     countryContestants: CountryContestant[],
     sourceCountryKey: string
   ) => {
-    countryContestants = await sortByVotes(countryContestants, voteYear, voteType, round, sourceCountryKey);
+    countryContestants = await sortByVotes(dispatch, countryContestants, voteYear, voteType, round, sourceCountryKey);
 
     const sortedContestants = countryContestants.filter((cc) => cc?.contestant?.votes !== undefined);
 

@@ -3,7 +3,7 @@ import { type FC, useRef, useEffect } from 'react';
 import { FaFileAlt, FaTv } from 'react-icons/fa';
 import Flag from "react-world-flags"
 import { CountryContestant } from '../../data/CountryContestant';
-import { AppState } from '../../redux/types';
+import { AppState } from '../../redux/store';
 import { voteCodeHasType } from '../../utilities/VoteProcessor';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAngleDoubleDown, faAngleDoubleUp, faAngleDown, faAngleUp } from '@fortawesome/free-solid-svg-icons';

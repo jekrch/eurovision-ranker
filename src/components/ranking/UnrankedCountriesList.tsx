@@ -3,7 +3,7 @@ import { Draggable } from 'react-beautiful-dnd';
 import { StrictModeDroppable } from './StrictModeDroppable';
 import classNames from 'classnames';
 import { Card } from './Card';
-import { AppState } from '../../redux/types';
+import { AppState } from '../../redux/store';
 import { useAppSelector } from '../../utilities/hooks';
 
 /**

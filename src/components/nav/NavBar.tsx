@@ -1,7 +1,7 @@
 import React, { Dispatch } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCog, faHouseUser } from '@fortawesome/free-solid-svg-icons';
-import { AppState } from '../../redux/types';
+import { AppState } from '../../redux/store';
 import { setShowUnranked } from '../../redux/rootSlice';
 import IconButton from '../IconButton';
 import classNames from 'classnames';

@@ -2,6 +2,7 @@ import { sanitizeYear } from "../data/Contestants";
 import { CountryContestant } from '../data/CountryContestant';
 import { ContestantVotes, Vote } from "../data/Vote";
 import { assignVotesToContestants } from "../redux/rootSlice";
+import { AppDispatch } from "../redux/store";
 import { fetchVotesForYear } from "./VoteRepository";
 import { Dispatch } from '@reduxjs/toolkit';
 
@@ -44,7 +45,7 @@ export async function getVotes(
 }
 
 export async function sortByVotes(
-    dispatch: Dispatch,
+    dispatch: AppDispatch,
     countryContestants: CountryContestant[],
     year: string,
     voteType: string,
@@ -177,7 +178,7 @@ function getVoteTypeFieldName(voteType: string) {
 }
 
 function assignVotesToCountryContestants(
-    dispatch: Dispatch<any>,
+    dispatch: AppDispatch,
     votes: Vote[],
     countryContestants: CountryContestant[]
 ): CountryContestant[] {
@@ -240,7 +241,7 @@ function getContestantVoteFieldValue(
 }
 
 export async function assignVotesByCode(
-    dispatch: Dispatch<any>,
+    dispatch: AppDispatch,
     countryContestants: CountryContestant[],
     year: string,
     voteCode: string

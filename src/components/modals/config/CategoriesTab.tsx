@@ -1,7 +1,7 @@
-import React, { Dispatch, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import IconButton from '../../IconButton';
-import { AppState } from '../../../redux/store';
+import { AppDispatch, AppState } from '../../../redux/store';
 import { deleteCategory, isValidCategoryName, saveCategories } from '../../../utilities/CategoryUtil';
 import TooltipHelp from '../../TooltipHelp';
 import Checkbox from '../../Checkbox';
@@ -10,7 +10,7 @@ import { updateQueryParams } from '../../../utilities/UrlUtil';
 import { useAppDispatch, useAppSelector } from '../../../utilities/hooks';
 
 const CategoriesTab: React.FC = () => {
-  const dispatch: Dispatch<any> = useAppDispatch();
+  const dispatch: AppDispatch = useAppDispatch();
   const categories = useAppSelector((state: AppState) => state.categories);
   const activeCategory = useAppSelector((state: AppState) => state.activeCategory);
   const [newCategoryName, setNewCategoryName] = useState('');
@@ -32,14 +32,14 @@ const CategoriesTab: React.FC = () => {
     if (!isValidCategoryName(name, categories)) {
       return;
     }
-    const updatedCategories = [...categories];
-    updatedCategories[index].name = name;
+    let updatedCategories = [...categories];
+    updatedCategories[index] = {...categories[index], name: name};
     saveCategories(updatedCategories, dispatch, categories, activeCategory);
   };
 
   const updateCategoryWeight = (index: number, weight: number) => {
-    const updatedCategories = [...categories];
-    updatedCategories[index].weight = weight;
+    let updatedCategories = [...categories];
+    updatedCategories[index] = {...updatedCategories[index], weight: weight };
     saveCategories(updatedCategories, dispatch, categories, activeCategory);
   };
 

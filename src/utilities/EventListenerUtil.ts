@@ -1,6 +1,7 @@
 import { Dispatch } from 'redux';
 import { decodeRankingsFromURL } from './UrlUtil';
 import { setShowUnranked } from '../redux/rootSlice';
+import { AppDispatch } from '../redux/store';
 
 
 export const setVh = () => {
@@ -12,7 +13,7 @@ export const handlePopState = (
   event: PopStateEvent,
   areCategoriesSet: () => boolean,
   activeCategory: number | undefined,
-  dispatch: Dispatch<any>
+  dispatch: AppDispatch
 ) => {
   // User clicked back (or forward) button
   const decodeFromUrl = async () => {

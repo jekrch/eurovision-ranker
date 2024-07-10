@@ -1,5 +1,5 @@
 import React, { Dispatch, useEffect, useRef, useState } from 'react';
-import { AppState } from '../../redux/store';
+import { AppDispatch, AppState } from '../../redux/store';
 import { setName } from '../../redux/rootSlice';
 import Modal from './Modal';
 import { useAppDispatch, useAppSelector } from '../../utilities/hooks';
@@ -18,7 +18,7 @@ type NameModalProps = {
  * @returns 
  */
 const NameModal: React.FC<NameModalProps> = (props: NameModalProps) => {
-    const dispatch: Dispatch<any> = useAppDispatch();
+    const dispatch: AppDispatch = useAppDispatch();
     const name = useAppSelector((state: AppState) => state.name);
     const [inputValue, setInputValue] = useState(name); 
     const inputRef = useRef<HTMLInputElement>(null);

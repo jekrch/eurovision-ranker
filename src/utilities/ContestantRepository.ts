@@ -14,7 +14,7 @@ const contestantCache: { [year: string]: Contestant[] } = {};
 export async function fetchCountryContestantsByYear(
   year: string,
   voteCode: string = '',
-  dispatch: Dispatch<any>
+  dispatch: AppDispatch
 ): Promise<CountryContestant[]> {
 
   // if we're requesting the cached year and there's no source country in 
@@ -34,10 +34,10 @@ export async function fetchCountryContestantsByYear(
 export async function fetchAndProcessCountryContestants(
    year: string,
    voteCode: string,
-   dispatch: Dispatch<any>, 
+   dispatch: Dispatch, 
 ) {
   let contestants: Contestant[] = await getContestantsByYear(
-    year, dispatch
+    year
   );
 
   let countryContestants: CountryContestant[] = contestants.map(contestant => {
@@ -172,7 +172,6 @@ function sanitizeYoutubeLinks(
 
 async function getContestantsByYear(
   year: string,
-  dispatch?: Dispatch<any>
 ): Promise<Contestant[]> {
 
   year = sanitizeYear(year);

@@ -9,7 +9,7 @@ import RankedItemsHeader from './RankedItemsHeader';
 import { FaChevronRight } from 'react-icons/fa';
 import IconButton from '../IconButton';
 import { setRankedItems, setShowUnranked, setUnrankedItems } from '../../redux/rootSlice';
-import { AppState } from '../../redux/store';
+import { AppDispatch, AppState } from '../../redux/store';
 import { supportedYears } from '../../data/Contestants';
 import { generateYoutubePlaylistUrl } from '../../utilities/YoutubeUtil';
 import { removeCountryFromUrlCategoryRankings } from '../../utilities/CategoryUtil';
@@ -42,7 +42,7 @@ const RankedCountriesList: React.FC<RankedCountriesListProps> = ({
     openNameModal,
     openMapModal
 }) => {
-    const dispatch: Dispatch<any> = useAppDispatch();
+    const dispatch: AppDispatch = useAppDispatch();
     const [refreshUrl, setRefreshUrl] = useState(0);
     const showUnranked = useAppSelector((state: AppState) => state.showUnranked);
     const theme = useAppSelector((state: AppState) => state.theme);

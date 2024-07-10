@@ -4,6 +4,7 @@ import { CountryContestant } from "../data/CountryContestant";
 import { Dispatch } from "react";
 import { setActiveCategory, setCategories, setShowTotalRank } from "../redux/rootSlice";
 import { Country } from "../data/Country";
+import { AppDispatch } from "../redux/store";
 
 export type Category = {
   name: string;
@@ -89,7 +90,7 @@ export function removeCountryFromUrlCategoryRankings(
 export function clearCategories(
   rankingToSet: string, 
   categories: Category[], 
-  dispatch: Dispatch<any>
+  dispatch: AppDispatch
 ) {
     
   const searchParams = new URLSearchParams(window.location.search);
@@ -394,7 +395,7 @@ export const areCategoriesSet = () => {
 
 export function saveCategories(
   updatedCategories: Category[],
-  dispatch: Dispatch<any>,
+  dispatch: AppDispatch,
   currentCategories: Category[],
   activeCategory: number | undefined
 ) {
@@ -451,7 +452,7 @@ export function saveCategories(
  */
 export const deleteCategory = (
   indexToDelete: number, 
-  dispatch: Dispatch<any>, 
+  dispatch: AppDispatch, 
   categories: Category[], 
   activeCategory: number | undefined
 ) => {

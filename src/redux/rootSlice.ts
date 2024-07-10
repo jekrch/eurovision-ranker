@@ -86,11 +86,35 @@ const rootSlice = createSlice({
         },
         assignVotesToContestants: (state, action: PayloadAction<{ voteSums: { [key: string]: ContestantVotes; } }>) => {
             const { voteSums } = action.payload;
-            state.contestants.forEach(cc => {
+            let newContestants = JSON.parse(JSON.stringify(state.contestants))
+            console.log(newContestants[3]?.contestant?.votes);
+            console.log(voteSums)
+            state.contestants.forEach((cc: CountryContestant) => {
                 if (cc.contestant) {
-                    cc.contestant.votes = voteSums[cc.country.key] || 0;
+                    cc.contestant.votes = voteSums[cc.country.key] || undefined;
+                    console.log(cc.country.key)
+                    console.log(cc.country.key)
+                    console.log(cc.contestant.votes)
                 }
             });
+
+            state.rankedItems.forEach((cc: CountryContestant) => {
+                if (!cc?.contestant) return;
+                cc.contestant.votes = voteSums[cc.country.key] || undefined;
+            });
+
+            state.unrankedItems.forEach((cc: CountryContestant) => {
+                if (!cc?.contestant) return;
+                cc.contestant.votes = voteSums[cc.country.key] || undefined;
+            });
+
+            console.log(state.rankedItems)
+            state.rankedItems.forEach((cc: any) => {
+                console.log(cc.country.name);
+                console.log(cc?.contestant?.votes);
+            });
+            setRankedItems(state.rankedItems);
+            //setContestants(newContestants);
         },
     },
 });

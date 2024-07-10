@@ -14,7 +14,7 @@ describe('contestantCache validation', () => {
         mockFetch.mockResolvedValueOnce({ text: () => Promise.resolve('mocked contestant csv data') });
         vi.stubGlobal('fetch', mockFetch);
 
-        const result = await fetchCountryContestantsByYear(cachedYear, '', dispatch);
+        const result = await fetchCountryContestantsByYear(cachedYear, '', {} as any);
         
         initialCountryContestantCache.forEach(c => {
             c.contestant!.finalsRank = c.contestant?.finalsRank?.toString()?.replace('.0', '') as number | undefined;

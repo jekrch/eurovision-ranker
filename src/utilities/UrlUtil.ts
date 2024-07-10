@@ -7,6 +7,7 @@ import { defaultYear, sanitizeYear } from '../data/Contestants';
 
 import { Category } from './CategoryUtil';
 import { Dispatch } from '@reduxjs/toolkit';
+import { AppDispatch } from '../redux/store';
 
 export type UrlParams = {
     rankingName: string | null;     // n
@@ -22,7 +23,7 @@ export type UrlParams = {
  */
 export const updateStates = (
     params: UrlParams,
-    dispatch: Dispatch<any>
+    dispatch: AppDispatch
 ) => {
     let { rankingName, contestYear, theme, voteCode, comparisonMode } = params;
 
@@ -64,7 +65,7 @@ export async function processAndUpdateRankings(
     contestYear: string,
     rankings: string | null,
     voteCode: string | null,
-    dispatch: Dispatch<any>
+    dispatch: AppDispatch
 ): Promise<string[] | undefined> {
 
     const yearContestants = await fetchCountryContestantsByYear(
@@ -155,7 +156,7 @@ export function urlHasRankings(activeCategory: number | undefined) {
  */
 export async function decodeRankingsFromURL(
     activeCategory: number | undefined,
-    dispatch: Dispatch<any>
+    dispatch: AppDispatch
 ): Promise<string[] | undefined> {
 
     const extractedParams: UrlParams = getUrlParams(activeCategory);

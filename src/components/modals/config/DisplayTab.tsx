@@ -8,11 +8,10 @@ import Checkbox from '../../Checkbox';
 import { updateQueryParams } from '../../../utilities/UrlUtil';
 import TooltipHelp from '../../TooltipHelp';
 import { useAppDispatch, useAppSelector } from '../../../utilities/hooks';
-import { Dispatch } from '@reduxjs/toolkit';
 import { CountryContestant } from '../../../data/CountryContestant';
 
 const DisplayTab: React.FC = () => {
-    const dispatch: Dispatch<any> = useAppDispatch();
+    const dispatch = useAppDispatch();
     const vote = useAppSelector((state: AppState) => state.vote);
     const theme = useAppSelector((state: AppState) => state.theme);
     const showComparison = useAppSelector((state: AppState) => state.showComparison);

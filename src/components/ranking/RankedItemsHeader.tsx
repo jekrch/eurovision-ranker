@@ -1,7 +1,7 @@
 import React, { Dispatch, useEffect, useState } from 'react';
 import Dropdown from '../Dropdown';
 import { CountryContestant } from '../../data/CountryContestant';
-import { AppState } from '../../redux/store';
+import { AppDispatch, AppState } from '../../redux/store';
 import { setActiveCategory, setShowTotalRank, setYear } from '../../redux/rootSlice';
 import RankedHeaderMenu from './RankedHeaderMenu';
 import classNames from 'classnames';
@@ -25,7 +25,7 @@ const RankedItemsHeader: React.FC<IRankedItemsHeaderProps> = ({
     supportedYears,
     className
 }) => {
-    const dispatch: Dispatch<any> = useAppDispatch();
+    const dispatch: AppDispatch = useAppDispatch();
     const year = useAppSelector((state: AppState) => state.year);
     const name = useAppSelector((state: AppState) => state.name);
     const rankedItems = useAppSelector((state: AppState) => state.rankedItems);

@@ -19,7 +19,7 @@ type NavbarProps = {
  * @returns 
  */
 const Navbar: React.FC<NavbarProps> = ({ openModal, openConfigModal }) => {
-    const dispatch: Dispatch<any> = useAppDispatch();
+    const dispatch = useAppDispatch();
     const showUnranked = useAppSelector((state: AppState) => state.showUnranked);
 
     return (

@@ -6,7 +6,7 @@ import classNames from 'classnames';
 import MenuItem from '../MenuItem';
 import SubmenuItem from '../SubmenuItem';
 import {  copyToClipboard, copyUrlToClipboard } from '../../utilities/export/ExportUtil';
-import { AppState } from '../../redux/store';
+import { AppDispatch, AppState } from '../../redux/store';
 import { EXPORT_TYPE } from '../../utilities/export/ExportType';
 import { rankedHasAnyYoutubeLinks } from '../../utilities/YoutubeUtil';
 import { setHeaderMenuOpen } from '../../redux/rootSlice';
@@ -24,7 +24,7 @@ const RankedHeaderMenu: React.FC<RankedHeaderMenuProps> = (props: RankedHeaderMe
   const menuRef = useRef<HTMLDivElement>(null);
   const rankedItems = useAppSelector((state: AppState) => state.rankedItems);
   const globalMenuOpenTrigger = useAppSelector((state: AppState) => state.headerMenuOpen);
-  const dispatch: Dispatch<any> = useAppDispatch();
+  const dispatch: AppDispatch = useAppDispatch();
   const CLOSING_DURATION = 300;
 
   const toggleMenu = () => {

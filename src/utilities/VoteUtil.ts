@@ -1,6 +1,7 @@
 import { countries } from "../data/Countries";
 import { CountryContestant } from "../data/CountryContestant";
 import { sanitizeYear } from '../data/Contestants';
+import { ContestantVotes } from "../data/Vote";
 
 export function getSourceCountryKey(voteSource: string) {
 
@@ -96,4 +97,16 @@ export function getVoteCode(
     }
 
     return voteCode;
+}
+
+export function assignVotes(
+    contestants: CountryContestant[], 
+    voteSums: { [key: string]: ContestantVotes; }
+) {
+    contestants.forEach((cc: CountryContestant) => {
+        if (cc.contestant) {
+            cc.contestant.votes = voteSums[cc.country.key] || undefined;
+        }
+    });
+    return contestants;
 }

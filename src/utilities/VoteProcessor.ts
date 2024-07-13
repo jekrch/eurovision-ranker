@@ -3,8 +3,10 @@ import { CountryContestant } from '../data/CountryContestant';
 import { ContestantVotes, Vote } from "../data/Vote";
 import { assignVotesToContestants } from "../redux/rootSlice";
 import { AppDispatch } from "../redux/store";
+import { clone } from "./ContestantUtil";
 import { fetchVotesForYear } from "./VoteRepository";
 import { Dispatch } from '@reduxjs/toolkit';
+import { assignVotes } from "./VoteUtil";
 
 let cachedVoteYear: string;
 let cachedVoteRound: string; 
@@ -45,12 +47,12 @@ export async function getVotes(
 }
 
 export async function sortByVotes(
-    dispatch: AppDispatch,
     countryContestants: CountryContestant[],
     year: string,
     voteType: string,
     round: string = 'final',
-    fromCountryKey?: string
+    fromCountryKey?: string,
+    dispatch?: AppDispatch
 ): Promise<CountryContestant[]> {
 
     year = sanitizeYear(year);
@@ -60,7 +62,7 @@ export async function sortByVotes(
     let voteTypeFieldName: string = getVoteTypeFieldName(voteType);
 
     countryContestants = assignVotesToCountryContestants(
-        dispatch, votes, countryContestants
+        votes, countryContestants, dispatch
     );
 
     // Sorting country contestants by votes in descending order
@@ -178,14 +180,30 @@ function getVoteTypeFieldName(voteType: string) {
 }
 
 function assignVotesToCountryContestants(
-    dispatch: AppDispatch,
     votes: Vote[],
-    countryContestants: CountryContestant[]
+    countryContestants: CountryContestant[],
+    dispatch?: AppDispatch,
 ): CountryContestant[] {
 
     // summing up the votes for each country
+    const voteSums: { [key: string]: ContestantVotes; } = getKeyVoteMap(votes);
+
+    if (dispatch) {
+        // assigning summed votes to corresponding country contestants
+        dispatch(
+            assignVotesToContestants({ voteSums })
+        );
+    } 
+
+    return assignVotes(
+        clone(countryContestants),
+        voteSums
+    )
+}
+
+function getKeyVoteMap(votes: Vote[]) {
     const voteSums: { [key: string]: ContestantVotes; } = {};
-    
+
     votes.forEach(vote => {
         let contestantVotes = voteSums[vote.toCountryKey];
 
@@ -217,13 +235,7 @@ function assignVotesToCountryContestants(
         //     voteSums[vote.toCountryKey] += voteToAdd;
         // }
     });
-
-    // assigning summed votes to corresponding country contestants
-    dispatch(
-        assignVotesToContestants({ voteSums })
-    );
-
-    return countryContestants;
+    return voteSums;
 }
 
 function getVoteFieldValue(vote: Vote, fieldName: string): number {
@@ -243,10 +255,10 @@ function getContestantVoteFieldValue(
 }
 
 export async function assignVotesByCode(
-    dispatch: AppDispatch,
     countryContestants: CountryContestant[],
     year: string,
-    voteCode: string
+    voteCode: string,
+    dispatch?: AppDispatch,
 ): Promise<CountryContestant[]> {
 
     let codes = voteCode?.split("-");
@@ -261,9 +273,9 @@ export async function assignVotesByCode(
     let votes: Vote[] = await fetchVotesForYear(year, fromCountryKey, round)
 
     return assignVotesToCountryContestants(
-        dispatch,
         votes,
-        countryContestants
+        countryContestants,
+        dispatch
     );
 }
 

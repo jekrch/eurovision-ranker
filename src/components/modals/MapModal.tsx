@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { ComposableMap, Geographies, Geography } from 'react-simple-maps';
 import geoJson from '../../data/geoJson.json';
-import { AppState } from '../../redux/store';
 import { ZoomableGroup } from 'react-simple-maps';
 import { Tooltip as ReactTooltip } from "react-tooltip";
 import Modal from './Modal';
 import { useAppSelector } from '../../utilities/hooks';
+import { AppState } from '../../redux/store';
 
 interface MapModalProps {
     isOpen: boolean;

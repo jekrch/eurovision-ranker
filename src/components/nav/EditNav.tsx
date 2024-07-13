@@ -3,7 +3,7 @@ import { faArrowRight, faTrashAlt, faSquare, faCheckSquare, faPenAlt } from '@fo
 import classNames from 'classnames';
 import { CountryContestant } from '../../data/CountryContestant';
 import IconButton from '../IconButton';
-import { AppState } from '../../redux/store';
+import { AppDispatch, AppState } from '../../redux/store';
 import { setIsDeleteMode, setContestants, setRankedItems, setUnrankedItems } from '../../redux/rootSlice';
 import { fetchCountryContestantsByYear } from '../../utilities/ContestantRepository';
 import { Dispatch } from 'redux';
@@ -23,7 +23,7 @@ type EditNavProps = {
  * @returns 
  */
 const EditNav: React.FC<EditNavProps> = ({ setNameModalShow, setRefreshUrl }) => {
-    const dispatch: Dispatch<any> = useAppDispatch();
+    const dispatch: AppDispatch = useAppDispatch();
     const year = useAppSelector((state: AppState) => state.year);
     const rankedItems = useAppSelector((state: AppState) => state.rankedItems);
     const unrankedItems = useAppSelector((state: AppState) => state.unrankedItems);

@@ -38,9 +38,20 @@ const RankingsTab: React.FC = () => {
         };
         updateVoteSourceOptions();
     }, [rankingYear]);
-
-    // Get sorted ranking code based on the selected year, vote type, round, and vote source
-    const getSortedRankingCode = async (voteYear: string, voteType: string, round: string, voteSource?: string) => {
+   
+    /**
+     * Get sorted ranking code based on the selected year, vote type, round, and vote source
+     * 
+     * @param voteYear 
+     * @param voteType 
+     * @param round 
+     * @param voteSource 
+     * @returns 
+     */
+    const getSortedRankingCode = async (
+        voteYear: string, voteType: string, 
+        round: string, voteSource?: string
+    ) => {
         let voteCode = undefined;
         let sourceCountryKey = undefined;
 
@@ -53,14 +64,24 @@ const RankingsTab: React.FC = () => {
             }
         }
 
-        let countryContestants = await fetchCountryContestantsByYear(voteYear, voteCode, dispatch);
+        let countryContestants = await fetchCountryContestantsByYear(
+            voteYear, voteCode
+        );
 
         if (sanitizeYear(year) === '1956') {
-            return countryContestants.filter((cc) => cc.contestant?.finalsRank!.toString() === '1').map((cc) => cc.id).join('');
+            return countryContestants.filter((cc) => 
+                cc.contestant?.finalsRank!.toString() === '1'
+            ).map((cc) => cc.id)
+            .join('');
         }
 
-        countryContestants = await sortByVotes(dispatch, countryContestants, voteYear, voteType, round, sourceCountryKey);
-        const sortedContestants = countryContestants.filter((cc) => cc?.contestant?.votes !== undefined);
+        countryContestants = await sortByVotes(
+            countryContestants, voteYear, voteType,
+             round, sourceCountryKey
+        );
+        const sortedContestants = countryContestants.filter(
+            (cc) => cc?.contestant?.votes !== undefined
+        );
 
         return sortedContestants.map((cc) => cc.id).join('');
     };

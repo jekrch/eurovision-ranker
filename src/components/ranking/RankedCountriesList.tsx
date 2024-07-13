@@ -109,8 +109,6 @@ const RankedCountriesList: React.FC<RankedCountriesListProps> = ({
         setRefreshUrl(Math.random());
     }
 
-    console.log('test')
-    console.log(rankedItems);
     return (
         <div className="tour-step-5 z-20">
             <StrictModeDroppable droppableId="rankedItems">

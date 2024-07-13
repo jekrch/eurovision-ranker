@@ -71,7 +71,9 @@ const DisplayTab: React.FC = () => {
     const onVoteTypeInputChanged = (voteType: string, checked: boolean) => {
         const newVote = updateVoteTypeCode(vote, voteType, checked);
         if (newVote !== vote) {
-            dispatch(setVote(newVote));
+            dispatch(
+                setVote(newVote)
+            );
             updateQueryParams({ v: newVote });
         }
     };
@@ -110,28 +112,11 @@ const DisplayTab: React.FC = () => {
             let newVote = `f-${voteTypeCode}-${countryCode}`;
 
             let newContestants = await assignVotesByCode(
-                dispatch,
                 contestants,
                 year,
-                newVote
+                newVote,
+                dispatch
             );
-
-            //console.log(newContestants)
-            // dispatch(
-            //     setContestants(newContestants)
-            // )
-
-            // let newRankedItems: CountryContestant[] = [];
-            
-            // for (const rankedItem of rankedItems) {
-            //     const newRankedItem = newContestants.find(c => c.id === rankedItem.id);
-            //     newRankedItems.push(newRankedItem ?? rankedItem);
-            // }
-            // console.log(newRankedItems);
-            // dispatch(
-            //     setRankedItems(newRankedItems)
-            // );
-            // console.log(newContestants)
 
             if (newVote !== vote) {
                 updateQueryParams({ v: newVote });

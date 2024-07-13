@@ -3,6 +3,8 @@ import { CountryContestant } from '../data/CountryContestant';
 import { Category } from '../utilities/CategoryUtil';
 import { ContestantVotes } from '../data/Vote';
 import { updateQueryParams } from '../utilities/UrlUtil';
+import { assignVotes } from '../utilities/VoteUtil';
+import { clone } from '../utilities/ContestantUtil';
 
 interface AppState {
     name: string;
@@ -87,33 +89,17 @@ const rootSlice = createSlice({
         assignVotesToContestants: (state, action: PayloadAction<{ voteSums: { [key: string]: ContestantVotes; } }>) => {
             const { voteSums } = action.payload;
 
-            let newContestants = JSON.parse(JSON.stringify(state.contestants))
+            state.contestants = assignVotes(
+                clone(state.contestants), voteSums
+            );
 
-            newContestants.forEach((cc: CountryContestant) => {
-                if (cc.contestant) {
-                    cc.contestant.votes = voteSums[cc.country.key] || undefined;
-                }
-            });
-
-            state.contestants = newContestants;
-
-            let newRankedItems = JSON.parse(JSON.stringify(state.rankedItems))
-
-            newRankedItems.forEach((cc: CountryContestant) => {
-                if (!cc?.contestant) return;
-                cc.contestant.votes = voteSums[cc.country.key] || undefined;
-            });
-
-            state.rankedItems = newRankedItems;
-
-            let newUnrankedItems = JSON.parse(JSON.stringify(state.unrankedItems))
-
-            newUnrankedItems.forEach((cc: CountryContestant) => {
-                if (!cc?.contestant) return;
-                cc.contestant.votes = voteSums[cc.country.key] || undefined;
-            });
-
-            state.unrankedItems = newUnrankedItems;
+            state.rankedItems = assignVotes(
+                clone(state.rankedItems), voteSums
+            );
+            
+            state.unrankedItems = assignVotes(
+                clone(state.unrankedItems), voteSums
+            );
         },
     },
 });

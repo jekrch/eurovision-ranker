@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { CallBackProps, EVENTS, ACTIONS, STATUS } from 'react-joyride';
-import { AppState } from '../redux/store';
+import { AppDispatch, AppState } from '../redux/store';
 import { setYear, setName, setShowUnranked, setRankedItems, setUnrankedItems, setShowTotalRank, setHeaderMenuOpen, setContestants } from '../redux/rootSlice';
 import { fetchCountryContestantsByYear } from '../utilities/ContestantRepository';
 import { tourSteps } from '../tour/steps';
@@ -21,7 +21,7 @@ interface JoyrideTourProps {
 }
 
 const JoyrideTour: React.FC<JoyrideTourProps> = (props: JoyrideTourProps) => {
-    const dispatch: Dispatch<any> = useAppDispatch();
+    const dispatch: AppDispatch = useAppDispatch();
     const year = useAppSelector((state: AppState) => state.year);
     const categories = useAppSelector((state: AppState) => state.categories);
     const activeCategory = useAppSelector((state: AppState) => state.activeCategory);

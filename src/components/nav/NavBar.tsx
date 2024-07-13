@@ -1,7 +1,7 @@
 import React, { Dispatch } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCog, faHouseUser } from '@fortawesome/free-solid-svg-icons';
-import { AppState } from '../../redux/store';
+import { AppDispatch, AppState } from '../../redux/store';
 import { setShowUnranked } from '../../redux/rootSlice';
 import IconButton from '../IconButton';
 import classNames from 'classnames';
@@ -19,7 +19,7 @@ type NavbarProps = {
  * @returns 
  */
 const Navbar: React.FC<NavbarProps> = ({ openModal, openConfigModal }) => {
-    const dispatch = useAppDispatch();
+    const dispatch: AppDispatch = useAppDispatch();
     const showUnranked = useAppSelector((state: AppState) => state.showUnranked);
 
     return (

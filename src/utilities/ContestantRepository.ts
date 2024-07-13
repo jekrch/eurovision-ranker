@@ -9,13 +9,14 @@ import { cachedYear, initialCountryContestantCache } from "../data/InitialContes
 import { SongDetails } from "../data/SongDetails";
 import { fetchContestantCsv } from "./CsvCache";
 import { AppDispatch } from "../redux/store";
+import { clone } from "./ContestantUtil";
 
 const contestantCache: { [year: string]: Contestant[] } = {};
 
 export async function fetchCountryContestantsByYear(
   year: string,
   voteCode: string = '',
-  dispatch: AppDispatch
+  dispatch?: AppDispatch
 ): Promise<CountryContestant[]> {
 
   // if we're requesting the cached year and there's no source country in 
@@ -24,15 +25,16 @@ export async function fetchCountryContestantsByYear(
       sanitizeYear(year) === cachedYear && 
       !voteCodeHasSourceCountry(voteCode)
     ) {
-    return JSON.parse(JSON.stringify(initialCountryContestantCache));;
+    return clone(initialCountryContestantCache);
   } 
   
   return await fetchAndProcessCountryContestants(
-    { year, voteCode, dispatch }  );
+    year, voteCode, dispatch 
+  );
 }
 
 export async function fetchAndProcessCountryContestants(
-{ year, voteCode, dispatch }: { year: string; voteCode: string; dispatch: AppDispatch; }, 
+  year: string, voteCode: string, dispatch?: AppDispatch 
 ) {
   let contestants: Contestant[] = await getContestantsByYear(
     year
@@ -79,7 +81,7 @@ export async function fetchAndProcessCountryContestants(
 
   // add votes if requested
   countryContestants = await assignVotesByCode(
-    dispatch, countryContestants, year, voteCode
+    countryContestants, year, voteCode, dispatch
   );
 
   countryContestants = sanitizeYoutubeLinks(

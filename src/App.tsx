@@ -6,7 +6,7 @@ import MainModal from './components/modals/MainModal';
 import NameModal from './components/modals/NameModal';
 import Navbar from './components/nav/NavBar';
 import EditNav from './components/nav/EditNav';
-import { AppState } from './redux/store';
+import { AppDispatch, AppState } from './redux/store';
 import { setRankedItems, setUnrankedItems, setShowUnranked, setActiveCategory, setShowTotalRank, setCategories } from './redux/rootSlice';
 import { decodeRankingsFromURL, encodeRankingsToURL, updateQueryParams, updateUrlFromRankedItems, urlHasRankings } from './utilities/UrlUtil';
 import { Dispatch } from 'redux';
@@ -33,7 +33,7 @@ const App: React.FC = () => {
   const [refreshRankedList, setRefreshRankedList] = useState(0);
   const [modalTab, setModalTab] = useState('about')
   const [configModalTab, setConfigModalTab] = useState('display')
-  const dispatch: Dispatch<any> = useAppDispatch();
+  const dispatch: AppDispatch = useAppDispatch();
   const showUnranked = useAppSelector((state: AppState) => state.showUnranked);
   const year = useAppSelector((state: AppState) => state.year);
   const name = useAppSelector((state: AppState) => state.name);
@@ -160,6 +160,7 @@ const App: React.FC = () => {
 
     updateRankedItems();
   }, [activeCategory, showTotalRank]);
+
 
   /**
  * Load categories from the url

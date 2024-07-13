@@ -129,7 +129,7 @@ const RankingsTab: React.FC = () => {
             </p>
             <div className="mt-5">
                 <span className="font-bold ml-0 whitespace-nowrap">ESC final rankings</span>
-                <div className="relative mt-[0.7em]">
+                <div className=" mt-[0.7em]">
                     <div>
                         <Dropdown
                             className="w-20 mx-auto mb-2"
@@ -142,7 +142,7 @@ const RankingsTab: React.FC = () => {
                         <span className="ml-2 text-sm">from</span>
                         <TooltipHelp
                             tooltipContent="Choose which country to display voting counts from. 'All' will show the total vote count"
-                            className="ml-4"
+                            className="ml-4 z-50"
                         />
                         <Dropdown
                             key="country-selector"

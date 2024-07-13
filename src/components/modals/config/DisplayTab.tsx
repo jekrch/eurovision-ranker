@@ -116,21 +116,22 @@ const DisplayTab: React.FC = () => {
                 newVote
             );
 
-            dispatch(
-                setContestants(newContestants)
-            )
+            //console.log(newContestants)
+            // dispatch(
+            //     setContestants(newContestants)
+            // )
 
-            let newRankedItems: CountryContestant[] = [];
+            // let newRankedItems: CountryContestant[] = [];
             
-            for (const rankedItem of rankedItems) {
-                const newRankedItem = newContestants.find(c => c.id === rankedItem.id);
-                newRankedItems.push(newRankedItem ?? rankedItem);
-            }
-            console.log(newRankedItems);
-            dispatch(
-                setRankedItems(newRankedItems)
-            );
-            console.log(newContestants)
+            // for (const rankedItem of rankedItems) {
+            //     const newRankedItem = newContestants.find(c => c.id === rankedItem.id);
+            //     newRankedItems.push(newRankedItem ?? rankedItem);
+            // }
+            // console.log(newRankedItems);
+            // dispatch(
+            //     setRankedItems(newRankedItems)
+            // );
+            // console.log(newContestants)
 
             if (newVote !== vote) {
                 updateQueryParams({ v: newVote });

@@ -182,8 +182,10 @@ function assignVotesToCountryContestants(
     votes: Vote[],
     countryContestants: CountryContestant[]
 ): CountryContestant[] {
+
     // summing up the votes for each country
     const voteSums: { [key: string]: ContestantVotes; } = {};
+    
     votes.forEach(vote => {
         let contestantVotes = voteSums[vote.toCountryKey];
 

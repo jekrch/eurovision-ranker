@@ -1,5 +1,5 @@
 import { UrlParams, convertRankingsStrToArray, extractParams, updateStates } from "./UrlUtil";
-import { setName, setYear, setTheme, setVote, setShowComparison } from '../redux/actions';
+import { setName, setYear, setTheme, setVote, setShowComparison } from '../redux/rootSlice';
 import { defaultYear } from "../data/Contestants";
 import { JSDOM } from 'jsdom';
 
@@ -83,7 +83,7 @@ describe('extractParams', () => {
     });
 });
 
-vi.mock('../redux/actions', () => ({
+vi.mock('../redux/rootSlice', () => ({
     setName: vi.fn(),
     setYear: vi.fn(),
     setTheme: vi.fn(),

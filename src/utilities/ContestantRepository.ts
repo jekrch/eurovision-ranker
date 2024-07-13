@@ -8,6 +8,7 @@ import { assignVotesByCode, voteCodeHasSourceCountry } from "./VoteProcessor";
 import { cachedYear, initialCountryContestantCache } from "../data/InitialContestants";
 import { SongDetails } from "../data/SongDetails";
 import { fetchContestantCsv } from "./CsvCache";
+import { AppDispatch } from "../redux/store";
 
 const contestantCache: { [year: string]: Contestant[] } = {};
 
@@ -27,14 +28,11 @@ export async function fetchCountryContestantsByYear(
   } 
   
   return await fetchAndProcessCountryContestants(
-    year, voteCode, dispatch
-  );
+    { year, voteCode, dispatch }  );
 }
 
 export async function fetchAndProcessCountryContestants(
-   year: string,
-   voteCode: string,
-   dispatch: Dispatch, 
+{ year, voteCode, dispatch }: { year: string; voteCode: string; dispatch: AppDispatch; }, 
 ) {
   let contestants: Contestant[] = await getContestantsByYear(
     year

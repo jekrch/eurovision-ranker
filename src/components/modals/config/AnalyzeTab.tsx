@@ -42,7 +42,7 @@ const AnalyzeTab: React.FC = () => {
   const getAllCountryRankCodes = async (voteType: string, round: string, voteYear: string) => {
     const codeCountryNameMap = new Map<string, Country[]>();
 
-    const countryContestants = await fetchCountryContestantsByYear(voteYear, '', dispatch);
+    const countryContestants = await fetchCountryContestantsByYear(voteYear, '');
 
     for (const country of countries) {
       const concatenatedIds = await getRankingIds(voteYear, voteType, 'final', countryContestants, country.key);

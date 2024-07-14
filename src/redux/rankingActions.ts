@@ -1,7 +1,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { CountryContestant } from '../data/CountryContestant';
 import { setRankedItems, setUnrankedItems } from './rootSlice';
-import { AppState } from './store'; // Assuming you have a store.ts file
+import { AppState } from './store';
 import { removeCountryFromUrlCategoryRankings } from '../utilities/CategoryUtil';
 
 export const deleteRankedCountry = createAsyncThunk(

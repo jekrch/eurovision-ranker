@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { AppState } from '../../../redux/store';
-import { setTheme, setVote, setContestants, setShowComparison, setRankedItems } from '../../../redux/rootSlice';
-import { assignVotesByCode, updateVoteTypeCode, voteCodeHasType } from '../../../utilities/VoteProcessor';
+import { setTheme, setVote, setContestants, setShowComparison, setRankedItems, assignVotesToContestants } from '../../../redux/rootSlice';
+import { assignVotesByCode, fetchVotesByCode, updateVoteTypeCode, voteCodeHasType } from '../../../utilities/VoteProcessor';
 import { countries } from '../../../data/Countries';
 import Dropdown from '../../Dropdown';
 import Checkbox from '../../Checkbox';
@@ -9,6 +9,7 @@ import { updateQueryParams } from '../../../utilities/UrlUtil';
 import TooltipHelp from '../../TooltipHelp';
 import { useAppDispatch, useAppSelector } from '../../../utilities/hooks';
 import { CountryContestant } from '../../../data/CountryContestant';
+import { Vote } from '../../../data/Vote';
 
 const DisplayTab: React.FC = () => {
     const dispatch = useAppDispatch();
@@ -109,20 +110,19 @@ const DisplayTab: React.FC = () => {
 
             let countryCode = getVoteSourceCodeFromOption(displayVoteSource);
 
-            let newVote = `f-${voteTypeCode}-${countryCode}`;
+            let newVoteCode = `f-${voteTypeCode}-${countryCode}`;
 
-            let newContestants = await assignVotesByCode(
-                contestants,
-                year,
-                newVote,
-                dispatch
-            );
+            let votes: Vote[] = await fetchVotesByCode(newVoteCode, year);
+            
+            dispatch(
+                assignVotesToContestants(votes)
+            )
 
-            if (newVote !== vote) {
-                updateQueryParams({ v: newVote });
+            if (newVoteCode !== vote) {
+                updateQueryParams({ v: newVoteCode });
 
                 dispatch(
-                    setVote(newVote)
+                    setVote(newVoteCode)
                 )
             }
         }

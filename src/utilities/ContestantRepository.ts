@@ -2,7 +2,6 @@ import { Contestant } from "../data/Contestant";
 import { CountryContestant } from "../data/CountryContestant";
 import { countries } from '../data/Countries';
 import { contestants2019, contestants2021, contestants2022, contestants2023, contestants2024, sanitizeYear } from '../data/Contestants';
-import { Dispatch } from 'redux';
 import Papa from 'papaparse';
 import { assignVotesByCode, voteCodeHasSourceCountry } from "./VoteProcessor";
 import { cachedYear, initialCountryContestantCache } from "../data/InitialContestants";
@@ -15,8 +14,7 @@ const contestantCache: { [year: string]: Contestant[] } = {};
 
 export async function fetchCountryContestantsByYear(
   year: string,
-  voteCode: string = '',
-  dispatch?: AppDispatch
+  voteCode: string = ''
 ): Promise<CountryContestant[]> {
 
   // if we're requesting the cached year and there's no source country in 
@@ -29,12 +27,12 @@ export async function fetchCountryContestantsByYear(
   } 
   
   return await fetchAndProcessCountryContestants(
-    year, voteCode, dispatch 
+    year, voteCode 
   );
 }
 
 export async function fetchAndProcessCountryContestants(
-  year: string, voteCode: string, dispatch?: AppDispatch 
+  year: string, voteCode: string
 ) {
   let contestants: Contestant[] = await getContestantsByYear(
     year
@@ -81,7 +79,7 @@ export async function fetchAndProcessCountryContestants(
 
   // add votes if requested
   countryContestants = await assignVotesByCode(
-    countryContestants, year, voteCode, dispatch
+    countryContestants, year, voteCode
   );
 
   countryContestants = sanitizeYoutubeLinks(

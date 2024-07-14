@@ -10,7 +10,6 @@ import { clearCategories, clearCategories as clearCategoriesUtil } from '../util
 import { CountryContestant } from '../data/CountryContestant';
 import { clearAllRankingParams } from '../utilities/UrlUtil';
 import { useAppDispatch, useAppSelector } from '../utilities/hooks';
-import { Dispatch } from '@reduxjs/toolkit';
 
 interface JoyrideTourProps {
   setRefreshUrl: (num: number) => void;
@@ -59,7 +58,7 @@ const JoyrideTour: React.FC<JoyrideTourProps> = (props: JoyrideTourProps) => {
     async function clearRanking(year: string) {
 
       let yearContestants = await fetchCountryContestantsByYear(
-        year, '', dispatch
+        year, ''
       );
   
       dispatch(

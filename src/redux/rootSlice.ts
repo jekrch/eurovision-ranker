@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { CountryContestant } from '../data/CountryContestant';
 import { Category } from '../utilities/CategoryUtil';
-import { ContestantVotes } from '../data/Vote';
+import { ContestantVotes, Vote } from '../data/Vote';
 import { assignVotes } from '../utilities/VoteUtil';
 import { clone } from '../utilities/ContestantUtil';
 
@@ -85,19 +85,19 @@ const rootSlice = createSlice({
         setShowComparison: (state, action: PayloadAction<boolean>) => {
             state.showComparison = action.payload;
         },
-        assignVotesToContestants: (state, action: PayloadAction<{ voteSums: { [key: string]: ContestantVotes; } }>) => {
-            const { voteSums } = action.payload;
+        assignVotesToContestants: (state, action: PayloadAction<Vote[]>) => {
+            const votes: Vote[] = action.payload;
 
             state.contestants = assignVotes(
-                clone(state.contestants), voteSums
+                clone(state.contestants), votes
             );
 
             state.rankedItems = assignVotes(
-                clone(state.rankedItems), voteSums
+                clone(state.rankedItems), votes
             );
             
             state.unrankedItems = assignVotes(
-                clone(state.unrankedItems), voteSums
+                clone(state.unrankedItems), votes
             );
         },
     },

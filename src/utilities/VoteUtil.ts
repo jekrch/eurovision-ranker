@@ -1,7 +1,8 @@
 import { countries } from "../data/Countries";
 import { CountryContestant } from "../data/CountryContestant";
 import { sanitizeYear } from '../data/Contestants';
-import { ContestantVotes } from "../data/Vote";
+import { ContestantVotes, Vote } from "../data/Vote";
+import { clone } from "./ContestantUtil";
 
 export function getSourceCountryKey(voteSource: string) {
 
@@ -87,7 +88,6 @@ export function getVoteCode(
     voteType: string,
     voteSource: string
 ) {
-
     let voteCode = `${round}-${voteType}`;
 
     const countryKey = getSourceCountryKey(voteSource);
@@ -101,12 +101,59 @@ export function getVoteCode(
 
 export function assignVotes(
     contestants: CountryContestant[], 
-    voteSums: { [key: string]: ContestantVotes; }
+    votes: Vote[]
 ) {
+    // summing up the votes for each country
+    const voteSums: { [key: string]: ContestantVotes; } = getKeyVoteMap(votes);
+
+    contestants = clone(contestants);
+    
     contestants.forEach((cc: CountryContestant) => {
         if (cc.contestant) {
             cc.contestant.votes = voteSums[cc.country.key] || undefined;
         }
     });
     return contestants;
+}
+
+function getKeyVoteMap(votes: Vote[]) {
+    const voteSums: { [key: string]: ContestantVotes; } = {};
+
+    votes.forEach(vote => {
+        let contestantVotes = voteSums[vote.toCountryKey];
+
+        if (!contestantVotes) {
+            contestantVotes = {
+                totalPoints: 0,
+                juryPoints: 0,
+                telePoints: 0,
+            } as ContestantVotes;
+            voteSums[vote.toCountryKey] = contestantVotes;
+        }
+        let totalPointsToAdd: number = getVoteFieldValue(vote, 'totalPoints');
+        let juryPointsToAdd: number = getVoteFieldValue(vote, 'juryPoints');
+        let telePointsToAdd: number = getVoteFieldValue(vote, 'telePoints');
+
+        if (totalPointsToAdd) {
+            contestantVotes.totalPoints! += totalPointsToAdd;
+        }
+
+        if (juryPointsToAdd) {
+            contestantVotes.juryPoints! += juryPointsToAdd;
+        }
+
+        if (telePointsToAdd) {
+            contestantVotes.telePoints! += telePointsToAdd;
+        }
+
+        // if (voteToAdd) {
+        //     voteSums[vote.toCountryKey] += voteToAdd;
+        // }
+    });
+    return voteSums;
+}
+
+function getVoteFieldValue(vote: Vote, fieldName: string): number {
+    let value = vote[fieldName as keyof Vote] as string; 
+    return parseInt(value, 10);
 }

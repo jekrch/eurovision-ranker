@@ -6,7 +6,6 @@ import { countries } from '../data/Countries';
 import { defaultYear, sanitizeYear } from '../data/Contestants';
 
 import { Category } from './CategoryUtil';
-import { Dispatch } from '@reduxjs/toolkit';
 import { AppDispatch } from '../redux/store';
 
 export type UrlParams = {
@@ -70,8 +69,7 @@ export async function processAndUpdateRankings(
 
     const yearContestants = await fetchCountryContestantsByYear(
         contestYear,
-        voteCode ?? '',
-        dispatch
+        voteCode ?? ''
     );
 
     dispatch(

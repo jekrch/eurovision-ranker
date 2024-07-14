@@ -1,11 +1,7 @@
 import { sanitizeYear } from "../data/Contestants";
 import { CountryContestant } from '../data/CountryContestant';
 import { ContestantVotes, Vote } from "../data/Vote";
-import { assignVotesToContestants } from "../redux/rootSlice";
-import { AppDispatch } from "../redux/store";
-import { clone } from "./ContestantUtil";
 import { fetchVotesForYear } from "./VoteRepository";
-import { Dispatch } from '@reduxjs/toolkit';
 import { assignVotes } from "./VoteUtil";
 
 let cachedVoteYear: string;
@@ -51,8 +47,7 @@ export async function sortByVotes(
     year: string,
     voteType: string,
     round: string = 'final',
-    fromCountryKey?: string,
-    dispatch?: AppDispatch
+    fromCountryKey?: string
 ): Promise<CountryContestant[]> {
 
     year = sanitizeYear(year);
@@ -61,8 +56,8 @@ export async function sortByVotes(
 
     let voteTypeFieldName: string = getVoteTypeFieldName(voteType);
 
-    countryContestants = assignVotesToCountryContestants(
-        votes, countryContestants, dispatch
+    countryContestants = assignVotes(
+        countryContestants, votes
     );
 
     // Sorting country contestants by votes in descending order
@@ -179,70 +174,6 @@ function getVoteTypeFieldName(voteType: string) {
     }
 }
 
-function assignVotesToCountryContestants(
-    votes: Vote[],
-    countryContestants: CountryContestant[],
-    dispatch?: AppDispatch,
-): CountryContestant[] {
-
-    // summing up the votes for each country
-    const voteSums: { [key: string]: ContestantVotes; } = getKeyVoteMap(votes);
-
-    if (dispatch) {
-        // assigning summed votes to corresponding country contestants
-        dispatch(
-            assignVotesToContestants({ voteSums })
-        );
-    } 
-
-    return assignVotes(
-        clone(countryContestants),
-        voteSums
-    )
-}
-
-function getKeyVoteMap(votes: Vote[]) {
-    const voteSums: { [key: string]: ContestantVotes; } = {};
-
-    votes.forEach(vote => {
-        let contestantVotes = voteSums[vote.toCountryKey];
-
-        if (!contestantVotes) {
-            contestantVotes = {
-                totalPoints: 0,
-                juryPoints: 0,
-                telePoints: 0,
-            } as ContestantVotes;
-            voteSums[vote.toCountryKey] = contestantVotes;
-        }
-        let totalPointsToAdd: number = getVoteFieldValue(vote, 'totalPoints');
-        let juryPointsToAdd: number = getVoteFieldValue(vote, 'juryPoints');
-        let telePointsToAdd: number = getVoteFieldValue(vote, 'telePoints');
-
-        if (totalPointsToAdd) {
-            contestantVotes.totalPoints! += totalPointsToAdd;
-        }
-
-        if (juryPointsToAdd) {
-            contestantVotes.juryPoints! += juryPointsToAdd;
-        }
-
-        if (telePointsToAdd) {
-            contestantVotes.telePoints! += telePointsToAdd;
-        }
-
-        // if (voteToAdd) {
-        //     voteSums[vote.toCountryKey] += voteToAdd;
-        // }
-    });
-    return voteSums;
-}
-
-function getVoteFieldValue(vote: Vote, fieldName: string): number {
-    let value = vote[fieldName as keyof Vote] as string; 
-    return parseInt(value, 10);
-}
-
 function getContestantVoteFieldValue(
     votes?: ContestantVotes, 
     fieldName?: string
@@ -258,9 +189,17 @@ export async function assignVotesByCode(
     countryContestants: CountryContestant[],
     year: string,
     voteCode: string,
-    dispatch?: AppDispatch,
 ): Promise<CountryContestant[]> {
 
+    let votes: Vote[] = await fetchVotesByCode(voteCode, year);
+
+    return assignVotes(
+        countryContestants,
+        votes
+    );
+}
+
+export async function fetchVotesByCode(voteCode: string, year: string) {
     let codes = voteCode?.split("-");
 
     let roundCode = codes?.[0];
@@ -269,14 +208,8 @@ export async function assignVotesByCode(
 
     let round = processVotingRound(roundCode);
     //let voteTypeFieldName: string = getVoteTypeFieldName(voteTypeCode);
-
-    let votes: Vote[] = await fetchVotesForYear(year, fromCountryKey, round)
-
-    return assignVotesToCountryContestants(
-        votes,
-        countryContestants,
-        dispatch
-    );
+    let votes: Vote[] = await fetchVotesForYear(year, fromCountryKey, round);
+    return votes;
 }
 
 function processVotingRound(round: string) {

@@ -21,25 +21,32 @@ describe('reorderByAllWeightedRankings', () => {
             id: '1', country: {
                 id: '1', name: 'Country 1', key: 'c1',
                 icon: ''
-            }
+            },
+            contestant: null
         },
         {
-            id: '2', country: {
+            id: '2', 
+            country: {
                 id: '2', name: 'Country 2', key: 'c2',
                 icon: ''
-            }
+            },
+            contestant: null
         },
         {
-            id: '3', country: {
+            id: '3', 
+            country: {
                 id: '3', name: 'Country 3', key: 'c3',
                 icon: ''
-            }
+            },
+            contestant: null
         },
         {
-            id: '4', country: {
+            id: '4', 
+            country: {
                 id: '4', name: 'Country 4', key: 'c4',
                 icon: ''
-            }
+            },
+            contestant: null
         },
     ];
 

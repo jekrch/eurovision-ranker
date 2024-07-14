@@ -201,7 +201,7 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
               return (
                 <div
                   key={index}
-                  className="px-2 py-1 text-xs flex-shrink-0 text-slate-400"
+                  className="px-2 py-1 text-xs flex-shrink-0 text-slate-400 h-[2em] flex"
                   title={`weight: ${category.weight}`}
                 >
                   <span className="">{category.name}:</span>{' '}

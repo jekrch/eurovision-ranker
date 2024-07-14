@@ -1,7 +1,7 @@
 
 import { setName, setYear, setRankedItems, setUnrankedItems, setContestants, setTheme, setVote, setShowComparison } from '../redux/rootSlice';
 import { fetchCountryContestantsByYear } from './ContestantRepository';
-import { CountryContestant } from '../data/CountryContestant';
+import { CountryContestant, createCountryContestant } from '../data/CountryContestant';
 import { countries } from '../data/Countries';
 import { defaultYear, sanitizeYear } from '../data/Contestants';
 
@@ -133,7 +133,7 @@ export function orderContestantsByRankingStr(
             } else {
                 const country = countries.find(c => c.id === id);
                 if (country) {
-                    const newContestant = new CountryContestant(country);
+                    const newContestant = createCountryContestant(country);
                     return newContestant;
                 } else {
                     return;

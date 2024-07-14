@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { AppState } from '../../redux/types';
+import { AppState } from '../../redux/store';
 import Modal from './Modal';
 import { CountryContestant } from '../../data/CountryContestant';
 import { getSongDetails } from '../../utilities/ContestantRepository';

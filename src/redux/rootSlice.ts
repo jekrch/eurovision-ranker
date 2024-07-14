@@ -2,7 +2,6 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { CountryContestant } from '../data/CountryContestant';
 import { Category } from '../utilities/CategoryUtil';
 import { ContestantVotes } from '../data/Vote';
-import { updateQueryParams } from '../utilities/UrlUtil';
 import { assignVotes } from '../utilities/VoteUtil';
 import { clone } from '../utilities/ContestantUtil';
 

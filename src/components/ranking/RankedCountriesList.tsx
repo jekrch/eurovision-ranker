@@ -17,6 +17,7 @@ import { updateUrlFromRankedItems } from '../../utilities/UrlUtil';
 import { IntroColumnWrapper } from './IntroColumnWrapper';
 import { useAppDispatch, useAppSelector } from '../../utilities/hooks';
 import { Dispatch } from '@reduxjs/toolkit';
+import { deleteRankedCountry } from '../../redux/rankingActions';
 
 interface RankedCountriesListProps {
     openSongModal: (countryContestant: CountryContestant) => void;
@@ -49,7 +50,6 @@ const RankedCountriesList: React.FC<RankedCountriesListProps> = ({
     const showTotalRank = useAppSelector((state: AppState) => state.showTotalRank);
     const isDeleteMode = useAppSelector((state: AppState) => state.isDeleteMode);
     const rankedItems = useAppSelector((state: AppState) => state.rankedItems);
-    const unrankedItems = useAppSelector((state: AppState) => state.unrankedItems);
     const categories = useAppSelector((state: AppState) => state.categories);
     const activeCategory = useAppSelector((state: AppState) => state.activeCategory);
       
@@ -69,43 +69,17 @@ const RankedCountriesList: React.FC<RankedCountriesListProps> = ({
         );
     }, [refreshUrl]);
 
-    /**
+   /**
    * Identify country with the provided Id in the rankedItems array, and 
    * move them back into the unrankedItems array, alphabetically 
    * 
    * @param countryId 
    */
-    function deleteRankedCountry(id: string) {
-        const index = rankedItems.findIndex(i => i.id === id);
-        const [objectToMove] = rankedItems.splice(index, 1);
-        const insertionIndex = unrankedItems.findIndex(
-            i => i.country.name > objectToMove.country.name
-        );
-
-        let newUnrankedItems;
-        if (insertionIndex === -1) {
-            // If no country is found with a name greater than our object, append it at the end.
-            newUnrankedItems = [...unrankedItems, objectToMove];
-        } else {
-            // Insert at the found index
-            newUnrankedItems = [
-                ...unrankedItems.slice(0, insertionIndex),
-                objectToMove,
-                ...unrankedItems.slice(insertionIndex)
-            ];
-        }
-
+    function handleDeleteRankedCountry(id: string) {
         dispatch(
-            setRankedItems([...rankedItems])
+            deleteRankedCountry(id)
         );
-
-        dispatch(
-            setUnrankedItems(newUnrankedItems)
-        );
-
-        // Remove the country from each category ranking in the URL parameters
-        removeCountryFromUrlCategoryRankings(categories, id);
-
+          
         setRefreshUrl(Math.random());
     }
 
@@ -191,7 +165,7 @@ const RankedCountriesList: React.FC<RankedCountriesListProps> = ({
                                                         rank={index + 1}
                                                         countryContestant={countryContestant}
                                                         isDeleteMode={showUnranked && isDeleteMode}
-                                                        deleteCallBack={deleteRankedCountry}
+                                                        deleteCallBack={handleDeleteRankedCountry}
                                                         isDragging={snapshot.isDragging}
                                                     />
                                                 ) : (

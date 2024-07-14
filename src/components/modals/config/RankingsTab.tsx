@@ -27,7 +27,8 @@ const RankingsTab: React.FC = () => {
     // Update vote source options based on the selected year
     useEffect(() => {
         const updateVoteSourceOptions = async () => {
-            const yearContestants = await fetchCountryContestantsByYear(rankingYear, undefined, dispatch);
+
+            const yearContestants = await fetchCountryContestantsByYear(rankingYear, undefined, undefined);
 
             setVoteSourceOptions([
                 'All',

@@ -10,6 +10,7 @@ import { clearCategories, clearCategories as clearCategoriesUtil } from '../util
 import { CountryContestant } from '../data/CountryContestant';
 import { clearAllRankingParams } from '../utilities/UrlUtil';
 import { useAppDispatch, useAppSelector } from '../utilities/hooks';
+import { clone } from '../utilities/ContestantUtil';
 
 interface JoyrideTourProps {
   setRefreshUrl: (num: number) => void;
@@ -150,14 +151,18 @@ const JoyrideTour: React.FC<JoyrideTourProps> = (props: JoyrideTourProps) => {
         break;
 
       case 5:
+
+        let swappedRankedItems = clone(rankedItems);
+
         if (rankedItems.length >= 2) {
           // swap the first two elements
-          const temp = rankedItems[0];
-          rankedItems[0] = rankedItems[1];
-          rankedItems[1] = temp;
+          
+          swappedRankedItems[0] = rankedItems[1];
+          swappedRankedItems[1] = rankedItems[0];
         }
+
         dispatch(
-          setRankedItems(rankedItems)
+          setRankedItems(swappedRankedItems)
         );
         
         props.setRefreshUrl(Math.random());

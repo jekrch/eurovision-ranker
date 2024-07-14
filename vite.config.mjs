@@ -3,16 +3,39 @@ import react from '@vitejs/plugin-react'
 import viteTsconfigPaths from 'vite-tsconfig-paths'
 import postcss from 'postcss';
 import tailwindcss from 'tailwindcss';
+import compression from 'vite-plugin-compression';
 import autoprefixer from 'autoprefixer';
 
 export default defineConfig({
     // depending on your application, base can also be "/"
     //base: '',
-    plugins: [react(), viteTsconfigPaths()],
+    plugins: [
+      react(), 
+      viteTsconfigPaths(),
+      compression({
+        algorithm: 'gzip',
+        ext: '.gz',
+      })
+    ],
+    build: {
+      minify: 'terser',
+      terserOptions: {
+        compress: {
+          drop_console: true,
+          drop_debugger: true,
+        },
+      },
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            react: ['react', 'react-dom'],
+            redux: ['@reduxjs/toolkit', 'react-redux'],
+          },
+        },
+      },
+    },
     server: {
-        // this ensures that the browser opens upon server start
         open: true,
-        // this sets a default port to 3000  
         port: 3000,
     },
     test: {

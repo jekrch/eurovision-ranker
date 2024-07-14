@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { DragDropContext, DropResult } from 'react-beautiful-dnd';
 import classNames from 'classnames';
 import { CountryContestant } from './data/CountryContestant';
@@ -9,7 +9,6 @@ import EditNav from './components/nav/EditNav';
 import { AppDispatch, AppState } from './redux/store';
 import { setRankedItems, setUnrankedItems, setShowUnranked, setActiveCategory, setShowTotalRank, setCategories } from './redux/rootSlice';
 import { decodeRankingsFromURL, encodeRankingsToURL, updateQueryParams, updateUrlFromRankedItems, urlHasRankings } from './utilities/UrlUtil';
-import { Dispatch } from 'redux';
 import MapModal from './components/modals/MapModal';
 import ConfigModal from './components/modals/config/ConfigModal';
 import WelcomeOverlay from './components/modals/WelcomeOverlay';
@@ -75,15 +74,15 @@ const App: React.FC = () => {
     return categoryRankingsExist(urlParams)
   };
 
-  const handleGetStarted = () => {
+  const handleGetStarted = useCallback(() => {
     setIsOverlayExit(true);
     const overlayDiv = document.querySelector('.overlay')!;
     overlayDiv.classList.add('slide-left');
 
     setTimeout(() => {
       setShowOverlay(false)
-    }, 500); // for the animation duration
-  };
+    }, 500);
+  }, []);
 
   /**
  * When the vote code updates, make sure to refresh the ranked 
@@ -258,7 +257,7 @@ const App: React.FC = () => {
      * @param result 
      * @returns 
      */
-  const handleOnDragEnd = (result: DropResult) => {
+  const handleOnDragEnd = useCallback((result: DropResult) => {
     const { source, destination } = result;
 
     if (!destination) return;
@@ -303,7 +302,7 @@ const App: React.FC = () => {
 
     dispatch(setActiveList(items));
     setRefreshUrl(Math.random());
-  };
+  }, [unrankedItems, rankedItems, categories, dispatch]);
 
   function openMainModal(tabName: string): void {
     setModalTab(tabName);

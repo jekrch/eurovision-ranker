@@ -26,7 +26,7 @@ const RankedHeaderMenu: React.FC<RankedHeaderMenuProps> = (props: RankedHeaderMe
   const globalMenuOpenTrigger = useAppSelector((state: AppState) => state.headerMenuOpen);
   const dispatch: AppDispatch = useAppDispatch();
   const CLOSING_DURATION = 300;
-
+  const menuNodeRef = useRef(null);
   const toggleMenu = () => {
   const shouldClose = isMenuOpen;
   setIsMenuOpen(!isMenuOpen);
@@ -103,7 +103,13 @@ const RankedHeaderMenu: React.FC<RankedHeaderMenuProps> = (props: RankedHeaderMe
           icon={faEllipsisH} 
         />
       </button>
-      <CSSTransition in={isMenuOpen} timeout={200} classNames="menu" unmountOnExit>
+      <CSSTransition 
+        in={isMenuOpen} 
+        timeout={200} 
+        classNames="menu"
+        nodeRef={menuNodeRef} 
+        unmountOnExit
+      >
         <ul
           role="menu"
           className="absolute z-20 min-w-[180px] right-0 mt-1 shadow-lg shadow-blue-gray-500/10 rounded-sm border border-slate-500 overflow-auto flex flex-col"

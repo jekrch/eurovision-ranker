@@ -1,10 +1,10 @@
 import React from 'react';
-import { Draggable } from 'react-beautiful-dnd';
 import { StrictModeDroppable } from './StrictModeDroppable';
 import classNames from 'classnames';
 import { Card } from './Card';
 import { AppState } from '../../redux/store';
 import { useAppSelector } from '../../utilities/hooks';
+import { Draggable } from '@hello-pangea/dnd';
 
 /**
  * Displays all ranked countries in the left column list on the select view

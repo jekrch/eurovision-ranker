@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Draggable } from 'react-beautiful-dnd';
 import { StrictModeDroppable } from './StrictModeDroppable';
 import classNames from 'classnames';
 import { CountryContestant } from '../../data/CountryContestant';
@@ -16,6 +15,7 @@ import { updateUrlFromRankedItems } from '../../utilities/UrlUtil';
 import { IntroColumnWrapper } from './IntroColumnWrapper';
 import { useAppDispatch, useAppSelector } from '../../utilities/hooks';
 import { deleteRankedCountry } from '../../redux/rankingActions';
+import { Draggable } from '@hello-pangea/dnd';
 
 interface RankedCountriesListProps {
     openSongModal: (countryContestant: CountryContestant) => void;
@@ -82,7 +82,7 @@ const RankedCountriesList: React.FC<RankedCountriesListProps> = ({
     return (
         <div className="tour-step-5 z-20">
             <StrictModeDroppable droppableId="rankedItems">
-                {(provided) => (
+                {(provided: any) => (
                     <div
                         className={classNames(
                             "grid h-full max-h-full min-h-full grid-rows-[auto_1fr]"
@@ -144,7 +144,7 @@ const RankedCountriesList: React.FC<RankedCountriesListProps> = ({
                                         index={index}
                                         isDragDisabled={showTotalRank}
                                     >
-                                        {(provided, snapshot) => (
+                                        {(provided: any, snapshot: any) => (
                                             <li
                                                 key={`li-${countryContestant.id.toString()}`}
                                                 ref={provided.innerRef}

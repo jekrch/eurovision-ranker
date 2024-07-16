@@ -4,6 +4,7 @@ import Modal from './Modal';
 import { CountryContestant } from '../../data/CountryContestant';
 import { getSongDetails } from '../../utilities/ContestantRepository';
 import { useAppSelector } from '../../utilities/hooks';
+import Flag from 'react-world-flags';
 
 type SongModalProps = {
     isOpen: boolean;
@@ -120,7 +121,7 @@ const SongModal: React.FC<SongModalProps> = (props: SongModalProps) => {
                             className="sr-only peer" 
                         />
                         <div className="relative w-7 h-4 bg-gray-00 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-gray-400 after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-gray-400 after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
-                        <span className="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300"><i className={`z-0 float-right text-md flag-icon -mr-2 flag-icon-gb mr-1`} /></span>
+                        <span className="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300"><Flag code={'gb'} className="mr-3 w-6 opacity-60  float-right text-md flag-icon mr-1" /> </span>
                     </label>
                     }
                 </span>

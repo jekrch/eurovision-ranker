@@ -1,32 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-2EJQ73Z228"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
 
-      gtag('config', 'G-2EJQ73Z228');
-    </script>
-    <link rel="icon" type="image/svg+xml" href="/eurovision-heart.svg">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/css/flag-icon.min.css">
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1" />
-    <meta name="theme-color" content="#000000" />
-    <meta
-      name="description"
-      content="An app for ranking your favorite Eurovision Song Contest participants"
-    />
-    <link rel="apple-touch-icon" href="/favicon.png" />
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1" />
+  <meta name="theme-color" content="#000000" />
+  <meta name="description" content="An app for ranking your favorite Eurovision Song Contest participants" />
 
-    <link rel="manifest" href="/manifest.json" />
-    <title>Eurovision Ranker</title>
-  </head>
-  <body>
-    <noscript>You need to enable JavaScript to run this app.</noscript>
-    <div id="root"></div>
-    <script type="module" src="/src/index.tsx"></script>
-  </body>
+  <!-- Preconnect to external domains -->
+  <link rel="preconnect" href="https://www.googletagmanager.com">
+
+  <!-- Preload critical assets -->
+  <link rel="preload" href="/src/index.tsx" as="script" type="module">
+  <link rel="preload" href="/eurovision-heart.svg" as="image" type="image/svg+xml">
+
+  <link rel="icon" type="image/svg+xml" href="/eurovision-heart.svg">
+  <link rel="apple-touch-icon" href="/favicon.png" />
+  <link rel="manifest" href="/manifest.json" />
+
+  <title>Eurovision Ranker</title>
+
+  <!-- Google tag (gtag.js) -->
+  <script defer src="https://www.googletagmanager.com/gtag/js?id=G-2EJQ73Z228"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+
+    gtag('config', 'G-2EJQ73Z228');
+  </script>
+
+</head>
+
+<body>
+  <noscript>You need to enable JavaScript to run this app.</noscript>
+  <div id="root"></div>
+  <script type="module" src="/src/index.tsx"></script>
+</body>
+
 </html>

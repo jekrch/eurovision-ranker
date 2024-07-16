@@ -1,35 +1,45 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-2EJQ73Z228"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
 
-      gtag('config', 'G-2EJQ73Z228');
-    </script>
-    <link rel="icon" type="image/svg+xml" href="/eurovision-heart.svg">
-    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/css/flag-icon.min.css"> -->
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1" />
-    <meta name="theme-color" content="#000000" />
-    <meta
-      name="description"
-      content="An app for ranking your favorite Eurovision Song Contest participants"
-    />
-    <link rel="apple-touch-icon" href="/favicon.png" />
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1" />
+  <meta name="theme-color" content="#000000" />
+  <meta name="description" content="An app for ranking your favorite Eurovision Song Contest participants" />
 
-    <link rel="manifest" href="/manifest.json" />
-    <title>Eurovision Ranker</title>
-    <script type="module" crossorigin src="/assets/index-BV-8MfTD.js"></script>
-    <link rel="modulepreload" crossorigin href="/assets/react-VFLnq-og.js">
-    <link rel="modulepreload" crossorigin href="/assets/redux-B4K4qiMx.js">
-    <link rel="stylesheet" crossorigin href="/assets/index-4eR5SDEf.css">
-  </head>
-  <body>
-    <noscript>You need to enable JavaScript to run this app.</noscript>
-    <div id="root"></div>
-  </body>
+  <!-- Preconnect to external domains -->
+  <link rel="preconnect" href="https://www.googletagmanager.com">
+
+  <!-- Preload critical assets -->
+  <link rel="preload" href="data:application/octet-stream;base64,aW1wb3J0IHsgUHJvdmlkZXIgfSBmcm9tICdyZWFjdC1yZWR1eCc7DQppbXBvcnQgUmVhY3RET00gZnJvbSAncmVhY3QtZG9tL2NsaWVudCc7DQppbXBvcnQgJy4vaW5kZXguY3NzJzsNCmltcG9ydCAnLi9hdXJvcmFsLmNzcyc7DQppbXBvcnQgQXBwIGZyb20gJy4vQXBwJzsNCmltcG9ydCBzdG9yZSBmcm9tICcuL3JlZHV4L3N0b3JlJzsgDQoNCmNvbnN0IHJvb3QgPSBSZWFjdERPTS5jcmVhdGVSb290KA0KICBkb2N1bWVudC5nZXRFbGVtZW50QnlJZCgncm9vdCcpIGFzIEhUTUxFbGVtZW50DQopOw0Kcm9vdC5yZW5kZXIoDQogIC8vPFJlYWN0LlN0cmljdE1vZGU+DQogICAgPFByb3ZpZGVyIHN0b3JlPXtzdG9yZX0+DQogICAgICA8QXBwIC8+DQogICAgPC9Qcm92aWRlcj4NCiAgLy88L1JlYWN0LlN0cmljdE1vZGU+DQopOw0K" as="script" type="module">
+  <link rel="preload" href="/eurovision-heart.svg" as="image" type="image/svg+xml">
+
+  <link rel="icon" type="image/svg+xml" href="/eurovision-heart.svg">
+  <link rel="apple-touch-icon" href="/favicon.png" />
+  <link rel="manifest" href="/manifest.json" />
+
+  <title>Eurovision Ranker</title>
+
+
+  <!-- Google tag (gtag.js) -->
+  <script defer src="https://www.googletagmanager.com/gtag/js?id=G-2EJQ73Z228"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+
+    gtag('config', 'G-2EJQ73Z228');
+  </script>
+
+  <script type="module" crossorigin src="/assets/index-BV-8MfTD.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/react-VFLnq-og.js">
+  <link rel="modulepreload" crossorigin href="/assets/redux-B4K4qiMx.js">
+  <link rel="stylesheet" crossorigin href="/assets/index-4eR5SDEf.css">
+</head>
+
+<body>
+  <noscript>You need to enable JavaScript to run this app.</noscript>
+  <div id="root"></div>
+</body>
+
 </html>

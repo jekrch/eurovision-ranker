@@ -1,4 +1,5 @@
 export interface ContestantRow {
+    id: string;
     year: number;
     to_country_id: string;
     to_country: string;

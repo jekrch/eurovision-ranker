@@ -41,6 +41,9 @@ const TableModal: React.FC<TableModalProps> = (props: TableModalProps) => {
             headers.forEach((header, index) => {
                 const value = values[index]?.trim();
                 switch (header.trim()) {
+                    case 'id':
+                        entry.id = value;
+                        break;
                     case 'year':
                         entry.year = parseInt(value, 10);
                         break;
@@ -59,7 +62,6 @@ const TableModal: React.FC<TableModalProps> = (props: TableModalProps) => {
                     case 'place_contest':
                         entry.place_contest = parseInt(value, 10);
                         break;
-                    // add cases for other fields as needed
                 }
             });
 

@@ -2,6 +2,8 @@ import csv
 import string
 import itertools
 
+## generate unique 3 character alphanumeric codes for all contest songs in contestants.csv
+
 def generate_codes():
     characters = string.ascii_lowercase + string.digits
     for code in itertools.product(characters, repeat=3):

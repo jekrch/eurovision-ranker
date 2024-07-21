@@ -1,7 +1,9 @@
 import { Contestant } from "./Contestant";
 
-//export const supportedYears = ["1967","2019", "2021","2022", "2023", "2024"];
-export const supportedYears = Array.from({ length: 2024 - 1956 + 1 }, (v, i) => ((1956 + i).toString())).reverse();
+export const supportedYears = Array.from(
+  { length: 2024 - 1956 + 1 }, 
+  (v, i) => ((1956 + i).toString())
+).reverse();
 
 /**
  * Converts the provided year from 2 digits to 4 if necessary

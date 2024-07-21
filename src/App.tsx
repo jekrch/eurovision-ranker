@@ -22,6 +22,7 @@ import { addWindowEventListeners, handlePopState, removeWindowEventListeners, se
 import RankedCountriesList from './components/ranking/RankedCountriesList';
 import UnrankedCountriesList from './components/ranking/UnrankedCountriesList';
 import { useAppDispatch, useAppSelector } from './utilities/hooks';
+import TableModal from './components/table/TableModal';
 
 const App: React.FC = () => {
   const [mainModalShow, setMainModalShow] = useState(false);
@@ -433,6 +434,14 @@ const App: React.FC = () => {
         onClose={() => {
           setNameModalShow(false);
         }}
+      />
+
+      <TableModal
+        isOpen={true}
+        onClose={() => {}}
+        // onClose={() => {
+        //   setNameModalShow(false);
+        // }}
       />
 
       <MapModal

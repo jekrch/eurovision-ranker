@@ -4,6 +4,8 @@ import { Category } from '../utilities/CategoryUtil';
 import { ContestantVotes, Vote } from '../data/Vote';
 import { assignVotes } from '../utilities/VoteUtil';
 import { clone } from '../utilities/ContestantUtil';
+import { EurovisionEntry, TableState } from '../components/table/tableTypes';
+import { changePageSize, filterTable, sortTable } from './tableSlice';
 
 interface AppState {
     name: string;
@@ -20,6 +22,7 @@ interface AppState {
     activeCategory: number | undefined;
     showTotalRank: boolean;
     showComparison: boolean;
+    tableState: TableState
 }
 
 const initialState: AppState = {
@@ -37,6 +40,16 @@ const initialState: AppState = {
     activeCategory: undefined,
     showTotalRank: false,
     showComparison: false,
+    tableState: {
+        sortColumn: '',
+        sortDirection: 'asc',
+        filters: {},
+        pageSize: 10,
+        currentPage: 1,
+        filteredEntries: [],
+        entries: [],
+        searchTerm: '',
+    } as TableState
 };
 
 const rootSlice = createSlice({
@@ -100,7 +113,28 @@ const rootSlice = createSlice({
                 clone(state.unrankedItems), votes
             );
         },
+        setTableCurrentPage: (state, action: PayloadAction<number>) => {
+            state.tableState.currentPage = action.payload;
+        },
+        setEntries: (state, action: PayloadAction<EurovisionEntry[]>) => {
+            state.tableState.entries = action.payload;
+        },
     },
+    extraReducers: (builder) => {
+        builder
+          .addCase(sortTable.fulfilled, (state, action) => {
+            state.tableState.sortColumn = action.payload.column;
+            state.tableState.sortDirection = action.payload.direction;
+          })
+          .addCase(filterTable.fulfilled, (state, action) => {
+            state.tableState.filters = action.payload;
+            state.tableState.currentPage = 1; // Reset to first page when filters change
+          })
+          .addCase(changePageSize.fulfilled, (state, action) => {
+            state.tableState.pageSize = action.payload;
+            state.tableState.currentPage = 1; // Reset to first page when page size changes
+          });
+      },
 });
 
 export const {
@@ -118,7 +152,9 @@ export const {
     setActiveCategory,
     setShowTotalRank,
     setShowComparison,
-    assignVotesToContestants
+    assignVotesToContestants,
+    setTableCurrentPage,
+    setEntries
 } = rootSlice.actions;
 
 export default rootSlice.reducer;

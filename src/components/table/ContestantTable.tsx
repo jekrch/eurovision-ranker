@@ -7,6 +7,7 @@ import { useAppDispatch } from '../../utilities/hooks';
 import { setTableCurrentPage } from '../../redux/rootSlice';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch, faSortUp, faSortDown } from '@fortawesome/free-solid-svg-icons';
+import Dropdown from '../Dropdown';
 
 const ContestantTable: React.FC = () => {
     const dispatch = useAppDispatch();
@@ -55,8 +56,8 @@ const ContestantTable: React.FC = () => {
         dispatch(filterTable({ search: event.target.value }));
     };
 
-    const handlePageSizeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        dispatch(changePageSize(Number(event.target.value)));
+    const handlePageSizeChange = (value: any) => {
+        dispatch(changePageSize(Number(value)));
     };
 
     const handlePageChange = (page: number) => {
@@ -144,29 +145,32 @@ const ContestantTable: React.FC = () => {
     return (
         <div className="flex flex-col h-full bg-transparent">
             <div className="flex justify-between items-center mb-4 px-4">
-                <div className="relative">
+                <div className="relative w-full mr-2">
                     <input
                         type="text"
                         value={searchTerm}
                         onChange={handleSearch}
                         placeholder="Search..."
-                        className="pl-10 pr-4 py-2 border rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="pl-10 pr-4 py-1 mt-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-slate-400 bg-transparent text-slate-300 border-slate-400"
                     />
-                    <FontAwesomeIcon icon={faSearch} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                    <FontAwesomeIcon icon={faSearch} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 mt-1" />
                 </div>
-                <select 
-                    value={pageSize} 
+                <Dropdown 
+                    value={pageSize?.toString() + ' per page'} 
                     onChange={handlePageSizeChange}
-                    className="border rounded-md px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                    <option value={10}>10 per page</option>
-                    <option value={25}>25 per page</option>
-                    <option value={50}>50 per page</option>
-                </select>
+                    options={[
+                        `10`,
+                        `25`,
+                        `50`
+                    ]}
+                    buttonClassName='py-[1.1em]'
+                    className="mr-4 mt-2 min-w-[8em]"
+                />
+                   
             </div>
             <div className="flex-grow overflow-auto">
                 <table className="w-full bg-transparent">
-                    <thead className="bg-gray-800 text-white sticky top-0">
+                    <thead className="bg-slate-700 text-slate-300 sticky top-0">
                         <tr>
                             {['Year', 'Country', 'Performer', 'Song'].map((header) => (
                                 <th 

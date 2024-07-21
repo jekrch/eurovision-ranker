@@ -437,7 +437,7 @@ const App: React.FC = () => {
       />
 
       <TableModal
-        isOpen={false}
+        isOpen={true}
         onClose={() => {}}
         // onClose={() => {
         //   setNameModalShow(false);

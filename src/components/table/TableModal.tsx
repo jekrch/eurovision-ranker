@@ -4,6 +4,7 @@ import ContestantTable from './ContestantTable';
 import { ContestantRow } from './tableTypes';
 import { useAppDispatch } from '../../utilities/hooks';
 import { setEntries } from '../../redux/rootSlice';
+import Papa from 'papaparse';
 
 type TableModalProps = {
     isOpen: boolean;
@@ -31,42 +32,30 @@ const TableModal: React.FC<TableModalProps> = (props: TableModalProps) => {
 
     // helper function to parse CSV
     function parseCSV(csv: string): ContestantRow[] {
-        const lines = csv.split('\n');
-        const headers = lines[0].split(',');
+        const parseResult = Papa.parse(csv, {
+            header: true,
+            skipEmptyLines: true,
+            transformHeader: (header: string) => header.trim(),
+            transform: (value: string) => value.trim()
+        });
 
-        return lines.slice(1).map(line => {
-            const values = line.split(',');
-            const entry: Partial<ContestantRow> = {};
+        return parseResult.data
+            .map((row: any) => {
+                const entry: Partial<ContestantRow> = {
+                    id: row.id,
+                    year: parseInt(row.year, 10),
+                    to_country_id: row.to_country_id,
+                    to_country: row.to_country,
+                    performer: row.performer,
+                    song: row.song,
+                    place_contest: parseInt(row.place_contest, 10)
+                };
 
-            headers.forEach((header, index) => {
-                const value = values[index]?.trim();
-                switch (header.trim()) {
-                    case 'id':
-                        entry.id = value;
-                        break;
-                    case 'year':
-                        entry.year = parseInt(value, 10);
-                        break;
-                    case 'to_country_id':
-                        entry.to_country_id = value;
-                        break;
-                    case 'to_country':
-                        entry.to_country = value;
-                        break;
-                    case 'performer':
-                        entry.performer = value;
-                        break;
-                    case 'song':
-                        entry.song = value;
-                        break;
-                    case 'place_contest':
-                        entry.place_contest = parseInt(value, 10);
-                        break;
-                }
-            });
-
-            return entry as ContestantRow;
-        }).filter(entry => entry.year && entry.to_country && entry.performer && entry.song);
+                return entry as ContestantRow;
+            })
+            .filter((entry: ContestantRow) =>
+                entry.year && entry.to_country && entry.performer && entry.song
+            );
     }
 
     return (

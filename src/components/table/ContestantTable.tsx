@@ -8,6 +8,7 @@ import { setTableCurrentPage } from '../../redux/rootSlice';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch, faSortUp, faSortDown } from '@fortawesome/free-solid-svg-icons';
 import Dropdown from '../Dropdown';
+import TooltipHelp from '../TooltipHelp';
 
 const ContestantTable: React.FC = () => {
     const dispatch = useAppDispatch();
@@ -29,9 +30,16 @@ const ContestantTable: React.FC = () => {
 
         // apply search filter
         if (searchTerm) {
-            result = result.filter(contestant => 
-                Object.entries(contestant).some(([key, value]) => 
-                    key !== 'id' && String(value).toLowerCase().includes(searchTerm.toLowerCase())
+            const isQuotedSearch = /^".*"$/.test(searchTerm.trim());
+            const searchTerms = isQuotedSearch 
+                ? [searchTerm.trim().slice(1, -1).toLowerCase()]
+                : searchTerm.toLowerCase().split(/\s+/);
+
+            result = result.filter(contestant =>
+                searchTerms.every(term =>
+                    Object.entries(contestant).some(([key, value]) =>
+                        key !== 'id' && String(value).toLowerCase().includes(term)
+                    )
                 )
             );
         }
@@ -76,9 +84,9 @@ const ContestantTable: React.FC = () => {
     // SortIcon component remains the same
     const SortIcon = ({ column }: { column: string }) => {
         if (sortColumn !== column) return null;
-        return sortDirection === 'asc' ? 
-            <FontAwesomeIcon icon={faSortUp} className="ml-1" /> : 
-            <FontAwesomeIcon icon={faSortDown} className="ml-1" />;
+        return sortDirection === 'asc' ?
+            <FontAwesomeIcon icon={faSortUp} className="ml-2" /> :
+            <FontAwesomeIcon icon={faSortDown} className="ml-2" />;
     };
 
     const renderPageButtons = () => {
@@ -155,6 +163,10 @@ const ContestantTable: React.FC = () => {
     return (
         <div className="flex flex-col h-full bg-transparent">
             <div className="flex justify-between items-center mb-4 px-4">
+            <TooltipHelp
+                tooltipContent='Search across all columns. To search for a phrase, enclose your search term in quotes "like this"'
+                className="-ml-3 mt-4 mr-3 pb-1"
+            />
                 <div className="relative w-full mr-2">
                     <input
                         type="text"
@@ -163,10 +175,11 @@ const ContestantTable: React.FC = () => {
                         placeholder="Search..."
                         className="pl-10 pr-4 py-1 mt-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-slate-400 bg-transparent text-slate-300 border-slate-400"
                     />
-                    <FontAwesomeIcon icon={faSearch} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 mt-1" />
+                    <FontAwesomeIcon icon={faSearch} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 mt-1" />
+
                 </div>
-                <Dropdown 
-                    value={pageSize?.toString() + ' per page'} 
+                <Dropdown
+                    value={pageSize?.toString() + ' per page'}
                     onChange={handlePageSizeChange}
                     options={[
                         `10`,
@@ -176,26 +189,29 @@ const ContestantTable: React.FC = () => {
                     buttonClassName='py-[1.1em]'
                     className="mr-4 mt-2 min-w-[8em]"
                 />
-                   
+
             </div>
             <div className="flex-grow overflow-auto">
                 <table className="w-full bg-transparent">
                     <thead className="bg-slate-700 text-slate-300 sticky top-0">
                         <tr>
                             {['Year', 'Country', 'Performer', 'Song'].map((header) => (
-                                <th 
-                                    key={header} 
-                                    className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider cursor-pointer hover:bg-gray-700"
+                                <th
+                                    key={header}
+                                    className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider cursor-pointer hover:bg-sky-800"
                                     onClick={() => handleSort(header.toLowerCase())}
                                 >
-                                    {header} <SortIcon column={header.toLowerCase()} />
+                                    <div className="flex items-center whitespace-nowrap">
+                                        {header}
+                                        <SortIcon column={header.toLowerCase()} />
+                                    </div>
                                 </th>
                             ))}
                         </tr>
                     </thead>
                     <tbody className="bg-transparent divide-y divide-gray-700">
                         {paginatedContestants.map((contestant) => (
-                            <tr key={contestant.id} className="hover:bg-gray-700 bg-opacity-50">
+                            <tr key={contestant.id} className="hover:bg-slate-800 bg-opacity-50">
                                 <td className="px-6 py-4 whitespace-nowrap">{contestant.year}</td>
                                 <td className="px-6 py-4 whitespace-nowrap">{contestant.to_country}</td>
                                 <td className="px-6 py-4 whitespace-nowrap">{contestant.performer}</td>
@@ -207,7 +223,7 @@ const ContestantTable: React.FC = () => {
             </div>
             <div className="mt-4 flex justify-between items-center px-4">
                 <span className="text-sm text-gray-300">
-                    Showing {((currentPage - 1) * pageSize) + 1} to {Math.min(currentPage * pageSize, sortedAndFilteredContestants.length)} of {sortedAndFilteredContestants.length} entries
+                    {((currentPage - 1) * pageSize) + 1} to {Math.min(currentPage * pageSize, sortedAndFilteredContestants.length)} of {sortedAndFilteredContestants.length} rows
                 </span>
                 <div className="space-x-2">
                     {renderPageButtons()}

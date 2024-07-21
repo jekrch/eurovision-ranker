@@ -4,7 +4,7 @@ import { Category } from '../utilities/CategoryUtil';
 import { ContestantVotes, Vote } from '../data/Vote';
 import { assignVotes } from '../utilities/VoteUtil';
 import { clone } from '../utilities/ContestantUtil';
-import { EurovisionEntry, TableState } from '../components/table/tableTypes';
+import { ContestantRow, TableState } from '../components/table/tableTypes';
 import { changePageSize, filterTable, sortTable } from './tableSlice';
 
 interface AppState {
@@ -116,7 +116,7 @@ const rootSlice = createSlice({
         setTableCurrentPage: (state, action: PayloadAction<number>) => {
             state.tableState.currentPage = action.payload;
         },
-        setEntries: (state, action: PayloadAction<EurovisionEntry[]>) => {
+        setEntries: (state, action: PayloadAction<ContestantRow[]>) => {
             state.tableState.entries = action.payload;
         },
     },

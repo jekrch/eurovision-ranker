@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../redux/store';
-import { EurovisionEntry } from './tableTypes';
+import { ContestantRow } from './tableTypes';
 import { changePageSize, filterTable, sortTable } from '../../redux/tableSlice';
 import { useAppDispatch } from '../../utilities/hooks';
 import { setTableCurrentPage } from '../../redux/rootSlice';
@@ -30,8 +30,8 @@ const ContestantTable: React.FC = () => {
         // Apply sorting
         if (sortColumn) {
             result.sort((a, b) => {
-                if (a[sortColumn as keyof EurovisionEntry] < b[sortColumn as keyof EurovisionEntry]) return sortDirection === 'asc' ? -1 : 1;
-                if (a[sortColumn as keyof EurovisionEntry] > b[sortColumn as keyof EurovisionEntry]) return sortDirection === 'asc' ? 1 : -1;
+                if (a[sortColumn as keyof ContestantRow] < b[sortColumn as keyof ContestantRow]) return sortDirection === 'asc' ? -1 : 1;
+                if (a[sortColumn as keyof ContestantRow] > b[sortColumn as keyof ContestantRow]) return sortDirection === 'asc' ? 1 : -1;
                 return 0;
             });
         }

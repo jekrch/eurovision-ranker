@@ -1,4 +1,4 @@
-export interface EurovisionEntry {
+export interface ContestantRow {
     year: number;
     to_country_id: string;
     to_country: string;
@@ -8,10 +8,10 @@ export interface EurovisionEntry {
   }
   
   export interface TableState {
-    entries: EurovisionEntry[];
+    entries: ContestantRow[];
     sortColumn: string;
     sortDirection: string;
-    filteredEntries: EurovisionEntry[];
+    filteredEntries: ContestantRow[];
     searchTerm: string;
     currentPage: number;
     pageSize: number;

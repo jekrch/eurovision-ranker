@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Modal from '../modals/Modal';
 import ContestantTable from './ContestantTable';
-// import { setEntries } from '../../redux/tableSlice';
-import { EurovisionEntry } from './tableTypes';
+import { ContestantRow } from './tableTypes';
 import { useAppDispatch } from '../../utilities/hooks';
 import { setEntries } from '../../redux/rootSlice';
 
@@ -25,19 +24,19 @@ const TableModal: React.FC<TableModalProps> = (props: TableModalProps) => {
         fetch('/contestants.csv')
             .then(response => response.text())
             .then(text => {
-                const entries: EurovisionEntry[] = parseCSV(text);
+                const entries: ContestantRow[] = parseCSV(text);
                 dispatch(setEntries(entries));
             });
     }, [dispatch]);
 
     // helper function to parse CSV
-    function parseCSV(csv: string): EurovisionEntry[] {
+    function parseCSV(csv: string): ContestantRow[] {
         const lines = csv.split('\n');
         const headers = lines[0].split(',');
 
         return lines.slice(1).map(line => {
             const values = line.split(',');
-            const entry: Partial<EurovisionEntry> = {};
+            const entry: Partial<ContestantRow> = {};
 
             headers.forEach((header, index) => {
                 const value = values[index]?.trim();
@@ -64,7 +63,7 @@ const TableModal: React.FC<TableModalProps> = (props: TableModalProps) => {
                 }
             });
 
-            return entry as EurovisionEntry;
+            return entry as ContestantRow;
         }).filter(entry => entry.year && entry.to_country && entry.performer && entry.song);
     }
 

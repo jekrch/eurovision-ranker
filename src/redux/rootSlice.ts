@@ -49,6 +49,7 @@ const initialState: AppState = {
         filteredEntries: [],
         entries: [],
         searchTerm: '',
+        selectedContestants: []
     } as TableState
 };
 
@@ -119,6 +120,18 @@ const rootSlice = createSlice({
         setEntries: (state, action: PayloadAction<ContestantRow[]>) => {
             state.tableState.entries = action.payload;
         },
+        toggleSelectedContestant: (state, action: PayloadAction<string>) => {
+            const contestantId = action.payload;
+            const index = state.tableState.selectedContestants.findIndex(c => c.id === contestantId);
+            if (index !== -1) {
+              state.tableState.selectedContestants.splice(index, 1);
+            } else {
+              const contestant = state.tableState.entries.find(c => c.id === contestantId);
+              if (contestant) {
+                state.tableState.selectedContestants.push(contestant);
+              }
+            }
+          },
     },
     extraReducers: (builder) => {
         builder
@@ -154,7 +167,8 @@ export const {
     setShowComparison,
     assignVotesToContestants,
     setTableCurrentPage,
-    setEntries
+    setEntries,
+    toggleSelectedContestant
 } = rootSlice.actions;
 
 export default rootSlice.reducer;

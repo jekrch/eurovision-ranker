@@ -4,17 +4,19 @@ import { AppState } from '../../redux/store';
 import { ContestantRow } from './tableTypes';
 import { changePageSize, filterTable, sortTable } from '../../redux/tableSlice';
 import { useAppDispatch } from '../../utilities/hooks';
-import { setTableCurrentPage } from '../../redux/rootSlice';
+import { setTableCurrentPage, toggleSelectedContestant } from '../../redux/rootSlice';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch, faSortUp, faSortDown } from '@fortawesome/free-solid-svg-icons';
+import { faSearch, faSortUp, faSortDown, faPlus, faMinus, faCheck } from '@fortawesome/free-solid-svg-icons';
 import Dropdown from '../Dropdown';
 import TooltipHelp from '../TooltipHelp';
+import { Switch } from '@headlessui/react';
 
 const ContestantTable: React.FC = () => {
     const dispatch = useAppDispatch();
     const { tableState } = useSelector((state: AppState) => state);
-    const { sortColumn, sortDirection, filters, pageSize, currentPage, entries } = tableState;
+    const { sortColumn, sortDirection, filters, pageSize, currentPage, entries, selectedContestants } = tableState;
     const [searchTerm, setSearchTerm] = useState('');
+    const [showSelected, setShowSelected] = useState(false);
 
     // apply sorting and filtering
     const sortedAndFilteredContestants = useMemo(() => {
@@ -56,14 +58,15 @@ const ContestantTable: React.FC = () => {
         return result;
     }, [entries, searchTerm, sortColumn, sortDirection]);
 
-    // pagination logic remains the same
-    const totalPages = Math.ceil(sortedAndFilteredContestants.length / pageSize);
-    const paginatedContestants = sortedAndFilteredContestants.slice(
+    // pagination logic
+    const displayedContestants = showSelected ? selectedContestants : sortedAndFilteredContestants;
+    const totalPages = Math.ceil(displayedContestants.length / pageSize);
+    const paginatedContestants = displayedContestants.slice(
         (currentPage - 1) * pageSize,
         currentPage * pageSize
     );
 
-    // other handler functions remain the same
+    // handler functions
     const handleSort = (column: string) => {
         dispatch(sortTable(column));
     };
@@ -81,7 +84,11 @@ const ContestantTable: React.FC = () => {
         dispatch(setTableCurrentPage(page));
     };
 
-    // SortIcon component remains the same
+    const handleToggleSelected = (id: string) => {
+        dispatch(toggleSelectedContestant(id));
+    };
+
+    // SortIcon component
     const SortIcon = ({ column }: { column: string }) => {
         if (sortColumn !== column) return null;
         return sortDirection === 'asc' ?
@@ -159,10 +166,10 @@ const ContestantTable: React.FC = () => {
         return pageButtons;
     };
 
-
     return (
         <div className="flex flex-col h-full bg-transparent">
             <div className="flex justify-between items-center mb-4 px-4">
+                
                 <TooltipHelp
                     tooltipContent='Search across all columns. To search for a phrase, enclose your search term in quotes "like this"'
                     className="-ml-3 mt-4 mr-3 pb-1"
@@ -176,8 +183,28 @@ const ContestantTable: React.FC = () => {
                         className="pl-10 pr-4 py-1 mt-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-slate-400 bg-transparent text-slate-300 border-slate-400"
                     />
                     <FontAwesomeIcon icon={faSearch} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 mt-1" />
-
                 </div>
+
+                <Switch.Group>
+                    <div className="flex items-center">
+                        <Switch
+                            checked={showSelected}
+                            onChange={setShowSelected}
+                            className={`mt-2 ${
+                                showSelected ? 'bg-sky-600' : 'bg-gray-200'
+                            } bg-sky-800 relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2`}
+                        >
+                            <span
+                                className={`${
+                                    showSelected ? 'translate-x-6' : 'translate-x-1'
+                                } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
+                            />
+                        </Switch>
+                        <span className="w-25"><Switch.Label className="ml-3 mr-6 mt-1 text-slate-300">{showSelected ? 'Search' : 'Selected'}</Switch.Label>
+                        </span>
+                    </div>
+                </Switch.Group>
+
                 <Dropdown
                     value={pageSize?.toString() + ' per page'}
                     onChange={handlePageSizeChange}
@@ -189,16 +216,19 @@ const ContestantTable: React.FC = () => {
                     buttonClassName='py-[1.1em]'
                     className="mr-4 mt-2 min-w-[8em]"
                 />
-
             </div>
+       
             <div className="flex-grow overflow-auto !rounded-t-md !rounded-tr-md mr-1 shadow-xl">
                 <table className="w-full bg-transparent">
                     <thead className="bg-slate-700 text-slate-300 sticky top-0">
                         <tr>
-                            {['Year', 'Country', 'Performer', 'Song'].map((header, index) => (
+                            <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                                {showSelected ? 'Remove' : 'Add'}
+                            </th>
+                            {['Year', 'Country', 'Performer', 'Song'].map((header) => (
                                 <th
                                     key={header}
-                                    className={`px-6 py-3 text-left text-xs font-medium uppercase tracking-wider cursor-pointer hover:bg-sky-800 `}
+                                    className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider cursor-pointer hover:bg-sky-800"
                                     onClick={() => handleSort(header.toLowerCase())}
                                 >
                                     <div className="flex items-center whitespace-nowrap">
@@ -212,6 +242,20 @@ const ContestantTable: React.FC = () => {
                     <tbody className="bg-transparent divide-y divide-gray-700">
                         {paginatedContestants.map((contestant) => (
                             <tr key={contestant.id} className="hover:bg-slate-800 bg-opacity-50">
+                                <td className="px-6 py-4 whitespace-nowrap">
+                                    <button
+                                        onClick={() => handleToggleSelected(contestant.id)}
+                                        className="text-slate-300 hover:text-slate-100"
+                                    >
+                                        {showSelected ? (
+                                            <FontAwesomeIcon icon={faMinus} />
+                                        ) : selectedContestants.some(c => c.id === contestant.id) ? (
+                                            <FontAwesomeIcon icon={faCheck} className="text-green-500" />
+                                        ) : (
+                                            <FontAwesomeIcon icon={faPlus} />
+                                        )}
+                                    </button>
+                                </td>
                                 <td className="px-6 py-4 whitespace-nowrap">{contestant.year}</td>
                                 <td className="px-6 py-4 whitespace-nowrap">{contestant.to_country}</td>
                                 <td className="px-6 py-4 whitespace-nowrap">{contestant.performer}</td>
@@ -223,7 +267,7 @@ const ContestantTable: React.FC = () => {
             </div>
             <div className="mt-4 flex justify-between items-center px-4">
                 <span className="text-sm text-gray-300">
-                    {((currentPage - 1) * pageSize) + 1} to {Math.min(currentPage * pageSize, sortedAndFilteredContestants.length)} of {sortedAndFilteredContestants.length} rows
+                    {((currentPage - 1) * pageSize) + 1} to {Math.min(currentPage * pageSize, displayedContestants.length)} of {displayedContestants.length} rows
                 </span>
                 <div className="space-x-2">
                     {renderPageButtons()}

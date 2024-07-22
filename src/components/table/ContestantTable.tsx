@@ -9,7 +9,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch, faSortUp, faSortDown, faPlus, faMinus, faCheck } from '@fortawesome/free-solid-svg-icons';
 import Dropdown from '../Dropdown';
 import TooltipHelp from '../TooltipHelp';
-import { Switch } from '@headlessui/react';
+import { Field, Label, Switch } from '@headlessui/react';
+import Ripples from 'react-ripples';
+import classNames from 'classnames';
 
 const ContestantTable: React.FC = () => {
     const dispatch = useAppDispatch();
@@ -169,41 +171,43 @@ const ContestantTable: React.FC = () => {
     return (
         <div className="flex flex-col h-full bg-transparent">
             <div className="flex justify-between items-center mb-4 px-4">
-                
-                <TooltipHelp
-                    tooltipContent='Search across all columns. To search for a phrase, enclose your search term in quotes "like this"'
-                    className="-ml-3 mt-4 mr-3 pb-1"
-                />
-                <div className="relative w-full mr-2">
-                    <input
-                        type="text"
-                        value={searchTerm}
-                        onChange={handleSearch}
-                        placeholder="Search..."
-                        className="pl-10 pr-4 py-1 mt-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-slate-400 bg-transparent text-slate-300 border-slate-400"
+                <div className="w-[18em] inline-flex">
+                    {!showSelected && <>
+                    <TooltipHelp
+                        tooltipContent='Search across all columns. To search for a phrase, enclose your search term in quotes "like this"'
+                        className={classNames("-ml-3 mt-4 mr-3 pb-1")}
                     />
-                    <FontAwesomeIcon icon={faSearch} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 mt-1" />
+                    <div className={classNames("relative w-full mr-2")}>
+                        <input
+                            type="text"
+                            value={searchTerm}
+                            onChange={handleSearch}
+                            placeholder="Search..."
+                            className="pl-10 pr-4 py-1 mt-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-slate-400 bg-transparent text-slate-300 border-slate-400"
+                        />
+                        <FontAwesomeIcon icon={faSearch} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 mt-1" />
+                    </div>
+                    </>}
                 </div>
+                <Field>
 
-                <Switch.Group>
                     <div className="flex items-center">
+                        <Label className="ml-3 mr-6 mt-2 text-slate-300">{'Selected'}</Label>
                         <Switch
                             checked={showSelected}
                             onChange={setShowSelected}
-                            className={`mt-2 ${
-                                showSelected ? 'bg-sky-600' : 'bg-gray-200'
-                            } bg-sky-800 relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2`}
+                            className={`mt-2 ${showSelected ? 'bg-sky-600' : 'bg-slate-600'
+                                } cursor-pointer relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-slate-600 mr-6`}
                         >
                             <span
-                                className={`${
-                                    showSelected ? 'translate-x-6' : 'translate-x-1'
-                                } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
+                                className={`${showSelected ? 'translate-x-6' : 'translate-x-1'
+                                    } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
                             />
                         </Switch>
-                        <span className="w-25"><Switch.Label className="ml-3 mr-6 mt-1 text-slate-300">{showSelected ? 'Search' : 'Selected'}</Switch.Label>
-                        </span>
+
+
                     </div>
-                </Switch.Group>
+                </Field>
 
                 <Dropdown
                     value={pageSize?.toString() + ' per page'}
@@ -214,13 +218,13 @@ const ContestantTable: React.FC = () => {
                         `50`
                     ]}
                     buttonClassName='py-[1.1em]'
-                    className="mr-4 mt-2 min-w-[8em]"
+                    className="mr-4 mt-2 min-w-[8em] float-right"
                 />
             </div>
-       
+
             <div className="flex-grow overflow-auto !rounded-t-md !rounded-tr-md mr-1 shadow-xl">
                 <table className="w-full bg-transparent">
-                    <thead className="bg-slate-700 text-slate-300 sticky top-0">
+                    <thead className="bg-slate-700 text-slate-300 sticky top-0 z-50">
                         <tr>
                             <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
                                 {showSelected ? 'Remove' : 'Add'}
@@ -243,18 +247,20 @@ const ContestantTable: React.FC = () => {
                         {paginatedContestants.map((contestant) => (
                             <tr key={contestant.id} className="hover:bg-slate-800 bg-opacity-50">
                                 <td className="px-6 py-4 whitespace-nowrap">
-                                    <button
-                                        onClick={() => handleToggleSelected(contestant.id)}
-                                        className="text-slate-300 hover:text-slate-100"
-                                    >
-                                        {showSelected ? (
-                                            <FontAwesomeIcon icon={faMinus} />
-                                        ) : selectedContestants.some(c => c.id === contestant.id) ? (
-                                            <FontAwesomeIcon icon={faCheck} className="text-green-500" />
-                                        ) : (
-                                            <FontAwesomeIcon icon={faPlus} />
-                                        )}
-                                    </button>
+                                    <Ripples placeholder={<></>}>
+                                        <button
+                                            onClick={() => handleToggleSelected(contestant.id)}
+                                            className="text-slate-300 hover:text-slate-100 items-center p-3 -my-2 rounded-md"
+                                        >
+                                            {showSelected ? (
+                                                <FontAwesomeIcon icon={faMinus} className="text-red-500 align-middle" />
+                                            ) : selectedContestants.some(c => c.id === contestant.id) ? (
+                                                <FontAwesomeIcon icon={faCheck} className="text-green-500" />
+                                            ) : (
+                                                <FontAwesomeIcon icon={faPlus} className="" />
+                                            )}
+                                        </button>
+                                    </Ripples>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap">{contestant.year}</td>
                                 <td className="px-6 py-4 whitespace-nowrap">{contestant.to_country}</td>

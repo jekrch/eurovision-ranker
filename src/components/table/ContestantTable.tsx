@@ -192,7 +192,7 @@ const ContestantTable: React.FC = () => {
                 <Field>
 
                     <div className="flex items-center">
-                        <Label className="ml-3 mr-6 mt-2 text-slate-300">{'Selected'}</Label>
+                        <Label className="cursor-pointer ml-3 mr-6 mt-2 text-slate-300">{'Selected'}</Label>
                         <Switch
                             checked={showSelected}
                             onChange={setShowSelected}

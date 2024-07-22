@@ -31,7 +31,7 @@ const ContestantTable: React.FC = () => {
         // apply search filter
         if (searchTerm) {
             const isQuotedSearch = /^".*"$/.test(searchTerm.trim());
-            const searchTerms = isQuotedSearch 
+            const searchTerms = isQuotedSearch
                 ? [searchTerm.trim().slice(1, -1).toLowerCase()]
                 : searchTerm.toLowerCase().split(/\s+/);
 
@@ -163,10 +163,10 @@ const ContestantTable: React.FC = () => {
     return (
         <div className="flex flex-col h-full bg-transparent">
             <div className="flex justify-between items-center mb-4 px-4">
-            <TooltipHelp
-                tooltipContent='Search across all columns. To search for a phrase, enclose your search term in quotes "like this"'
-                className="-ml-3 mt-4 mr-3 pb-1"
-            />
+                <TooltipHelp
+                    tooltipContent='Search across all columns. To search for a phrase, enclose your search term in quotes "like this"'
+                    className="-ml-3 mt-4 mr-3 pb-1"
+                />
                 <div className="relative w-full mr-2">
                     <input
                         type="text"
@@ -191,14 +191,14 @@ const ContestantTable: React.FC = () => {
                 />
 
             </div>
-            <div className="flex-grow overflow-auto">
+            <div className="flex-grow overflow-auto !rounded-t-md !rounded-tr-md mr-1 shadow-xl">
                 <table className="w-full bg-transparent">
                     <thead className="bg-slate-700 text-slate-300 sticky top-0">
                         <tr>
-                            {['Year', 'Country', 'Performer', 'Song'].map((header) => (
+                            {['Year', 'Country', 'Performer', 'Song'].map((header, index) => (
                                 <th
                                     key={header}
-                                    className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider cursor-pointer hover:bg-sky-800"
+                                    className={`px-6 py-3 text-left text-xs font-medium uppercase tracking-wider cursor-pointer hover:bg-sky-800 `}
                                     onClick={() => handleSort(header.toLowerCase())}
                                 >
                                     <div className="flex items-center whitespace-nowrap">

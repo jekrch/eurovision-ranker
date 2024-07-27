@@ -163,7 +163,7 @@ const RankingsTab: React.FC = () => {
                         />
                         <span className="ml-2 text-sm">from</span>
                         <TooltipHelp
-                            tooltipContent="Choose which country to display voting counts from. 'All' will show the total vote count"
+                            content="Choose which country to display voting counts from. 'All' will show the total vote count"
                             className="ml-4 z-50"
                         />
                         <Dropdown

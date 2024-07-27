@@ -250,7 +250,7 @@ const AnalyzeTab: React.FC = () => {
         </div>
         <div className="mb-1">
           <TooltipHelp
-            tooltipContent="When viewing a category ranking, also display the contestant's rank in each other category"
+            content="When viewing a category ranking, also display the contestant's rank in each other category"
             className="ml-2 pb-1"
           />
           <Checkbox

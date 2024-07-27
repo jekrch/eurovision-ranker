@@ -135,7 +135,7 @@ const DisplayTab: React.FC = () => {
                 <div className="mb-[0.5em] border-slate-700 border-b-[1px] pb-2 -mt-2">
                     <span className="flex items-center ml-2">
                         <TooltipHelp
-                            tooltipContent="Select which types of votes to display with each ranked country"
+                            content="Select which types of votes to display with each ranked country"
                         />
                         <span className="ml-3 text-sm font-semibold">
 
@@ -168,7 +168,7 @@ const DisplayTab: React.FC = () => {
 
                     <div className="mt-[0.5em]">
                         <TooltipHelp
-                            tooltipContent="Choose which country to display voting counts from. 'All' will show the total vote count"
+                            content="Choose which country to display voting counts from. 'All' will show the total vote count"
                             className="ml-4"
                         />
                         <span className="ml-3 text-sm font-semibold">
@@ -193,7 +193,7 @@ const DisplayTab: React.FC = () => {
                     <div>
                         <div className="mb-2">
                             <TooltipHelp
-                                tooltipContent="When viewing a category ranking, also display the contestant's rank in each other category"
+                                content="When viewing a category ranking, also display the contestant's rank in each other category"
                                 className="ml-4 pb-1"
                             />
                             <Checkbox

@@ -23,10 +23,13 @@ import RankedCountriesList from './components/ranking/RankedCountriesList';
 import UnrankedCountriesList from './components/ranking/UnrankedCountriesList';
 import { useAppDispatch, useAppSelector } from './utilities/hooks';
 import TableModal from './components/table/TableModal';
+import { Switch } from './components/Switch';
+import TooltipHelp from './components/TooltipHelp';
 
 const App: React.FC = () => {
   const [mainModalShow, setMainModalShow] = useState(false);
   const [nameModalShow, setNameModalShow] = useState(false);
+  const [tableModalShow, setTableModalShow] = useState(true);
   const [mapModalShow, setMapModalShow] = useState(false);
   const [configModalShow, setConfigModalShow] = useState(false);
   const [refreshUrl, setRefreshUrl] = useState(0);
@@ -367,7 +370,21 @@ const App: React.FC = () => {
 
               {/* Unranked Countries List */}
               {showUnranked && (
-                <UnrankedCountriesList />
+                <div className='inline-grid'>
+                  <span className="">
+                    <TooltipHelp
+                      content="test"
+                    />
+                    <Switch 
+                      label={'advanced'}
+                      className='mb-2 items-center'
+                      labelClassName='text-sm text-slate-400'
+                      checked={tableModalShow}
+                      setChecked={setTableModalShow}
+                    />
+                  </span>
+                  <UnrankedCountriesList />
+                </div>
               )}
 
               {/* Ranked Countries List */}
@@ -437,11 +454,10 @@ const App: React.FC = () => {
       />
 
       <TableModal
-        isOpen={true}
-        onClose={() => {}}
-        // onClose={() => {
-        //   setNameModalShow(false);
-        // }}
+        isOpen={tableModalShow}
+        onClose={() => {
+          setTableModalShow(false);
+        }}
       />
 
       <MapModal

@@ -6,14 +6,14 @@ import { faQuestionCircle } from '@fortawesome/free-solid-svg-icons';
 
 interface TooltipHelpProps {
     icon?: IconDefinition;
-    tooltipContent: string;
+    content: string;
     place?: string;
     className?: string;
 }
 
 const TooltipHelp: React.FC<TooltipHelpProps> = ({
     icon = faQuestionCircle,
-    tooltipContent,
+    content: tooltipContent,
     place = 'bottom-end',
     className = 'ml-2 text-slate-400 cursor-pointer',
 }) => {

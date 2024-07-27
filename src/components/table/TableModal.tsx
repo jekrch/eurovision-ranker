@@ -62,7 +62,7 @@ const TableModal: React.FC<TableModalProps> = (props: TableModalProps) => {
         <Modal
             isOpen={props.isOpen}
             onClose={props.onClose}
-            className="z-50 select-text max-w-[90vw] w-full h-[90vh] flex flex-col"
+            className="z-50 select-text max-w-[95vw] w-full h-[90vh] flex flex-col"
         >
             <div className="flex-grow overflow-hidden">
                 <ContestantTable />

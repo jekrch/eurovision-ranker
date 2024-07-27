@@ -93,7 +93,7 @@ const CategoriesTab: React.FC = () => {
         </div>
         <div className="mt-1">
           <TooltipHelp
-            tooltipContent="When viewing a category ranking, also display the contestant's rank in each other category"
+            content="When viewing a category ranking, also display the contestant's rank in each other category"
             className="ml-2 pb-1"
           />
           <Checkbox

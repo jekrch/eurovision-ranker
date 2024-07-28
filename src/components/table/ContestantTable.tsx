@@ -71,6 +71,9 @@ const ContestantTable: React.FC = () => {
 
     // handler functions
     const handleSort = (column: string) => {
+        if (column === 'country') {
+            column = 'to_country'
+        }
         dispatch(sortTable(column));
     };
 
@@ -128,7 +131,7 @@ const ContestantTable: React.FC = () => {
         // Add "First" button
         if (currentPage > 1) {
             pageButtons.push(
-                <button key="first" onClick={() => handlePageChange(1)} className="px-3 py-1 rounded bg-gray-700 text-gray-300 hover:bg-gray-600">
+                <button key="first" onClick={() => handlePageChange(1)} className="text-sm px-2 py-1 rounded bg-gray-700 text-gray-300 hover:bg-gray-600">
                     First
                 </button>
             );
@@ -145,7 +148,7 @@ const ContestantTable: React.FC = () => {
                 <button
                     key={page}
                     onClick={() => handlePageChange(page)}
-                    className={`px-3 py-1 rounded ${currentPage === page ? 'bg-blue-500 text-white' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'}`}
+                    className={`px-2 py-1 rounded ${currentPage === page ? 'bg-sky-600 text-white' : 'bg-gray-700 text-gray-300 hover:bg-gray-600 text-sm'}`}
                 >
                     {page}
                 </button>
@@ -160,7 +163,7 @@ const ContestantTable: React.FC = () => {
         // Add "Last" button
         if (currentPage < totalPages) {
             pageButtons.push(
-                <button key="last" onClick={() => handlePageChange(totalPages)} className="px-3 py-1 rounded bg-gray-700 text-gray-300 hover:bg-gray-600">
+                <button key="last" onClick={() => handlePageChange(totalPages)} className="text-sm px-2 py-1 rounded bg-gray-700 text-gray-300 hover:bg-gray-600">
                     Last
                 </button>
             );
@@ -170,7 +173,7 @@ const ContestantTable: React.FC = () => {
     };
 
     return (
-        <div className="flex flex-col h-full bg-transparent">
+        <div className="flex flex-col h-full bg-transparent text-slate-300">
             <div className="flex flex-col mb-4 px-4">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                     <div className="w-full sm:w-auto flex-grow sm:flex-grow-0 flex items-center">
@@ -241,8 +244,8 @@ const ContestantTable: React.FC = () => {
                         </thead>
                         <tbody className="bg-transparent divide-y divide-gray-700">
                             {paginatedContestants.map((contestant) => (
-                                <tr key={contestant.id} className="hover:bg-slate-800 bg-opacity-50">
-                                    <td className="py-0 whitespace-nowrap sticky left-0 z-30 bg-slate-900">
+                                <tr key={contestant.id} className="hover:bg-slate-800 bg-opacity-50 text-slate-300">
+                                    <td className="py-0 whitespace-nowrap sticky left-0 z-30 bg-slate-900 hover:bg-sky-900">
                                         <div className="flex justify-center h-full">
                                             <Ripples className="flex items-center justify-center w-full h-full" placeholder={<></>}>
                                                 <button
@@ -260,10 +263,10 @@ const ContestantTable: React.FC = () => {
                                             </Ripples>
                                         </div>
                                     </td>
-                                    <td className="px-6 py-4 whitespace-nowrap">{contestant.year}</td>
-                                    <td className="px-6 py-4 whitespace-nowrap">{contestant.to_country}</td>
-                                    <td className="px-6 py-4 whitespace-nowrap">{contestant.performer}</td>
-                                    <td className="px-6 py-4 whitespace-nowrap">{contestant.song}</td>
+                                    <td className="px-6 py-4 whitespace-nowrap overflow-x-clip">{contestant.year}</td>
+                                    <td className="px-6 py-4 whitespace-nowrap overflow-x-clip">{contestant.to_country}</td>
+                                    <td className="px-6 py-4 whitespace-nowrap overflow-x-clip" title={contestant.performer}>{contestant.performer}</td>
+                                    <td className="px-6 py-4 whitespace-nowrap overflow-x-clip" title={contestant.song}>{contestant.song}</td>
                                 </tr>
                             ))}
                         </tbody>

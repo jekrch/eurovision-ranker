@@ -25,6 +25,7 @@ import { useAppDispatch, useAppSelector } from './utilities/hooks';
 import TableModal from './components/table/TableModal';
 import { Switch } from './components/Switch';
 import TooltipHelp from './components/TooltipHelp';
+import RankedCountriesTable from './components/ranking/RankedCountriesTable';
 
 const App: React.FC = () => {
   const [mainModalShow, setMainModalShow] = useState(false);
@@ -369,7 +370,7 @@ const App: React.FC = () => {
             <div className="flex flex-row justify-center gap-4 px-4 py-2">
 
               {/* Unranked Countries List */}
-              {showUnranked && (
+              {showUnranked && false &&  (
                 <div className='inline-grid'>
                   <span className="">
                     <TooltipHelp
@@ -388,7 +389,16 @@ const App: React.FC = () => {
               )}
 
               {/* Ranked Countries List */}
-              <RankedCountriesList
+              {/* <RankedCountriesList
+                openSongModal={openSongModal}
+                openModal={openMainModal}
+                openConfigModal={openConfigModal}
+                setRunTour={setRunTour}
+                openNameModal={() => setNameModalShow(true)}
+                openMapModal={() => setMapModalShow(true)}
+              /> */}
+
+              <RankedCountriesTable
                 openSongModal={openSongModal}
                 openModal={openMainModal}
                 openConfigModal={openConfigModal}

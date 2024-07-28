@@ -20,8 +20,6 @@ export const sortTable = createAsyncThunk(
 export const filterTable = createAsyncThunk(
     'table/filterTable',
     async (filters: Record<string, string | number>, { getState }) => {
-      // Simulate an API call or complex filtering logic
-      await new Promise(resolve => setTimeout(resolve, 100));
       return filters;
     }
   );
@@ -29,8 +27,6 @@ export const filterTable = createAsyncThunk(
 export const changePageSize = createAsyncThunk(
   'table/changePageSize',
   async (size: number, { getState }) => {
-    // Simulate an API call or complex logic
-    await new Promise(resolve => setTimeout(resolve, 100));
     return size;
   }
 );

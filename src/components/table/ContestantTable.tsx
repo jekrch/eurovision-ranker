@@ -62,12 +62,15 @@ const ContestantTable: React.FC = () => {
                 entry.year && entry.to_country && entry.performer && entry.song
             );
     }
-    
+
     // apply sorting and filtering
     const sortedAndFilteredContestants = useMemo(() => {
+        // determine which dataset to use
+        const tableRows = showSelected ? selectedContestants : entries;
+
         // use a Set to keep track of unique ids
         const uniqueIds = new Set<string>();
-        let result = entries.filter(contestant => {
+        let result = tableRows.filter(contestant => {
             if (uniqueIds.has(contestant.id)) {
                 return false;
             }
@@ -101,14 +104,15 @@ const ContestantTable: React.FC = () => {
         }
 
         return result;
-    }, [entries, searchTerm, sortColumn, sortDirection, globalSearch]);
+    }, [entries, selectedContestants, showSelected, searchTerm, sortColumn, sortDirection, globalSearch]);
 
     useEffect(() => {
         dispatch(setTableCurrentPage(1));
+        setSearchTerm(''); // Reset search term when switching between views
     }, [showSelected]);
 
     // pagination logic
-    const displayedContestants = showSelected ? selectedContestants : sortedAndFilteredContestants;
+    const displayedContestants = sortedAndFilteredContestants;
     const totalPages = Math.ceil(displayedContestants.length / pageSize);
     const paginatedContestants = displayedContestants.slice(
         (currentPage - 1) * pageSize,
@@ -138,6 +142,7 @@ const ContestantTable: React.FC = () => {
 
     const handleToggleSelected = (id: string) => {
         dispatch(toggleSelectedContestant(id));
+        setSearchTerm('');
     };
 
     // SortIcon component
@@ -224,7 +229,7 @@ const ContestantTable: React.FC = () => {
             <div className="flex flex-col mb-4 px-4">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                     <div className="w-full sm:w-auto flex-grow sm:flex-grow-0 flex items-center">
-                        {!showSelected && (
+                        {true && (
                             <>
                                 <TooltipHelp
                                     content='Search across all columns. To search for a phrase, enclose your search term in quotes "like this"'
@@ -336,18 +341,18 @@ const ContestantTable: React.FC = () => {
                     {((currentPage - 1) * pageSize) + 1} to {Math.min(currentPage * pageSize, displayedContestants.length)} of {displayedContestants.length}
                 </span> */}
                 <div>
-                <Dropdown
-                    value={`${pageSize}`}
-                    onChange={handlePageSizeChange}
-                    options={['10', '25', '50']}
-                    buttonClassName=''
-                    className="min-w-[0.9em] text-xs"
-                    openUpwards={true}
-                    mini={true}
-                />
-                <span className="text-sm text-gray-300 ml-2 mr-3 whitespace-nowrap">
-                    of {displayedContestants.length}
-                </span>
+                    <Dropdown
+                        value={`${pageSize}`}
+                        onChange={handlePageSizeChange}
+                        options={['10', '25', '50']}
+                        buttonClassName=''
+                        className="min-w-[0.9em] text-xs"
+                        openUpwards={true}
+                        mini={true}
+                    />
+                    <span className="text-sm text-gray-300 ml-2 mr-3 whitespace-nowrap">
+                        of {displayedContestants.length}
+                    </span>
                 </div>
                 <div className="space-x-2 space-y-2">
                     {renderPageButtons()}

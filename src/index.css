@@ -78,7 +78,7 @@ code {
 
 /* styling the scrollbar corner */
 ::-webkit-scrollbar-corner {
-  background: rgb(86, 103, 125);
+  background: rgb(86, 103, 125, 0.0);
 }
 
 .gradient-background2 {

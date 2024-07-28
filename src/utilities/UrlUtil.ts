@@ -1,5 +1,5 @@
 
-import { setName, setYear, setRankedItems, setUnrankedItems, setContestants, setTheme, setVote, setShowComparison } from '../redux/rootSlice';
+import { setName, setYear, setRankedItems, setUnrankedItems, setContestants, setTheme, setVote, setShowComparison, setGlobalSearch } from '../redux/rootSlice';
 import { fetchCountryContestantsByYear } from './ContestantRepository';
 import { CountryContestant, createCountryContestant } from '../data/CountryContestant';
 import { countries } from '../data/Countries';
@@ -15,6 +15,7 @@ export type UrlParams = {
     theme: string | null;           // t: ab
     voteCode: string | null;        // v: {round}-{type}-{fromCountryKey} f-t-gb
     comparisonMode: string | null;  // cm: t/f
+    globalMode: string | null       // g: t/f/null
 }
 
 /**
@@ -24,13 +25,17 @@ export const updateStates = (
     params: UrlParams,
     dispatch: AppDispatch
 ) => {
-    let { rankingName, contestYear, theme, voteCode, comparisonMode } = params;
+    let { rankingName, contestYear, theme, voteCode, comparisonMode, globalMode } = params;
 
     if (rankingName) {
         dispatch(
             setName(rankingName)
         );
     }
+
+    dispatch(
+        setGlobalSearch(globalMode === 't')
+    )
 
     dispatch(
         setShowComparison(comparisonMode === 't')
@@ -260,7 +265,8 @@ export const extractParams = (params: URLSearchParams, activeCategory: number | 
         rankings: params.get(`r${activeCategory !== undefined ? activeCategory + 1 : ''}`),
         theme: params.get('t'),           // e.g. ab
         voteCode: params.get('v'),        // e.g. {round}-{type}-{fromCountryKey} f-t-gb
-        comparisonMode: params.get('cm')  // e.g. t/f
+        comparisonMode: params.get('cm'), // e.g. t/f
+        globalMode: params.get('g')       // e.g. t/f/null
     } as UrlParams;
 };
 
@@ -280,12 +286,15 @@ export  const updateUrlFromRankedItems = async (
 /**
  * Function to update the query parameters
  */
-export function updateQueryParams(params: { [key: string]: string }) {
+export function updateQueryParams(params: { [key: string]: string | undefined }) {
     const searchParams = new URLSearchParams(window.location.search);
 
     // Set new or update existing parameters
     Object.keys(params).forEach(key => {
-        searchParams.set(key, params[key]);
+        if (params[key])
+            searchParams.set(key, params[key]);
+        else 
+            searchParams.delete(key);
     });
 
     const newUrl = '?' + searchParams.toString();

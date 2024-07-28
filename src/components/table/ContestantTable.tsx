@@ -1,10 +1,10 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../redux/store';
 import { ContestantRow } from './tableTypes';
 import { changePageSize, filterTable, sortTable } from '../../redux/tableSlice';
 import { useAppDispatch } from '../../utilities/hooks';
-import { setTableCurrentPage, toggleSelectedContestant } from '../../redux/rootSlice';
+import { setEntries, setShowUnranked, setTableCurrentPage, toggleSelectedContestant } from '../../redux/rootSlice';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch, faSortUp, faSortDown, faPlus, faMinus, faCheck } from '@fortawesome/free-solid-svg-icons';
 import Dropdown from '../Dropdown';
@@ -13,14 +13,56 @@ import TooltipHelp from '../TooltipHelp';
 import Ripples from 'react-ripples';
 import classNames from 'classnames';
 import { Switch } from '../Switch';
+import IconButton from '../IconButton';
+import Papa from 'papaparse';
 
 const ContestantTable: React.FC = () => {
     const dispatch = useAppDispatch();
-    const { tableState } = useSelector((state: AppState) => state);
+    const { tableState, showUnranked, rankedItems, globalSearch } = useSelector((state: AppState) => state);
     const { sortColumn, sortDirection, filters, pageSize, currentPage, entries, selectedContestants } = tableState;
     const [searchTerm, setSearchTerm] = useState('');
     const [showSelected, setShowSelected] = useState(false);
 
+    useMemo(() => {
+        if (!globalSearch || entries.length > 0) return;
+
+        // fetch data from your CSV file
+        fetch('/contestants.csv')
+            .then(response => response.text())
+            .then(text => {
+                const entries: ContestantRow[] = parseCSV(text);
+                dispatch(setEntries(entries));
+            });
+    }, [globalSearch]);
+
+    // helper function to parse CSV
+    function parseCSV(csv: string): ContestantRow[] {
+        const parseResult = Papa.parse(csv, {
+            header: true,
+            skipEmptyLines: true,
+            transformHeader: (header: string) => header.trim(),
+            transform: (value: string) => value.trim()
+        });
+
+        return parseResult.data
+            .map((row: any) => {
+                const entry: Partial<ContestantRow> = {
+                    id: row.id,
+                    year: parseInt(row.year, 10),
+                    to_country_id: row.to_country_id,
+                    to_country: row.to_country,
+                    performer: row.performer,
+                    song: row.song,
+                    place_contest: parseInt(row.place_contest, 10)
+                };
+
+                return entry as ContestantRow;
+            })
+            .filter((entry: ContestantRow) =>
+                entry.year && entry.to_country && entry.performer && entry.song
+            );
+    }
+    
     // apply sorting and filtering
     const sortedAndFilteredContestants = useMemo(() => {
         // use a Set to keep track of unique ids
@@ -59,7 +101,11 @@ const ContestantTable: React.FC = () => {
         }
 
         return result;
-    }, [entries, searchTerm, sortColumn, sortDirection]);
+    }, [entries, searchTerm, sortColumn, sortDirection, globalSearch]);
+
+    useEffect(() => {
+        dispatch(setTableCurrentPage(1));
+    }, [showSelected]);
 
     // pagination logic
     const displayedContestants = showSelected ? selectedContestants : sortedAndFilteredContestants;
@@ -133,15 +179,15 @@ const ContestantTable: React.FC = () => {
         if (currentPage > 1) {
             pageButtons.push(
                 <button key="first" onClick={() => handlePageChange(1)} className="text-sm px-2 py-1 rounded bg-gray-700 text-gray-300 hover:bg-gray-600">
-                    First
+                    {'<<'}
                 </button>
             );
         }
 
         // Add ellipsis if needed
-        if (startPage > 1) {
-            pageButtons.push(<span key="ellipsis1" className="px-3 py-1">...</span>);
-        }
+        // if (startPage > 1) {
+        //     pageButtons.push(<span key="ellipsis1" className="px-1 py-1 text-sm">...</span>);
+        // }
 
         // Add page number buttons
         for (let page = startPage; page <= endPage; page++) {
@@ -157,15 +203,15 @@ const ContestantTable: React.FC = () => {
         }
 
         // Add ellipsis if needed
-        if (endPage < totalPages) {
-            pageButtons.push(<span key="ellipsis2" className="px-3 py-1">...</span>);
-        }
+        // if (endPage < totalPages) {
+        //     pageButtons.push(<span key="ellipsis2" className="px-1 py-1 text-sm">...</span>);
+        // }
 
         // Add "Last" button
         if (currentPage < totalPages) {
             pageButtons.push(
                 <button key="last" onClick={() => handlePageChange(totalPages)} className="text-sm px-2 py-1 rounded bg-gray-700 text-gray-300 hover:bg-gray-600">
-                    Last
+                    {'>>'}
                 </button>
             );
         }
@@ -190,26 +236,37 @@ const ContestantTable: React.FC = () => {
                                         value={searchTerm}
                                         onChange={handleSearch}
                                         placeholder="Search..."
-                                        className="w-full pl-10 pr-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-slate-400 bg-transparent text-slate-300 border-slate-400"
+                                        className="text-sm w-full pl-10 pr-4 py-[0.4em] border rounded-md focus:outline-none focus:ring-2 focus:ring-slate-400 bg-transparent text-slate-300 border-slate-400"
                                     />
                                     <FontAwesomeIcon icon={faSearch} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400" />
                                 </div>
                             </>
                         )}
                     </div>
-                    <div className="flex items-center gap-1 mr-3 py-1">
-                        <Switch 
+                    <div className="flex items-center gap-1 mr-3 py-1 text-sm">
+                        <Switch
                             label='Selected'
-                            checked={showSelected} 
+                            checked={showSelected}
                             setChecked={setShowSelected}
                         />
-                        <Dropdown
-                            value={`${pageSize} per page`}
-                            onChange={handlePageSizeChange}
-                            options={['10', '25', '50']}
-                            buttonClassName='py-2'
-                            className="min-w-[8em] mt-[0.5em]"
+
+                        <IconButton
+                            className={classNames(
+                                "tada-animation ml-auto bg-blue-600 hover:bg-blue-700 text-white font-normal py-1 pl-[0.7em] pr-[0.9em] rounded-md text-xs mr-0 w-[6em]",
+                                { "tada-animation": showUnranked && rankedItems?.length }
+                            )}
+                            onClick={() => dispatch(
+                                setShowUnranked(!showUnranked)
+                            )}
+                            title={'View List'}
                         />
+                        {/* <FaChevronRight
+                            className={classNames(
+                                "ml-2 mr-auto text-lg justify-center align-center bounce-right text-blue-300",
+                                { "tada-animation": showUnranked && rankedItems?.length }
+                            )}
+                        /> */}
+
                     </div>
                 </div>
             </div>
@@ -251,7 +308,7 @@ const ContestantTable: React.FC = () => {
                                             <Ripples className="flex items-center justify-center w-full h-full" placeholder={<></>}>
                                                 <button
                                                     onClick={() => handleToggleSelected(contestant.id)}
-                                                    className="text-slate-300 hover:text-slate-100 p-2 rounded-md h-full w-full" 
+                                                    className="text-slate-300 hover:text-slate-100 p-2 rounded-md h-full w-full"
                                                 >
                                                     {showSelected ? (
                                                         <FontAwesomeIcon icon={faMinus} className="text-red-500" />
@@ -275,9 +332,23 @@ const ContestantTable: React.FC = () => {
                 </div>
             </div>
             <div className="mt-4 flex justify-between items-center px-4">
-                <span className="text-sm text-gray-300">
-                    {((currentPage - 1) * pageSize) + 1} to {Math.min(currentPage * pageSize, displayedContestants.length)} of {displayedContestants.length} rows
+                {/* <span className="text-sm text-gray-300">
+                    {((currentPage - 1) * pageSize) + 1} to {Math.min(currentPage * pageSize, displayedContestants.length)} of {displayedContestants.length}
+                </span> */}
+                <div>
+                <Dropdown
+                    value={`${pageSize}`}
+                    onChange={handlePageSizeChange}
+                    options={['10', '25', '50']}
+                    buttonClassName=''
+                    className="min-w-[0.9em] text-xs"
+                    openUpwards={true}
+                    mini={true}
+                />
+                <span className="text-sm text-gray-300 ml-2 mr-3 whitespace-nowrap">
+                    of {displayedContestants.length}
                 </span>
+                </div>
                 <div className="space-x-2 space-y-2">
                     {renderPageButtons()}
                 </div>

@@ -92,26 +92,7 @@ const RankedCountriesTable: React.FC<RankedCountriesTableProps> = ({
                         <div className="px-1 overflow-y-auto h-full mt-2 pb-3">
                             <ContestantTable/>
                         </div>
-                        {showUnranked && rankedItems?.length > 0 && (
-                            <div className="pl-2 rounded-b-md h-8 bg-blue-900 ranked-bar-background text-slate-300 items-center flex shadow-md gradient-background">
-                                <IconButton
-                                    className={classNames(
-                                        "tour-step-4 ml-auto bg-blue-600 hover:bg-blue-700 text-white font-normal py-1 pl-[0.7em] pr-[0.9em] rounded-md text-xs mr-0 w-[6em]",
-                                        { "tada-animation": showUnranked && rankedItems?.length }
-                                    )}
-                                    onClick={() => dispatch(
-                                        setShowUnranked(!showUnranked)
-                                    )}
-                                    title={'View List'}
-                                />
-                                <FaChevronRight
-                                    className={classNames(
-                                        "ml-2 mr-auto text-lg justify-center align-center bounce-right text-blue-300",
-                                        { "tada-animation": showUnranked && rankedItems?.length }
-                                    )}
-                                />
-                            </div>
-                        )}
+    
                     </div>
  
         </div>

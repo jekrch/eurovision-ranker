@@ -48,6 +48,7 @@ const App: React.FC = () => {
   const vote = useAppSelector((state: AppState) => state.vote);
   const rankedItems = useAppSelector((state: AppState) => state.rankedItems);
   const unrankedItems = useAppSelector((state: AppState) => state.unrankedItems);
+  const globalSearch = useAppSelector((state: AppState) => state.globalSearch);
   const [isSongModalOpen, setIsSongModalOpen] = useState(false);
   const [selectedCountryContestant, setSelectedCountryContestant] = useState<CountryContestant | undefined>(undefined);
   const [showOverlay, setShowOverlay] = useState(!areRankingsSet());
@@ -370,42 +371,46 @@ const App: React.FC = () => {
             <div className="flex flex-row justify-center gap-4 px-4 py-2">
 
               {/* Unranked Countries List */}
-              {showUnranked && false &&  (
-                <div className='inline-grid'>
-                  <span className="">
-                    <TooltipHelp
-                      content="test"
-                    />
-                    <Switch 
-                      label={'advanced'}
-                      className='mb-2 items-center'
-                      labelClassName='text-sm text-slate-400'
-                      checked={tableModalShow}
-                      setChecked={setTableModalShow}
-                    />
-                  </span>
-                  <UnrankedCountriesList />
-                </div>
+              {showUnranked && !globalSearch && (
+
+                //    <div className='inline-grid'>
+                //     <span className="">
+                //   <TooltipHelp
+                //     content="test"
+                //   />
+                //   <Switch 
+                //     label={'adv'}
+                //     className='mb-2 items-center'
+                //     labelClassName='text-sm text-slate-400'
+                //     checked={tableModalShow}
+                //     setChecked={setTableModalShow}
+                //   />
+                // </span> 
+                <UnrankedCountriesList />
+                // </div>
               )}
 
               {/* Ranked Countries List */}
-              {/* <RankedCountriesList
-                openSongModal={openSongModal}
-                openModal={openMainModal}
-                openConfigModal={openConfigModal}
-                setRunTour={setRunTour}
-                openNameModal={() => setNameModalShow(true)}
-                openMapModal={() => setMapModalShow(true)}
-              /> */}
+              {globalSearch && showUnranked ? (
+                <RankedCountriesTable
+                  openSongModal={openSongModal}
+                  openModal={openMainModal}
+                  openConfigModal={openConfigModal}
+                  setRunTour={setRunTour}
+                  openNameModal={() => setNameModalShow(true)}
+                  openMapModal={() => setMapModalShow(true)}
+                />
+              ) :
+                <RankedCountriesList
+                  openSongModal={openSongModal}
+                  openModal={openMainModal}
+                  openConfigModal={openConfigModal}
+                  setRunTour={setRunTour}
+                  openNameModal={() => setNameModalShow(true)}
+                  openMapModal={() => setMapModalShow(true)}
+                />
 
-              <RankedCountriesTable
-                openSongModal={openSongModal}
-                openModal={openMainModal}
-                openConfigModal={openConfigModal}
-                setRunTour={setRunTour}
-                openNameModal={() => setNameModalShow(true)}
-                openMapModal={() => setMapModalShow(true)}
-              />
+              }
             </div>
           </DragDropContext>
         </div>
@@ -463,12 +468,12 @@ const App: React.FC = () => {
         }}
       />
 
-      <TableModal
+      {/* <TableModal
         isOpen={tableModalShow}
         onClose={() => {
           setTableModalShow(false);
         }}
-      />
+      /> */}
 
       <MapModal
         isOpen={mapModalShow}

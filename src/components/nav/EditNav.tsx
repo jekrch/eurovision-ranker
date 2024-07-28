@@ -4,10 +4,11 @@ import classNames from 'classnames';
 import { CountryContestant } from '../../data/CountryContestant';
 import IconButton from '../IconButton';
 import { AppDispatch, AppState } from '../../redux/store';
-import { setIsDeleteMode, setContestants, setRankedItems, setUnrankedItems } from '../../redux/rootSlice';
+import { setIsDeleteMode, setContestants, setRankedItems, setUnrankedItems, setGlobalSearch } from '../../redux/rootSlice';
 import { fetchCountryContestantsByYear } from '../../utilities/ContestantRepository';
-import { clearAllRankingParams } from '../../utilities/UrlUtil';
+import { clearAllRankingParams, updateQueryParams } from '../../utilities/UrlUtil';
 import { useAppDispatch, useAppSelector } from '../../utilities/hooks';
+import { Switch } from '../Switch';
 
 type EditNavProps = {
     setNameModalShow: React.Dispatch<SetStateAction<boolean>>;
@@ -28,6 +29,7 @@ const EditNav: React.FC<EditNavProps> = ({ setNameModalShow, setRefreshUrl }) =>
     const unrankedItems = useAppSelector((state: AppState) => state.unrankedItems);
     const isDeleteMode = useAppSelector((state: AppState) => state.isDeleteMode);
     const categories = useAppSelector((state: AppState) => state.categories);
+    const globalSearch = useAppSelector((state: AppState) => state.globalSearch);
 
     /**
    * Clear rankedItems and fill unrankedItems with the relevant year's contestants
@@ -82,6 +84,13 @@ const EditNav: React.FC<EditNavProps> = ({ setNameModalShow, setRefreshUrl }) =>
         setRefreshUrl(Math.random());
     }
 
+    const updateGlobalSearch = (checked: boolean) => {
+        updateQueryParams({'g': checked ? 't' : undefined});
+        dispatch(
+            setGlobalSearch(checked)
+        );
+    }
+
     return (
         <nav className="nav-diagonal-split-bg bg-gray-800 text-white px-3 pb-1 pt-1 sticky bottom-0 z-50">
             <div className="container mx-auto flex justify-between items-center">
@@ -89,6 +98,13 @@ const EditNav: React.FC<EditNavProps> = ({ setNameModalShow, setRefreshUrl }) =>
                     <li>
                         <div className="tour-step-3 flex items-center">
 
+                            <Switch 
+                                label={'adv'}
+                                className='mb-2 items-center'
+                                labelClassName='text-sm text-slate-400'
+                                checked={globalSearch}
+                                setChecked={updateGlobalSearch}
+                            />
                             <IconButton
                                 icon={faArrowRight}
                                 disabled={!unrankedItems.length}
@@ -96,7 +112,6 @@ const EditNav: React.FC<EditNavProps> = ({ setNameModalShow, setRefreshUrl }) =>
                                 iconClassName='mr-[0.3em]'
                                 title="Add All"
                             />
-
                             <IconButton
                                 icon={faTrashAlt}
                                 disabled={!rankedItems.length}

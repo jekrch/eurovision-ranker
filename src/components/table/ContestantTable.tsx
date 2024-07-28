@@ -96,6 +96,7 @@ const ContestantTable: React.FC = () => {
 
     // SortIcon component
     const SortIcon = ({ column }: { column: string }) => {
+        if (column === 'country') column = 'to_country';
         if (sortColumn !== column) return null;
         return sortDirection === 'asc' ?
             <FontAwesomeIcon icon={faSortUp} className="ml-2" /> :

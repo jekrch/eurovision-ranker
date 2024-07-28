@@ -12,6 +12,7 @@ interface AppState {
     year: string;
     theme: string;
     vote: string;
+    globalSearch: boolean;
     showUnranked: boolean;
     isDeleteMode: boolean;
     headerMenuOpen: boolean;
@@ -30,6 +31,7 @@ const initialState: AppState = {
     year: '',
     theme: '',
     vote: 'loading',
+    globalSearch: false,
     showUnranked: false,
     isDeleteMode: false,
     headerMenuOpen: false,
@@ -98,6 +100,9 @@ const rootSlice = createSlice({
         },
         setShowComparison: (state, action: PayloadAction<boolean>) => {
             state.showComparison = action.payload;
+        },
+        setGlobalSearch: (state, action: PayloadAction<boolean>) => {
+            state.globalSearch = action.payload;
         },
         assignVotesToContestants: (state, action: PayloadAction<Vote[]>) => {
             const votes: Vote[] = action.payload;
@@ -168,7 +173,8 @@ export const {
     assignVotesToContestants,
     setTableCurrentPage,
     setEntries,
-    toggleSelectedContestant
+    toggleSelectedContestant,
+    setGlobalSearch
 } = rootSlice.actions;
 
 export default rootSlice.reducer;

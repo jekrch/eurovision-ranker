@@ -76,6 +76,11 @@ code {
   background-color: rgb(86, 103, 125);
 }
 
+/* styling the scrollbar corner */
+::-webkit-scrollbar-corner {
+  background: rgb(86, 103, 125);
+}
+
 .gradient-background2 {
   background: linear-gradient(155deg, #3d76cb, #1a2a45, #9e33ea);
 }

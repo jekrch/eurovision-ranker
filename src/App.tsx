@@ -7,7 +7,7 @@ import NameModal from './components/modals/NameModal';
 import Navbar from './components/nav/NavBar';
 import EditNav from './components/nav/EditNav';
 import { AppDispatch, AppState } from './redux/store';
-import { setRankedItems, setUnrankedItems, setShowUnranked, setActiveCategory, setShowTotalRank, setCategories } from './redux/rootSlice';
+import { setRankedItems, setUnrankedItems, setShowUnranked, setActiveCategory, setShowTotalRank, setCategories, setGlobalSearch } from './redux/rootSlice';
 import { decodeRankingsFromURL, encodeRankingsToURL, updateQueryParams, updateUrlFromRankedItems, urlHasRankings } from './utilities/UrlUtil';
 import MapModal from './components/modals/MapModal';
 import ConfigModal from './components/modals/config/ConfigModal';
@@ -22,7 +22,6 @@ import { addWindowEventListeners, handlePopState, removeWindowEventListeners, se
 import RankedCountriesList from './components/ranking/RankedCountriesList';
 import UnrankedCountriesList from './components/ranking/UnrankedCountriesList';
 import { useAppDispatch, useAppSelector } from './utilities/hooks';
-import TableModal from './components/table/TableModal';
 import { Switch } from './components/Switch';
 import TooltipHelp from './components/TooltipHelp';
 import RankedCountriesTable from './components/ranking/RankedCountriesTable';
@@ -30,7 +29,6 @@ import RankedCountriesTable from './components/ranking/RankedCountriesTable';
 const App: React.FC = () => {
   const [mainModalShow, setMainModalShow] = useState(false);
   const [nameModalShow, setNameModalShow] = useState(false);
-  const [tableModalShow, setTableModalShow] = useState(true);
   const [mapModalShow, setMapModalShow] = useState(false);
   const [configModalShow, setConfigModalShow] = useState(false);
   const [refreshUrl, setRefreshUrl] = useState(0);
@@ -147,6 +145,13 @@ const App: React.FC = () => {
     };
 
   }, [])
+
+  const updateGlobalSearch = (checked: boolean) => {
+    updateQueryParams({ 'g': checked ? 't' : undefined });
+    dispatch(
+      setGlobalSearch(checked)
+    );
+  }
 
   /**
    * Reload the rankings from the URL if the activeCategory changes or 
@@ -373,21 +378,24 @@ const App: React.FC = () => {
               {/* Unranked Countries List */}
               {showUnranked && !globalSearch && (
 
-                //    <div className='inline-grid'>
-                //     <span className="">
-                //   <TooltipHelp
-                //     content="test"
-                //   />
-                //   <Switch 
-                //     label={'adv'}
-                //     className='mb-2 items-center'
-                //     labelClassName='text-sm text-slate-400'
-                //     checked={tableModalShow}
-                //     setChecked={setTableModalShow}
-                //   />
-                // </span> 
-                <UnrankedCountriesList />
-                // </div>
+                <div className="relative flex flex-col">
+                  <div className="sticky top-0 z-10 rounded-t-md round-b-sm text-center font-bold bg-blue-900 gradient-background text-slate-300 tracking-tighter shadow-md">
+                    <div className="flex items-center justify-center py-1 px-0">
+                      <TooltipHelp
+                        content="Select countries across all contest years"
+                        className="text-slate-300 align-middle mb-1 -mr-1"
+                      />
+                      <Switch
+                        label="adv"
+                        className="items-center align-middle"
+                        labelClassName="text-sm text-slate-400"
+                        checked={globalSearch}
+                        setChecked={updateGlobalSearch}
+                      />
+                    </div>
+                  </div>
+                  <UnrankedCountriesList />
+                </div>
               )}
 
               {/* Ranked Countries List */}

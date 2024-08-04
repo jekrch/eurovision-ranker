@@ -1,6 +1,7 @@
 import { ContestantVotes } from "./Vote";
 
 export type Contestant = {
+    id: string;
     countryKey: string;
     artist: string;
     song: string;
@@ -8,5 +9,6 @@ export type Contestant = {
     finalsRank?: number;
     semiFinalsRank?: number;
     votes?: ContestantVotes;
+    year?: string;
   };
   

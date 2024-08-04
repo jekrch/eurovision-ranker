@@ -4,7 +4,7 @@ import { AppState } from '../../redux/store';
 import { ContestantRow } from './tableTypes';
 import { changePageSize, filterTable, sortTable } from '../../redux/tableSlice';
 import { useAppDispatch } from '../../utilities/hooks';
-import { setEntries, setShowUnranked, setTableCurrentPage, toggleSelectedContestant } from '../../redux/rootSlice';
+import { setEntries, setGlobalSearch, setShowUnranked, setTableCurrentPage, toggleSelectedContestant } from '../../redux/rootSlice';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch, faSortUp, faSortDown, faPlus, faMinus, faCheck } from '@fortawesome/free-solid-svg-icons';
 import Dropdown from '../Dropdown';
@@ -15,6 +15,7 @@ import classNames from 'classnames';
 import { Switch } from '../Switch';
 import IconButton from '../IconButton';
 import Papa from 'papaparse';
+import { updateQueryParams } from '../../utilities/UrlUtil';
 
 const ContestantTable: React.FC = () => {
     const dispatch = useAppDispatch();
@@ -189,11 +190,6 @@ const ContestantTable: React.FC = () => {
             );
         }
 
-        // Add ellipsis if needed
-        // if (startPage > 1) {
-        //     pageButtons.push(<span key="ellipsis1" className="px-1 py-1 text-sm">...</span>);
-        // }
-
         // Add page number buttons
         for (let page = startPage; page <= endPage; page++) {
             pageButtons.push(
@@ -207,11 +203,6 @@ const ContestantTable: React.FC = () => {
             );
         }
 
-        // Add ellipsis if needed
-        // if (endPage < totalPages) {
-        //     pageButtons.push(<span key="ellipsis2" className="px-1 py-1 text-sm">...</span>);
-        // }
-
         // Add "Last" button
         if (currentPage < totalPages) {
             pageButtons.push(
@@ -224,33 +215,52 @@ const ContestantTable: React.FC = () => {
         return pageButtons;
     };
 
+    const updateGlobalSearch = (checked: boolean) => {
+        updateQueryParams({ 'g': checked ? 't' : undefined });
+        dispatch(
+            setGlobalSearch(checked)
+        );
+    }
+
     return (
         <div className="flex flex-col h-full bg-transparent text-slate-300">
             <div className="flex flex-col mb-4 px-4">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                     <div className="w-full sm:w-auto flex-grow sm:flex-grow-0 flex items-center">
-                        {true && (
-                            <>
-                                <TooltipHelp
-                                    content='Search across all columns. To search for a phrase, enclose your search term in quotes "like this"'
-                                    className="mt-2 mr-3 pb-1"
-                                />
-                                <div className="relative w-full mr-3">
-                                    <input
-                                        type="text"
-                                        value={searchTerm}
-                                        onChange={handleSearch}
-                                        placeholder="Search..."
-                                        className="text-sm w-full pl-10 pr-4 py-[0.4em] border rounded-md focus:outline-none focus:ring-2 focus:ring-slate-400 bg-transparent text-slate-300 border-slate-400"
-                                    />
-                                    <FontAwesomeIcon icon={faSearch} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400" />
-                                </div>
-                            </>
-                        )}
+
+                        <TooltipHelp
+                            content='Search across all columns. To search for a phrase, enclose your search term in quotes "like this"'
+                            className="mt-2 mr-3 pb-1"
+                        />
+                        <div className="relative w-full mr-3">
+                            <input
+                                type="text"
+                                value={searchTerm}
+                                onChange={handleSearch}
+                                placeholder="Search..."
+                                className="text-sm w-full pl-10 pr-4 py-[0.4em] border rounded-md focus:outline-none focus:ring-2 focus:ring-slate-400 bg-transparent text-slate-300 border-slate-400"
+                            />
+                            <FontAwesomeIcon icon={faSearch} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400" />
+                        </div>
                     </div>
                     <div className="flex items-center gap-1 mr-3 py-1 text-sm">
+                        <div className="flex items-center justify-center py-1 px-0">
+                            <TooltipHelp
+                                content="Uncheck this to use the simple year-based selection mode"
+                                className="text-slate-300 align-middle mb-1 -mr-1"
+                            />
+                            <Switch
+                                label="adv"
+                                className="items-center align-middle"
+                                labelClassName="text-sm text-slate-400"
+                                checked={globalSearch}
+                                setChecked={updateGlobalSearch}
+                            />
+                        </div>
+
                         <Switch
-                            label='Selected'
+                            label='selected'
+                            className="-ml-4"
                             checked={showSelected}
                             setChecked={setShowSelected}
                         />

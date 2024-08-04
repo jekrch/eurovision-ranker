@@ -1,5 +1,5 @@
 import { UrlParams, convertRankingsStrToArray, extractParams, updateStates } from "./UrlUtil";
-import { setName, setYear, setTheme, setVote, setShowComparison } from '../redux/rootSlice';
+import { setName, setYear, setTheme, setVote, setShowComparison, setGlobalSearch } from '../redux/rootSlice';
 import { defaultYear } from "../data/Contestants";
 import { JSDOM } from 'jsdom';
 
@@ -60,7 +60,8 @@ describe('extractParams', () => {
             rankings: 'abc',
             theme: 'ab',
             voteCode: 'f-tv',
-            comparisonMode: null
+            comparisonMode: null,
+            globalMode: null,
         });
     });
 
@@ -77,6 +78,7 @@ describe('extractParams', () => {
             contestYear: '2023',
             rankings: 'abc',
             theme: null,
+            globalMode: null,
             voteCode: null,
             comparisonMode: null
         });
@@ -88,7 +90,8 @@ vi.mock('../redux/rootSlice', () => ({
     setYear: vi.fn(),
     setTheme: vi.fn(),
     setVote: vi.fn(),
-    setShowComparison: vi.fn()
+    setShowComparison: vi.fn(),
+    setGlobalSearch: vi.fn()
 }));
 
 
@@ -103,6 +106,7 @@ describe('updateStates', () => {
         (setYear as any).mockClear();
         (setTheme as any).mockClear();
         (setVote as any).mockClear();
+        (setGlobalSearch as any).mockClear();
     });
 
     it('should dispatch setName when rankingName is provided', () => {
@@ -111,6 +115,7 @@ describe('updateStates', () => {
                 rankingName: 'Test Name', 
                 contestYear: null, 
                 theme: null, 
+                globalMode: null,
                 voteCode: null, 
                 comparisonMode: null 
             } as UrlParams, mockDispatch
@@ -125,6 +130,7 @@ describe('updateStates', () => {
                 rankingName: null, 
                 contestYear: null,
                  theme: null, 
+                 globalMode: null,
                  voteCode: null, 
                  comparisonMode: null 
             } as UrlParams, 

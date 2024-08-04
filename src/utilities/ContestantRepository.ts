@@ -10,7 +10,8 @@ import { fetchContestantCsv } from "./CsvCache";
 import { AppDispatch } from "../redux/store";
 import { clone } from "./ContestantUtil";
 
-const contestantCache: { [year: string]: Contestant[] } = {};
+const yearContestantCache: { [year: string]: Contestant[] } = {};
+const idContestantCache: { [id: string]: Contestant } = {};
 
 export async function fetchCountryContestantsByYear(
   year: string,
@@ -181,72 +182,105 @@ async function getContestantsByYear(
   return await getContestantsForYear(year);
 }
 
-/**
- * Returns all contestants for the provided year. Caches each result 
- * set by year. 
- * 
- * @param year 
- * @returns 
- */
-export function getContestantsForYear(year: string): Promise<Contestant[]> {
-  if (contestantCache[year]) {
-    return Promise.resolve(contestantCache[year]);
-  }
+// shared cache for contestants
+const contestantCache: { [year: string]: Contestant[]; } = {};
+const individualContestantCache: { [id: string]: Contestant } = {};
 
+/**
+ * parses CSV data and processes contestants
+ * 
+ * @param results - parsed CSV data
+ * @param filterFn - function to filter relevant rows
+ * @returns processed contestants
+ */
+function processContestants(
+  results: any,
+  filterFn: (row: any) => boolean
+): Contestant[] {
+  const tempStorage = new Map<string, Contestant>();
+
+  results.data
+    .filter(filterFn)
+    .forEach((row: any) => {
+      const year = row.year;
+      const countryKey = row.to_country_id;
+      const id = `${year}-${countryKey}`;
+
+      if (!tempStorage.has(id)) {
+        // create a new entry
+        tempStorage.set(id, createContestant(row));
+      } else {
+        handleDuplicateEntry(tempStorage, id, row);
+      }
+    });
+
+  return Array.from(tempStorage.values());
+}
+
+/**
+ * creates a contestant object from a row of data
+ * 
+ * @param row - CSV row data
+ * @returns contestant object
+ */
+function createContestant(row: any): Contestant {
+  return {
+    id: row.id,
+    countryKey: row.to_country_id,
+    artist: row.performer,
+    song: row.song,
+    youtube: row.youtube_url,
+    finalsRank: row.place_final ?? row.place_contest,
+    semiFinalsRank: row.place_sf,
+    year: row.year,
+  };
+}
+
+/**
+ * handles duplicate entries in the data
+ * 
+ * @param tempStorage - map of processed contestants
+ * @param id - contestant ID
+ * @param row - CSV row data
+ */
+function handleDuplicateEntry(
+  tempStorage: Map<string, Contestant>, 
+  id: string, 
+  row: any
+): void {
+  const [year, countryKey] = id.split('-');
+  if (year !== '1956') {
+    console.debug('dupe found ' + year + ' ' + countryKey);
+    // update the existing entry
+    const existingEntry = tempStorage.get(id)!;
+    if (row.place_contest) {
+      existingEntry.finalsRank = row.place_contest;
+    }
+    if (row.place_sf) {
+      existingEntry.semiFinalsRank = row.place_sf;
+    }
+  } else {
+    // since 1956 had two songs per country, allow country dupes here
+    tempStorage.set(`${id}-2`, {
+      ...createContestant(row),
+      countryKey: `${countryKey}-2`,
+    });
+  }
+}
+
+/**
+ * fetches and parses contestant CSV data
+ * 
+ * @returns promise resolving to parsed CSV data
+ */
+function fetchAndParseCsv(): Promise<any> {
   return new Promise((resolve, reject) => {
     fetchContestantCsv()
       .then(response => response)
       .then(csvString => {
         Papa.parse(csvString, {
           header: true,
-          complete: (results: any) => {
-            const tempStorage = new Map<string, Contestant>();
-
-            results.data
-              .filter((row: any) => row.year === year)
-              .forEach((row: any) => {
-                const countryKey = row.to_country_id;
-
-                // Check if this country already has an entry
-                if (!tempStorage.has(countryKey)) {
-                  // Create a new entry
-                  tempStorage.set(countryKey, {
-                    countryKey,
-                    artist: row.performer,
-                    song: row.song,
-                    youtube: row.youtube_url,
-                    finalsRank: row.place_final ?? row.place_contest,
-                    semiFinalsRank: row.place_sf,
-                  });
-                } else {
-                  if (year !== '1956') {
-                    console.debug('dupe found ' + year + ' ' + countryKey);
-                    // Update the existing entry
-                    const existingEntry: any = tempStorage.get(countryKey);
-                    if (row.place_contest) {
-                      existingEntry.finalsRank = row.place_contest;
-                    }
-                    if (row.place_sf) {
-                      existingEntry.semiFinalsRank = row.place_sf;
-                    }
-                  } else {
-                    // since 1956 had two songs per country, I'm allowing country dupes here
-                    tempStorage.set(countryKey + '2', {
-                      countryKey: countryKey + '2',
-                      artist: row.performer,
-                      song: row.song,
-                      youtube: row.youtube_url,
-                      finalsRank: row.place_final ?? row.place_contest,
-                      semiFinalsRank: row.place_sf,
-                    });
-                  }
-                }
-              });
-
-            const contestants = Array.from(tempStorage.values());
-            contestantCache[year] = contestants;
-            resolve(contestants);
-          },
+          complete: (results: any) => resolve(results),
           error: (error: any) => reject(error)
         });
       })
@@ -254,6 +288,63 @@ export function getContestantsForYear(year: string): Promise<Contestant[]> {
   });
 }
 
+/**
+ * returns all contestants for the provided year
+ * caches each result set by year
+ * 
+ * @param year 
+ * @returns promise resolving to an array of contestants
+ */
+export function getContestantsForYear(year: string): Promise<Contestant[]> {
+  if (contestantCache[year]) {
+    return Promise.resolve(contestantCache[year]);
+  }
+
+  return fetchAndParseCsv()
+    .then(results => {
+      const contestants = processContestants(results, row => row.year === year);
+      contestantCache[year] = contestants;
+      return contestants;
+    });
+}
+
+/**
+ * fetches contestants by a list of ID strings
+ * utilizes and updates an individual contestant cache
+ * 
+ * @param ids - array of contestant IDs (format: 'year-countryKey')
+ * @returns promise resolving to an array of contestants
+ */
+export function getContestantsByIds(ids: string[]): Promise<Contestant[]> {
+  const cachedContestants: Contestant[] = [];
+  const idsToFetch: string[] = [];
+
+  ids.forEach(id => {
+    if (id in individualContestantCache) {
+      cachedContestants.push(individualContestantCache[id]);
+    } else {
+      idsToFetch.push(id);
+    }
+  });
+
+  if (idsToFetch.length === 0) {
+    return Promise.resolve(cachedContestants);
+  }
+
+  return fetchAndParseCsv()
+    .then(results => {
+      const fetchedContestants = processContestants(results, row => {
+        const [year, countryKey] = row.to_country_id.split('-');
+        return idsToFetch.includes(`${year}-${countryKey}`);
+      });
+
+      fetchedContestants.forEach(contestant => {
+        individualContestantCache[`${contestant.year}-${contestant.countryKey}`] = contestant;
+      });
+
+      return [...cachedContestants, ...fetchedContestants];
+    });
+}
 export function getSongDetails(
   year: string, 
   songTitle: string

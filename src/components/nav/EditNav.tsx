@@ -97,14 +97,6 @@ const EditNav: React.FC<EditNavProps> = ({ setNameModalShow, setRefreshUrl }) =>
                 <ul className="flex space-x-2">
                     <li>
                         <div className="tour-step-3 flex items-center">
-
-                            <Switch 
-                                label={'adv'}
-                                className='mb-2 items-center'
-                                labelClassName='text-sm text-slate-400'
-                                checked={globalSearch}
-                                setChecked={updateGlobalSearch}
-                            />
                             <IconButton
                                 icon={faArrowRight}
                                 disabled={!unrankedItems.length}

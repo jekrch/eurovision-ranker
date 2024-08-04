@@ -16,7 +16,7 @@ export const Switch: React.FC<SwitchProps> = ({ checked: checked, setChecked, cl
     <Field>
       <div className={classNames("flex items-right items-center", className)}>
         <Label 
-            className={classNames("cursor-pointer ml-3 mr-3 text-slate-300 text-md", labelClass)}
+            className={classNames("cursor-pointer ml-3 mr-2 text-slate-300 text-md", labelClass)}
         >{label}</Label>
         <HeadlessSwitch
             checked={checked}

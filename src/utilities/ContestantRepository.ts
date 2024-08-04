@@ -323,8 +323,7 @@ export function getContestantsByUids(ids: string[]): Promise<Contestant[]> {
     });
 }
 export function getSongDetails(
-  year: string,
-  songTitle: string
+  uid: string
 ): Promise<SongDetails | undefined> {
 
   return new Promise((resolve, reject) => {
@@ -337,7 +336,7 @@ export function getSongDetails(
           header: true,
           complete: (results: any) => {
             const matchingRow = results.data.find(
-              (row: any) => row.year === year && row.song === songTitle
+              (row: any) => row.id === uid
             );
 
             if (matchingRow) {

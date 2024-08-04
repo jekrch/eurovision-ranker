@@ -35,7 +35,7 @@ const SongModal: React.FC<SongModalProps> = (props: SongModalProps) => {
             setLyrics(undefined);
             setEngLyrics(undefined);
             
-            getSongDetails(year, contestant.song)
+            getSongDetails(contestant.id)
                 .then(fetchedSongDetails => {
                     assignLyrics(
                         fetchedSongDetails?.lyrics,

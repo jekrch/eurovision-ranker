@@ -6,7 +6,6 @@ import { assignVotesByCode, voteCodeHasSourceCountry } from "./VoteProcessor";
 import { cachedYear, initialCountryContestantCache } from "../data/InitialContestants";
 import { SongDetails } from "../data/SongDetails";
 import { fetchContestantCsv } from "./CsvCache";
-import { AppDispatch } from "../redux/store";
 import { clone } from "./ContestantUtil";
 import { sanitizeYear } from "../data/Contestants";
 
@@ -24,9 +23,6 @@ export async function fetchCountryContestantsByYear(
     sanitizeYear(year) === cachedYear &&
     !voteCodeHasSourceCountry(voteCode)
   ) {
-    // console.log(await fetchAndProcessCountryContestants(
-    //   year, voteCode
-    // ))
     return clone(initialCountryContestantCache);
   }
 
@@ -42,10 +38,15 @@ export async function fetchAndProcessCountryContestants(
     year
   );
 
+  return await mapContestantsWithVotes(contestants, year, voteCode);
+}
+
+async function mapContestantsWithVotes(contestants: Contestant[], year?: string, voteCode?: string) {
+
   let countryContestants: CountryContestant[] = contestants.map(contestant => {
 
     // special handling for 1956 where two contestants were sent for each participating nation
-    let secondaryContestant = sanitizeYear(year) === '1956' && contestant.countryKey.endsWith('2');
+    let secondaryContestant = sanitizeYear(contestant?.year!) === '1956' && contestant.countryKey.endsWith('2');
 
     let contestantCountryKey = contestant.countryKey;
 
@@ -85,7 +86,7 @@ export async function fetchAndProcessCountryContestants(
 
   // add votes if requested
   countryContestants = await assignVotesByCode(
-    countryContestants, year, voteCode
+    countryContestants, voteCode ?? ''
   );
 
   return countryContestants;
@@ -150,7 +151,7 @@ function processContestants(
       const year = row.year;
       const countryKey = row.to_country_id;
       const id = `${year}-${countryKey}`;
-
+      row.yearCountry = id;
       if (!tempStorage.has(id)) {
         // create a new entry
         tempStorage.set(id, createContestant(row));
@@ -254,6 +255,37 @@ export function getContestantsForYear(year: string): Promise<Contestant[]> {
 }
 
 /**
+ * return country contestants by their global ids and in the order of ids
+ * 
+ * @param ids 
+ * @param voteType 
+ * @returns 
+ */
+export async function getCountryContestantsByIds(
+  ids: string[], 
+  voteType: string = ''
+): Promise<CountryContestant[]> {
+  const contestants = await getContestantsByIds(ids);
+  const countryContestants: CountryContestant[] = await mapContestantsWithVotes(
+    contestants, undefined, voteType
+  );
+  
+  // create a map for quick lookup
+  const contestantMap = new Map(countryContestants.map(cc => [cc.uid, cc]));
+  
+  // create a new array with the correct order
+  const orderedCountryContestants = ids.map(id => {
+    const contestant = contestantMap.get(id);
+    if (!contestant) {
+      console.error(`No contestant found for id: ${id}`);
+    }
+    return contestant;
+  }).filter((cc): cc is CountryContestant => cc !== undefined);
+
+  return orderedCountryContestants;
+}
+
+/**
  * fetches contestants by a list of ID strings
  * utilizes and updates an individual contestant cache
  * 
@@ -279,8 +311,7 @@ export function getContestantsByIds(ids: string[]): Promise<Contestant[]> {
   return fetchAndParseCsv()
     .then(results => {
       const fetchedContestants = processContestants(results, row => {
-        const [year, countryKey] = row.to_country_id.split('-');
-        return idsToFetch.includes(`${year}-${countryKey}`);
+        return idsToFetch.includes(row.id);
       });
 
       fetchedContestants.forEach(contestant => {

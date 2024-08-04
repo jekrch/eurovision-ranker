@@ -8,7 +8,7 @@ import Navbar from './components/nav/NavBar';
 import EditNav from './components/nav/EditNav';
 import { AppDispatch, AppState } from './redux/store';
 import { setRankedItems, setUnrankedItems, setShowUnranked, setActiveCategory, setShowTotalRank, setCategories, setGlobalSearch } from './redux/rootSlice';
-import { decodeRankingsFromURL, encodeRankingsToURL, updateQueryParams, updateUrlFromRankedItems, urlHasRankings } from './utilities/UrlUtil';
+import { decodeRankingsFromURL, encodeRankingsToURL, updateQueryParams, updateUrlFromRankedItems, urlHasRankings, urlParamHasValue } from './utilities/UrlUtil';
 import MapModal from './components/modals/MapModal';
 import ConfigModal from './components/modals/config/ConfigModal';
 import WelcomeOverlay from './components/modals/WelcomeOverlay';

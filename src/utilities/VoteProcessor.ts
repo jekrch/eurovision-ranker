@@ -1,7 +1,8 @@
 import { sanitizeYear } from "../data/Contestants";
 import { CountryContestant } from '../data/CountryContestant';
 import { ContestantVotes, Vote } from "../data/Vote";
-import { fetchVotesForYear } from "./VoteRepository";
+import { getUids } from "./ContestantUtil";
+import { fetchVotesForYear, fetchVotesForYearsAndCountries } from "./VoteRepository";
 import { assignVotes } from "./VoteUtil";
 
 let cachedVoteYear: string;
@@ -44,39 +45,77 @@ export async function getVotes(
 
 export async function sortByVotes(
     countryContestants: CountryContestant[],
-    year: string,
     voteType: string,
     round: string = 'final',
     fromCountryKey?: string
 ): Promise<CountryContestant[]> {
+    const voteTypeFieldName: string = getVoteTypeFieldName(voteType);
 
-    year = sanitizeYear(year);
+    // Ensure round is a valid round name, not a vote type
+    const validRound = convertToValidRound(round);
 
-    let votes: Vote[] = await getVotes(year, fromCountryKey, round)
+    // get unique years from countryContestants, excluding those without a contestant or year
+    const years = new Set(countryContestants
+        .filter(cc => cc.contestant?.year)
+        .map(cc => cc.contestant!.year));
 
-    let voteTypeFieldName: string = getVoteTypeFieldName(voteType);
+    let votes: Vote[];
 
-    countryContestants = assignVotes(
-        countryContestants, votes
-    );
+    if (years.size > 1) {
+        // use the new method for multiple years
+        const yearCountryPairs = countryContestants
+            .filter(cc => cc.contestant?.year)
+            .map(cc => ({
+                year: cc.contestant!.year!,
+                countryKey: cc.country.key
+            }));
 
-    // Sorting country contestants by votes in descending order
-    countryContestants.sort(
+        votes = await fetchVotesForYearsAndCountries(yearCountryPairs, validRound);
+        
+        if (fromCountryKey) {
+            votes = votes.filter(v => v.fromCountryKey === fromCountryKey);
+        }
+    } else {
+        // use the existing method for a single year
+        const year = years.size === 1 ? sanitizeYear(Array.from(years)[0]!) : '';
+        votes = await getVotes(year, fromCountryKey, validRound);
+    }
+
+    const votedContestants = assignVotes(countryContestants, votes);
+
+    // sorting country contestants by votes in descending order
+    votedContestants.sort(
         (a, b) => (getContestantVoteFieldValue(b.contestant?.votes, voteTypeFieldName)) -
                   (getContestantVoteFieldValue(a.contestant?.votes, voteTypeFieldName))   
     );
 
     // if there is a source country, filter out 0 votes, otherwise, keep them
     if (fromCountryKey?.length) {
-        return countryContestants.filter(
-            // filter out any countries with 0 votes
-            v => {
-                return getContestantVoteFieldValue(v.contestant?.votes, voteTypeFieldName) > 0;
-            }
+        return votedContestants.filter(
+            v => getContestantVoteFieldValue(v.contestant?.votes, voteTypeFieldName) > 0
         );
     } else {
-        return countryContestants;
+        return votedContestants;
     }
+}
+
+/**
+ * ensure we have a valid round
+ * 
+ * @param round 
+ * @returns 
+ */
+function convertToValidRound(round: string): string {
+    const validRounds = ['final', 'semi-final', 'semi-final-1', 'semi-final-2'];
+    const lowercaseRound = round.toLowerCase();
+    
+    if (validRounds.includes(lowercaseRound)) {
+        return lowercaseRound;
+    }
+    
+    // Default to 'final' if an invalid round is provided
+    throw new Error(`Invalid round "${round}" provided. Defaulting to "final".`);
+    return 'final';
 }
 
 /**
@@ -185,18 +224,39 @@ function getContestantVoteFieldValue(
     return parseInt(value, 10);
 }
 
+
 export async function assignVotesByCode(
     countryContestants: CountryContestant[],
-    year: string,
     voteCode: string,
 ): Promise<CountryContestant[]> {
+    const years = new Set(countryContestants
+        .filter(cc => cc.contestant?.year)
+        .map(cc => cc.contestant!.year));
 
-    let votes: Vote[] = await fetchVotesByCode(voteCode, year);
+    let votes: Vote[];
 
-    return assignVotes(
-        countryContestants,
-        votes
-    );
+    if (years.size > 1) {
+        const yearCountryPairs = countryContestants
+            .filter(cc => cc.contestant?.year)
+            .map(cc => ({
+                year: cc.contestant!.year!,
+                countryKey: cc.country.key
+            }));
+
+        const [roundCode, , fromCountryKey] = voteCode.split('-');
+        const round = processVotingRound(roundCode);
+
+        votes = await fetchVotesForYearsAndCountries(yearCountryPairs, round);
+        
+        if (fromCountryKey) {
+            votes = votes.filter(v => v.fromCountryKey === fromCountryKey);
+        }
+    } else {
+        const year = years.size === 1 ? sanitizeYear(Array.from(years)[0]!) : '';
+        votes = await fetchVotesByCode(voteCode, year);
+    }
+
+    return assignVotes(countryContestants, votes);
 }
 
 export async function fetchVotesByCode(voteCode: string, year: string) {

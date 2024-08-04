@@ -75,7 +75,7 @@ const AnalyzeTab: React.FC = () => {
     sourceCountryKey: string
   ) => {
     countryContestants = await sortByVotes(
-      countryContestants, voteYear, voteType, round, sourceCountryKey
+      countryContestants, voteType, round, sourceCountryKey
     );
 
     const sortedContestants = countryContestants.filter((cc) => cc?.contestant?.votes !== undefined);

@@ -77,7 +77,7 @@ const RankingsTab: React.FC = () => {
         }
 
         countryContestants = await sortByVotes(
-            countryContestants, voteYear, voteType,
+            countryContestants, voteType,
              round, sourceCountryKey
         );
         const sortedContestants = countryContestants.filter(

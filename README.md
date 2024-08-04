@@ -11,7 +11,7 @@ A user's ranking is stored in the URL so it can be easily saved for later refere
 
 Users can also view a geographical heat map of their ranking, which is implemented using [React Simple Maps](https://www.react-simple-maps.io/).
 
-Multiple rankings can be created by category with different weights given to each category to reflect the user's preferences. A weighted total ranking can then be calculated, which better reflects the competing values that contribute to the user's final judgment.
+Multiple rankings can be created by category with different weights given to each category to reflect the user's preferences. A weighted total ranking can then be calculated, which reflects the competing values contributing to the user's final judgment.
 
 <img width="300" alt="image" src="https://github.com/jekrch/eurovision-ranker/assets/8173930/71bc60c8-7630-4df6-830d-fdddb28f4010">
 <img width="300" alt="image" src="https://github.com/jekrch/eurovision-ranker/assets/8173930/a6545c3f-ecc2-43cc-83e3-5dbd26ad72b9">

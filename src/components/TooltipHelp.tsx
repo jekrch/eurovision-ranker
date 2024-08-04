@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import { Tooltip } from 'react-tooltip';
 import { faQuestionCircle } from '@fortawesome/free-solid-svg-icons';
+import classNames from 'classnames';
 
 interface TooltipHelpProps {
     icon?: IconDefinition;
@@ -15,17 +16,23 @@ const TooltipHelp: React.FC<TooltipHelpProps> = ({
     icon = faQuestionCircle,
     content: tooltipContent,
     place = 'bottom-end',
-    className = 'ml-2 text-slate-400 cursor-pointer',
+    className,
 }) => {
 
     const tooltipId = React.useMemo(() => `tooltip-${Math.random().toString(36).substr(2, 9)}`, []);
     return (
         <>
-            <a data-tooltip-id={tooltipId} data-tooltip-content={tooltipContent}>
-                <FontAwesomeIcon icon={icon} className={className} />
+            <a 
+                data-tooltip-id={tooltipId} 
+                data-tooltip-content={tooltipContent}
+            >
+                <FontAwesomeIcon 
+                    icon={icon} 
+                    className={classNames('ml-2 text-slate-400 cursor-pointer !text-base', className)} 
+                />
             </a>
             <Tooltip
-                className="z-50 max-w-[40vw] !bg-[#3068ba] !text-slate-300"
+                className="z-50 max-w-[40vw] !bg-[#3068ba] !text-slate-300 !font-normal"
                 id={tooltipId}
                 place={place as any}
                 variant="info"

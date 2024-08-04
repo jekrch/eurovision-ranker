@@ -379,7 +379,7 @@ const App: React.FC = () => {
               {showUnranked && !globalSearch && (
 
                 <div className="relative flex flex-col">
-                  <div className="sticky top-0 z-10 rounded-t-md round-b-sm text-center font-bold bg-blue-900 gradient-background text-slate-300 tracking-tighter shadow-md">
+                  <div className="sticky top-0 rounded-t-md round-b-sm text-center font-bold bg-blue-900 gradient-background text-slate-300 tracking-tighter shadow-md z-50">
                     <div className="flex items-center justify-center py-1 px-0">
                       <TooltipHelp
                         content="Select countries across all contest years"
@@ -387,7 +387,7 @@ const App: React.FC = () => {
                       />
                       <Switch
                         label="adv"
-                        className="items-center align-middle"
+                        className="items-center align-middle font-normal"
                         labelClassName="text-sm text-slate-400"
                         checked={globalSearch}
                         setChecked={updateGlobalSearch}
@@ -423,7 +423,7 @@ const App: React.FC = () => {
           </DragDropContext>
         </div>
 
-        <div className="hidden fixed bottom-[3em] left-[1em] z-50" style={{}}>
+        <div className="hidden fixed bottom-[3em] left-[1em] z-50">
           <div className='p-2 bg-slate-300 bg-opacity-40 rounded-lg'>
             <button
               onClick={() => {

@@ -252,7 +252,7 @@ const ContestantTable: React.FC = () => {
                             <Switch
                                 label="adv"
                                 className="items-center align-middle"
-                                labelClassName="text-sm text-slate-400"
+                                labelClassName="text-base text-slate-400"
                                 checked={globalSearch}
                                 setChecked={updateGlobalSearch}
                             />
@@ -260,7 +260,8 @@ const ContestantTable: React.FC = () => {
 
                         <Switch
                             label='selected'
-                            className="-ml-4"
+                            className="-ml-4 text-base"
+                            labelClassName='text-slate-400'
                             checked={showSelected}
                             setChecked={setShowSelected}
                         />

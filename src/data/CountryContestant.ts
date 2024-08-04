@@ -3,6 +3,7 @@ import { Country } from "./Country";
 
 export interface CountryContestant {
     id: string;
+    uid?: string;
     country: Country;
     contestant: Contestant | null;
   };

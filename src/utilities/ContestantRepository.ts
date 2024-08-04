@@ -1,7 +1,6 @@
 import { Contestant } from "../data/Contestant";
 import { CountryContestant } from "../data/CountryContestant";
 import { countries } from '../data/Countries';
-import { contestants2019, contestants2021, contestants2022, contestants2023, contestants2024, sanitizeYear } from '../data/Contestants';
 import Papa from 'papaparse';
 import { assignVotesByCode, voteCodeHasSourceCountry } from "./VoteProcessor";
 import { cachedYear, initialCountryContestantCache } from "../data/InitialContestants";
@@ -9,6 +8,7 @@ import { SongDetails } from "../data/SongDetails";
 import { fetchContestantCsv } from "./CsvCache";
 import { AppDispatch } from "../redux/store";
 import { clone } from "./ContestantUtil";
+import { sanitizeYear } from "../data/Contestants";
 
 const yearContestantCache: { [year: string]: Contestant[] } = {};
 const idContestantCache: { [id: string]: Contestant } = {};
@@ -21,14 +21,17 @@ export async function fetchCountryContestantsByYear(
   // if we're requesting the cached year and there's no source country in 
   // the vote code, return an already parsed json array (for performance)
   if (
-      sanitizeYear(year) === cachedYear && 
-      !voteCodeHasSourceCountry(voteCode)
-    ) {
+    sanitizeYear(year) === cachedYear &&
+    !voteCodeHasSourceCountry(voteCode)
+  ) {
+    // console.log(await fetchAndProcessCountryContestants(
+    //   year, voteCode
+    // ))
     return clone(initialCountryContestantCache);
-  } 
-  
+  }
+
   return await fetchAndProcessCountryContestants(
-    year, voteCode 
+    year, voteCode
   );
 }
 
@@ -66,12 +69,14 @@ export async function fetchAndProcessCountryContestants(
       countryB.name += ' (2)';
       return {
         id: '_' + country.id,
+        uid: contestant?.id,
         country: countryB,
         contestant: contestant,
       };
     } else {
       return {
         id: country.id,
+        uid: contestant?.id,
         country: country,
         contestant: contestant,
       };
@@ -83,15 +88,11 @@ export async function fetchAndProcessCountryContestants(
     countryContestants, year, voteCode
   );
 
-  countryContestants = sanitizeYoutubeLinks(
-    year,
-    countryContestants
-  );
   return countryContestants;
 }
 
 function fetchCountryByKey(
-  contestantCountryKey: string, 
+  contestantCountryKey: string,
   contestant: Contestant
 ) {
   let country = countries.find(country => country.key === contestantCountryKey);
@@ -118,67 +119,11 @@ function fetchCountryByKey(
   return country;
 }
 
-/**
- * The csv data set has some youtube links that are currently region locked. Replace 
- * those with the youtube links from the legacy CountryContestant ts array data. 
- * 
- * @param year 
- * @param countryContestants 
- * @returns 
- */
-function sanitizeYoutubeLinks(
-  year: string,
-  countryContestants: CountryContestant[],
-): CountryContestant[] {
-
-  year = sanitizeYear(year);
-  let youtubeContestants: Contestant[];
-
-  // only do this for the years we have youtube links for
-  switch (year) {
-    case '2023':
-      youtubeContestants = contestants2023;
-      break;
-    case '2022':
-      youtubeContestants = contestants2022;
-      break;
-    case '2021':
-      youtubeContestants = contestants2021;
-      break;
-    case '2019':
-      youtubeContestants = contestants2019;
-      break;
-    default:
-      return countryContestants;
-  }
-
-  countryContestants.forEach(countryContestantToUpdate => {
-    // Find the matching contestant 
-    const matchingContestantWithYoutube = youtubeContestants.find(
-      contestantInSecond =>
-        contestantInSecond.countryKey?.toLowerCase() ===
-        countryContestantToUpdate.country.key?.toLowerCase()
-    );
-
-    // Replace the youtube value if a match is found
-    if (matchingContestantWithYoutube && countryContestantToUpdate?.contestant) {
-      countryContestantToUpdate.contestant.youtube = matchingContestantWithYoutube.youtube;
-    }
-  });
-
-  return countryContestants;
-}
-
 async function getContestantsByYear(
   year: string,
 ): Promise<Contestant[]> {
 
   year = sanitizeYear(year);
-
-  if (year === '2024') {
-    return contestants2024;
-  }
-
   return await getContestantsForYear(year);
 }
 
@@ -244,8 +189,8 @@ function createContestant(row: any): Contestant {
  * @param row - CSV row data
  */
 function handleDuplicateEntry(
-  tempStorage: Map<string, Contestant>, 
-  id: string, 
+  tempStorage: Map<string, Contestant>,
+  id: string,
   row: any
 ): void {
   const [year, countryKey] = id.split('-');
@@ -346,7 +291,7 @@ export function getContestantsByIds(ids: string[]): Promise<Contestant[]> {
     });
 }
 export function getSongDetails(
-  year: string, 
+  year: string,
   songTitle: string
 ): Promise<SongDetails | undefined> {
 
@@ -366,7 +311,7 @@ export function getSongDetails(
             if (matchingRow) {
               //console.log(matchingRow)
               resolve({
-                lyrics: matchingRow.lyrics, 
+                lyrics: matchingRow.lyrics,
                 engLyrics: matchingRow.eng_lyrics,
                 composers: matchingRow.composers,
                 lyricists: matchingRow.lyricists

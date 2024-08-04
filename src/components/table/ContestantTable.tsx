@@ -3,8 +3,8 @@ import { useSelector } from 'react-redux';
 import { AppState } from '../../redux/store';
 import { ContestantRow } from './tableTypes';
 import { changePageSize, filterTable, sortTable } from '../../redux/tableSlice';
-import { useAppDispatch } from '../../utilities/hooks';
-import { setEntries, setGlobalSearch, setShowUnranked, setTableCurrentPage, toggleSelectedContestant } from '../../redux/rootSlice';
+import { useAppDispatch, useAppSelector } from '../../utilities/hooks';
+import { setEntries, setGlobalSearch, setRankedItems, setSelectedContestants, setShowUnranked, setTableCurrentPage, toggleSelectedContestant } from '../../redux/rootSlice';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch, faSortUp, faSortDown, faPlus, faMinus, faCheck } from '@fortawesome/free-solid-svg-icons';
 import Dropdown from '../Dropdown';
@@ -15,7 +15,8 @@ import classNames from 'classnames';
 import { Switch } from '../Switch';
 import IconButton from '../IconButton';
 import Papa from 'papaparse';
-import { updateQueryParams } from '../../utilities/UrlUtil';
+import { getUrlParam, updateQueryParams, updateUrlFromRankedItems } from '../../utilities/UrlUtil';
+import { getCountryContestantsByUids } from '../../utilities/ContestantRepository';
 
 const ContestantTable: React.FC = () => {
     const dispatch = useAppDispatch();
@@ -23,6 +24,27 @@ const ContestantTable: React.FC = () => {
     const { sortColumn, sortDirection, filters, pageSize, currentPage, entries, selectedContestants } = tableState;
     const [searchTerm, setSearchTerm] = useState('');
     const [showSelected, setShowSelected] = useState(false);
+    const categories = useAppSelector((state: AppState) => state.categories);
+    const activeCategory = useAppSelector((state: AppState) => state.activeCategory);
+
+    // fetch data and initialize selectedContestants
+    useEffect(() => {
+        if (!globalSearch || entries.length > 0) return;
+
+        fetch('/contestants.csv')
+            .then(response => response.text())
+            .then(text => {
+                const allEntries: ContestantRow[] = parseCSV(text);
+                dispatch(setEntries(allEntries));
+
+                // initialize selectedContestants based on rankedItems
+                if (rankedItems.length > 0) {
+                    const rankedItemsSet = new Set(rankedItems.map(item => item.uid));
+                    const initialSelectedContestants = allEntries.filter(entry => rankedItemsSet.has(entry.id));
+                    dispatch(setSelectedContestants(initialSelectedContestants));
+                }
+            });
+    }, [globalSearch, entries.length, rankedItems, dispatch]);
 
     useMemo(() => {
         if (!globalSearch || entries.length > 0) return;
@@ -107,6 +129,50 @@ const ContestantTable: React.FC = () => {
         return result;
     }, [entries, selectedContestants, showSelected, searchTerm, sortColumn, sortDirection, globalSearch]);
 
+    // effect to update rankedItems when selectedContestants change
+    useEffect(() => {
+        const updateRankedItems = async () => {
+            const voteType = getUrlParam('v') ?? '';
+
+            console.log('test')
+            try {
+                // get the current rankedItems
+                const currentRankedItems = rankedItems || [];
+
+                // determine which items to add and remove
+                const currentUids = new Set(currentRankedItems.map(item => item.uid));
+                const selectedUids = new Set(selectedContestants.map(contestant => contestant.id));
+
+                const uidsToAdd = selectedContestants
+                    .filter(contestant => !currentUids.has(contestant.id))
+                    .map(contestant => contestant.id);
+
+                const uidsToRemove = currentRankedItems
+                    .filter(item => !selectedUids.has(item.uid!))
+                    .map(item => item.uid);
+
+                // fetch new items
+                const newCountryContestants = await getCountryContestantsByUids(uidsToAdd, voteType);
+
+                // create new rankedItems array
+                const newRankedItems = [
+                    ...currentRankedItems.filter(item => !uidsToRemove.includes(item.uid)),
+                    ...newCountryContestants
+                ];
+
+                dispatch(setRankedItems(newRankedItems));
+
+                updateUrlFromRankedItems(
+                    activeCategory, categories, newRankedItems
+                );
+            } catch (error) {
+                console.error('Error updating ranked items:', error);
+            }
+        };
+
+        updateRankedItems();
+    }, [selectedContestants, dispatch]);
+
     useEffect(() => {
         dispatch(setTableCurrentPage(1));
         setSearchTerm(''); // Reset search term when switching between views
@@ -143,7 +209,6 @@ const ContestantTable: React.FC = () => {
 
     const handleToggleSelected = (id: string) => {
         dispatch(toggleSelectedContestant(id));
-        setSearchTerm('');
     };
 
     // SortIcon component

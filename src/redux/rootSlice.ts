@@ -125,6 +125,9 @@ const rootSlice = createSlice({
         setEntries: (state, action: PayloadAction<ContestantRow[]>) => {
             state.tableState.entries = action.payload;
         },
+        setSelectedContestants: (state, action: PayloadAction<ContestantRow[]>) => {
+            state.tableState.selectedContestants = action.payload;
+        },
         toggleSelectedContestant: (state, action: PayloadAction<string>) => {
             const contestantId = action.payload;
             const index = state.tableState.selectedContestants.findIndex(c => c.id === contestantId);
@@ -174,6 +177,7 @@ export const {
     setTableCurrentPage,
     setEntries,
     toggleSelectedContestant,
+    setSelectedContestants,
     setGlobalSearch
 } = rootSlice.actions;
 

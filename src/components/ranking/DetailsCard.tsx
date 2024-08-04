@@ -31,6 +31,7 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
   const vote = useAppSelector((state: AppState) => state.vote);
   const categories = useAppSelector((state: AppState) => state.categories);
   const activeCategory = useAppSelector((state: AppState) => state.activeCategory);
+  const isGlobalMode = useAppSelector((state: AppState) => state.globalSearch);
   const showTotalRank = useAppSelector((state: AppState) => state.showTotalRank);
   const showComparison = useAppSelector((state: AppState) => state.showComparison);
   const contestant = props.countryContestant.contestant;
@@ -42,7 +43,7 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
       categoryRankingsRef.current.scrollLeft = props.categoryScrollPosition;
     }
   }, [props.categoryScrollPosition]);
-  
+
   function getCategoryRankings() {
     if (!showTotalRank && !showComparison) return undefined;
 
@@ -61,11 +62,11 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
    */
   function getRankIconaAndDiff(actualRank: number | undefined, categoryRank: number | undefined) {
     const rankDifference = actualRank && categoryRank ? categoryRank - actualRank : 0;
-  
+
     let arrowIcon = null;
     if (rankDifference < 0) {
       arrowIcon = Math.abs(rankDifference) >= 3 ? faAngleDoubleUp : faAngleUp;
-  
+
     } else if (rankDifference > 0) {
       arrowIcon = rankDifference >= 3 ? faAngleDoubleDown : faAngleDown;
     }
@@ -116,7 +117,13 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
                 </a>
               }
             </span>
-            <span className="overflow-hidden overflow-ellipsis">{country?.name}</span>
+            <span className="overflow-hidden overflow-ellipsis">{country?.name}
+              { (isGlobalMode && contestant) && 
+                <span className='text-slate-300 text-[1em] font-medium ml-3'>
+                  {contestant?.year}
+                </span>
+              }
+            </span>
           </div>
 
           {/* <i className={`z-1 float-right ml-3 flag-icon -mr-2 ${props.country?.icon}`} /> */}
@@ -180,20 +187,20 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
 
       </div>
       {categories?.length > 0 && (showTotalRank || showComparison) && (
-        <div 
+        <div
           ref={categoryRankingsRef}
           className="mt-0 mx-[0.6em] shadow-lg rounded-b-md bg-[#1c214c] bg-opacity-100 border-gray-600 border-x-[0.01em] border-b-[0.01em] overflow-x-auto relative"
-          onScroll={props.onCategoryScroll}  
+          onScroll={props.onCategoryScroll}
         >
           <div className="flex">
             {categories.map((category, index) => {
-              
+
               if (!showTotalRank && index === activeCategory) {
                 return;
               }
 
               const categoryRankIndex = categoryRankings?.[category.name];
-              
+
               var { arrowIcon, rankDifference } = getRankIconaAndDiff(
                 props.rank, categoryRankIndex
               );
@@ -210,7 +217,7 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
                     <FontAwesomeIcon
                       icon={arrowIcon}
                       className={classNames("pt-[0.2em] ml-1 inline-block text-sm text-opacity-40", rankDifference < 0 ? 'text-green-500' : 'text-red-500')}
-                    /> 
+                    />
                   }
                 </div>
               );

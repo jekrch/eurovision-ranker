@@ -1,6 +1,6 @@
 
 import { setName, setYear, setRankedItems, setUnrankedItems, setContestants, setTheme, setVote, setShowComparison, setGlobalSearch } from '../redux/rootSlice';
-import { fetchCountryContestantsByYear, getContestantsByIds, getCountryContestantsByIds } from './ContestantRepository';
+import { fetchCountryContestantsByYear, getContestantsByUids, getCountryContestantsByUids } from './ContestantRepository';
 import { CountryContestant, createCountryContestant } from '../data/CountryContestant';
 import { countries } from '../data/Countries';
 import { defaultYear, sanitizeYear } from '../data/Contestants';
@@ -139,7 +139,7 @@ export async function orderContestantsByRankingStr(
     console.log(rankedIds)
 
     if (isGlobalMode) {
-        const rankedCountries: CountryContestant[] = await getCountryContestantsByIds(rankedIds, voteCode);
+        const rankedCountries: CountryContestant[] = await getCountryContestantsByUids(rankedIds, voteCode);
         return { rankedIds, rankedCountries }
     }
 

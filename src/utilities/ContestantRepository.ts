@@ -8,6 +8,7 @@ import { SongDetails } from "../data/SongDetails";
 import { fetchContestantCsv } from "./CsvCache";
 import { clone } from "./ContestantUtil";
 import { sanitizeYear } from "../data/Contestants";
+import { getUrlParam } from "./UrlUtil";
 
 const yearContestantCache: { [year: string]: Contestant[] } = {};
 const idContestantCache: { [id: string]: Contestant } = {};
@@ -257,15 +258,15 @@ export function getContestantsForYear(year: string): Promise<Contestant[]> {
 /**
  * return country contestants by their global ids and in the order of ids
  * 
- * @param ids 
+ * @param uids 
  * @param voteType 
  * @returns 
  */
-export async function getCountryContestantsByIds(
-  ids: string[], 
-  voteType: string = ''
+export async function getCountryContestantsByUids(
+  uids: string[], 
+  voteType: string = getUrlParam('v') ?? ''
 ): Promise<CountryContestant[]> {
-  const contestants = await getContestantsByIds(ids);
+  const contestants = await getContestantsByUids(uids);
   const countryContestants: CountryContestant[] = await mapContestantsWithVotes(
     contestants, undefined, voteType
   );
@@ -274,7 +275,7 @@ export async function getCountryContestantsByIds(
   const contestantMap = new Map(countryContestants.map(cc => [cc.uid, cc]));
   
   // create a new array with the correct order
-  const orderedCountryContestants = ids.map(id => {
+  const orderedCountryContestants = uids.map(id => {
     const contestant = contestantMap.get(id);
     if (!contestant) {
       console.error(`No contestant found for id: ${id}`);
@@ -292,7 +293,7 @@ export async function getCountryContestantsByIds(
  * @param ids - array of contestant IDs (format: 'year-countryKey')
  * @returns promise resolving to an array of contestants
  */
-export function getContestantsByIds(ids: string[]): Promise<Contestant[]> {
+export function getContestantsByUids(ids: string[]): Promise<Contestant[]> {
   const cachedContestants: Contestant[] = [];
   const idsToFetch: string[] = [];
 

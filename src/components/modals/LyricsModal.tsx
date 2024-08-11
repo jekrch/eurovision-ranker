@@ -3,7 +3,7 @@ import { AppState } from '../../redux/store';
 import Modal from './Modal';
 import { CountryContestant } from '../../data/CountryContestant';
 import { getSongDetails } from '../../utilities/ContestantRepository';
-import { useAppSelector } from '../../utilities/hooks';
+import { useAppSelector } from '../../hooks/stateHooks';
 import Flag from 'react-world-flags';
 
 type SongModalProps = {

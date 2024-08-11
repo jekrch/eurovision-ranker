@@ -1,21 +1,10 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { StrictModeDroppable } from './StrictModeDroppable';
 import classNames from 'classnames';
 import { CountryContestant } from '../../data/CountryContestant';
-import { Card } from './Card';
-import { DetailsCard } from './DetailsCard';
-import RankedItemsHeader from './RankedItemsHeader';
-import { FaChevronRight } from 'react-icons/fa';
-import IconButton from '../IconButton';
-import { setShowUnranked } from '../../redux/rootSlice';
 import { AppDispatch, AppState } from '../../redux/store';
-import { supportedYears } from '../../data/Contestants';
-import { generateYoutubePlaylistUrl } from '../../utilities/YoutubeUtil';
 import { updateUrlFromRankedItems } from '../../utilities/UrlUtil';
-import { IntroColumnWrapper } from './IntroColumnWrapper';
-import { useAppDispatch, useAppSelector } from '../../utilities/hooks';
+import { useAppDispatch, useAppSelector } from '../../hooks/stateHooks';
 import { deleteRankedCountry } from '../../redux/rankingActions';
-import { Draggable } from '@hello-pangea/dnd';
 import ContestantTable from '../table/ContestantTable';
 
 interface RankedCountriesTableProps {

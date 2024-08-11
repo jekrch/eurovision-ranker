@@ -4,11 +4,10 @@ import classNames from 'classnames';
 import { CountryContestant } from '../../data/CountryContestant';
 import IconButton from '../IconButton';
 import { AppDispatch, AppState } from '../../redux/store';
-import { setIsDeleteMode, setContestants, setRankedItems, setUnrankedItems, setGlobalSearch } from '../../redux/rootSlice';
+import { setIsDeleteMode, setContestants, setRankedItems, setUnrankedItems, setSelectedContestants } from '../../redux/rootSlice';
 import { fetchCountryContestantsByYear } from '../../utilities/ContestantRepository';
 import { clearAllRankingParams, updateQueryParams } from '../../utilities/UrlUtil';
-import { useAppDispatch, useAppSelector } from '../../utilities/hooks';
-import { Switch } from '../Switch';
+import { useAppDispatch, useAppSelector } from '../../hooks/stateHooks';
 
 type EditNavProps = {
     setNameModalShow: React.Dispatch<SetStateAction<boolean>>;
@@ -26,6 +25,7 @@ const EditNav: React.FC<EditNavProps> = ({ setNameModalShow, setRefreshUrl }) =>
     const dispatch: AppDispatch = useAppDispatch();
     const year = useAppSelector((state: AppState) => state.year);
     const rankedItems = useAppSelector((state: AppState) => state.rankedItems);
+    const selectedContestants = useAppSelector((state: AppState) => state.tableState.selectedContestants);
     const unrankedItems = useAppSelector((state: AppState) => state.unrankedItems);
     const isDeleteMode = useAppSelector((state: AppState) => state.isDeleteMode);
     const categories = useAppSelector((state: AppState) => state.categories);
@@ -49,6 +49,10 @@ const EditNav: React.FC<EditNavProps> = ({ setNameModalShow, setRefreshUrl }) =>
 
         dispatch(
             setRankedItems([])
+        );
+
+        dispatch(
+            setSelectedContestants([])
         );
 
         clearAllRankingParams(categories);
@@ -84,13 +88,6 @@ const EditNav: React.FC<EditNavProps> = ({ setNameModalShow, setRefreshUrl }) =>
         setRefreshUrl(Math.random());
     }
 
-    const updateGlobalSearch = (checked: boolean) => {
-        updateQueryParams({'g': checked ? 't' : undefined});
-        dispatch(
-            setGlobalSearch(checked)
-        );
-    }
-
     return (
         <nav className="nav-diagonal-split-bg bg-gray-800 text-white px-3 pb-1 pt-1 sticky bottom-0 z-50">
             <div className="container mx-auto flex justify-between items-center">
@@ -106,28 +103,30 @@ const EditNav: React.FC<EditNavProps> = ({ setNameModalShow, setRefreshUrl }) =>
                             />
                             <IconButton
                                 icon={faTrashAlt}
-                                disabled={!rankedItems.length}
+                                disabled={!rankedItems.length && !selectedContestants?.length}
                                 className="ml-4"
                                 iconClassName='mr-[0.3em]'
                                 onClick={resetRanking}
                                 title="Clear"
                             />
 
-                            <IconButton
-                                icon={isDeleteMode ? faCheckSquare : faSquare}
-                                disabled={!rankedItems.length}
-                                className={classNames(
-                                    "ml-4",
-                                    rankedItems.length && isDeleteMode ? "bg-red-800 border-red-100 hover:bg-red-700" : null
-                                )}
-                                iconClassName='mr-[0.3em]'
-                                onClick={() => {
-                                    dispatch(
-                                        setIsDeleteMode(!isDeleteMode)
-                                    );
-                                }}
-                                title="Delete"
-                            />
+                            {!globalSearch &&
+                                <IconButton
+                                    icon={isDeleteMode ? faCheckSquare : faSquare}
+                                    disabled={!rankedItems.length}
+                                    className={classNames(
+                                        "ml-4",
+                                        rankedItems.length && isDeleteMode ? "bg-red-800 border-red-100 hover:bg-red-700" : null
+                                    )}
+                                    iconClassName='mr-[0.3em]'
+                                    onClick={() => {
+                                        dispatch(
+                                            setIsDeleteMode(!isDeleteMode)
+                                        );
+                                    }}
+                                    title="Delete"
+                                />
+                            }
 
                             <IconButton
                                 icon={faPenAlt}

@@ -21,7 +21,7 @@ import JoyrideTour from './tour/JoyrideTour';
 import { addWindowEventListeners, handlePopState, removeWindowEventListeners, setVh } from './utilities/EventListenerUtil';
 import RankedCountriesList from './components/ranking/RankedCountriesList';
 import UnrankedCountriesList from './components/ranking/UnrankedCountriesList';
-import { useAppDispatch, useAppSelector } from './utilities/hooks';
+import { useAppDispatch, useAppSelector } from './hooks/stateHooks';
 import { Switch } from './components/Switch';
 import TooltipHelp from './components/TooltipHelp';
 import RankedCountriesTable from './components/ranking/RankedCountriesTable';

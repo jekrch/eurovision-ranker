@@ -10,7 +10,7 @@ import { AppDispatch, AppState } from '../../redux/store';
 import { EXPORT_TYPE } from '../../utilities/export/ExportType';
 import { rankedHasAnyYoutubeLinks } from '../../utilities/YoutubeUtil';
 import { setHeaderMenuOpen } from '../../redux/rootSlice';
-import { useAppDispatch, useAppSelector } from '../../utilities/hooks';
+import { useAppDispatch, useAppSelector } from '../../hooks/stateHooks';
 
 interface RankedHeaderMenuProps {
   onMapClick?: () => void;

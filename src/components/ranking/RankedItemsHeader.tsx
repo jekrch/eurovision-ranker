@@ -6,7 +6,7 @@ import { setActiveCategory, setShowTotalRank, setYear } from '../../redux/rootSl
 import RankedHeaderMenu from './RankedHeaderMenu';
 import classNames from 'classnames';
 import Ripples from 'react-ripples';
-import { useAppDispatch, useAppSelector } from '../../utilities/hooks';
+import { useAppDispatch, useAppSelector } from '../../hooks/stateHooks';
 
 interface IRankedItemsHeaderProps {
     setMapModalShow: () => void;

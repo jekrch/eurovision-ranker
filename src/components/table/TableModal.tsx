@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Modal from '../modals/Modal';
 import ContestantTable from './ContestantTable';
 import { ContestantRow } from './tableTypes';
-import { useAppDispatch } from '../../utilities/hooks';
+import { useAppDispatch } from '../../hooks/stateHooks';
 import { setEntries } from '../../redux/rootSlice';
 import Papa from 'papaparse';
 

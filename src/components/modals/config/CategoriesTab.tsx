@@ -7,7 +7,7 @@ import TooltipHelp from '../../TooltipHelp';
 import Checkbox from '../../Checkbox';
 import { setShowComparison } from '../../../redux/rootSlice';
 import { updateQueryParams } from '../../../utilities/UrlUtil';
-import { useAppDispatch, useAppSelector } from '../../../utilities/hooks';
+import { useAppDispatch, useAppSelector } from '../../../hooks/stateHooks';
 
 const CategoriesTab: React.FC = () => {
   const dispatch: AppDispatch = useAppDispatch();

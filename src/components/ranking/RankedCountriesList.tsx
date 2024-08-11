@@ -13,9 +13,9 @@ import { supportedYears } from '../../data/Contestants';
 import { generateYoutubePlaylistUrl } from '../../utilities/YoutubeUtil';
 import { updateUrlFromRankedItems } from '../../utilities/UrlUtil';
 import { IntroColumnWrapper } from './IntroColumnWrapper';
-import { useAppDispatch, useAppSelector } from '../../utilities/hooks';
 import { deleteRankedCountry } from '../../redux/rankingActions';
 import { Draggable } from '@hello-pangea/dnd';
+import { useAppDispatch, useAppSelector } from '../../hooks/stateHooks';
 
 interface RankedCountriesListProps {
     openSongModal: (countryContestant: CountryContestant) => void;
@@ -137,7 +137,7 @@ const RankedCountriesList: React.FC<RankedCountriesListProps> = ({
                                         </span>
                                     </div>
                                 )}
-                                {rankedItems.map((countryContestant, index) => (
+                                {rankedItems.map((countryContestant: CountryContestant, index: number) => (
                                     <Draggable
                                         key={`draggable-${countryContestant?.uid ?? countryContestant.id}`}
                                         draggableId={countryContestant?.uid ?? countryContestant.id}

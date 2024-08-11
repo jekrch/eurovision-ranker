@@ -15,7 +15,7 @@ import { getSourceCountryKey, getVoteTypeCodeFromOption, getVoteTypeOptionsByYea
 import TooltipHelp from '../../TooltipHelp';
 import Checkbox from '../../Checkbox';
 import BetaBadge from '../../BetaBadge';
-import { useAppDispatch, useAppSelector } from '../../../utilities/hooks';
+import { useAppDispatch, useAppSelector } from '../../../hooks/stateHooks';
 
 const AnalyzeTab: React.FC = () => {
   const dispatch = useAppDispatch();

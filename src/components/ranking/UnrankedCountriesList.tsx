@@ -3,7 +3,7 @@ import { StrictModeDroppable } from './StrictModeDroppable';
 import classNames from 'classnames';
 import { Card } from './Card';
 import { AppState } from '../../redux/store';
-import { useAppSelector } from '../../utilities/hooks';
+import { useAppDispatch, useAppSelector } from '../../hooks/stateHooks';
 import { Draggable } from '@hello-pangea/dnd';
 
 /**

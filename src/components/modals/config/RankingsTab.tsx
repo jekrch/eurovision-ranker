@@ -9,7 +9,7 @@ import Dropdown from '../../Dropdown';
 import IconButton from '../../IconButton';
 import { goToUrl } from '../../../utilities/UrlUtil';
 import TooltipHelp from '../../TooltipHelp';
-import { useAppDispatch, useAppSelector } from '../../../utilities/hooks';
+import { useAppDispatch, useAppSelector } from '../../../hooks/stateHooks';
 
 const RankingsTab: React.FC = () => {
     const dispatch = useAppDispatch();

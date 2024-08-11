@@ -2,7 +2,7 @@ import React, { Dispatch, useEffect, useRef, useState } from 'react';
 import { AppDispatch, AppState } from '../../redux/store';
 import { setName } from '../../redux/rootSlice';
 import Modal from './Modal';
-import { useAppDispatch, useAppSelector } from '../../utilities/hooks';
+import { useAppDispatch, useAppSelector } from '../../hooks/stateHooks';
 
 type NameModalProps = {
     isOpen: boolean;

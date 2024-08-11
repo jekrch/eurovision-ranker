@@ -7,7 +7,7 @@ import Dropdown from '../../Dropdown';
 import Checkbox from '../../Checkbox';
 import { updateQueryParams } from '../../../utilities/UrlUtil';
 import TooltipHelp from '../../TooltipHelp';
-import { useAppDispatch, useAppSelector } from '../../../utilities/hooks';
+import { useAppDispatch, useAppSelector } from '../../../hooks/stateHooks';
 import { CountryContestant } from '../../../data/CountryContestant';
 import { Vote } from '../../../data/Vote';
 

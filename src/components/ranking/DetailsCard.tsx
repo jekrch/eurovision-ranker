@@ -7,7 +7,7 @@ import { AppState } from '../../redux/store';
 import { voteCodeHasType } from '../../utilities/VoteProcessor';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAngleDoubleDown, faAngleDoubleUp, faAngleDown, faAngleUp } from '@fortawesome/free-solid-svg-icons';
-import { getCountryCategoryRankingsFromUrl } from '../../utilities/CategoryUtil';
+import { getContestantCategoryRankingsFromUrl, getCountryCategoryRankingsFromUrl } from '../../utilities/CategoryUtil';
 import { useAppDispatch, useAppSelector } from '../../hooks/stateHooks';
 
 export interface DetailsCardProps {
@@ -47,11 +47,12 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
   function getCategoryRankings() {
     if (!showTotalRank && !showComparison) return undefined;
 
-    return getCountryCategoryRankingsFromUrl(categories, country);
+    return getContestantCategoryRankingsFromUrl(categories, props.countryContestant);
   }
 
   const categoryRankings = getCategoryRankings();
 
+  console.log(categoryRankings)
   /**
    * Returns the difference between the provided category rank and the actualRank along 
    * with an up/down angle icon to represent the diff. 

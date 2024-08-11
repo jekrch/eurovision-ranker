@@ -220,7 +220,7 @@ export function convertRankingsStrToArray(
     isGlobalMode?: boolean
 ): string[] {
 
-    if (isGlobalMode) {
+    if (isGlobalMode || rankings.startsWith('>')) {
         // remove the leading '>' and split into 3-character chunks
         return rankings.startsWith('>') ? rankings.slice(1).match(/.{1,3}/g) || [] : [];
     }

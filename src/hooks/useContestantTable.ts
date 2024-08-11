@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import Papa from 'papaparse';
 import { useAppDispatch } from './stateHooks';
@@ -16,8 +16,10 @@ export const useContestantTable = () => {
     const { sortColumn, sortDirection, filters, pageSize, currentPage, entries, selectedContestants } = tableState;
     const [searchTerm, setSearchTerm] = useState('');
     const [showSelected, setShowSelected] = useState(false);
+    
     const prevSelectedContestantsRef = useRef<ContestantRow[]>([]);
     const prevRankedItemsRef = useRef<CountryContestant[]>([]);
+
 
     // fetch data and initialize selectedContestants
     useEffect(() => {
@@ -25,16 +27,12 @@ export const useContestantTable = () => {
 
         const fetchData = async () => {
             try {
-
                 let allEntries: ContestantRow[] = entries;
                 if (!entries?.length) {
                     const response = await fetch('/contestants.csv');
                     const text = await response.text();
-                    const allEntries: ContestantRow[] = parseCSV(text);
-                    console.log('FILL')
-                    dispatch(
-                        setEntries(allEntries)
-                    );
+                    allEntries = parseCSV(text);
+                    dispatch(setEntries(allEntries));
                 }
 
                 // initialize selectedContestants based on rankedItems
@@ -43,14 +41,13 @@ export const useContestantTable = () => {
                         rankedItems.map((item: CountryContestant) => item.uid)
                     );
                     const initialSelectedContestants = allEntries.filter((entry: any) => rankedItemsSet.has(entry.id));
-                    if (areContestantRowsEqual(initialSelectedContestants, selectedContestants)) {
-                        return;
+                    if (!areContestantRowsEqual(initialSelectedContestants, selectedContestants)) {
+                        dispatch(setSelectedContestants(initialSelectedContestants));
                     }
-                    console.log(initialSelectedContestants)
-                    dispatch(
-                        setSelectedContestants(initialSelectedContestants)
-                    );
                 }
+
+                // update URL parameters for main ranking and category rankings
+                updateRankingURLParams();
             } catch (error) {
                 console.error('Error fetching data:', error);
             }
@@ -58,7 +55,20 @@ export const useContestantTable = () => {
 
         fetchData();
     }, [globalSearch, entries.length, rankedItems, dispatch]);
+    
+    const updateRankingURLParams = useCallback(() => {
+        const mainRanking = rankedItems.map(item => item.uid).join('');
+        const params: { [key: string]: string } = { };
 
+        categories.forEach((_, index) => {
+            const categoryParam = `r${index + 1}`;
+            const categoryRanking = getUrlParam(categoryParam) || '';
+            params[categoryParam] = categoryRanking;
+        });
+
+        updateQueryParams(params);
+    }, [rankedItems, categories]);
+    
     // helper function to parse CSV
     const parseCSV = (csv: string): ContestantRow[] => {
         const parseResult = Papa.parse(csv, {
@@ -105,9 +115,9 @@ export const useContestantTable = () => {
         return true;
     };
 
+    
     useEffect(() => {
         const updateRankedItems = async () => {
-            // Check if selectedContestants has actually changed
             if (areContestantRowsEqual(prevSelectedContestantsRef.current, selectedContestants)) {
                 return;
             }
@@ -116,25 +126,24 @@ export const useContestantTable = () => {
 
             try {
                 const currentRankedItems = rankedItems || [];
-                const currentUids = new Set(currentRankedItems.map((item: CountryContestant) => item.uid));
-                const selectedUids = new Set(selectedContestants.map((contestant: ContestantRow) => contestant.id));
+                const currentUids = new Set(currentRankedItems.map(item => item.uid));
+                const selectedUids = new Set(selectedContestants.map(contestant => contestant.id));
 
                 const uidsToAdd = selectedContestants
-                    .filter((contestant: ContestantRow) => !currentUids.has(contestant.id))
-                    .map((contestant: ContestantRow) => contestant.id);
+                    .filter(contestant => !currentUids.has(contestant.id))
+                    .map(contestant => contestant.id);
 
                 const uidsToRemove = currentRankedItems
-                    .filter((item: CountryContestant) => !selectedUids.has(item.uid!))
-                    .map((item: CountryContestant) => item.uid);
+                    .filter(item => !selectedUids.has(item.uid!))
+                    .map(item => item.uid);
 
                 const newCountryContestants = await getCountryContestantsByUids(uidsToAdd, voteType);
 
                 const newRankedItems = [
-                    ...currentRankedItems.filter((item: CountryContestant) => !uidsToRemove.includes(item.uid)),
+                    ...currentRankedItems.filter(item => !uidsToRemove.includes(item.uid)),
                     ...newCountryContestants
                 ];
 
-                // Only dispatch if there's an actual change in rankedItems
                 if (!areRankedItemsEqual(newRankedItems, prevRankedItemsRef.current)) {
                     dispatch(setRankedItems(newRankedItems));
 
@@ -142,11 +151,9 @@ export const useContestantTable = () => {
                         activeCategory, categories, newRankedItems
                     );
 
-                    // Update the rankedItems ref after processing
                     prevRankedItemsRef.current = newRankedItems;
                 }
 
-                // Update the selectedContestants ref after processing
                 prevSelectedContestantsRef.current = selectedContestants;
             } catch (error) {
                 console.error('Error updating ranked items:', error);
@@ -154,7 +161,7 @@ export const useContestantTable = () => {
         };
 
         updateRankedItems();
-    }, [selectedContestants, activeCategory, categories, rankedItems]);
+    }, [selectedContestants, activeCategory, categories, rankedItems, dispatch]);
 
 
     // reset page and search term when switching views
@@ -211,6 +218,26 @@ export const useContestantTable = () => {
         currentPage * pageSize
     );
 
+    const updateCategoryRankings = useCallback((contestantId: string, isAdding: boolean) => {
+        categories.forEach((_, index) => {
+            const categoryParam = `r${index + 1}`;
+            let currentRanking = new URLSearchParams(window.location.search).get(categoryParam) || '';
+            if (!currentRanking.startsWith('>')) {
+                currentRanking = `>${currentRanking}`;
+            }
+
+            let updatedRanking: string;
+
+            if (isAdding) {
+                updatedRanking = currentRanking + contestantId;
+            } else {
+                updatedRanking = currentRanking.replace(contestantId, '');
+            }
+
+            updateQueryParams({ [categoryParam]: updatedRanking });
+        });
+    }, [categories]);
+    
     const handleSort = (column: string) => {
         if (column === 'country') {
             column = 'to_country';
@@ -231,13 +258,45 @@ export const useContestantTable = () => {
         dispatch(setTableCurrentPage(page));
     };
 
-    const handleToggleSelected = (id: string) => {
-        dispatch(toggleSelectedContestant(id));
-    };
+    const handleToggleSelected = useCallback((id: string) => {
+        const isSelected = selectedContestants.some(contestant => contestant.id === id);
+        let newSelectedContestants: ContestantRow[];
+
+        if (isSelected) {
+            newSelectedContestants = selectedContestants.filter(contestant => contestant.id !== id);
+            updateCategoryRankings(id, false); // Remove from category rankings
+        } else {
+            const contestantToAdd = tableState.entries.find(contestant => contestant.id === id);
+            if (contestantToAdd) {
+                newSelectedContestants = [...selectedContestants, contestantToAdd];
+                updateCategoryRankings(id, true); // Add to category rankings
+            } else {
+                return; // Contestant not found, do nothing
+            }
+        }
+
+        dispatch(setSelectedContestants(newSelectedContestants));
+        if (globalSearch) {
+            updateRankingURLParams();
+        }
+    }, [selectedContestants, tableState.entries, dispatch, updateCategoryRankings, globalSearch, updateRankingURLParams]);
+
 
     const updateGlobalSearch = (checked: boolean) => {
         updateQueryParams({ 'g': checked ? 't' : undefined });
         dispatch(setGlobalSearch(checked));
+
+        if (checked) {
+            // update URL parameters for rankings when globalSearch is enabled
+            updateRankingURLParams();
+        } else {
+            // clear ranking parameters when globalSearch is disabled
+            const params: { [key: string]: undefined } = { 'r': undefined };
+            categories.forEach((_, index) => {
+                params[`r${index + 1}`] = undefined;
+            });
+            updateQueryParams(params);
+        }
     };
 
     return {

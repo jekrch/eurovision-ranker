@@ -209,9 +209,14 @@ export function reorderByAllWeightedRankings(
     categoryRankings
   );
 
-  // Reorder the rankedItems based on the sorted countriesWithScores
+  // reorder the rankedItems based on the sorted countriesWithScores. Handle 3 letter global uids 
+  // differently than the shorter non-global ids
   const reorderedRankedItems = countriesWithScores.map(({ countryId }) =>
-    rankedItems.find((item) => item.country.id === countryId)
+    rankedItems.find(
+      (item) => countryId.length === 3 ? 
+        item.uid === countryId : 
+        item.country.id === countryId
+    )
   ).filter((item): item is CountryContestant => item !== undefined);
 
   return reorderedRankedItems;
@@ -362,6 +367,42 @@ export function getCountryCategoryRankingsFromUrl(
     if (ranking) {
       const rankedIds = convertRankingsStrToArray(ranking);
       const categoryRank = rankedIds.indexOf(country.id) + 1;
+      categoryRankings[category.name] = categoryRank;
+    }
+  });
+
+  return categoryRankings;
+}
+
+/**
+ * Returns a map of all of the countries category rankings (category name: rank)
+ * 
+ * @param categories 
+ * @param countryContestant 
+ * @returns 
+ */
+export function getContestantCategoryRankingsFromUrl(
+  categories: Category[],
+  countryContestant: CountryContestant
+) {
+  const params = new URLSearchParams(window.location.search);
+  const categoryRankings: { [key: string]: number; } = {};
+
+  categories.forEach((category, index) => {
+
+    const categoryParam = `r${index + 1}`;
+    const ranking = params.get(categoryParam);
+
+    if (ranking) {
+      const rankedIds = convertRankingsStrToArray(ranking);
+      let categoryRank;
+      
+      if (rankedIds?.[0].length === 3) {
+        categoryRank = rankedIds.indexOf(countryContestant?.contestant?.id ?? '') + 1;
+      } else {
+        categoryRank = rankedIds.indexOf(countryContestant.id ?? '') + 1;
+      }
+      
       categoryRankings[category.name] = categoryRank;
     }
   });

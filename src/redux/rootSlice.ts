@@ -43,8 +43,8 @@ const initialState: AppState = {
     showTotalRank: false,
     showComparison: false,
     tableState: {
-        sortColumn: '',
-        sortDirection: 'asc',
+        sortColumn: 'year',
+        sortDirection: 'desc',
         filters: {},
         pageSize: 10,
         currentPage: 1,

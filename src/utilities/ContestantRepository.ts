@@ -2,7 +2,7 @@ import { Contestant } from "../data/Contestant";
 import { CountryContestant } from "../data/CountryContestant";
 import { countries } from '../data/Countries';
 import Papa from 'papaparse';
-import { assignVotesByCode, voteCodeHasSourceCountry } from "./VoteProcessor";
+import { assignVotesByCode, assignVotesByContestants, voteCodeHasSourceCountry } from "./VoteProcessor";
 import { cachedYear, initialCountryContestantCache } from "../data/InitialContestants";
 import { SongDetails } from "../data/SongDetails";
 import { fetchContestantCsv } from "./CsvCache";
@@ -39,10 +39,13 @@ export async function fetchAndProcessCountryContestants(
     year
   );
 
-  return await mapContestantsWithVotes(contestants, year, voteCode);
+  return await mapContestantsWithVotes(contestants, voteCode);
 }
 
-async function mapContestantsWithVotes(contestants: Contestant[], year?: string, voteCode?: string) {
+async function mapContestantsWithVotes(
+  contestants: Contestant[], 
+  voteCode?: string
+) {
 
   let countryContestants: CountryContestant[] = contestants.map(contestant => {
 
@@ -86,11 +89,16 @@ async function mapContestantsWithVotes(contestants: Contestant[], year?: string,
   }).sort((a, b) => a.country.name.localeCompare(b.country.name));
 
   // add votes if requested
-  countryContestants = await assignVotesByCode(
-    countryContestants, voteCode ?? ''
-  );
+  // countryContestants = await assignVotesByCode(
+  //   countryContestants, voteCode ?? ''
+  // );
 
-  return countryContestants;
+  let newCountryContestants = await assignVotesByContestants(
+    countryContestants, 
+    voteCode ?? ''
+  )
+
+  return newCountryContestants;
 }
 
 function fetchCountryByKey(
@@ -180,6 +188,13 @@ function createContestant(row: any): Contestant {
     finalsRank: row.place_final ?? row.place_contest,
     semiFinalsRank: row.place_sf,
     year: row.year,
+    votes: {
+      round: 'Final',
+      year: row.year,
+      totalPoints: row.points_final,
+      telePoints: row.points_tele_final,
+      juryPoints: row.points_jury_final
+    }
   };
 }
 
@@ -268,7 +283,7 @@ export async function getCountryContestantsByUids(
 ): Promise<CountryContestant[]> {
   const contestants = await getContestantsByUids(uids);
   const countryContestants: CountryContestant[] = await mapContestantsWithVotes(
-    contestants, undefined, voteType
+    contestants, voteType
   );
   
   // create a map for quick lookup

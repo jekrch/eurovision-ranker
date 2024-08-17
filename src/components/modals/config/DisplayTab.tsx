@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { AppState } from '../../../redux/store';
 import { setTheme, setVote, setContestants, setShowComparison, setRankedItems, assignVotesToContestants } from '../../../redux/rootSlice';
-import { assignVotesByCode, fetchVotesByCode, updateVoteTypeCode, voteCodeHasType } from '../../../utilities/VoteProcessor';
+import { assignVotesByCode, assignVotesByContestants, fetchVotesByCode, updateVoteTypeCode, voteCodeHasType } from '../../../utilities/VoteProcessor';
 import { countries } from '../../../data/Countries';
 import Dropdown from '../../Dropdown';
 import Checkbox from '../../Checkbox';
@@ -19,6 +19,7 @@ const DisplayTab: React.FC = () => {
     const contestants = useAppSelector((state: AppState) => state.contestants);
     const rankedItems = useAppSelector((state: AppState) => state.rankedItems);
     const year = useAppSelector((state: AppState) => state.year);
+    const globalSearch = useAppSelector((state: AppState) => state.globalSearch);
     const [themeSelection, setThemeSelection] = useState('None');
 
     // Get vote source option based on vote code
@@ -112,11 +113,9 @@ const DisplayTab: React.FC = () => {
 
             let newVoteCode = `f-${voteTypeCode}-${countryCode}`;
 
-            let votes: Vote[] = await fetchVotesByCode(newVoteCode, year);
-            
-            dispatch(
-                assignVotesToContestants(votes)
-            )
+            await resetRankedItemVotes(
+                rankedItems, newVoteCode
+            );
 
             if (newVoteCode !== vote) {
                 updateQueryParams({ v: newVoteCode });
@@ -128,6 +127,25 @@ const DisplayTab: React.FC = () => {
         }
         handleVoteCountryUpdate();
     }, [displayVoteSource]);
+
+    async function resetRankedItemVotes(
+        rankedItems: CountryContestant[], newVoteCode: string
+    ) {
+        if (globalSearch) {
+            let newRankedItems = await assignVotesByContestants(
+                rankedItems, newVoteCode
+            );
+            dispatch(
+                setRankedItems(newRankedItems)
+            );
+        } else {
+            let votes: Vote[] = await fetchVotesByCode(newVoteCode, year);
+    
+            dispatch(
+                assignVotesToContestants(votes)
+            );
+        }
+    }
 
     return (
         <div className="mb-0">
@@ -221,3 +239,4 @@ const DisplayTab: React.FC = () => {
 };
 
 export default DisplayTab;
+

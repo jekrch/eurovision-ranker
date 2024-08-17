@@ -18,6 +18,7 @@ export function fetchVotesForYear(
   year: string,
   countryKey?: string,
   round?: string,
+  toCountryKey?: string
 ): Promise<Vote[]> {
   year = sanitizeYear(year);
   countryKey = countryKey?.toLowerCase();
@@ -25,8 +26,12 @@ export function fetchVotesForYear(
   if (round)
     round = convertRoundToShortName(round);
 
-  const cacheKey = `${year}-${countryKey}-${round}`;
+  let cacheKey =`${year}-${countryKey}-${round}`
+  
+  if (toCountryKey)
+    cacheKey = `${year}-${countryKey}-${round}-${toCountryKey}`;
 
+  console.log(cacheKey);
   if (voteCache[cacheKey]) {
     return Promise.resolve(voteCache[cacheKey]);
   }
@@ -44,12 +49,16 @@ export function fetchVotesForYear(
                 (row: any) =>
                   row.year === year &&
                   (
-                    !countryKey ||
+                    !countryKey?.length ||
                     row.from_country_id === countryKey
                   ) &&
                   (
-                    !round ||
+                    !round?.length ||
                     row.round === round
+                  ) &&
+                  (
+                    !toCountryKey?.length || 
+                    row.to_country_id === toCountryKey
                   )
               ).map((row: any) => ({
                 year: row.year,
@@ -73,6 +82,7 @@ export function fetchVotesForYear(
 
 /**
  * fetches votes for multiple years and countries
+ * 
  * @param yearCountryPairs - array of objects containing year and country key
  * @param round - optional round filter
  */

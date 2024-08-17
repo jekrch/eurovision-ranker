@@ -83,7 +83,9 @@ export async function processAndUpdateRankings(
             voteCode ?? ''
         );
 
-        dispatch(setContestants(yearContestants));
+        dispatch(
+            setContestants(yearContestants)
+        );
     }
 
     if (rankingsString) {
@@ -91,7 +93,9 @@ export async function processAndUpdateRankings(
             rankingsString, yearContestants, isGlobalMode
         );
 
-        dispatch(setRankedItems(rankedCountries));
+        dispatch(
+            setRankedItems(rankedCountries)
+        );
 
         if (isGlobalMode) {
             dispatch(setUnrankedItems([]));
@@ -139,7 +143,10 @@ export async function orderContestantsByRankingStr(
     console.log(rankedIds)
 
     if (isGlobalMode) {
-        const rankedCountries: CountryContestant[] = await getCountryContestantsByUids(rankedIds, voteCode);
+        const rankedCountries: CountryContestant[] = await getCountryContestantsByUids(
+            rankedIds, 
+            voteCode
+        );
         return { rankedIds, rankedCountries }
     }
 

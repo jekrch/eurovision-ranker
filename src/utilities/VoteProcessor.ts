@@ -52,12 +52,37 @@ export async function sortByVotes(
     const voteTypeFieldName: string = getVoteTypeFieldName(voteType);
 
     // Ensure round is a valid round name, not a vote type
+    const votedContestants = await assignVotesByContestant(countryContestants, round, fromCountryKey);
+
+    // sorting country contestants by votes in descending order
+    votedContestants.sort(
+        (a, b) => (getContestantVoteFieldValue(b.contestant?.votes, voteTypeFieldName)) -
+            (getContestantVoteFieldValue(a.contestant?.votes, voteTypeFieldName))
+    );
+
+    // if there is a source country, filter out 0 votes, otherwise, keep them
+    if (fromCountryKey?.length) {
+        return votedContestants.filter(
+            v => getContestantVoteFieldValue(v.contestant?.votes, voteTypeFieldName) > 0
+        );
+    } else {
+        return votedContestants;
+    }
+}
+
+async function assignVotesByContestant(
+    countryContestants: CountryContestant[], 
+    round: string, 
+    fromCountryKey: string | undefined
+) {
     const validRound = convertToValidRound(round);
 
     // get unique years from countryContestants, excluding those without a contestant or year
-    const years = new Set(countryContestants
-        .filter(cc => cc.contestant?.year)
-        .map(cc => cc.contestant!.year));
+    const years = new Set(
+        countryContestants
+            .filter(cc => cc.contestant?.year)
+            .map(cc => cc.contestant!.year)
+    );
 
     let votes: Vote[];
 
@@ -78,25 +103,11 @@ export async function sortByVotes(
     } else {
         // use the existing method for a single year
         const year = years.size === 1 ? sanitizeYear(Array.from(years)[0]!) : '';
+        //console.log(fromCountryKey)
         votes = await getVotes(year, fromCountryKey, validRound);
     }
 
-    const votedContestants = assignVotes(countryContestants, votes);
-
-    // sorting country contestants by votes in descending order
-    votedContestants.sort(
-        (a, b) => (getContestantVoteFieldValue(b.contestant?.votes, voteTypeFieldName)) -
-            (getContestantVoteFieldValue(a.contestant?.votes, voteTypeFieldName))
-    );
-
-    // if there is a source country, filter out 0 votes, otherwise, keep them
-    if (fromCountryKey?.length) {
-        return votedContestants.filter(
-            v => getContestantVoteFieldValue(v.contestant?.votes, voteTypeFieldName) > 0
-        );
-    } else {
-        return votedContestants;
-    }
+    return assignVotes(countryContestants, votes);
 }
 
 /**
@@ -251,8 +262,8 @@ export async function assignVotesByCode(
 
         votes = await fetchVotesForYearsAndCountries(yearCountryPairs, round);
 
-        console.log('getting votes by years');
-        console.log(votes)
+        //console.log('getting votes by years');
+        //console.log(votes)
         if (fromCountryKey) {
             votes = votes.filter(v => v.fromCountryKey === fromCountryKey);
         }
@@ -270,81 +281,20 @@ export async function assignVotesByContestants(
     voteCode: string
 ): Promise<CountryContestant[]> {
 
-    //let newCountryContestants = clone(countryContestants)
-
     let { fromCountryKey, round } = getVoteCodeSettings(voteCode);
 
-    if (!fromCountryKey?.length && round == 'Final') {
-        console.log('use default');
-        return countryContestants;
-    }
+    // console.log(fromCountryKey);
+    // console.log(round)
+    // if (!fromCountryKey?.length && round == 'final') {
+    //     console.log('use default');
+    //     return countryContestants;
+    // }
 
-    // convert string to number, return undefined for empty strings
-    const parseVoteValue = (value: string | undefined): number | undefined => {
-        if (value === undefined || value === '') return undefined;
-        const num = Number(value);
-        return isNaN(num) ? undefined : num;
-    };
-
-    // calculate the sum of points for each voting category
-    const calculatePoints = (
-        votes: Vote[],
-        getPoints: (vote: Vote) => any | undefined
-    ): number | undefined => {
-
-        const validPoints = votes.map(
-            vote => parseVoteValue(
-                getPoints(vote)
-            )
-        ).filter(
-            (point): point is number => point !== undefined
-        );
-        return validPoints.length > 0 ? validPoints.reduce(
-            (sum, points) => sum + points, 0
-        ) : undefined;
-    };
-
-    const updatedCountryContestants = await Promise.all(
-        countryContestants.map(
-            async (countryContestant: CountryContestant) => {
-
-                if (countryContestant.contestant) {
-
-                    let votes: Vote[] = await fetchVotesForYear(
-                        countryContestant.contestant?.year!,
-                        fromCountryKey,
-                        round,
-                        countryContestant.country.key!
-                    );
-
-                    // console.log(countryContestant)
-                    // console.log(fromCountryKey)
-                    // console.log(countryContestant.contestant?.year!)
-                    // console.log(countryContestant.country.key!)
-                    // console.log(votes)
-
-                    let contestantVotes: ContestantVotes = {
-                        round: round,
-                        year: countryContestant.contestant?.year!,
-                        totalPoints: calculatePoints(votes, vote => vote.totalPoints),
-                        juryPoints: calculatePoints(votes, vote => vote.juryPoints),
-                        telePoints: calculatePoints(votes, vote => vote.telePoints),
-                    }
-
-                    const updatedContestant = {
-                        ...countryContestant.contestant,
-                        votes: contestantVotes,
-                    };
-                    return {
-                        ...countryContestant,
-                        contestant: updatedContestant,
-                    };
-                } else {
-                    return countryContestant;
-                }
-            }));
-
-    return updatedCountryContestants;
+    return await assignVotesByContestant(
+        countryContestants, 
+        round, 
+        fromCountryKey
+    );
 }
 
 function getVoteCodeSettings(voteCode: string) {

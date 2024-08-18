@@ -30,6 +30,7 @@ const AnalyzeTab: React.FC = () => {
   const [mostDissimilarComparisons, setMostDissimilarComparisons] = useState<RankingComparison[]>([]);
   const [codeCountryNameMap, setCodeCountryNameMap] = useState<Map<string, Country[]>>(new Map());
   const showComparison = useAppSelector((state: AppState) => state.showComparison);
+  const globalSearch = useAppSelector((state: AppState) => state.globalSearch);
 
   /**
    * Get all country rank codes for the selected year and vote type
@@ -39,14 +40,19 @@ const AnalyzeTab: React.FC = () => {
    * @param voteYear 
    * @returns 
    */
-  const getAllCountryRankCodes = async (voteType: string, round: string, voteYear: string) => {
+  const getAllCountryRankCodes = async (globalMode: boolean, round: string, voteYear: string) => {
     const codeCountryNameMap = new Map<string, Country[]>();
 
     const countryContestants = await fetchCountryContestantsByYear(voteYear, '');
 
     for (const country of countries) {
-      const concatenatedIds = await getRankingIds(voteYear, voteType, 'final', countryContestants, country.key);
+      
+      const concatenatedIds = await getRankingIds(
+        globalMode, voteType, 'final', countryContestants, country.key
+      );
 
+      console.log(globalMode)
+      console.log(concatenatedIds)
       if (codeCountryNameMap.has(concatenatedIds)) {
         codeCountryNameMap.get(concatenatedIds)?.push(country);
       } else {
@@ -68,7 +74,7 @@ const AnalyzeTab: React.FC = () => {
    * @returns 
    */
   const getRankingIds = async (
-    voteYear: string,
+    globalMode: boolean,
     voteType: string,
     round: string,
     countryContestants: CountryContestant[],
@@ -78,16 +84,21 @@ const AnalyzeTab: React.FC = () => {
       countryContestants, voteType, round, sourceCountryKey
     );
 
-    const sortedContestants = countryContestants.filter((cc) => cc?.contestant?.votes !== undefined);
+    const sortedContestants = countryContestants.filter(
+      (cc) => cc?.contestant?.votes !== undefined
+    );
 
-    return sortedContestants.map((cc) => cc.id).join('');
+    return sortedContestants.map((cc) => {
+        return globalMode ? cc.uid : cc?.id;
+      }
+    ).join('');
   };
 
   // Find the most similar vote by country for the current ranking
   const findMostSimilarVoteByCountry = async () => {
     const extractedParams = getUrlParams(activeCategory);
     const currentRankingCode = extractedParams.rankings;
-    const codeCountryMap: Map<string, Country[]> = await getAllCountryRankCodes(voteType, 'final', year);
+    const codeCountryMap: Map<string, Country[]> = await getAllCountryRankCodes(globalSearch, 'final', year);
     setCodeCountryNameMap(codeCountryMap);
     const codeArrays = Array.from(codeCountryMap.keys());
     const similarComparisons = await findMostSimilarLists(year, currentRankingCode!, codeArrays);
@@ -98,7 +109,7 @@ const AnalyzeTab: React.FC = () => {
   const findMostDissimilarVoteByCountry = async () => {
     const extractedParams = getUrlParams(activeCategory);
     const currentRankingCode = extractedParams.rankings;
-    const codeCountryMap: Map<string, Country[]> = await getAllCountryRankCodes(voteType, 'final', year);
+    const codeCountryMap: Map<string, Country[]> = await getAllCountryRankCodes(globalSearch, 'final', year);
     setCodeCountryNameMap(codeCountryMap);
     const codeArrays = Array.from(codeCountryMap.keys());
     const dissimilarComparisons = await findMostDissimilarLists(year, currentRankingCode!, codeArrays);

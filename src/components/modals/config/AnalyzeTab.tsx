@@ -46,13 +46,13 @@ const AnalyzeTab: React.FC = () => {
     const countryContestants = await fetchCountryContestantsByYear(voteYear, '');
 
     for (const country of countries) {
-      
+
       const concatenatedIds = await getRankingIds(
         globalMode, voteType, 'final', countryContestants, country.key
       );
 
-      console.log(globalMode)
-      console.log(concatenatedIds)
+      //console.log(globalMode)
+      //console.log(concatenatedIds)
       if (codeCountryNameMap.has(concatenatedIds)) {
         codeCountryNameMap.get(concatenatedIds)?.push(country);
       } else {

@@ -7,6 +7,8 @@ import RankingsTab from './RankingsTab';
 import DisplayTab from './DisplayTab';
 import AnalyzeTab from './AnalyzeTab';
 import TabButton from '../../TabButton';
+import { AppState } from '../../../redux/store';
+import { useAppSelector } from '../../../hooks/stateHooks';
 
 type ConfigModalProps = {
     isOpen: boolean;
@@ -25,6 +27,12 @@ type ConfigModalProps = {
  */
 const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
     const [activeTab, setActiveTab] = useState(props.tab);
+    const globalSearch = useAppSelector((state: AppState) => state.globalSearch);
+    const rankedItems = useAppSelector((state: AppState) => state.rankedItems);
+    const uniqueRankedYears = new Set(
+        rankedItems.map(r => r.contestant?.year).filter(Boolean)
+    );
+    const hasMultipleYears = uniqueRankedYears.size > 1;
 
     useEffect(() => {
         if (props.isOpen)
@@ -64,13 +72,15 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
                         icon={faSlidersH}
                         label="Categories"
                     />
-
-                    <TabButton
-                        isActive={activeTab === 'analyze'}
-                        onClick={() => setActiveTab('analyze')}
-                        icon={faChartLine}
-                        label="Analyze"
-                    />
+                    
+                    {!hasMultipleYears &&
+                        <TabButton
+                            isActive={activeTab === 'analyze'}
+                            onClick={() => setActiveTab('analyze')}
+                            icon={faChartLine}
+                            label="Analyze"
+                        />
+                    }
                 </ul>
             </div>
 

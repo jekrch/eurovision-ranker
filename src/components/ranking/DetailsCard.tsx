@@ -52,7 +52,7 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
 
   const categoryRankings = getCategoryRankings();
 
-  console.log(categoryRankings)
+  //console.log(categoryRankings)
   /**
    * Returns the difference between the provided category rank and the actualRank along 
    * with an up/down angle icon to represent the diff. 

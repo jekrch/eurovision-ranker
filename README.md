@@ -56,7 +56,6 @@ Multiple rankings can be created by category with different weights given to eac
 
 ### Running the Application
 
-Start the development server:
 ```
 npm run start
 ```
@@ -65,7 +64,6 @@ The application will be available at `http://localhost:3000`.
 
 ### Running Tests
 
-Execute the test suite:
 ```
 npm run test
 ```

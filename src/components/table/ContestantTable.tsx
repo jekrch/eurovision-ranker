@@ -9,12 +9,14 @@ import Pagination from './Pagination';
 import { Switch } from '../Switch';
 import IconButton from '../IconButton';
 import { setShowUnranked } from '../../redux/rootSlice';
-import { useAppDispatch } from '../../hooks/stateHooks';
+import { useAppDispatch, useAppSelector } from '../../hooks/stateHooks';
 import classNames from 'classnames';
 
 const ContestantTable: React.FC = () => {
     const dispatch = useAppDispatch();
-    const { showUnranked, rankedItems, tableState } = useSelector((state: AppState) => state);
+    const showUnranked = useAppSelector((state: AppState) => state.showUnranked);
+    const rankedItems = useAppSelector((state: AppState) => state.rankedItems);
+    const tableState = useAppSelector((state: AppState) => state.tableState);
     const { sortColumn, sortDirection } = tableState;
 
     const {

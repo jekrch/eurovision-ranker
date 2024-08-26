@@ -1,19 +1,26 @@
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import Papa from 'papaparse';
-import { useAppDispatch } from './stateHooks';
+import { useAppDispatch, useAppSelector } from './stateHooks';
 import { ContestantRow } from '../components/table/tableTypes';
 import { setEntries, setGlobalSearch, setRankedItems, setSelectedContestants, setTableCurrentPage, toggleSelectedContestant } from '../redux/rootSlice';
 import { CountryContestant } from '../data/CountryContestant';
-import { getUrlParam, updateQueryParams, updateUrlFromRankedItems } from '../utilities/UrlUtil';
+import { convertRankingsStrToArray, getUrlParam, updateQueryParams, updateUrlFromRankedItems } from '../utilities/UrlUtil';
 import { getCountryContestantsByUids } from '../utilities/ContestantRepository';
 import { changePageSize, filterTable, sortTable } from '../redux/tableSlice';
 import { AppState } from '../redux/store';
+import { convertRankingUrlParamsByMode } from '../utilities/ContestantUtil';
 
 export const useContestantTable = () => {
     const dispatch = useAppDispatch();
-    const { tableState, showUnranked, rankedItems, globalSearch, categories, activeCategory } = useSelector((state: AppState) => state);
-    const { sortColumn, sortDirection, filters, pageSize, currentPage, entries, selectedContestants } = tableState;
+    const tableState = useAppSelector((state: AppState) => state.tableState);
+    const rankedItems = useAppSelector((state: AppState) => state.rankedItems);
+    const globalSearch = useAppSelector((state: AppState) => state.globalSearch);
+    const categories = useAppSelector((state: AppState) => state.categories);
+    const activeCategory = useAppSelector((state: AppState) => state.activeCategory);
+    
+    const { sortColumn, sortDirection, pageSize, currentPage, entries, selectedContestants } = tableState;
+    
     const [searchTerm, setSearchTerm] = useState('');
     const [showSelected, setShowSelected] = useState(false);
     
@@ -28,6 +35,7 @@ export const useContestantTable = () => {
         const fetchData = async () => {
             try {
                 let allEntries: ContestantRow[] = entries;
+                
                 if (!entries?.length) {
                     const response = await fetch('/contestants.csv');
                     const text = await response.text();
@@ -40,14 +48,24 @@ export const useContestantTable = () => {
                     const rankedItemsSet = new Set(
                         rankedItems.map((item: CountryContestant) => item.uid)
                     );
-                    const initialSelectedContestants = allEntries.filter((entry: any) => rankedItemsSet.has(entry.id));
-                    if (!areContestantRowsEqual(initialSelectedContestants, selectedContestants)) {
-                        dispatch(setSelectedContestants(initialSelectedContestants));
+
+                    const initialSelectedContestants = allEntries.filter(
+                        (entry: any) => rankedItemsSet.has(entry.id)
+                    );
+
+                    if (
+                        !areContestantRowsEqual(
+                            initialSelectedContestants, 
+                            selectedContestants)
+                    ) {
+                        dispatch(
+                            setSelectedContestants(initialSelectedContestants)
+                        );
                     }
                 }
 
                 // update URL parameters for main ranking and category rankings
-                updateRankingURLParams();
+                convertRankingURLParams();
             } catch (error) {
                 console.error('Error fetching data:', error);
             }
@@ -69,6 +87,12 @@ export const useContestantTable = () => {
         updateQueryParams(params);
     }, [rankedItems, categories]);
     
+    const convertRankingURLParams = useCallback(() => {
+        convertRankingUrlParamsByMode(
+            categories, globalSearch, rankedItems
+        );
+    }, [globalSearch, rankedItems, categories]);
+
     // helper function to parse CSV
     const parseCSV = (csv: string): ContestantRow[] => {
         const parseResult = Papa.parse(csv, {
@@ -169,7 +193,7 @@ export const useContestantTable = () => {
         dispatch(setTableCurrentPage(1));
         setSearchTerm('');
     }, [showSelected, dispatch]);
-
+        
     const sortedAndFilteredContestants = useMemo(() => {
         const tableRows = showSelected ? selectedContestants : entries;
 
@@ -275,28 +299,23 @@ export const useContestantTable = () => {
             }
         }
 
-        dispatch(setSelectedContestants(newSelectedContestants));
+        dispatch(
+            setSelectedContestants(newSelectedContestants)
+        );
+
         if (globalSearch) {
             updateRankingURLParams();
         }
-    }, [selectedContestants, tableState.entries, dispatch, updateCategoryRankings, globalSearch, updateRankingURLParams]);
+    }, [selectedContestants, tableState.entries, dispatch, updateCategoryRankings, globalSearch, updateRankingURLParams, convertRankingURLParams]);
 
 
     const updateGlobalSearch = (checked: boolean) => {
         updateQueryParams({ 'g': checked ? 't' : undefined });
-        dispatch(setGlobalSearch(checked));
+        dispatch(
+            setGlobalSearch(checked)
+        );
 
-        if (checked) {
-            // update URL parameters for rankings when globalSearch is enabled
-            updateRankingURLParams();
-        } else {
-            // clear ranking parameters when globalSearch is disabled
-            const params: { [key: string]: undefined } = { 'r': undefined };
-            categories.forEach((_, index) => {
-                params[`r${index + 1}`] = undefined;
-            });
-            updateQueryParams(params);
-        }
+        convertRankingURLParams();
     };
 
     return {
@@ -315,6 +334,7 @@ export const useContestantTable = () => {
         currentPage,
         totalPages,
         displayedContestants,
-        selectedContestants
+        selectedContestants,
+        convertRankingURLParams
     };
 };

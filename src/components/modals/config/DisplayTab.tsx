@@ -16,7 +16,6 @@ const DisplayTab: React.FC = () => {
     const vote = useAppSelector((state: AppState) => state.vote);
     const theme = useAppSelector((state: AppState) => state.theme);
     const showComparison = useAppSelector((state: AppState) => state.showComparison);
-    const contestants = useAppSelector((state: AppState) => state.contestants);
     const rankedItems = useAppSelector((state: AppState) => state.rankedItems);
     const year = useAppSelector((state: AppState) => state.year);
     const globalSearch = useAppSelector((state: AppState) => state.globalSearch);

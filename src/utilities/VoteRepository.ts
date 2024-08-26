@@ -31,7 +31,6 @@ export function fetchVotesForYear(
   if (toCountryKey)
     cacheKey = `${year}-${countryKey}-${round}-${toCountryKey}`;
 
-  console.log(cacheKey);
   if (voteCache[cacheKey]) {
     return Promise.resolve(voteCache[cacheKey]);
   }

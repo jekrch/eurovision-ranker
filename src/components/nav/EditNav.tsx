@@ -1,17 +1,15 @@
 import React, { SetStateAction } from 'react';
 import { faArrowRight, faTrashAlt, faSquare, faCheckSquare, faPenAlt } from '@fortawesome/free-solid-svg-icons';
 import classNames from 'classnames';
-import { CountryContestant } from '../../data/CountryContestant';
 import IconButton from '../IconButton';
 import { AppDispatch, AppState } from '../../redux/store';
-import { setIsDeleteMode, setContestants, setRankedItems, setUnrankedItems, setSelectedContestants } from '../../redux/rootSlice';
-import { fetchCountryContestantsByYear } from '../../utilities/ContestantRepository';
-import { clearAllRankingParams, updateQueryParams } from '../../utilities/UrlUtil';
+import { setIsDeleteMode, setRankedItems, setUnrankedItems } from '../../redux/rootSlice';
 import { useAppDispatch, useAppSelector } from '../../hooks/stateHooks';
+import { useResetRanking } from '../../hooks/useResetRanking';
+import { useRefreshUrl } from '../../hooks/useRefreshUrl';
 
 type EditNavProps = {
     setNameModalShow: React.Dispatch<SetStateAction<boolean>>;
-    setRefreshUrl: React.Dispatch<SetStateAction<number>>;
 };
 
 /**
@@ -21,7 +19,7 @@ type EditNavProps = {
  * @param param0 
  * @returns 
  */
-const EditNav: React.FC<EditNavProps> = ({ setNameModalShow, setRefreshUrl }) => {
+const EditNav: React.FC<EditNavProps> = ({ setNameModalShow }) => {
     const dispatch: AppDispatch = useAppDispatch();
     const year = useAppSelector((state: AppState) => state.year);
     const rankedItems = useAppSelector((state: AppState) => state.rankedItems);
@@ -30,35 +28,10 @@ const EditNav: React.FC<EditNavProps> = ({ setNameModalShow, setRefreshUrl }) =>
     const isDeleteMode = useAppSelector((state: AppState) => state.isDeleteMode);
     const categories = useAppSelector((state: AppState) => state.categories);
     const globalSearch = useAppSelector((state: AppState) => state.globalSearch);
+    const resetRanking = useResetRanking();
+    const refreshUrl = useRefreshUrl();
 
-    /**
-   * Clear rankedItems and fill unrankedItems with the relevant year's contestants
-   */
-    async function resetRanking() {
-        let yearContestants: CountryContestant[] = await fetchCountryContestantsByYear(
-            year, ''
-        );
-
-        dispatch(
-            setContestants(yearContestants)
-        );
-
-        dispatch(
-            setUnrankedItems(yearContestants)
-        );
-
-        dispatch(
-            setRankedItems([])
-        );
-
-        dispatch(
-            setSelectedContestants([])
-        );
-
-        clearAllRankingParams(categories);
-        setRefreshUrl(Math.random());
-    }
-
+    
     /**
      * Add all remaining unranked items to the ranked array
      */
@@ -85,7 +58,7 @@ const EditNav: React.FC<EditNavProps> = ({ setNameModalShow, setRefreshUrl }) =>
             window.history.replaceState(null, '', newUrl);
         }
     
-        setRefreshUrl(Math.random());
+        refreshUrl();
     }
 
     return (

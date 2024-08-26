@@ -74,7 +74,7 @@ export async function processAndUpdateRankings(
     dispatch: AppDispatch
 ): Promise<string[] | undefined> {
     const isGlobalMode = globalMode === 't';
-    console.log(isGlobalMode ? 'in global mode' : 'in normal mode');
+    //console.log(isGlobalMode ? 'in global mode' : 'in normal mode');
 
     let yearContestants;
     if (!isGlobalMode) {
@@ -140,7 +140,6 @@ export async function orderContestantsByRankingStr(
     voteCode?: string
 ) {
     const rankedIds = convertRankingsStrToArray(rankings, isGlobalMode);
-    console.log(rankedIds)
 
     if (isGlobalMode) {
         const rankedCountries: CountryContestant[] = await getCountryContestantsByUids(
@@ -172,7 +171,7 @@ export async function orderContestantsByRankingStr(
 
 export function urlHasRankings(activeCategory: number | undefined) {
     const extractedParams = getUrlParams(activeCategory);
-    return extractedParams.rankings?.length;
+    return extractedParams.rankings?.replace('>', '')?.length;
 }
 
 /**
@@ -308,7 +307,7 @@ export const updateUrlFromRankedItems = async (
     isGlobalMode: boolean = urlParamHasValue('g', 't')
 ) => {
     const encodedRankings = encodeRankingsToURL(rankedItems, isGlobalMode);
-    console.log(encodedRankings)
+    //console.log(encodedRankings)
     if (categories?.length > 0 && activeCategory !== undefined) {
         updateQueryParams({ [`r${activeCategory + 1}`]: encodedRankings });
     } else {

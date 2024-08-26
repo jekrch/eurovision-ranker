@@ -1,8 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import TooltipHelp from '../TooltipHelp';
 import { Switch } from '../Switch';
+import GlobalConfirmationModal from '../modals/GlobalConfirmationModal';
+import { useRefreshUrl } from '../../hooks/useRefreshUrl';
+import { AppDispatch, AppState } from '../../redux/store';
+import { urlHasRankings } from '../../utilities/UrlUtil';
+import { useResetRanking } from '../../hooks/useResetRanking';
+import { useAppDispatch, useAppSelector } from '../../hooks/stateHooks';
+import { getDistinctRankedYears } from '../../utilities/ContestantUtil';
+import { setYear } from '../../redux/rootSlice';
+import { useConvertRankParams } from '../../hooks/useConvertRankParams';
 
 interface SearchBarProps {
     searchTerm: string;
@@ -17,6 +26,49 @@ const SearchBar: React.FC<SearchBarProps> = ({
     globalSearch,
     updateGlobalSearch
 }) => {
+
+    const dispatch: AppDispatch = useAppDispatch();
+    const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
+    const activeCategory = useAppSelector((state: AppState) => state.activeCategory);
+    const rankedItems = useAppSelector((state: AppState) => state.rankedItems);
+    const resetRanking = useResetRanking();
+    const refreshUrl = useRefreshUrl();
+    const convertRankParams = useConvertRankParams();
+    
+    const confirmAdvancedMode = (checked: boolean) => {
+        if (!checked) {
+            if (
+                urlHasRankings(activeCategory)
+            ) {
+
+                const rankedYears = getDistinctRankedYears(rankedItems);
+
+                if (rankedYears?.length == 1) {
+                    dispatch(setYear(rankedYears[0]));
+                    updateGlobalSearch(false);
+                    convertRankParams(false);
+                    refreshUrl();
+                                        
+                } else {
+                    setIsConfirmationOpen(true);
+                }
+                
+            } else {
+                resetRanking();
+                updateGlobalSearch(false);
+                convertRankParams(false);
+            }
+        } else {
+            updateGlobalSearch(checked);
+        }
+    }
+
+    const handleDisableGlobalConfirm = () => {
+        resetRanking();
+        updateGlobalSearch(false);
+        convertRankParams(false);
+    };
+
     return (
         <div className="w-full sm:w-auto flex-grow sm:flex-grow-0 flex items-center">
             <TooltipHelp
@@ -43,9 +95,15 @@ const SearchBar: React.FC<SearchBarProps> = ({
                     className="items-center align-middle"
                     labelClassName="text-base text-slate-400"
                     checked={globalSearch}
-                    setChecked={updateGlobalSearch}
+                    setChecked={confirmAdvancedMode}
                 />
             </div>
+            <GlobalConfirmationModal
+                isOpen={isConfirmationOpen}
+                onClose={() => setIsConfirmationOpen(false)}
+                onConfirm={handleDisableGlobalConfirm}
+                message={`Are you sure you want to turn off advanced global search mode? \n\nYour current selections will be cleared, since they contain contestants from multiple years.`}
+            />
         </div>
     );
 };

@@ -449,7 +449,6 @@ const App: React.FC = () => {
           <div className={`edit-nav-container ${(!showOverlay || isOverlayExit) && 'slide-up-animation'}`}>
             <EditNav
               setNameModalShow={setNameModalShow}
-              setRefreshUrl={setRefreshUrl}
             />
           </div>
         }

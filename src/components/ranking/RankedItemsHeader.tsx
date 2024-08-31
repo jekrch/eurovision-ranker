@@ -28,6 +28,7 @@ const RankedItemsHeader: React.FC<IRankedItemsHeaderProps> = ({
     const dispatch: AppDispatch = useAppDispatch();
     const year = useAppSelector((state: AppState) => state.year);
     const name = useAppSelector((state: AppState) => state.name);
+    const globalSearch = useAppSelector((state: AppState) => state.globalSearch);
     const rankedItems = useAppSelector((state: AppState) => state.rankedItems);
     const showTotalRank = useAppSelector((state: AppState) => state.showTotalRank);
     const categories = useAppSelector((state: AppState) => state.categories);
@@ -88,7 +89,7 @@ const RankedItemsHeader: React.FC<IRankedItemsHeaderProps> = ({
                     )}
 
                     <div className="justify-center w-full ml-2 mr-2">
-                        {year}
+                        {!globalSearch ? year : null}
                         {name && (
                             <span className="font-bold text-slate-400 text-md"> - {name}</span>
                         )}

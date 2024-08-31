@@ -91,7 +91,9 @@ const RankedItemsHeader: React.FC<IRankedItemsHeaderProps> = ({
                     <div className="justify-center w-full ml-2 mr-2">
                         {!globalSearch ? year : null}
                         {name && (
-                            <span className="font-bold text-slate-400 text-md"> - {name}</span>
+                            <span className="font-bold text-slate-400 text-md"> 
+                                {!globalSearch ? ` - ` : ``}{name}
+                            </span>
                         )}
                     </div>
                     

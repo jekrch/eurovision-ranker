@@ -31,7 +31,7 @@ const TableHeader: React.FC<TableHeaderProps> = ({ handleSort, sortColumn, sortD
                 {columns.map((header) => (
                     <th
                         key={header}
-                        className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider cursor-pointer hover:bg-sky-800"
+                        className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider cursor-pointer hover:bg-[#3068ba]"
                         onClick={() => handleSort(header.toLowerCase())}
                     >
                         <div className="flex items-center whitespace-nowrap">

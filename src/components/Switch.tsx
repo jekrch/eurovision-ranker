@@ -21,7 +21,7 @@ export const Switch: React.FC<SwitchProps> = ({ checked: checked, setChecked, cl
         <HeadlessSwitch
             checked={checked}
             onChange={setChecked}
-            className={`${checked ? 'bg-sky-600' : 'bg-slate-600'
+            className={`${checked ? 'bg-[#3068ba]' : 'bg-slate-600'
                 } cursor-pointer relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-slate-600 mr-6`}
         >
             <span

@@ -272,21 +272,25 @@ export function urlParamHasValue(key: string, value: string) {
  * Clear all the category rankings (rx parameters) from the URL
  * @param categories 
  */
-export function clearAllRankingParams(categories: Category[]) {
-
-    const searchParams = new URLSearchParams(window.location.search);
-
+export function clearAllRankingParams(categories: Category[]): void {
+    const url = new URL(window.location.href);
+    const searchParams = url.searchParams;
+  
+    // clear category-specific parameters
     categories.forEach((_, index) => {
-        const categoryParam = `r${index + 1}`;
-        searchParams.delete(categoryParam);
+      const categoryParam = `r${index + 1}`;
+      searchParams.delete(categoryParam);
     });
-
-    // Clear the main ranking (r parameter) from the URL
+  
+    // clear the main ranking parameter
     searchParams.delete('r');
-
-    const newUrl = `${window.location.pathname}?${searchParams.toString()}`;
-    window.history.replaceState(null, '', newUrl);
-}
+  
+    // update the URL without changing the origin
+    url.search = searchParams.toString();
+    
+    // use pushState instead of replaceState to avoid potential issues
+    window.history.pushState(null, '', url.toString());
+  }
 
 export const extractParams = (params: URLSearchParams, activeCategory: number | undefined): UrlParams => {
     return {

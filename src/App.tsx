@@ -213,6 +213,7 @@ const App: React.FC = () => {
         return;
       }
       updateQueryParams({ y: year.slice(-2) });
+      
       await decodeRankingsFromURL(
         activeCategory,
         dispatch

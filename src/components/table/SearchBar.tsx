@@ -32,7 +32,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
     const activeCategory = useAppSelector((state: AppState) => state.activeCategory);
     const rankedItems = useAppSelector((state: AppState) => state.rankedItems);
     const resetRanking = useResetRanking();
-    const refreshUrl = useRefreshUrl();
+    const { refreshUrl } = useRefreshUrl();
     const convertRankParams = useConvertRankParams();
     
     const confirmAdvancedMode = (checked: boolean) => {

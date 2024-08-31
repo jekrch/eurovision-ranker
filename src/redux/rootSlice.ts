@@ -51,7 +51,8 @@ const initialState: AppState = {
         filteredEntries: [],
         entries: [],
         searchTerm: '',
-        selectedContestants: []
+        selectedContestants: [],
+        paginatedContestants: []
     } as TableState
 };
 
@@ -128,6 +129,9 @@ const rootSlice = createSlice({
         setSelectedContestants: (state, action: PayloadAction<ContestantRow[]>) => {
             state.tableState.selectedContestants = action.payload;
         },
+        setPaginatedContestants: (state, action: PayloadAction<ContestantRow[]>) => {
+            state.tableState.paginatedContestants = action.payload;
+        },
         toggleSelectedContestant: (state, action: PayloadAction<string>) => {
             const contestantId = action.payload;
             const index = state.tableState.selectedContestants.findIndex(c => c.id === contestantId);
@@ -139,7 +143,23 @@ const rootSlice = createSlice({
                 state.tableState.selectedContestants.push(contestant);
               }
             }
-          },
+        },
+        /**
+         * Add all paginatedContestants that are not already selected
+         * @param state 
+         */
+        addAllPaginatedContestants: (state) => {
+            const newSelectedContestants = state.tableState.paginatedContestants.filter(
+                paginatedContestant => !state.tableState.selectedContestants.some(
+                    selectedContestant => selectedContestant.id === paginatedContestant.id
+                )
+            );
+            
+            state.tableState.selectedContestants = [
+                ...state.tableState.selectedContestants,
+                ...newSelectedContestants
+            ];
+        },
     },
     extraReducers: (builder) => {
         builder
@@ -178,6 +198,8 @@ export const {
     setEntries,
     toggleSelectedContestant,
     setSelectedContestants,
+    setPaginatedContestants,
+    addAllPaginatedContestants,
     setGlobalSearch
 } = rootSlice.actions;
 

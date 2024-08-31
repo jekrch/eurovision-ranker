@@ -1,15 +1,15 @@
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
-import { useSelector } from 'react-redux';
 import Papa from 'papaparse';
 import { useAppDispatch, useAppSelector } from './stateHooks';
 import { ContestantRow } from '../components/table/tableTypes';
-import { setEntries, setGlobalSearch, setRankedItems, setSelectedContestants, setTableCurrentPage, toggleSelectedContestant } from '../redux/rootSlice';
+import { setEntries, setGlobalSearch, setPaginatedContestants, setRankedItems, setSelectedContestants, setTableCurrentPage } from '../redux/rootSlice';
 import { CountryContestant } from '../data/CountryContestant';
-import { convertRankingsStrToArray, getUrlParam, updateQueryParams, updateUrlFromRankedItems } from '../utilities/UrlUtil';
+import { getUrlParam, updateQueryParams, updateUrlFromRankedItems } from '../utilities/UrlUtil';
 import { getCountryContestantsByUids } from '../utilities/ContestantRepository';
 import { changePageSize, filterTable, sortTable } from '../redux/tableSlice';
 import { AppState } from '../redux/store';
 import { convertRankingUrlParamsByMode } from '../utilities/ContestantUtil';
+import { isArrayEqual } from '../utilities/RankAnalyzer';
 
 export const useContestantTable = () => {
     const dispatch = useAppDispatch();
@@ -142,7 +142,12 @@ export const useContestantTable = () => {
     
     useEffect(() => {
         const updateRankedItems = async () => {
-            if (areContestantRowsEqual(prevSelectedContestantsRef.current, selectedContestants)) {
+            if (
+                areContestantRowsEqual(
+                    prevSelectedContestantsRef.current, 
+                    selectedContestants
+                )
+            ) {
                 return;
             }
 
@@ -266,7 +271,9 @@ export const useContestantTable = () => {
         if (column === 'country') {
             column = 'to_country';
         }
-        dispatch(sortTable(column));
+        dispatch(
+            sortTable(column)
+        );
     };
 
     const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -317,6 +324,32 @@ export const useContestantTable = () => {
 
         convertRankingURLParams();
     };
+
+    /**
+     * Keep the tableState.paginatedContestants field updated so that we 
+     * can use the "Add All" button in the Edit Nav.
+     */
+    useEffect(() => {
+        if (
+            !areContestantRowsEqual(
+                tableState.paginatedContestants, 
+                paginatedContestants
+            )
+        ) {    
+            dispatch(
+                setPaginatedContestants(
+                    paginatedContestants
+                )
+            );
+        }
+    }, [
+        tableState.currentPage, 
+        tableState.filters, 
+        tableState.entries, 
+        tableState.sortDirection, 
+        tableState.sortColumn, 
+        tableState.pageSize
+    ]);
 
     return {
         paginatedContestants,

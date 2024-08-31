@@ -3,10 +3,11 @@ import { faArrowRight, faTrashAlt, faSquare, faCheckSquare, faPenAlt } from '@fo
 import classNames from 'classnames';
 import IconButton from '../IconButton';
 import { AppDispatch, AppState } from '../../redux/store';
-import { setIsDeleteMode, setRankedItems, setUnrankedItems } from '../../redux/rootSlice';
+import { addAllPaginatedContestants, setIsDeleteMode } from '../../redux/rootSlice';
 import { useAppDispatch, useAppSelector } from '../../hooks/stateHooks';
 import { useResetRanking } from '../../hooks/useResetRanking';
 import { useRefreshUrl } from '../../hooks/useRefreshUrl';
+
 
 type EditNavProps = {
     setNameModalShow: React.Dispatch<SetStateAction<boolean>>;
@@ -21,44 +22,46 @@ type EditNavProps = {
  */
 const EditNav: React.FC<EditNavProps> = ({ setNameModalShow }) => {
     const dispatch: AppDispatch = useAppDispatch();
-    const year = useAppSelector((state: AppState) => state.year);
     const rankedItems = useAppSelector((state: AppState) => state.rankedItems);
     const selectedContestants = useAppSelector((state: AppState) => state.tableState.selectedContestants);
     const unrankedItems = useAppSelector((state: AppState) => state.unrankedItems);
     const isDeleteMode = useAppSelector((state: AppState) => state.isDeleteMode);
-    const categories = useAppSelector((state: AppState) => state.categories);
+    const paginatedContestants = useAppSelector((state: AppState) => state.tableState.paginatedContestants);
     const globalSearch = useAppSelector((state: AppState) => state.globalSearch);
     const resetRanking = useResetRanking();
-    const refreshUrl = useRefreshUrl();
+    const { handleAddAllUnranked } = useRefreshUrl();
 
+    function addAll() {
+        if (globalSearch) {
+            addPaginatedContestants();
+        } else {
+            handleAddAllUnranked();
+        }
+    }
+
+    /**
+     * If we're using the global search mode, add all contestants on the current 
+     * page
+     */
+    function addPaginatedContestants(){
+        dispatch(
+            addAllPaginatedContestants()
+        );
+    }
     
     /**
-     * Add all remaining unranked items to the ranked array
+     * Determines whether the Add All button should be enabled, which has 
+     * different requirements depending on whether we're in global search 
+     * mode or not. 
+     * 
+     * @returns 
      */
-    function addAllUnranked() {
-        dispatch(
-            setUnrankedItems([])
-        );
-        dispatch(
-            setRankedItems(rankedItems.concat(unrankedItems))
-        );
-    
-        // Append unranked items to all existing category rankings (via rx parameters)
-        if (categories.length > 0) {
-            const searchParams = new URLSearchParams(window.location.search);
-    
-            categories.forEach((_, index) => {
-                const categoryParam = `r${index + 1}`;
-                const currentRanking = searchParams.get(categoryParam) || '';
-                const updatedRanking = `${currentRanking}${unrankedItems.map(item => item.country.id).join('')}`;
-                searchParams.set(categoryParam, updatedRanking);
-            });
-    
-            const newUrl = `${window.location.pathname}?${searchParams.toString()}`;
-            window.history.replaceState(null, '', newUrl);
+    function canAddAll() {
+        if (globalSearch) {            
+            return paginatedContestants?.length > 0;
+        } else {
+            return unrankedItems?.length > 0;
         }
-    
-        refreshUrl();
     }
 
     return (
@@ -69,8 +72,8 @@ const EditNav: React.FC<EditNavProps> = ({ setNameModalShow }) => {
                         <div className="tour-step-3 flex items-center">
                             <IconButton
                                 icon={faArrowRight}
-                                disabled={!unrankedItems.length}
-                                onClick={addAllUnranked}
+                                disabled={!canAddAll()}
+                                onClick={addAll}
                                 iconClassName='mr-[0.3em]'
                                 title="Add All"
                             />

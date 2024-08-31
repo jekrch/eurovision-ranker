@@ -56,7 +56,7 @@ async function mapContestantsWithVotes(
 
     if (secondaryContestant) {
       // I appended '2' to the end of each secondary contestant's country key (e.g. fr and fr2)
-      contestantCountryKey = contestantCountryKey.slice(0, -1);;
+      contestantCountryKey = contestantCountryKey.slice(0, -2);
     }
 
     let country = fetchCountryByKey(contestantCountryKey, contestant);
@@ -105,6 +105,7 @@ function fetchCountryByKey(
   contestantCountryKey: string,
   contestant: Contestant
 ) {
+ 
   let country = countries.find(country => country.key === contestantCountryKey);
 
   // some countries in the dataset have their name used as their two character 

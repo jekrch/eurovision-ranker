@@ -11,6 +11,7 @@ export interface ContestantRow {
   export interface TableState {
     entries: ContestantRow[];
     selectedContestants: ContestantRow[];
+    paginatedContestants: ContestantRow[];
     sortColumn: string;
     sortDirection: string;
     filteredEntries: ContestantRow[];

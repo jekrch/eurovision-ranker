@@ -73,7 +73,7 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
                         label="Categories"
                     />
                     
-                    {!hasMultipleYears &&
+                    {!globalSearch &&
                         <TabButton
                             isActive={activeTab === 'analyze'}
                             onClick={() => setActiveTab('analyze')}

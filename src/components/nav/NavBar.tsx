@@ -23,7 +23,7 @@ const Navbar: React.FC<NavbarProps> = ({ openModal, openConfigModal }) => {
     const showUnranked = useAppSelector((state: AppState) => state.showUnranked);
 
     return (
-        <nav className="nav-diagonal-split-bg bg-gray-800 text-white py-1 px-4 sticky top-0 z-50">
+        <nav className="nav-diagonal-split-bg py-1 px-4 sticky z-50">
             <div className="container mx-auto flex justify-between items-center z-50">
                 <div className="flex items-center flex-wrap">
                     <div className="items-center -my-1">

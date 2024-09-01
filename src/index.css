@@ -409,6 +409,7 @@ https://codepen.io/chris22smith/pen/RZogMa */
 
 .ranked-items-background {
   background: linear-gradient(to bottom, #2a286e, #0c0c38); 
+  /* background: linear-gradient(to bottom, #13172b, #28315b);  */
 }
 
 .ranked-bar-background {

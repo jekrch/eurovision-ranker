@@ -1,7 +1,7 @@
 import { countries } from "../data/Countries";
 import { CountryContestant } from "../data/CountryContestant";
 import { sanitizeYear } from '../data/Contestants';
-import { ContestantVotes, Vote } from "../data/Vote";
+import { ContestantVotes, Vote } from '../data/Vote';
 import { clone } from "./ContestantUtil";
 
 export function getSourceCountryKey(voteSource: string) {
@@ -110,7 +110,7 @@ export function assignVotes(
     
     contestants.forEach((cc: CountryContestant) => {
         if (cc.contestant) {
-            cc.contestant.votes = voteSums[cc.country.key] || undefined;
+            cc.contestant.votes = voteSums[getVoteKey(cc)] || undefined;
         }
     });
     return contestants;
@@ -120,29 +120,41 @@ function getKeyVoteMap(votes: Vote[]) {
     const voteSums: { [key: string]: ContestantVotes; } = {};
 
     votes.forEach(vote => {
-        let contestantVotes = voteSums[vote.toCountryKey];
+
+        let contestantVotes = voteSums[getKey(vote)];
 
         if (!contestantVotes) {
             contestantVotes = {
-                totalPoints: 0,
-                juryPoints: 0,
-                telePoints: 0,
+                totalPoints: undefined,
+                juryPoints: undefined,
+                telePoints: undefined,
+                year: vote.year,
+                round: vote.round
             } as ContestantVotes;
-            voteSums[vote.toCountryKey] = contestantVotes;
+            voteSums[getKey(vote)] = contestantVotes;
         }
         let totalPointsToAdd: number = getVoteFieldValue(vote, 'totalPoints');
         let juryPointsToAdd: number = getVoteFieldValue(vote, 'juryPoints');
         let telePointsToAdd: number = getVoteFieldValue(vote, 'telePoints');
 
         if (totalPointsToAdd) {
+            if (!contestantVotes.totalPoints)
+                contestantVotes.totalPoints = 0;
+
             contestantVotes.totalPoints! += totalPointsToAdd;
         }
 
         if (juryPointsToAdd) {
+            if (!contestantVotes.juryPoints)
+                contestantVotes.juryPoints = 0;
+
             contestantVotes.juryPoints! += juryPointsToAdd;
         }
 
         if (telePointsToAdd) {
+            if (!contestantVotes.telePoints)
+                contestantVotes.telePoints = 0;
+
             contestantVotes.telePoints! += telePointsToAdd;
         }
 
@@ -151,6 +163,14 @@ function getKeyVoteMap(votes: Vote[]) {
         // }
     });
     return voteSums;
+}
+
+function getKey(vote: Vote) {
+    return `${vote.toCountryKey}-${vote.year}`;
+}
+
+function getVoteKey(countryContestant: CountryContestant) {
+    return `${countryContestant.country.key}-${countryContestant?.contestant?.year}`;
 }
 
 function getVoteFieldValue(vote: Vote, fieldName: string): number {

@@ -7,8 +7,8 @@ import NameModal from './components/modals/NameModal';
 import Navbar from './components/nav/NavBar';
 import EditNav from './components/nav/EditNav';
 import { AppDispatch, AppState } from './redux/store';
-import { setRankedItems, setUnrankedItems, setShowUnranked, setActiveCategory, setShowTotalRank, setCategories } from './redux/rootSlice';
-import { decodeRankingsFromURL, encodeRankingsToURL, updateQueryParams, updateUrlFromRankedItems, urlHasRankings } from './utilities/UrlUtil';
+import { setRankedItems, setUnrankedItems, setShowUnranked, setActiveCategory, setShowTotalRank, setCategories, setGlobalSearch } from './redux/rootSlice';
+import { decodeRankingsFromURL, encodeRankingsToURL, updateQueryParams, updateUrlFromRankedItems, urlHasRankings, urlParamHasValue } from './utilities/UrlUtil';
 import MapModal from './components/modals/MapModal';
 import ConfigModal from './components/modals/config/ConfigModal';
 import WelcomeOverlay from './components/modals/WelcomeOverlay';
@@ -21,7 +21,10 @@ import JoyrideTour from './tour/JoyrideTour';
 import { addWindowEventListeners, handlePopState, removeWindowEventListeners, setVh } from './utilities/EventListenerUtil';
 import RankedCountriesList from './components/ranking/RankedCountriesList';
 import UnrankedCountriesList from './components/ranking/UnrankedCountriesList';
-import { useAppDispatch, useAppSelector } from './utilities/hooks';
+import { useAppDispatch, useAppSelector } from './hooks/stateHooks';
+import { Switch } from './components/Switch';
+import TooltipHelp from './components/TooltipHelp';
+import RankedCountriesTable from './components/ranking/RankedCountriesTable';
 
 const App: React.FC = () => {
   const [mainModalShow, setMainModalShow] = useState(false);
@@ -43,6 +46,7 @@ const App: React.FC = () => {
   const vote = useAppSelector((state: AppState) => state.vote);
   const rankedItems = useAppSelector((state: AppState) => state.rankedItems);
   const unrankedItems = useAppSelector((state: AppState) => state.unrankedItems);
+  const globalSearch = useAppSelector((state: AppState) => state.globalSearch);
   const [isSongModalOpen, setIsSongModalOpen] = useState(false);
   const [selectedCountryContestant, setSelectedCountryContestant] = useState<CountryContestant | undefined>(undefined);
   const [showOverlay, setShowOverlay] = useState(!areRankingsSet());
@@ -142,6 +146,13 @@ const App: React.FC = () => {
 
   }, [])
 
+  const updateGlobalSearch = (checked: boolean) => {
+    updateQueryParams({ 'g': checked ? 't' : undefined });
+    dispatch(
+      setGlobalSearch(checked)
+    );
+  }
+
   /**
    * Reload the rankings from the URL if the activeCategory changes or 
    * if the user either displays or exits the totalRank tab
@@ -202,6 +213,7 @@ const App: React.FC = () => {
         return;
       }
       updateQueryParams({ y: year.slice(-2) });
+      
       await decodeRankingsFromURL(
         activeCategory,
         dispatch
@@ -365,24 +377,54 @@ const App: React.FC = () => {
             <div className="flex flex-row justify-center gap-4 px-4 py-2">
 
               {/* Unranked Countries List */}
-              {showUnranked && (
-                <UnrankedCountriesList />
+              {showUnranked && !globalSearch && (
+
+                <div className="relative flex flex-col">
+                  <div className="sticky top-0 rounded-t-md round-b-sm text-center font-bold bg-blue-900 gradient-background text-slate-300 tracking-tighter shadow-md z-50">
+                    <div className="flex items-center justify-center py-1 px-0">
+                      <TooltipHelp
+                        content="Select countries across all contest years"
+                        className="text-slate-300 align-middle mb-1 -mr-1"
+                      />
+                      <Switch
+                        label="adv"
+                        className="items-center align-middle font-normal"
+                        labelClassName="text-sm text-slate-400"
+                        checked={globalSearch}
+                        setChecked={updateGlobalSearch}
+                      />
+                    </div>
+                  </div>
+                  <UnrankedCountriesList />
+                </div>
               )}
 
               {/* Ranked Countries List */}
-              <RankedCountriesList
-                openSongModal={openSongModal}
-                openModal={openMainModal}
-                openConfigModal={openConfigModal}
-                setRunTour={setRunTour}
-                openNameModal={() => setNameModalShow(true)}
-                openMapModal={() => setMapModalShow(true)}
-              />
+              {globalSearch && showUnranked ? (
+                <RankedCountriesTable
+                  openSongModal={openSongModal}
+                  openModal={openMainModal}
+                  openConfigModal={openConfigModal}
+                  setRunTour={setRunTour}
+                  openNameModal={() => setNameModalShow(true)}
+                  openMapModal={() => setMapModalShow(true)}
+                />
+              ) :
+                <RankedCountriesList
+                  openSongModal={openSongModal}
+                  openModal={openMainModal}
+                  openConfigModal={openConfigModal}
+                  setRunTour={setRunTour}
+                  openNameModal={() => setNameModalShow(true)}
+                  openMapModal={() => setMapModalShow(true)}
+                />
+
+              }
             </div>
           </DragDropContext>
         </div>
 
-        <div className="hidden fixed bottom-[3em] left-[1em] z-50" style={{}}>
+        <div className="hidden fixed bottom-[3em] left-[1em] z-50">
           <div className='p-2 bg-slate-300 bg-opacity-40 rounded-lg'>
             <button
               onClick={() => {
@@ -408,7 +450,6 @@ const App: React.FC = () => {
           <div className={`edit-nav-container ${(!showOverlay || isOverlayExit) && 'slide-up-animation'}`}>
             <EditNav
               setNameModalShow={setNameModalShow}
-              setRefreshUrl={setRefreshUrl}
             />
           </div>
         }
@@ -434,6 +475,13 @@ const App: React.FC = () => {
           setNameModalShow(false);
         }}
       />
+
+      {/* <TableModal
+        isOpen={tableModalShow}
+        onClose={() => {
+          setTableModalShow(false);
+        }}
+      /> */}
 
       <MapModal
         isOpen={mapModalShow}

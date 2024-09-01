@@ -9,7 +9,7 @@ import Joyride from 'react-joyride';
 import { clearCategories, clearCategories as clearCategoriesUtil } from '../utilities/CategoryUtil';
 import { CountryContestant } from '../data/CountryContestant';
 import { clearAllRankingParams } from '../utilities/UrlUtil';
-import { useAppDispatch, useAppSelector } from '../utilities/hooks';
+import { useAppDispatch, useAppSelector } from '../hooks/stateHooks';
 import { clone } from '../utilities/ContestantUtil';
 
 interface JoyrideTourProps {

@@ -1,12 +1,13 @@
 
-import { setName, setYear, setRankedItems, setUnrankedItems, setContestants, setTheme, setVote, setShowComparison } from '../redux/rootSlice';
-import { fetchCountryContestantsByYear } from './ContestantRepository';
+import { setName, setYear, setRankedItems, setUnrankedItems, setContestants, setTheme, setVote, setShowComparison, setGlobalSearch } from '../redux/rootSlice';
+import { fetchCountryContestantsByYear, getContestantsByUids, getCountryContestantsByUids } from './ContestantRepository';
 import { CountryContestant, createCountryContestant } from '../data/CountryContestant';
 import { countries } from '../data/Countries';
 import { defaultYear, sanitizeYear } from '../data/Contestants';
 
 import { Category } from './CategoryUtil';
 import { AppDispatch } from '../redux/store';
+import { Contestant } from '../data/Contestant';
 
 export type UrlParams = {
     rankingName: string | null;     // n
@@ -15,6 +16,7 @@ export type UrlParams = {
     theme: string | null;           // t: ab
     voteCode: string | null;        // v: {round}-{type}-{fromCountryKey} f-t-gb
     comparisonMode: string | null;  // cm: t/f
+    globalMode: string | null       // g: t/f/null
 }
 
 /**
@@ -24,13 +26,17 @@ export const updateStates = (
     params: UrlParams,
     dispatch: AppDispatch
 ) => {
-    let { rankingName, contestYear, theme, voteCode, comparisonMode } = params;
+    let { rankingName, contestYear, theme, voteCode, comparisonMode, globalMode } = params;
 
     if (rankingName) {
         dispatch(
             setName(rankingName)
         );
     }
+
+    dispatch(
+        setGlobalSearch(globalMode === 't')
+    )
 
     dispatch(
         setShowComparison(comparisonMode === 't')
@@ -62,47 +68,55 @@ export const updateStates = (
  */
 export async function processAndUpdateRankings(
     contestYear: string,
-    rankings: string | null,
+    rankingsString: string | null,
     voteCode: string | null,
+    globalMode: string | null,
     dispatch: AppDispatch
 ): Promise<string[] | undefined> {
+    const isGlobalMode = globalMode === 't';
+    //console.log(isGlobalMode ? 'in global mode' : 'in normal mode');
 
-    const yearContestants = await fetchCountryContestantsByYear(
-        contestYear,
-        voteCode ?? ''
-    );
-
-    dispatch(
-        setContestants(yearContestants)
-    );
-
-    if (rankings) {
-        const { rankedIds, rankedCountries } = orderContestantsByRankingStr(
-            rankings, yearContestants
+    let yearContestants;
+    if (!isGlobalMode) {
+        yearContestants = await fetchCountryContestantsByYear(
+            contestYear,
+            voteCode ?? ''
         );
 
-        const unrankedCountries = yearContestants.filter(
-            countryContestant => !rankedIds.includes(countryContestant.id)
+        dispatch(
+            setContestants(yearContestants)
+        );
+    }
+
+    if (rankingsString) {
+        const { rankedIds, rankedCountries } = await orderContestantsByRankingStr(
+            rankingsString, yearContestants, isGlobalMode
         );
 
         dispatch(
             setRankedItems(rankedCountries)
         );
 
-        dispatch(
-            setUnrankedItems(unrankedCountries)
-        );
+        if (isGlobalMode) {
+            dispatch(setUnrankedItems([]));
+        } else {
+            const unrankedCountries = yearContestants?.filter(
+                countryContestant => !rankedIds.includes(countryContestant.id)
+            );
+            dispatch(setUnrankedItems(unrankedCountries!));
+        }
 
         return rankedIds;
     } else {
-        dispatch(
-            setRankedItems([])
-        );
-        dispatch(
-            setUnrankedItems(yearContestants)
-        );
+        if (isGlobalMode) {
+            dispatch(setRankedItems(yearContestants ?? []));
+            dispatch(setUnrankedItems([]));
+        } else {
+            dispatch(setRankedItems([]));
+            dispatch(setUnrankedItems(yearContestants ?? []));
+        }
     }
-};
+}
 
 export function getOrderedContestantsByCategory(
     activeCategory: number | undefined,
@@ -113,40 +127,51 @@ export function getOrderedContestantsByCategory(
 
     return orderContestantsByRankingStr(
         extractedParams.rankings ?? '',
-        countryContestants
+        countryContestants,
+        extractedParams.globalMode === 't',
+        extractedParams.voteCode ?? ''
     );
 }
 
-export function orderContestantsByRankingStr(
+export async function orderContestantsByRankingStr(
     rankings: string,
-    yearContestants: CountryContestant[],
+    yearContestants?: CountryContestant[],
+    isGlobalMode?: boolean,
+    voteCode?: string
 ) {
-    const rankedIds = convertRankingsStrToArray(rankings);
+    const rankedIds = convertRankingsStrToArray(rankings, isGlobalMode);
+
+    if (isGlobalMode) {
+        const rankedCountries: CountryContestant[] = await getCountryContestantsByUids(
+            rankedIds, 
+            voteCode
+        );
+        return { rankedIds, rankedCountries }
+    }
 
     const rankedCountries = rankedIds.map(
         (id: string) => {
-            let countryContestant: CountryContestant | undefined = yearContestants.find(
-                c => c.id === id
+            let countryContestant: CountryContestant | undefined = yearContestants?.find(
+                c => isGlobalMode ? c.uid === id : c.id === id
             );
             if (countryContestant) {
                 return countryContestant;
-            } else {
+            } else if (!isGlobalMode) {
                 const country = countries.find(c => c.id === id);
                 if (country) {
-                    const newContestant = createCountryContestant(country);
-                    return newContestant;
-                } else {
-                    return;
+                    return createCountryContestant(country);
                 }
             }
+            return undefined;
         }
     ).filter(Boolean) as CountryContestant[];
+
     return { rankedIds, rankedCountries };
 }
 
 export function urlHasRankings(activeCategory: number | undefined) {
     const extractedParams = getUrlParams(activeCategory);
-    return extractedParams.rankings?.length;
+    return extractedParams.rankings?.replace('>', '')?.length;
 }
 
 /**
@@ -169,6 +194,7 @@ export async function decodeRankingsFromURL(
         extractedParams.contestYear || defaultYear,
         extractedParams.rankings,
         extractedParams.voteCode,
+        extractedParams.globalMode,
         dispatch
     );
 };
@@ -181,25 +207,34 @@ export function getUrlParams(activeCategory: number | undefined): UrlParams {
 export function getUrlParam(paramName: string): string | null {
     const urlParams = new URLSearchParams(window.location.search);
     return urlParams.get(paramName);
-  }
+}
 
 /**
  * Encode rankings to csv for URL
- * @param rankedCountries 
- * @returns 
  */
-export const encodeRankingsToURL = (rankedCountries: CountryContestant[]): string => {
-    const ids = rankedCountries.map(item => item.id);
-    return ids.join('');
+export const encodeRankingsToURL = (
+    rankedCountries: CountryContestant[], 
+    isGlobalMode: boolean = urlParamHasValue('g', 't')
+): string => {
+    const ids = rankedCountries.map(item => isGlobalMode ? item.uid : item.id);
+    return isGlobalMode ? `>${ids.join('')}` : ids.join('');
 };
 
-export function convertRankingsStrToArray(rankings: string): string[] {
+
+export function convertRankingsStrToArray(
+    rankings: string,
+    isGlobalMode?: boolean
+): string[] {
+
+    if (isGlobalMode || rankings.startsWith('>')) {
+        // remove the leading '>' and split into 3-character chunks
+        return rankings.startsWith('>') ? rankings.slice(1).match(/.{1,3}/g) || [] : [];
+    }
+
     let rankedIds: string[] = [];
     let i = 0;
 
     while (i < rankings.length) {
-        // skip the underscore and adjust for the next character or 
-        // next two if it's a period
         if (rankings[i] === '_') {
             if (i + 1 < rankings.length) {
                 if (rankings[i + 1] === '.' && i + 2 < rankings.length) {
@@ -210,48 +245,52 @@ export function convertRankingsStrToArray(rankings: string): string[] {
                     i += 2;
                 }
             } else {
-                // if underscore is the last character, just push it
                 rankedIds.push(rankings[i]);
                 i += 1;
             }
-        }
-        // check for the period and the next character
-        else if (rankings[i] === '.' && i + 1 < rankings.length) {
+        } else if (rankings[i] === '.' && i + 1 < rankings.length) {
             rankedIds.push(rankings.substring(i, i + 2));
             i += 2;
-        }
-        else {
+        } else {
             rankedIds.push(rankings[i]);
             i += 1;
         }
     }
 
-    // Remove duplicates
-    let uniqueSet = new Set(rankedIds);
-    rankedIds = Array.from(uniqueSet);
-
-    return rankedIds;
+    // remove duplicates
+    return Array.from(new Set(rankedIds));
 }
+
+export function urlParamHasValue(key: string, value: string) {
+    const urlParams = new URLSearchParams(window.location.search);
+    const rParam = urlParams.get(key);
+
+    return rParam !== null && rParam === value;
+};
 
 /**
  * Clear all the category rankings (rx parameters) from the URL
  * @param categories 
  */
-export function clearAllRankingParams(categories: Category[]) {
-
-    const searchParams = new URLSearchParams(window.location.search);
-
+export function clearAllRankingParams(categories: Category[]): void {
+    const url = new URL(window.location.href);
+    const searchParams = url.searchParams;
+  
+    // clear category-specific parameters
     categories.forEach((_, index) => {
-        const categoryParam = `r${index + 1}`;
-        searchParams.delete(categoryParam);
+      const categoryParam = `r${index + 1}`;
+      searchParams.delete(categoryParam);
     });
-
-    // Clear the main ranking (r parameter) from the URL
+  
+    // clear the main ranking parameter
     searchParams.delete('r');
-
-    const newUrl = `${window.location.pathname}?${searchParams.toString()}`;
-    window.history.replaceState(null, '', newUrl);
-}
+  
+    // update the URL without changing the origin
+    url.search = searchParams.toString();
+    
+    // use pushState instead of replaceState to avoid potential issues
+    window.history.pushState(null, '', url.toString());
+  }
 
 export const extractParams = (params: URLSearchParams, activeCategory: number | undefined): UrlParams => {
     return {
@@ -260,32 +299,38 @@ export const extractParams = (params: URLSearchParams, activeCategory: number | 
         rankings: params.get(`r${activeCategory !== undefined ? activeCategory + 1 : ''}`),
         theme: params.get('t'),           // e.g. ab
         voteCode: params.get('v'),        // e.g. {round}-{type}-{fromCountryKey} f-t-gb
-        comparisonMode: params.get('cm')  // e.g. t/f
+        comparisonMode: params.get('cm'), // e.g. t/f
+        globalMode: params.get('g')       // e.g. t/f/null
     } as UrlParams;
 };
 
-export  const updateUrlFromRankedItems = async (
-    activeCategory: number | undefined, 
-    categories: Category[], 
-    rankedItems: CountryContestant[]
+export const updateUrlFromRankedItems = async (
+    activeCategory: number | undefined,
+    categories: Category[],
+    rankedItems: CountryContestant[],
+    isGlobalMode: boolean = urlParamHasValue('g', 't')
 ) => {
-    // Update the URL with the new active category
+    const encodedRankings = encodeRankingsToURL(rankedItems, isGlobalMode);
+    //console.log(encodedRankings)
     if (categories?.length > 0 && activeCategory !== undefined) {
-      updateQueryParams({ [`r${activeCategory + 1}`]: encodeRankingsToURL(rankedItems) });
+        updateQueryParams({ [`r${activeCategory + 1}`]: encodedRankings });
     } else {
-      updateQueryParams({ r: encodeRankingsToURL(rankedItems) });
+        updateQueryParams({ r: encodedRankings });
     }
-  };
+};
 
 /**
  * Function to update the query parameters
  */
-export function updateQueryParams(params: { [key: string]: string }) {
+export function updateQueryParams(params: { [key: string]: string | undefined }) {
     const searchParams = new URLSearchParams(window.location.search);
 
     // Set new or update existing parameters
     Object.keys(params).forEach(key => {
-        searchParams.set(key, params[key]);
+        if (params[key])
+            searchParams.set(key, params[key]);
+        else
+            searchParams.delete(key);
     });
 
     const newUrl = '?' + searchParams.toString();
@@ -300,7 +345,7 @@ export function updateQueryParams(params: { [key: string]: string }) {
 function getUrl(queryString: string) {
     const currentDomain = window.location.origin;
     const currentPath = window.location.pathname;
-    
+
     return `${currentDomain}${currentPath}${queryString}`;
 }
 

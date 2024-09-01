@@ -10,7 +10,7 @@ import { AppDispatch, AppState } from '../../redux/store';
 import { EXPORT_TYPE } from '../../utilities/export/ExportType';
 import { rankedHasAnyYoutubeLinks } from '../../utilities/YoutubeUtil';
 import { setHeaderMenuOpen } from '../../redux/rootSlice';
-import { useAppDispatch, useAppSelector } from '../../utilities/hooks';
+import { useAppDispatch, useAppSelector } from '../../hooks/stateHooks';
 
 interface RankedHeaderMenuProps {
   onMapClick?: () => void;
@@ -94,6 +94,7 @@ const RankedHeaderMenu: React.FC<RankedHeaderMenuProps> = (props: RankedHeaderMe
   
   return (
     <div className="relative inline-block" ref={menuRef}>
+     
       <button
         className={classNames("tour-step-6 w-6 h-6 bg-[#8e8d8d] hover:bg-slate-400 rounded-full flex justify-center items-center cursor-pointer", { "!bg-slate-400": isMenuOpen })}
         onClick={toggleMenu}

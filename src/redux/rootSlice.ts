@@ -4,12 +4,15 @@ import { Category } from '../utilities/CategoryUtil';
 import { ContestantVotes, Vote } from '../data/Vote';
 import { assignVotes } from '../utilities/VoteUtil';
 import { clone } from '../utilities/ContestantUtil';
+import { ContestantRow, TableState } from '../components/table/tableTypes';
+import { changePageSize, filterTable, sortTable } from './tableSlice';
 
 interface AppState {
     name: string;
     year: string;
     theme: string;
     vote: string;
+    globalSearch: boolean;
     showUnranked: boolean;
     isDeleteMode: boolean;
     headerMenuOpen: boolean;
@@ -20,6 +23,7 @@ interface AppState {
     activeCategory: number | undefined;
     showTotalRank: boolean;
     showComparison: boolean;
+    tableState: TableState
 }
 
 const initialState: AppState = {
@@ -27,6 +31,7 @@ const initialState: AppState = {
     year: '',
     theme: '',
     vote: 'loading',
+    globalSearch: false,
     showUnranked: false,
     isDeleteMode: false,
     headerMenuOpen: false,
@@ -37,6 +42,18 @@ const initialState: AppState = {
     activeCategory: undefined,
     showTotalRank: false,
     showComparison: false,
+    tableState: {
+        sortColumn: 'year',
+        sortDirection: 'desc',
+        filters: {},
+        pageSize: 10,
+        currentPage: 1,
+        filteredEntries: [],
+        entries: [],
+        searchTerm: '',
+        selectedContestants: [],
+        paginatedContestants: []
+    } as TableState
 };
 
 const rootSlice = createSlice({
@@ -85,6 +102,9 @@ const rootSlice = createSlice({
         setShowComparison: (state, action: PayloadAction<boolean>) => {
             state.showComparison = action.payload;
         },
+        setGlobalSearch: (state, action: PayloadAction<boolean>) => {
+            state.globalSearch = action.payload;
+        },
         assignVotesToContestants: (state, action: PayloadAction<Vote[]>) => {
             const votes: Vote[] = action.payload;
 
@@ -100,7 +120,62 @@ const rootSlice = createSlice({
                 clone(state.unrankedItems), votes
             );
         },
+        setTableCurrentPage: (state, action: PayloadAction<number>) => {
+            state.tableState.currentPage = action.payload;
+        },
+        setEntries: (state, action: PayloadAction<ContestantRow[]>) => {
+            state.tableState.entries = action.payload;
+        },
+        setSelectedContestants: (state, action: PayloadAction<ContestantRow[]>) => {
+            state.tableState.selectedContestants = action.payload;
+        },
+        setPaginatedContestants: (state, action: PayloadAction<ContestantRow[]>) => {
+            state.tableState.paginatedContestants = action.payload;
+        },
+        toggleSelectedContestant: (state, action: PayloadAction<string>) => {
+            const contestantId = action.payload;
+            const index = state.tableState.selectedContestants.findIndex(c => c.id === contestantId);
+            if (index !== -1) {
+              state.tableState.selectedContestants.splice(index, 1);
+            } else {
+              const contestant = state.tableState.entries.find(c => c.id === contestantId);
+              if (contestant) {
+                state.tableState.selectedContestants.push(contestant);
+              }
+            }
+        },
+        /**
+         * Add all paginatedContestants that are not already selected
+         * @param state 
+         */
+        addAllPaginatedContestants: (state) => {
+            const newSelectedContestants = state.tableState.paginatedContestants.filter(
+                paginatedContestant => !state.tableState.selectedContestants.some(
+                    selectedContestant => selectedContestant.id === paginatedContestant.id
+                )
+            );
+            
+            state.tableState.selectedContestants = [
+                ...state.tableState.selectedContestants,
+                ...newSelectedContestants
+            ];
+        },
     },
+    extraReducers: (builder) => {
+        builder
+          .addCase(sortTable.fulfilled, (state, action) => {
+            state.tableState.sortColumn = action.payload.column;
+            state.tableState.sortDirection = action.payload.direction;
+          })
+          .addCase(filterTable.fulfilled, (state, action) => {
+            state.tableState.filters = action.payload;
+            state.tableState.currentPage = 1; // Reset to first page when filters change
+          })
+          .addCase(changePageSize.fulfilled, (state, action) => {
+            state.tableState.pageSize = action.payload;
+            state.tableState.currentPage = 1; // Reset to first page when page size changes
+          });
+      },
 });
 
 export const {
@@ -118,7 +193,14 @@ export const {
     setActiveCategory,
     setShowTotalRank,
     setShowComparison,
-    assignVotesToContestants
+    assignVotesToContestants,
+    setTableCurrentPage,
+    setEntries,
+    toggleSelectedContestant,
+    setSelectedContestants,
+    setPaginatedContestants,
+    addAllPaginatedContestants,
+    setGlobalSearch
 } = rootSlice.actions;
 
 export default rootSlice.reducer;

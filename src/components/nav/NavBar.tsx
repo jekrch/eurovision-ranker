@@ -5,7 +5,7 @@ import { AppDispatch, AppState } from '../../redux/store';
 import { setShowUnranked } from '../../redux/rootSlice';
 import IconButton from '../IconButton';
 import classNames from 'classnames';
-import { useAppDispatch, useAppSelector } from '../../utilities/hooks';
+import { useAppDispatch, useAppSelector } from '../../hooks/stateHooks';
 
 type NavbarProps = {
     openModal: (tabName: string) => void;

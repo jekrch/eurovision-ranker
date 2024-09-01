@@ -4,7 +4,7 @@ import geoJson from '../../data/geoJson.json';
 import { ZoomableGroup } from 'react-simple-maps';
 import { Tooltip as ReactTooltip } from "react-tooltip";
 import Modal from './Modal';
-import { useAppSelector } from '../../utilities/hooks';
+import { useAppDispatch, useAppSelector } from '../../hooks/stateHooks';
 import { AppState } from '../../redux/store';
 
 interface MapModalProps {

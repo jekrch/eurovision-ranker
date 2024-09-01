@@ -18,14 +18,18 @@ export function fetchVotesForYear(
   year: string,
   countryKey?: string,
   round?: string,
+  toCountryKey?: string
 ): Promise<Vote[]> {
   year = sanitizeYear(year);
   countryKey = countryKey?.toLowerCase();
-  
+
   if (round)
     round = convertRoundToShortName(round);
 
-  const cacheKey = `${year}-${countryKey}-${round}`;
+  let cacheKey =`${year}-${countryKey}-${round}`
+  
+  if (toCountryKey)
+    cacheKey = `${year}-${countryKey}-${round}-${toCountryKey}`;
 
   if (voteCache[cacheKey]) {
     return Promise.resolve(voteCache[cacheKey]);
@@ -41,16 +45,20 @@ export function fetchVotesForYear(
             // Filter and map the data
             const votes = results.data
               .filter(
-                (row: any) => 
-                  row.year === year && 
+                (row: any) =>
+                  row.year === year &&
                   (
-                    !countryKey || 
+                    !countryKey?.length ||
                     row.from_country_id === countryKey
-                  )  && 
+                  ) &&
                   (
-                    !round || 
+                    !round?.length ||
                     row.round === round
-                  )                
+                  ) &&
+                  (
+                    !toCountryKey?.length || 
+                    row.to_country_id === toCountryKey
+                  )
               ).map((row: any) => ({
                 year: row.year,
                 round: convertRoundToLongName(row.round),
@@ -60,7 +68,63 @@ export function fetchVotesForYear(
                 telePoints: row.tele_points ?? parseInt(row.tele_points),
                 juryPoints: row.jury_points ?? parseInt(row.jury_points),
               }));
-            
+
+            voteCache[cacheKey] = votes;
+            resolve(votes);
+          },
+          error: (error: any) => reject(error)
+        });
+      })
+      .catch(error => reject(error));
+  });
+}
+
+/**
+ * fetches votes for multiple years and countries
+ * 
+ * @param yearCountryPairs - array of objects containing year and country key
+ * @param round - optional round filter
+ */
+export async function fetchVotesForYearsAndCountries(
+  yearCountryPairs: Array<{ year: string, countryKey: string }>,
+  round?: string
+): Promise<Vote[]> {
+  const uniqueYears = new Set(yearCountryPairs.map(pair => sanitizeYear(pair.year)));
+  const uniqueCountries = new Set(yearCountryPairs.map(pair => pair.countryKey.toLowerCase()));
+
+  if (round) {
+    round = convertRoundToShortName(round);
+  }
+
+  const cacheKey = `${Array.from(uniqueYears).join(',')}-${Array.from(uniqueCountries).join(',')}-${round}`;
+
+  if (voteCache[cacheKey]) {
+    return Promise.resolve(voteCache[cacheKey]);
+  }
+
+  return new Promise((resolve, reject) => {
+    fetchVoteCsv()
+      .then(response => response)
+      .then(csvString => {
+        Papa.parse(csvString, {
+          header: true,
+          complete: (results: any) => {
+            const votes = results.data
+              .filter((row: any) =>
+                uniqueYears.has(row.year) &&
+                uniqueCountries.has(row.to_country_id) &&
+                (!round || row.round === round)
+              )
+              .map((row: any) => ({
+                year: row.year,
+                round: convertRoundToLongName(row.round),
+                fromCountryKey: row.from_country_id,
+                toCountryKey: row.to_country_id,
+                totalPoints: row.total_points ? parseInt(row.total_points) : 0,
+                telePoints: row.tele_points ? parseInt(row.tele_points) : 0,
+                juryPoints: row.jury_points ? parseInt(row.jury_points) : 0,
+              }));
+
             voteCache[cacheKey] = votes;
             resolve(votes);
           },
@@ -77,9 +141,9 @@ const convertRoundToLongName = (round: string) => {
       return 'Final'
     case 'sf':
       return 'Semi-Final';
-    case 'sf1': 
+    case 'sf1':
       return 'Semi-Final-1'
-    case 'sf2': 
+    case 'sf2':
       return 'Semi-Final-2'
     default:
       throw new Error(round + ' not supported');

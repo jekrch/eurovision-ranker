@@ -7,7 +7,7 @@ import TooltipHelp from '../../TooltipHelp';
 import Checkbox from '../../Checkbox';
 import { setShowComparison } from '../../../redux/rootSlice';
 import { updateQueryParams } from '../../../utilities/UrlUtil';
-import { useAppDispatch, useAppSelector } from '../../../utilities/hooks';
+import { useAppDispatch, useAppSelector } from '../../../hooks/stateHooks';
 
 const CategoriesTab: React.FC = () => {
   const dispatch: AppDispatch = useAppDispatch();
@@ -93,7 +93,7 @@ const CategoriesTab: React.FC = () => {
         </div>
         <div className="mt-1">
           <TooltipHelp
-            tooltipContent="When viewing a category ranking, also display the contestant's rank in each other category"
+            content="When viewing a category ranking, also display the contestant's rank in each other category"
             className="ml-2 pb-1"
           />
           <Checkbox

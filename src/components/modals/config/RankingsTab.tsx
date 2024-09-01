@@ -9,7 +9,7 @@ import Dropdown from '../../Dropdown';
 import IconButton from '../../IconButton';
 import { goToUrl } from '../../../utilities/UrlUtil';
 import TooltipHelp from '../../TooltipHelp';
-import { useAppDispatch, useAppSelector } from '../../../utilities/hooks';
+import { useAppDispatch, useAppSelector } from '../../../hooks/stateHooks';
 
 const RankingsTab: React.FC = () => {
     const dispatch = useAppDispatch();
@@ -77,7 +77,7 @@ const RankingsTab: React.FC = () => {
         }
 
         countryContestants = await sortByVotes(
-            countryContestants, voteYear, voteType,
+            countryContestants, voteType,
              round, sourceCountryKey
         );
         const sortedContestants = countryContestants.filter(
@@ -163,7 +163,7 @@ const RankingsTab: React.FC = () => {
                         />
                         <span className="ml-2 text-sm">from</span>
                         <TooltipHelp
-                            tooltipContent="Choose which country to display voting counts from. 'All' will show the total vote count"
+                            content="Choose which country to display voting counts from. 'All' will show the total vote count"
                             className="ml-4 z-50"
                         />
                         <Dropdown

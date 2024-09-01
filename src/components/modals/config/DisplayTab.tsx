@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { AppState } from '../../../redux/store';
 import { setTheme, setVote, setContestants, setShowComparison, setRankedItems, assignVotesToContestants } from '../../../redux/rootSlice';
-import { assignVotesByCode, fetchVotesByCode, updateVoteTypeCode, voteCodeHasType } from '../../../utilities/VoteProcessor';
+import { assignVotesByCode, assignVotesByContestants, fetchVotesByCode, updateVoteTypeCode, voteCodeHasType } from '../../../utilities/VoteProcessor';
 import { countries } from '../../../data/Countries';
 import Dropdown from '../../Dropdown';
 import Checkbox from '../../Checkbox';
 import { updateQueryParams } from '../../../utilities/UrlUtil';
 import TooltipHelp from '../../TooltipHelp';
-import { useAppDispatch, useAppSelector } from '../../../utilities/hooks';
+import { useAppDispatch, useAppSelector } from '../../../hooks/stateHooks';
 import { CountryContestant } from '../../../data/CountryContestant';
 import { Vote } from '../../../data/Vote';
 
@@ -16,9 +16,9 @@ const DisplayTab: React.FC = () => {
     const vote = useAppSelector((state: AppState) => state.vote);
     const theme = useAppSelector((state: AppState) => state.theme);
     const showComparison = useAppSelector((state: AppState) => state.showComparison);
-    const contestants = useAppSelector((state: AppState) => state.contestants);
     const rankedItems = useAppSelector((state: AppState) => state.rankedItems);
     const year = useAppSelector((state: AppState) => state.year);
+    const globalSearch = useAppSelector((state: AppState) => state.globalSearch);
     const [themeSelection, setThemeSelection] = useState('None');
 
     // Get vote source option based on vote code
@@ -112,11 +112,9 @@ const DisplayTab: React.FC = () => {
 
             let newVoteCode = `f-${voteTypeCode}-${countryCode}`;
 
-            let votes: Vote[] = await fetchVotesByCode(newVoteCode, year);
-            
-            dispatch(
-                assignVotesToContestants(votes)
-            )
+            await resetRankedItemVotes(
+                rankedItems, newVoteCode
+            );
 
             if (newVoteCode !== vote) {
                 updateQueryParams({ v: newVoteCode });
@@ -129,13 +127,32 @@ const DisplayTab: React.FC = () => {
         handleVoteCountryUpdate();
     }, [displayVoteSource]);
 
+    async function resetRankedItemVotes(
+        rankedItems: CountryContestant[], newVoteCode: string
+    ) {
+        if (globalSearch) {
+            let newRankedItems = await assignVotesByContestants(
+                rankedItems, newVoteCode
+            );
+            dispatch(
+                setRankedItems(newRankedItems)
+            );
+        } else {
+            let votes: Vote[] = await fetchVotesByCode(newVoteCode, year);
+    
+            dispatch(
+                assignVotesToContestants(votes)
+            );
+        }
+    }
+
     return (
         <div className="mb-0">
             <div>
                 <div className="mb-[0.5em] border-slate-700 border-b-[1px] pb-2 -mt-2">
                     <span className="flex items-center ml-2">
                         <TooltipHelp
-                            tooltipContent="Select which types of votes to display with each ranked country"
+                            content="Select which types of votes to display with each ranked country"
                         />
                         <span className="ml-3 text-sm font-semibold">
 
@@ -168,7 +185,7 @@ const DisplayTab: React.FC = () => {
 
                     <div className="mt-[0.5em]">
                         <TooltipHelp
-                            tooltipContent="Choose which country to display voting counts from. 'All' will show the total vote count"
+                            content="Choose which country to display voting counts from. 'All' will show the total vote count"
                             className="ml-4"
                         />
                         <span className="ml-3 text-sm font-semibold">
@@ -193,7 +210,7 @@ const DisplayTab: React.FC = () => {
                     <div>
                         <div className="mb-2">
                             <TooltipHelp
-                                tooltipContent="When viewing a category ranking, also display the contestant's rank in each other category"
+                                content="When viewing a category ranking, also display the contestant's rank in each other category"
                                 className="ml-4 pb-1"
                             />
                             <Checkbox
@@ -221,3 +238,4 @@ const DisplayTab: React.FC = () => {
 };
 
 export default DisplayTab;
+

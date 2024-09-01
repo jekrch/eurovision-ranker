@@ -12,10 +12,12 @@ type DropdownProps = {
   value: string;
   onChange: (value: string) => void;
   options: string[];
-  showSearch: boolean;
+  showSearch?: boolean;
+  openUpwards?: boolean;
+  mini?: boolean;
 };
 
-const Dropdown: React.FC<DropdownProps> = ({ value, onChange, options, className, menuClassName, showSearch, buttonClassName }) => {
+const Dropdown: React.FC<DropdownProps> = ({ value, onChange, options, className, menuClassName, showSearch, buttonClassName, openUpwards, mini }) => {
   const [filter, setFilter] = useState('');
   const buttonRef = useRef<HTMLButtonElement>(null);
   const [menuPosition, setMenuPosition] = useState({
@@ -64,7 +66,8 @@ const Dropdown: React.FC<DropdownProps> = ({ value, onChange, options, className
             buttonClassName
           )}>
           {value}
-          <FontAwesomeIcon className="-mr-1 h-[0.8em] w-5 text-gray-400" icon={faChevronDown} />
+          
+          {!mini && <FontAwesomeIcon className="-mr-1 h-[0.8em] w-5 text-gray-400" icon={faChevronDown} /> }
         </Menu.Button>
       </div>
 
@@ -84,14 +87,17 @@ const Dropdown: React.FC<DropdownProps> = ({ value, onChange, options, className
             position: 'absolute',
             top: `${menuPosition.top}px`,
             left: `${menuPosition.left}px`,
-            zIndex: 1000, // Ensure it's above everything else
+            zIndex: 1000, // ensure it's above everything else
           }}
-          className="origin-top-right"
+          className={classNames("origin-top-left", {
+            "origin-bottom-right": !openUpwards,
+          })}
         >
         <Menu.Items 
           as="div" 
+          anchor={openUpwards && 'top start'}
           style={{ maxHeight: `${menuPosition.maxHeight}px`, overflowY: 'auto' }}
-          className="dropdown-menu absolute mt-2 w-[6em] rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none custom-scrollbar"
+          className="z-50 dropdown-menu absolute mt-2 w-[6em] rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none custom-scrollbar"
          >
           <div className="py-1 bg-slate-600 bg-opacity-96">
             {showSearch &&
@@ -116,7 +122,7 @@ const Dropdown: React.FC<DropdownProps> = ({ value, onChange, options, className
                       }}
                       className={classNames(
                         active ? 'bg-slate-400 text-blue-100' : 'text-slate-300',
-                        'block w-full px-4 py-2 text-left text-sm'
+                        'block w-full px-4 py-2 text-left text-sm '
                       )}
                     >
                       {option}

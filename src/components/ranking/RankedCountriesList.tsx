@@ -13,9 +13,9 @@ import { supportedYears } from '../../data/Contestants';
 import { generateYoutubePlaylistUrl } from '../../utilities/YoutubeUtil';
 import { updateUrlFromRankedItems } from '../../utilities/UrlUtil';
 import { IntroColumnWrapper } from './IntroColumnWrapper';
-import { useAppDispatch, useAppSelector } from '../../utilities/hooks';
 import { deleteRankedCountry } from '../../redux/rankingActions';
 import { Draggable } from '@hello-pangea/dnd';
+import { useAppDispatch, useAppSelector } from '../../hooks/stateHooks';
 
 interface RankedCountriesListProps {
     openSongModal: (countryContestant: CountryContestant) => void;
@@ -137,16 +137,16 @@ const RankedCountriesList: React.FC<RankedCountriesListProps> = ({
                                         </span>
                                     </div>
                                 )}
-                                {rankedItems.map((countryContestant, index) => (
+                                {rankedItems.map((countryContestant: CountryContestant, index: number) => (
                                     <Draggable
-                                        key={`draggable-${countryContestant.id.toString()}`}
-                                        draggableId={countryContestant.id.toString()}
+                                        key={`draggable-${countryContestant?.uid ?? countryContestant.id}`}
+                                        draggableId={countryContestant?.uid ?? countryContestant.id}
                                         index={index}
                                         isDragDisabled={showTotalRank}
                                     >
                                         {(provided: any, snapshot: any) => (
                                             <li
-                                                key={`li-${countryContestant.id.toString()}`}
+                                                key={`li-${countryContestant?.uid ?? countryContestant.id}`}
                                                 ref={provided.innerRef}
                                                 {...provided.draggableProps}
                                                 {...provided.dragHandleProps}
@@ -156,7 +156,7 @@ const RankedCountriesList: React.FC<RankedCountriesListProps> = ({
                                             >
                                                 {showUnranked ? (
                                                     <Card
-                                                        key={`card-${countryContestant.id.toString()}`}
+                                                        key={`card-${countryContestant?.uid ?? countryContestant.id}`}
                                                         className="m-auto text-slate-400 bg- bg-[#03022d] no-select"
                                                         rank={index + 1}
                                                         countryContestant={countryContestant}
@@ -166,7 +166,7 @@ const RankedCountriesList: React.FC<RankedCountriesListProps> = ({
                                                     />
                                                 ) : (
                                                     <DetailsCard
-                                                        key={`card-${countryContestant.id.toString()}`}
+                                                        key={`card-${countryContestant?.uid ?? countryContestant.id}`}
                                                         className="m-auto text-slate-400 bg- bg-[#03022d] no-select"
                                                         rank={index + 1}
                                                         countryContestant={countryContestant}

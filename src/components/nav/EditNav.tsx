@@ -1,17 +1,16 @@
 import React, { SetStateAction } from 'react';
 import { faArrowRight, faTrashAlt, faSquare, faCheckSquare, faPenAlt } from '@fortawesome/free-solid-svg-icons';
 import classNames from 'classnames';
-import { CountryContestant } from '../../data/CountryContestant';
 import IconButton from '../IconButton';
 import { AppDispatch, AppState } from '../../redux/store';
-import { setIsDeleteMode, setContestants, setRankedItems, setUnrankedItems } from '../../redux/rootSlice';
-import { fetchCountryContestantsByYear } from '../../utilities/ContestantRepository';
-import { clearAllRankingParams } from '../../utilities/UrlUtil';
-import { useAppDispatch, useAppSelector } from '../../utilities/hooks';
+import { addAllPaginatedContestants, setIsDeleteMode } from '../../redux/rootSlice';
+import { useAppDispatch, useAppSelector } from '../../hooks/stateHooks';
+import { useResetRanking } from '../../hooks/useResetRanking';
+import { useRefreshUrl } from '../../hooks/useRefreshUrl';
+
 
 type EditNavProps = {
     setNameModalShow: React.Dispatch<SetStateAction<boolean>>;
-    setRefreshUrl: React.Dispatch<SetStateAction<number>>;
 };
 
 /**
@@ -21,65 +20,48 @@ type EditNavProps = {
  * @param param0 
  * @returns 
  */
-const EditNav: React.FC<EditNavProps> = ({ setNameModalShow, setRefreshUrl }) => {
+const EditNav: React.FC<EditNavProps> = ({ setNameModalShow }) => {
     const dispatch: AppDispatch = useAppDispatch();
-    const year = useAppSelector((state: AppState) => state.year);
     const rankedItems = useAppSelector((state: AppState) => state.rankedItems);
+    const selectedContestants = useAppSelector((state: AppState) => state.tableState.selectedContestants);
     const unrankedItems = useAppSelector((state: AppState) => state.unrankedItems);
     const isDeleteMode = useAppSelector((state: AppState) => state.isDeleteMode);
-    const categories = useAppSelector((state: AppState) => state.categories);
+    const paginatedContestants = useAppSelector((state: AppState) => state.tableState.paginatedContestants);
+    const globalSearch = useAppSelector((state: AppState) => state.globalSearch);
+    const resetRanking = useResetRanking();
+    const { handleAddAllUnranked } = useRefreshUrl();
 
-    /**
-   * Clear rankedItems and fill unrankedItems with the relevant year's contestants
-   */
-    async function resetRanking() {
-        let yearContestants: CountryContestant[] = await fetchCountryContestantsByYear(
-            year, ''
-        );
-
-        dispatch(
-            setContestants(yearContestants)
-        );
-
-        dispatch(
-            setUnrankedItems(yearContestants)
-        );
-
-        dispatch(
-            setRankedItems([])
-        );
-
-        clearAllRankingParams(categories);
-        setRefreshUrl(Math.random());
+    function addAll() {
+        if (globalSearch) {
+            addPaginatedContestants();
+        } else {
+            handleAddAllUnranked();
+        }
     }
 
     /**
-     * Add all remaining unranked items to the ranked array
+     * If we're using the global search mode, add all contestants on the current 
+     * page
      */
-    function addAllUnranked() {
+    function addPaginatedContestants(){
         dispatch(
-            setUnrankedItems([])
+            addAllPaginatedContestants()
         );
-        dispatch(
-            setRankedItems(rankedItems.concat(unrankedItems))
-        );
+    }
     
-        // Append unranked items to all existing category rankings (via rx parameters)
-        if (categories.length > 0) {
-            const searchParams = new URLSearchParams(window.location.search);
-    
-            categories.forEach((_, index) => {
-                const categoryParam = `r${index + 1}`;
-                const currentRanking = searchParams.get(categoryParam) || '';
-                const updatedRanking = `${currentRanking}${unrankedItems.map(item => item.country.id).join('')}`;
-                searchParams.set(categoryParam, updatedRanking);
-            });
-    
-            const newUrl = `${window.location.pathname}?${searchParams.toString()}`;
-            window.history.replaceState(null, '', newUrl);
+    /**
+     * Determines whether the Add All button should be enabled, which has 
+     * different requirements depending on whether we're in global search 
+     * mode or not. 
+     * 
+     * @returns 
+     */
+    function canAddAll() {
+        if (globalSearch) {            
+            return paginatedContestants?.length > 0;
+        } else {
+            return unrankedItems?.length > 0;
         }
-    
-        setRefreshUrl(Math.random());
     }
 
     return (
@@ -88,39 +70,39 @@ const EditNav: React.FC<EditNavProps> = ({ setNameModalShow, setRefreshUrl }) =>
                 <ul className="flex space-x-2">
                     <li>
                         <div className="tour-step-3 flex items-center">
-
                             <IconButton
                                 icon={faArrowRight}
-                                disabled={!unrankedItems.length}
-                                onClick={addAllUnranked}
+                                disabled={!canAddAll()}
+                                onClick={addAll}
                                 iconClassName='mr-[0.3em]'
                                 title="Add All"
                             />
-
                             <IconButton
                                 icon={faTrashAlt}
-                                disabled={!rankedItems.length}
+                                disabled={!rankedItems.length && !selectedContestants?.length}
                                 className="ml-4"
                                 iconClassName='mr-[0.3em]'
                                 onClick={resetRanking}
                                 title="Clear"
                             />
 
-                            <IconButton
-                                icon={isDeleteMode ? faCheckSquare : faSquare}
-                                disabled={!rankedItems.length}
-                                className={classNames(
-                                    "ml-4",
-                                    rankedItems.length && isDeleteMode ? "bg-red-800 border-red-100 hover:bg-red-700" : null
-                                )}
-                                iconClassName='mr-[0.3em]'
-                                onClick={() => {
-                                    dispatch(
-                                        setIsDeleteMode(!isDeleteMode)
-                                    );
-                                }}
-                                title="Delete"
-                            />
+                            {!globalSearch &&
+                                <IconButton
+                                    icon={isDeleteMode ? faCheckSquare : faSquare}
+                                    disabled={!rankedItems.length}
+                                    className={classNames(
+                                        "ml-4",
+                                        rankedItems.length && isDeleteMode ? "bg-red-800 border-red-100 hover:bg-red-700" : null
+                                    )}
+                                    iconClassName='mr-[0.3em]'
+                                    onClick={() => {
+                                        dispatch(
+                                            setIsDeleteMode(!isDeleteMode)
+                                        );
+                                    }}
+                                    title="Delete"
+                                />
+                            }
 
                             <IconButton
                                 icon={faPenAlt}

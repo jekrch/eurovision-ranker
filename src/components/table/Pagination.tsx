@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import Dropdown from '../Dropdown';
 import classNames from 'classnames';
 
@@ -10,7 +10,6 @@ interface PaginationProps {
     handlePageSizeChange: (value: string) => void;
     handlePageChange: (page: number) => void;
 }
-
 
 const Pagination: React.FC<PaginationProps> = ({
     pageSize,
@@ -115,14 +114,14 @@ const Pagination: React.FC<PaginationProps> = ({
     };
 
     return (
-        <div className="mt-4 flex justify-between items-center px-4">
+        <div className="mt-1 flex justify-between px-2">
             <div>
                 <Dropdown
                     value={`${pageSize}`}
                     onChange={handlePageSizeChange}
                     options={['10', '25', '50']}
                     buttonClassName=''
-                    className="min-w-[0.9em] text-xs"
+                    className="min-w-[0.9em] text-xs mt-2"
                     openUpwards={true}
                     mini={true}
                 />

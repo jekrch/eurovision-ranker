@@ -78,7 +78,7 @@ const RankedCountriesTable: React.FC<RankedCountriesTableProps> = ({
                         )}
                     >
 
-                        <div className="px-1 overflow-y-auto h-full mt-2 pb-3">
+                        <div className="overflow-y-auto h-full">
                             <ContestantTable/>
                         </div>
     

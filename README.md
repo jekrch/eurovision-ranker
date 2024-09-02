@@ -14,8 +14,11 @@ Users can also view a geographical heat map of their ranking, which is implement
 
 Multiple rankings can be created by category with different weights given to each category to reflect the user's preferences. A weighted total ranking can then be calculated, which reflects the competing values contributing to the user's final judgment.
 
-<img width="300" alt="image" src="https://github.com/jekrch/eurovision-ranker/assets/8173930/71bc60c8-7630-4df6-830d-fdddb28f4010">
-<img width="300" alt="image" src="https://github.com/jekrch/eurovision-ranker/assets/8173930/a6545c3f-ecc2-43cc-83e3-5dbd26ad72b9">
+<img width="300" alt="image" src="https://github.com/user-attachments/assets/8e89f5b5-1a5b-4e68-b36d-6efbac6c089a">
+<img width="300" alt="image" src="https://github.com/user-attachments/assets/496d3d67-8375-4659-b906-dee288aec8b0">
+<br/><br/>
+<img width="300" alt="image" src="https://github.com/user-attachments/assets/84f77d90-5849-43f9-b78d-7aff544470ed">
+
 
 ## Features
 

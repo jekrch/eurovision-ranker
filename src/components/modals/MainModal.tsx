@@ -67,7 +67,7 @@ const MainModal: React.FC<MainModalProps> = (props: MainModalProps) => {
                                     className="w-full shadow-lg rounded mb-5" />
                             </div>
                             <button
-                                className="w-full bg-blue-500 hover:bg-blue-700 text-white font-normal py-1 px-3 rounded-full text-md mb-1"
+                                className="w-full bg-[#3068ba] hover:bg-blue-700 text-white font-normal py-1 px-3 rounded-md text-md mb-1"
                                 onClick={() => window.open('https://www.givemn.org/story/Jddsdf', '_blank')}
                             >
                                 {'Donate'}
@@ -88,7 +88,7 @@ const MainModal: React.FC<MainModalProps> = (props: MainModalProps) => {
                         target="_blank"
                         rel="noopener noreferrer"
                         href="https://github.com/jekrch/eurovision-ranker/releases"
-                    >v5.0</a>
+                    >v5.1</a>
                 </span>
                 <span className="text-right">
                     {`Copyright (c) 2023${new Date().getFullYear()?.toString() !== '2023' ? '-' + new Date().getFullYear() : ''} `}

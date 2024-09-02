@@ -177,7 +177,7 @@ export function urlHasRankings(activeCategory: number | undefined) {
 /**
  * Decodes rankings from URL and updates Redux store accordingly.
  */
-export async function decodeRankingsFromURL(
+export async function loadRankingsFromURL(
     activeCategory: number | undefined,
     dispatch: AppDispatch
 ): Promise<string[] | undefined> {

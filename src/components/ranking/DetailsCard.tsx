@@ -76,57 +76,57 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
 
   return (
     <div>
-    <div
-      key={props.rank ? 'ranked-' : `unranked-card-${country.name}`}
-      className={classNames(
-        props.className, 
-        "relative mx-[.5rem] min-h-[2.5em] py-[0.4em] flex flex-row items-stretch !cursor-grabber whitespace-normal text-sm overflow-hidden shadow rounded border border-0.5 border-gray-400",
-        props.isDragging ? "shadow-slate-400 shadow-sm border-solid" : "",
-        !props.isDragging && props.rank === 1 ? "first-card-glow" : "",
-        props.rank ? "border-solid border-gray" : "border-dashed",
-      )}
-    >
-      <div className="-my-2 flex-shrink-0 pb-[1px] mr-3 font-bold w-8 pr-[0.01em] border-r-[0.01em] border-[#334678]x border-gray-400 bg-[#283a6d] bg-opacity-100 text-slate-300 tracking-tighter items-center justify-center flex text-lg font-monox rounded-sm">
-        {props.rank}
-      </div>
-
-      <div className="relative w-12 mr-3 flex items-center">
-        <div className="relative w-full">
-          {country.key !== 'yu' ? (
-            <Flag code={country.key} className="w-full opacity-80" />
-          ) : (
-            <img
-              src="https://upload.wikimedia.org/wikipedia/commons/6/61/Flag_of_Yugoslavia_%281946-1992%29.svg"
-              alt="Flag of Yugoslavia"
-              className="w-full h-auto opacity-80"
-            />
-          )}
-          {isGlobalMode && contestant && (
-            <div className="bottom-0 left-0 right-0 bg-slate-600 bg-opacity-30 text-slate-300 text-sm font-bold text-center py-1">
-              {contestant.year}
-            </div>
-          )}
+      <div
+        key={props.rank ? 'ranked-' : `unranked-card-${country.name}`}
+        className={classNames(
+          props.className,
+          "relative mx-[.5rem] min-h-[2.5em] py-[0.4em] flex flex-row items-stretch !cursor-grabber whitespace-normal text-sm overflow-hidden shadow rounded border border-0.5 border-gray-400",
+          props.isDragging ? "shadow-slate-400 shadow-sm border-solid" : "",
+          !props.isDragging && props.rank === 1 ? "first-card-glow" : "",
+          props.rank ? "border-solid border-gray" : "border-dashed",
+        )}
+      >
+        <div className="-my-2 flex-shrink-0 pb-[1px] mr-3 font-bold w-8 pr-[0.01em] border-r-[0.01em] border-[#334678]x border-gray-400 bg-[#283a6d] bg-opacity-100 text-slate-300 tracking-tighter items-center justify-center flex text-lg font-monox rounded-sm">
+          {props.rank}
         </div>
-      </div>
 
-      <div className={classNames("flex-grow text-slate-400 font-bold")}>
-        <div className={`overflow-hidden overflow-ellipsis`}>
-          <span className="float-right flex flex-row items-center">
-            {contestant?.youtube &&
-              <div
-                onClick={() => { props.openSongModal() }}
-                className='cursor-pointer rounded text-slate-500 hover:text-slate-100 mr-[0.7em]'>
-                <FaFileAlt className='text-base' />
+        <div className="relative w-12 mr-3 flex items-center">
+          <div className="relative w-full">
+            {country.key !== 'yu' ? (
+              <Flag code={country.key} className="w-full opacity-80" />
+            ) : (
+              <img
+                src="https://upload.wikimedia.org/wikipedia/commons/6/61/Flag_of_Yugoslavia_%281946-1992%29.svg"
+                alt="Flag of Yugoslavia"
+                className="w-full h-auto opacity-80"
+              />
+            )}
+            {isGlobalMode && contestant && (
+              <div className="bottom-0 left-0 right-0 bg-slate-600 bg-opacity-30 text-slate-300 text-sm font-bold text-center py-1">
+                {contestant.year}
               </div>
-            }
-            {contestant?.youtube &&
-              <a href={contestant?.youtube} target="_blank" rel="noopener noreferrer" className='rounded text-slate-500 hover:text-slate-100'>
-                <FaTv className='text-xl mr-[0.3em]' />
-              </a>
-            }
-          </span>
-          <span className="overflow-hidden overflow-ellipsis">{country?.name}</span>
+            )}
+          </div>
         </div>
+
+        <div className={classNames("flex-grow text-slate-400 font-bold")}>
+          <div className={`overflow-hidden overflow-ellipsis`}>
+            <span className="float-right flex flex-row items-center">
+              {contestant?.youtube &&
+                <div
+                  onClick={() => { props.openSongModal() }}
+                  className='cursor-pointer rounded text-slate-500 hover:text-slate-100 mr-[0.7em]'>
+                  <FaFileAlt className='text-base' />
+                </div>
+              }
+              {contestant?.youtube &&
+                <a href={contestant?.youtube} target="_blank" rel="noopener noreferrer" className='rounded text-slate-500 hover:text-slate-100'>
+                  <FaTv className='text-xl mr-[0.3em]' />
+                </a>
+              }
+            </span>
+            <span className="overflow-hidden overflow-ellipsis">{country?.name}</span>
+          </div>
 
           {/* <i className={`z-1 float-right ml-3 flag-icon -mr-2 ${props.country?.icon}`} /> */}
 

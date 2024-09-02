@@ -1,5 +1,5 @@
 import { Dispatch } from 'redux';
-import { decodeRankingsFromURL } from './UrlUtil';
+import { loadRankingsFromURL } from './UrlUtil';
 import { setShowUnranked } from '../redux/rootSlice';
 import { AppDispatch } from '../redux/store';
 
@@ -18,7 +18,7 @@ export const handlePopState = (
   // User clicked back (or forward) button
   const decodeFromUrl = async () => {
     let category = areCategoriesSet() && !activeCategory ? 0 : activeCategory;
-    const rankingsExist = await decodeRankingsFromURL(category, dispatch);
+    const rankingsExist = await loadRankingsFromURL(category, dispatch);
 
     // Set showUnranked based on whether rankings exist
     dispatch(

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { AppState } from '../../redux/store';
 import { useContestantTable } from '../../hooks/useContestantTable';
 import TableHeader from './TableHeader';
@@ -16,7 +16,7 @@ import { useRefreshUrl } from '../../hooks/useRefreshUrl';
 import { useResetRanking } from '../../hooks/useResetRanking';
 import { useConvertRankParams } from '../../hooks/useConvertRankParams';
 import { getDistinctRankedYears } from '../../utilities/ContestantUtil';
-import { urlHasRankings } from '../../utilities/UrlUtil';
+import { loadRankingsFromURL, urlHasRankings } from '../../utilities/UrlUtil';
 
 const ContestantTable: React.FC = () => {
     const dispatch = useAppDispatch();
@@ -29,7 +29,7 @@ const ContestantTable: React.FC = () => {
     const resetRanking = useResetRanking();
     const { refreshUrl } = useRefreshUrl();
     const convertRankParams = useConvertRankParams();
-    
+
     const {
         paginatedContestants,
         handleSort,
@@ -49,48 +49,68 @@ const ContestantTable: React.FC = () => {
         selectedContestants
     } = useContestantTable();
 
-    const confirmAdvancedMode = (checked: boolean) => {
+    const switchAdvancedMode = async (checked: boolean) => {
         if (!checked) {
-            if (urlHasRankings(activeCategory)) {
+            if (
+                urlHasRankings(activeCategory)
+            ) {
                 const rankedYears = getDistinctRankedYears(rankedItems);
                 if (rankedYears?.length === 1) {
-                    dispatch(setYear(rankedYears[0]));
-                    updateGlobalSearch(false);
-                    convertRankParams(false);
+                    
+                    // set the year as the first year
+                    dispatch(
+                        setYear(rankedYears[0])
+                    );
+                    
+                    exitAdvancedMode();
                     refreshUrl();
+
+                    await loadRankingsFromURL(
+                        activeCategory, 
+                        dispatch
+                    );
                 } else {
                     setIsConfirmationOpen(true);
                 }
             } else {
                 resetRanking();
-                updateGlobalSearch(false);
-                convertRankParams(false);
+                exitAdvancedMode();
             }
         } else {
             updateGlobalSearch(checked);
         }
     };
 
+    const exitAdvancedMode = () => {
+        updateGlobalSearch(false);
+        convertRankParams(false);    
+    }
+
     const handleDisableGlobalConfirm = () => {
         resetRanking();
-        updateGlobalSearch(false);
-        convertRankParams(false);
+        exitAdvancedMode();
     };
 
     return (
         <div className="flex flex-col h-full bg-transparent text-slate-300">
-            <div className="flex flex-col mb-1 pr-1">
-                <div className="w-ful">
+            <div className={classNames(
+                "flex flex-col mb-1 pr-1 sm:flex-row sm:items-center sm:space-x-4"
+            )}>
+                <div className={classNames(
+                    "w-full xs:w-1/2"
+                )}>
                     <SearchBar
                         searchTerm={searchTerm}
                         handleSearch={handleSearch}
-                        className="w-full"
+                        className="w-full mb-1"
                     />
                 </div>
-                <div className="flex items-center justify-between py-1 text-sm mt-1">
+                <div className={classNames(
+                    "flex items-center justify-between pb-1 text-sm mt-1 sm:mt-0 sm:justify-end sm:flex-grow min-w-[50%]"
+                )}>
                     <Switch
                         label='selected'
-                        className=" text-base"
+                        className="text-base"
                         labelClassName='text-slate-400'
                         checked={showSelected}
                         setChecked={setShowSelected}
@@ -99,14 +119,14 @@ const ContestantTable: React.FC = () => {
                         <div className="flex items-center">
                             <TooltipHelp
                                 content="Uncheck this to use the simple year-based selection mode"
-                                className="text-slate-300 align-middle mb-1 -mr-1"
+                                className="text-slate-300 align-middle mb-0 -mr-1"
                             />
                             <Switch
                                 label="adv"
                                 className="items-center align-middle"
                                 labelClassName="text-base text-slate-400"
                                 checked={globalSearch}
-                                setChecked={confirmAdvancedMode}
+                                setChecked={switchAdvancedMode}
                             />
                         </div>
                         <IconButton

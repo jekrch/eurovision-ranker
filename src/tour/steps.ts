@@ -53,14 +53,18 @@ export const tourSteps = [
   },
   {
     target: '.tour-step-14',
-    content: 'Want to save or share your ranking? Just copy the URL! All of your ranking data is stored there.',
+    content: 'You can select contestants from multiple years by enabling "Advanced Mode"',
   },
   {
     target: '.tour-step-15',
-    content: 'e.g. your current URL is: eurovision-ranker.com?n=Sigrit%27s+Top+Picks&y=23&r=nidk4t',
+    content: 'Want to save or share your ranking? Just copy the URL! All of your ranking data is stored there.',
   },
   {
     target: '.tour-step-16',
+    content: 'e.g. your current URL is: eurovision-ranker.com?n=Sigrit%27s+Top+Picks&y=23&r=nidk4t',
+  },
+  {
+    target: '.tour-step-17',
     content: 'Enjoy, friends ❤️',
   }
 ].map(step => ({ ...step, disableBeacon: true }));

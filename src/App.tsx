@@ -8,7 +8,7 @@ import Navbar from './components/nav/NavBar';
 import EditNav from './components/nav/EditNav';
 import { AppDispatch, AppState } from './redux/store';
 import { setRankedItems, setUnrankedItems, setShowUnranked, setActiveCategory, setShowTotalRank, setCategories, setGlobalSearch } from './redux/rootSlice';
-import { decodeRankingsFromURL, encodeRankingsToURL, updateQueryParams, updateUrlFromRankedItems, urlHasRankings, urlParamHasValue } from './utilities/UrlUtil';
+import { loadRankingsFromURL, encodeRankingsToURL, updateQueryParams, updateUrlFromRankedItems, urlHasRankings, urlParamHasValue } from './utilities/UrlUtil';
 import MapModal from './components/modals/MapModal';
 import ConfigModal from './components/modals/config/ConfigModal';
 import WelcomeOverlay from './components/modals/WelcomeOverlay';
@@ -161,7 +161,7 @@ const App: React.FC = () => {
     const updateRankedItems = async () => {
 
       if (!showTotalRank) {
-        const rankingsExist = await decodeRankingsFromURL(
+        const rankingsExist = await loadRankingsFromURL(
           activeCategory,
           dispatch
         );
@@ -214,7 +214,7 @@ const App: React.FC = () => {
       }
       updateQueryParams({ y: year.slice(-2) });
       
-      await decodeRankingsFromURL(
+      await loadRankingsFromURL(
         activeCategory,
         dispatch
       );
@@ -347,7 +347,7 @@ const App: React.FC = () => {
 
       <div
         className={classNames(
-          "site-content flex flex-col h-screen tour-step-14 tour-step-15 tour-step-16 normal-bg",
+          "site-content flex flex-col h-screen tour-step-15 tour-step-16 tour-step-17 normal-bg",
           { 'star-sky': theme.includes('ab') }
         )}>
 
@@ -380,7 +380,7 @@ const App: React.FC = () => {
               {showUnranked && !globalSearch && (
 
                 <div className="relative flex flex-col">
-                  <div className="sticky top-0 rounded-t-md round-b-sm text-center font-bold bg-blue-900 gradient-background text-slate-300 tracking-tighter shadow-md z-50">
+                  <div className="tour-step-14 sticky top-0 rounded-t-md round-b-sm text-center font-bold bg-blue-900 gradient-background-reverse text-slate-300 tracking-tighter shadow-md z-50">
                     <div className="flex items-center justify-center py-1 px-0">
                       <TooltipHelp
                         content="Select countries across all contest years"
@@ -400,15 +400,9 @@ const App: React.FC = () => {
               )}
 
               {/* Ranked Countries List */}
+
               {globalSearch && showUnranked ? (
-                <RankedCountriesTable
-                  openSongModal={openSongModal}
-                  openModal={openMainModal}
-                  openConfigModal={openConfigModal}
-                  setRunTour={setRunTour}
-                  openNameModal={() => setNameModalShow(true)}
-                  openMapModal={() => setMapModalShow(true)}
-                />
+                <RankedCountriesTable/>
               ) :
                 <RankedCountriesList
                   openSongModal={openSongModal}

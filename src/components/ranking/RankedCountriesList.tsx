@@ -108,7 +108,7 @@ const RankedCountriesList: React.FC<RankedCountriesListProps> = ({
                                 {...provided.droppableProps}
                                 ref={provided.innerRef}
                                 className={classNames(
-                                    "overflow-y-auto overflow-x-hidden pt-3 bg-[#1d1b54] ranked-items-background w-full h-full",
+                                    "overflow-y-auto overflow-x-hidden pt-3 bg-[#1d1b54]x ranked-items-background w-full h-full",
                                     showUnranked
                                         ? "min-w-[9em] max-w-50vw-6em"
                                         : "w-[80vw] max-w-[30em] min-w-[20em]",

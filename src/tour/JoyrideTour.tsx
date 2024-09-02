@@ -1,14 +1,14 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { CallBackProps, EVENTS, ACTIONS, STATUS } from 'react-joyride';
 import { AppDispatch, AppState } from '../redux/store';
-import { setYear, setName, setShowUnranked, setRankedItems, setUnrankedItems, setShowTotalRank, setHeaderMenuOpen, setContestants } from '../redux/rootSlice';
+import { setYear, setName, setShowUnranked, setRankedItems, setUnrankedItems, setShowTotalRank, setHeaderMenuOpen, setContestants, setGlobalSearch } from '../redux/rootSlice';
 import { fetchCountryContestantsByYear } from '../utilities/ContestantRepository';
 import { tourSteps } from '../tour/steps';
 import { joyrideOptions } from '../utilities/JoyrideUtil';
 import Joyride from 'react-joyride';
 import { clearCategories, clearCategories as clearCategoriesUtil } from '../utilities/CategoryUtil';
 import { CountryContestant } from '../data/CountryContestant';
-import { clearAllRankingParams } from '../utilities/UrlUtil';
+import { clearAllRankingParams, updateQueryParams } from '../utilities/UrlUtil';
 import { useAppDispatch, useAppSelector } from '../hooks/stateHooks';
 import { clone } from '../utilities/ContestantUtil';
 
@@ -40,7 +40,7 @@ const JoyrideTour: React.FC<JoyrideTourProps> = (props: JoyrideTourProps) => {
 
     const handleJoyrideCallback = useCallback((data: CallBackProps) => {
       const { action, index, status, type } = data;
-  
+
       if (type === EVENTS.STEP_BEFORE && index === 0) {
         clearRanking(year);
       }
@@ -92,7 +92,7 @@ const JoyrideTour: React.FC<JoyrideTourProps> = (props: JoyrideTourProps) => {
           dispatch(setYear('2023'));
           props.setRefreshUrl(Math.random());
         }
-
+        
         await clearRanking(year);
 
         dispatch(

@@ -60,7 +60,7 @@ const MainModal: React.FC<MainModalProps> = (props: MainModalProps) => {
                     <div className="mb-0">
                         <div className="float-left w-1/2 mr-5 mt-2">
 
-                            <div className="aspect-ratio-box mb-5">
+                            <div className="aspect-ratio-box mb-4">
                                 <img
                                     src={`/mnay.png`}
                                     alt="Heart"

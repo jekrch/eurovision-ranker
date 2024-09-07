@@ -30,7 +30,6 @@ const JoyrideTour: React.FC<JoyrideTourProps> = (props: JoyrideTourProps) => {
     const [startTour, setStartTour] = useState<boolean>(false);
     const resetRanking = useResetRanking();
     const [originalUrlQuery, setOriginalUrlQuery] = useState<string>('');
-
     const [joyrideStepIndex, setJoyrideStepIndex] = useState(0);
   
     useEffect(() => {

@@ -219,7 +219,7 @@ const AnalyzeTab: React.FC = () => {
               </div>
               <div>
                 <IconButton
-                  className="bg-blue-500 hover:bg-blue-700 text-white font-normal pl-[0.7em] rounded-md text-xs py-[0.5em] pr-[1em]"
+                  className="pl-[0.7em] rounded-md text-xs py-[0.5em] pr-[1em]"
                   onClick={() => addRankingAsCategory(comparison.list2Code, getRankingTitle(voteType, country))}
                   icon={undefined}
                   title="Add as Category"

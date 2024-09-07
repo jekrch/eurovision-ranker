@@ -1,16 +1,17 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { CallBackProps, EVENTS, ACTIONS, STATUS } from 'react-joyride';
 import { AppDispatch, AppState } from '../redux/store';
-import { setYear, setName, setShowUnranked, setRankedItems, setUnrankedItems, setShowTotalRank, setHeaderMenuOpen, setContestants, setGlobalSearch } from '../redux/rootSlice';
+import { setYear, setName, setShowUnranked, setRankedItems, setUnrankedItems, setShowTotalRank, setHeaderMenuOpen, setContestants, setGlobalSearch, setTheme } from '../redux/rootSlice';
 import { fetchCountryContestantsByYear } from '../utilities/ContestantRepository';
 import { tourSteps } from '../tour/steps';
 import { joyrideOptions } from '../utilities/JoyrideUtil';
 import Joyride from 'react-joyride';
 import { clearCategories, clearCategories as clearCategoriesUtil } from '../utilities/CategoryUtil';
 import { CountryContestant } from '../data/CountryContestant';
-import { clearAllRankingParams, updateQueryParams } from '../utilities/UrlUtil';
+import { clearAllRankingParams, goToUrl, updateQueryParams } from '../utilities/UrlUtil';
 import { useAppDispatch, useAppSelector } from '../hooks/stateHooks';
 import { clone } from '../utilities/ContestantUtil';
+import { useResetRanking } from '../hooks/useResetRanking';
 
 interface JoyrideTourProps {
   setRefreshUrl: (num: number) => void;
@@ -24,13 +25,60 @@ const JoyrideTour: React.FC<JoyrideTourProps> = (props: JoyrideTourProps) => {
     const dispatch: AppDispatch = useAppDispatch();
     const year = useAppSelector((state: AppState) => state.year);
     const categories = useAppSelector((state: AppState) => state.categories);
-    const activeCategory = useAppSelector((state: AppState) => state.activeCategory);
-    const showTotalRank = useAppSelector((state: AppState) => state.showTotalRank);
     const rankedItems = useAppSelector((state: AppState) => state.rankedItems);
     const unrankedItems = useAppSelector((state: AppState) => state.unrankedItems);
+    const [startTour, setStartTour] = useState<boolean>(false);
+    const resetRanking = useResetRanking();
+    const [originalUrlQuery, setOriginalUrlQuery] = useState<string>('');
 
     const [joyrideStepIndex, setJoyrideStepIndex] = useState(0);
   
+    useEffect(() => {
+      if (props.runTour !== startTour) {
+
+        // if we're starting the tour, save the current URL so we can 
+        // restore it after exiting the tour. Then clear the current 
+        // ranking state.
+        if (props.runTour) {
+          setOriginalUrlQuery(window.location.search);
+          clearRankingForTour();
+
+        }
+
+        setStartTour(props.runTour);
+
+        // if we're exiting the tour, return to the URL we had 
+        // when the tour began 
+        if (!props.runTour) {
+          goToUrl(originalUrlQuery, undefined);
+        }
+      }
+
+    }, [props.runTour]);
+
+    /**
+     * In order to prepare for a tour, we should clear the theme, ensure 
+     * that we're not in advanced/global mode, and clear any current ranking.
+     * Note that the original ranking will be restored when the tour ends. 
+     */
+    function clearRankingForTour() {
+      updateQueryParams({
+        'g': undefined,
+        t: ''
+      }
+      );
+    
+      dispatch(
+        setGlobalSearch(false)
+      );
+
+      dispatch(
+        setTheme('')
+      );
+    
+      resetRanking();
+    }
+
     useEffect(() => {
       const executeJoyRideStep = async () => {
         await executeTourStepActions(joyrideStepIndex);
@@ -210,7 +258,7 @@ const JoyrideTour: React.FC<JoyrideTourProps> = (props: JoyrideTourProps) => {
         disableScrolling={true}
         disableScrollParentFix={true}
         continuous
-        run={props.runTour}
+        run={startTour}
         steps={tourSteps}
         stepIndex={joyrideStepIndex}
         callback={handleJoyrideCallback}

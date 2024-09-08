@@ -1,30 +1,33 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import { DragDropContext, DropResult } from '@hello-pangea/dnd';
 import classNames from 'classnames';
 import { CountryContestant } from './data/CountryContestant';
-import MainModal from './components/modals/MainModal';
-import NameModal from './components/modals/NameModal';
-import Navbar from './components/nav/NavBar';
-import EditNav from './components/nav/EditNav';
 import { AppDispatch, AppState } from './redux/store';
 import { setRankedItems, setUnrankedItems, setShowUnranked, setActiveCategory, setShowTotalRank, setCategories, setGlobalSearch } from './redux/rootSlice';
-import { loadRankingsFromURL, encodeRankingsToURL, updateQueryParams, updateUrlFromRankedItems, urlHasRankings, urlParamHasValue } from './utilities/UrlUtil';
-import MapModal from './components/modals/MapModal';
-import ConfigModal from './components/modals/config/ConfigModal';
+import { loadRankingsFromURL, encodeRankingsToURL, updateQueryParams, updateUrlFromRankedItems, urlHasRankings } from './utilities/UrlUtil';
 import WelcomeOverlay from './components/modals/WelcomeOverlay';
-import SongModal from './components/modals/LyricsModal';
 import { Toaster } from 'react-hot-toast';
 import { toastOptions } from './utilities/ToasterUtil';
 import { areCategoriesSet, categoryRankingsExist, parseCategoriesUrlParam, reorderByAllWeightedRankings } from './utilities/CategoryUtil';
 import { isArrayEqual } from './utilities/RankAnalyzer';
-import JoyrideTour from './tour/JoyrideTour';
 import { addWindowEventListeners, handlePopState, removeWindowEventListeners, setVh } from './utilities/EventListenerUtil';
-import RankedCountriesList from './components/ranking/RankedCountriesList';
-import UnrankedCountriesList from './components/ranking/UnrankedCountriesList';
 import { useAppDispatch, useAppSelector } from './hooks/stateHooks';
 import { Switch } from './components/Switch';
 import TooltipHelp from './components/TooltipHelp';
-import RankedCountriesTable from './components/ranking/RankedCountriesTable';
+import ContentPlaceholder from './components/ranking/ContentPlaceholder';
+import EditNav from './components/nav/EditNav';
+
+// lazy load components to reduce initial bundle size
+const LazyRankedCountriesList = React.lazy(() => import('./components/ranking/RankedCountriesList'));
+const LazyUnrankedCountriesList = React.lazy(() => import('./components/ranking/UnrankedCountriesList'));
+const LazyRankedCountriesTable = React.lazy(() => import('./components/ranking/RankedCountriesTable'));
+const LazyMainModal = React.lazy(() => import('./components/modals/MainModal'));
+const LazyNameModal = React.lazy(() => import('./components/modals/NameModal'));
+const LazyNavbar = React.lazy(() => import('./components/nav/NavBar'));
+const LazyMapModal = React.lazy(() => import('./components/modals/MapModal'));
+const LazyConfigModal = React.lazy(() => import('./components/modals/config/ConfigModal'));
+const LazySongModal = React.lazy(() => import('./components/modals/LyricsModal'));
+const LazyJoyrideTour = React.lazy(() => import('./tour/JoyrideTour'));
 
 const App: React.FC = () => {
   const [mainModalShow, setMainModalShow] = useState(false);
@@ -32,27 +35,32 @@ const App: React.FC = () => {
   const [mapModalShow, setMapModalShow] = useState(false);
   const [configModalShow, setConfigModalShow] = useState(false);
   const [refreshUrl, setRefreshUrl] = useState(0);
-  const [refreshRankedList, setRefreshRankedList] = useState(0);
   const [modalTab, setModalTab] = useState('about')
   const [configModalTab, setConfigModalTab] = useState('display')
   const dispatch: AppDispatch = useAppDispatch();
-  const showUnranked = useAppSelector((state: AppState) => state.showUnranked);
-  const year = useAppSelector((state: AppState) => state.year);
-  const name = useAppSelector((state: AppState) => state.name);
-  const theme = useAppSelector((state: AppState) => state.theme);
-  const categories = useAppSelector((state: AppState) => state.categories);
-  const activeCategory = useAppSelector((state: AppState) => state.activeCategory);
-  const showTotalRank = useAppSelector((state: AppState) => state.showTotalRank);
-  const vote = useAppSelector((state: AppState) => state.vote);
-  const rankedItems = useAppSelector((state: AppState) => state.rankedItems);
-  const unrankedItems = useAppSelector((state: AppState) => state.unrankedItems);
-  const globalSearch = useAppSelector((state: AppState) => state.globalSearch);
+
+  const {
+    showUnranked,
+    year,
+    name,
+    theme,
+    categories,
+    activeCategory,
+    showTotalRank,
+    rankedItems,
+    unrankedItems,
+    globalSearch
+  } = useAppSelector((state: AppState) => state);
+
   const [isSongModalOpen, setIsSongModalOpen] = useState(false);
   const [selectedCountryContestant, setSelectedCountryContestant] = useState<CountryContestant | undefined>(undefined);
   const [showOverlay, setShowOverlay] = useState(!areRankingsSet());
   const [isOverlayExit, setIsOverlayExit] = useState(false);
   const [runTour, setRunTour] = useState(false);
 
+  const memoizedRankedItems = useMemo(() => rankedItems, [rankedItems]);
+  const memoizedUnrankedItems = useMemo(() => unrankedItems, [unrankedItems]);
+  
   const loadAuroralCSS = () => {
     return import('./auroral.css');
   };
@@ -86,21 +94,14 @@ const App: React.FC = () => {
     setTimeout(() => {
       setShowOverlay(false)
     }, 500);
+    
   }, []);
-
-  /**
- * When the vote code updates, make sure to refresh the ranked 
- * list so the new votes are displayed
- */
-  useEffect(() => {
-    setRefreshRankedList(Math.random())
-  }, [vote]);
 
 
   useEffect(() => {
     if (refreshUrl === 0) return;
     updateUrlFromRankedItems(
-      activeCategory, categories, rankedItems
+      activeCategory, categories, memoizedRankedItems
     );
   }, [refreshUrl]);
 
@@ -191,10 +192,10 @@ const App: React.FC = () => {
 
       if (showTotalRank) {
 
-        let totalOrderRankings = reorderByAllWeightedRankings(categories, rankedItems);
+        let totalOrderRankings = reorderByAllWeightedRankings(categories, memoizedRankedItems);
 
         // if it's already correctly ordered don't reset rankedItems
-        if (isArrayEqual(totalOrderRankings, rankedItems)) {
+        if (isArrayEqual(totalOrderRankings, memoizedRankedItems)) {
           return;
         }
 
@@ -205,7 +206,7 @@ const App: React.FC = () => {
     };
 
     updateRankedItems();
-  }, [showTotalRank, rankedItems, categories]);
+  }, [showTotalRank, memoizedRankedItems, categories]);
 
   useEffect(() => {
     const handleYearUpdate = async () => {
@@ -235,7 +236,7 @@ const App: React.FC = () => {
         const currentRanking = new URLSearchParams(window.location.search).get(categoryParam);
 
         if (!currentRanking) {
-          const updatedRanking = encodeRankingsToURL(rankedItems);
+          const updatedRanking = encodeRankingsToURL(memoizedRankedItems);
           updateQueryParams({ [categoryParam]: updatedRanking });
         }
       });
@@ -277,14 +278,14 @@ const App: React.FC = () => {
     let activeList, setActiveList, otherList, setOtherList;
 
     if (source.droppableId === 'unrankedItems') {
-      activeList = unrankedItems;
+      activeList = memoizedUnrankedItems;
       setActiveList = setUnrankedItems;
-      otherList = rankedItems;
+      otherList = memoizedRankedItems;
       setOtherList = setRankedItems;
     } else {
-      activeList = rankedItems;
+      activeList = memoizedRankedItems;
       setActiveList = setRankedItems;
-      otherList = unrankedItems;
+      otherList = memoizedUnrankedItems;
       setOtherList = setUnrankedItems;
     }
 
@@ -314,7 +315,7 @@ const App: React.FC = () => {
 
     dispatch(setActiveList(items));
     setRefreshUrl(Math.random());
-  }, [unrankedItems, rankedItems, categories, dispatch]);
+  }, [memoizedUnrankedItems, memoizedRankedItems, categories, dispatch]);
 
   function openMainModal(tabName: string): void {
     setModalTab(tabName);
@@ -358,10 +359,12 @@ const App: React.FC = () => {
             <div className="star" id="stars3"></div>
           </div>
         }
-        <Navbar
-          openModal={openMainModal}
-          openConfigModal={openConfigModal}
-        />
+        <Suspense fallback={<div/>}>
+          <LazyNavbar
+            openModal={openMainModal}
+            openConfigModal={openConfigModal}
+          />
+        </Suspense>
 
         <div className="flex-grow overflow-auto overflow-x-hidden bg-[#040241] flex justify-center bg-opacity-0">
           <DragDropContext
@@ -395,24 +398,29 @@ const App: React.FC = () => {
                       />
                     </div>
                   </div>
-                  <UnrankedCountriesList />
+                  <Suspense fallback={<ContentPlaceholder/>}>
+                    <LazyUnrankedCountriesList />
+                  </Suspense>
                 </div>
               )}
 
               {/* Ranked Countries List */}
 
               {globalSearch && showUnranked ? (
-                <RankedCountriesTable/>
+                <Suspense fallback={<ContentPlaceholder />}>
+                  <LazyRankedCountriesTable/>
+                </Suspense>
               ) :
-                <RankedCountriesList
-                  openSongModal={openSongModal}
-                  openModal={openMainModal}
-                  openConfigModal={openConfigModal}
-                  setRunTour={setRunTour}
-                  openNameModal={() => setNameModalShow(true)}
-                  openMapModal={() => setMapModalShow(true)}
-                />
-
+                <Suspense fallback={<ContentPlaceholder />}>
+                  <LazyRankedCountriesList
+                    openSongModal={openSongModal}
+                    openModal={openMainModal}
+                    openConfigModal={openConfigModal}
+                    setRunTour={setRunTour}
+                    openNameModal={() => setNameModalShow(true)}
+                    openMapModal={() => setMapModalShow(true)}
+                  />
+                </Suspense>
               }
             </div>
           </DragDropContext>
@@ -449,66 +457,61 @@ const App: React.FC = () => {
         }
       </div>
 
-      <div className="">
-        <MainModal
-          tab={modalTab}
-          isOpen={mainModalShow}
-          onClose={() => setMainModalShow(false)}
-          startTour={() => {
-            dispatch(
-              setShowUnranked(true)
-            );
-            setRunTour(true);
+      <Suspense fallback={<div/>}>
+        <div>
+          <LazyMainModal
+            tab={modalTab}
+            isOpen={mainModalShow}
+            onClose={() => setMainModalShow(false)}
+            startTour={() => {
+              dispatch(
+                setShowUnranked(true)
+              );
+              setRunTour(true);
+            }}
+          />
+        </div>
+
+        <LazyNameModal
+          isOpen={nameModalShow}
+          onClose={() => {
+            setNameModalShow(false);
           }}
         />
-      </div>
 
-      <NameModal
-        isOpen={nameModalShow}
-        onClose={() => {
-          setNameModalShow(false);
-        }}
-      />
-
-      {/* <TableModal
-        isOpen={tableModalShow}
-        onClose={() => {
-          setTableModalShow(false);
-        }}
-      /> */}
-
-      <MapModal
-        isOpen={mapModalShow}
-        onClose={() => { setMapModalShow(false) }}
-      />
-
-      <SongModal
-        isOpen={isSongModalOpen}
-        countryContestant={selectedCountryContestant}
-        onClose={() => setIsSongModalOpen(false)}
-      />
-
-      <div className="tour-step-13">
-        <ConfigModal
-          tab={configModalTab}
-          isOpen={configModalShow}
-          onClose={() => setConfigModalShow(false)}
-          startTour={() => {
-            dispatch(
-              setShowUnranked(true)
-            );
-            setRunTour(true);
-          }}
+        <LazyMapModal
+          isOpen={mapModalShow}
+          onClose={() => { setMapModalShow(false) }}
         />
-      </div>
-      <JoyrideTour
-        setRefreshUrl={setRefreshUrl}
-        openConfigModal={openConfigModal}
-        setConfigModalShow={setConfigModalShow}
-        setRunTour={setRunTour}
-        runTour={runTour}
-      />
 
+        <LazySongModal
+          isOpen={isSongModalOpen}
+          countryContestant={selectedCountryContestant}
+          onClose={() => setIsSongModalOpen(false)}
+        />
+
+        <div className="tour-step-13">
+          <LazyConfigModal
+            tab={configModalTab}
+            isOpen={configModalShow}
+            onClose={() => setConfigModalShow(false)}
+            startTour={() => {
+              dispatch(
+                setShowUnranked(true)
+              );
+              setRunTour(true);
+            }}
+          />
+        </div>
+        <LazyJoyrideTour
+          setRefreshUrl={setRefreshUrl}
+          openConfigModal={openConfigModal}
+          setConfigModalShow={setConfigModalShow}
+          setRunTour={setRunTour}
+          runTour={runTour}
+        />
+      </Suspense>
+      
       <Toaster
         toastOptions={toastOptions}
         position="top-center"

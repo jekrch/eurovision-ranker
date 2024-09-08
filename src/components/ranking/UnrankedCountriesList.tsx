@@ -3,7 +3,7 @@ import { StrictModeDroppable } from './StrictModeDroppable';
 import classNames from 'classnames';
 import { Card } from './Card';
 import { AppState } from '../../redux/store';
-import { useAppDispatch, useAppSelector } from '../../hooks/stateHooks';
+import { useAppSelector } from '../../hooks/stateHooks';
 import { Draggable } from '@hello-pangea/dnd';
 
 /**
@@ -24,7 +24,7 @@ const UnrankedCountriesList: React.FC = ({
                         key={`ranked-list-${unrankedItems.length}`}
                         {...provided.droppableProps}
                         ref={provided.innerRef}
-                        className={classNames("pt-3 min-w-[10em] tour-step-2", "")}
+                        className={classNames("pt-[0.3em] min-w-[10em] tour-step-2", "")}
                     >
                         {unrankedItems.map((item, index) => (
                             <Draggable

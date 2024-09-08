@@ -10,6 +10,7 @@ type IconButtonProps = {
     iconClassName?: string;
     disabled?: boolean;
     title?: string;
+    isGrayTheme?: boolean;
 };
 
 function rippleEffect(event: any) {
@@ -36,7 +37,7 @@ function rippleEffect(event: any) {
     }, 600);
 }
 
-export const IconButton: React.FC<IconButtonProps> = ({ icon, onClick, className, disabled = false, title, iconClassName }) => {
+export const IconButton: React.FC<IconButtonProps> = ({ icon, onClick, className, disabled = false, title, iconClassName, isGrayTheme }) => {
     const handleClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         if (!disabled) {
             rippleEffect(event);
@@ -49,7 +50,8 @@ export const IconButton: React.FC<IconButtonProps> = ({ icon, onClick, className
             className={classNames(
                 "relative overflow-hidden text-white font-normal py-1 pl-2 pr-3 rounded-md text-xs",
                 disabled ? "bg-slate-500" : "bg-[#3068ba] hover:bg-blue-700",
-                className
+                className,
+                { "text-white bg-slate-700 hover:bg-slate-800 dark:bg-slate-600 dark:hover:bg-slate-700 dark:focus:ring-blue-800": isGrayTheme}
             )}
             onClick={handleClick}
             disabled={disabled}

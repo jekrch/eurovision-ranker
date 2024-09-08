@@ -25,7 +25,7 @@ const ExportTab: React.FC = () => {
     <div className="mb-0">
       <div className="mb-[1.5em]">
         <IconButton
-          className="pl-[0.7em] ml-0 rounded-md text-xs py-[0.5em] px-[1em]"
+          className="pl-[0.7em] ml-0 py-[0.5em] px-[1em]"
           onClick={copyUrlToClipboard}
           icon={faCopy}
           title="Copy URL to Clipboard"
@@ -51,7 +51,7 @@ const ExportTab: React.FC = () => {
         />
 
         <IconButton
-          className="ml-4 pl-[0.7em] rounded-md text-xs py-[0.5em] pr-[1em]"
+          className="ml-4 pl-[0.7em] py-[0.5em] pr-[1em]"
           onClick={() => copyToClipboard(rankedItems, exportTypeSelection as EXPORT_TYPE)}
           icon={faCopy}
           title="Copy to Clipboard"

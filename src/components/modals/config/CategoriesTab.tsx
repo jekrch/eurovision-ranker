@@ -74,14 +74,14 @@ const CategoriesTab: React.FC = () => {
             className="px-2.5 py-1.5 ml-1 mr-3 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
           />
           <IconButton
-            className="ml-1 pl-[0.7em] rounded-md text-xs py-[0.5em] pr-[1em]"
+            className="ml-1 pl-[0.7em] py-[0.5em] pr-[1em]"
             onClick={addCategory}
             icon={undefined}
             title="Add"
           />
           {categories?.length > 0 && (
             <IconButton
-              className="ml-3 mt-2 bg-rose-800 hover:bg-rose-700 text-white font-normal pl-[0.7em] rounded-md text-xs py-[0.5em] pr-[1em]"
+              className="ml-3 mt-2 bg-rose-800 hover:bg-rose-700 text-white font-normal pl-[0.7em] py-[0.5em] pr-[1em]"
               onClick={() => {
                 saveCategories([], dispatch, categories, activeCategory);
               }}

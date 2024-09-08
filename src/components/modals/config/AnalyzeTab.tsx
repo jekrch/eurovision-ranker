@@ -219,7 +219,7 @@ const AnalyzeTab: React.FC = () => {
               </div>
               <div>
                 <IconButton
-                  className="pl-[0.7em] rounded-md text-xs py-[0.5em] pr-[1em]"
+                  className="pl-[0.7em] py-[0.5em] pr-[1em]"
                   onClick={() => addRankingAsCategory(comparison.list2Code, getRankingTitle(voteType, country))}
                   icon={undefined}
                   title="Add as Category"
@@ -272,7 +272,7 @@ const AnalyzeTab: React.FC = () => {
           />
         </div>
         <IconButton
-          className="ml-3 font-normal pl-[0.7em] rounded-md text-xs py-[0.5em] pr-[1em]"
+          className="ml-3 pl-[0.7em] py-[0.5em] pr-[1em]"
           onClick={async () => await findMostSimilarVoteByCountry()}
           icon={undefined}
           title="Most similar"

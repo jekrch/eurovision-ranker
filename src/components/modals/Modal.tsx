@@ -3,7 +3,7 @@ import React, { ReactNode, useEffect, useRef, useState } from 'react';
 
 type ModalContainerProps = {
     isOpen: boolean;
-    className: string;
+    className?: string;
     closeBtnClassName?: string;
     onClose: () => void;
     children: ReactNode;

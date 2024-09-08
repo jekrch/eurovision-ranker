@@ -41,9 +41,10 @@ const GlobalConfirmationModal: React.FC<GlobalConfirmationModalProps> = ({
                     title='Confirm'
                 />
                 <IconButton
-                    className="ml-2 text-white bg-slate-700 hover:bg-slate-800 dark:bg-slate-600 dark:hover:bg-slate-700 dark:focus:ring-blue-800"
+                    className="ml-2"
                     onClick={onClose}
                     title='Cancel'
+                    isGrayTheme={true}
                 />
             </div>
         </Modal>

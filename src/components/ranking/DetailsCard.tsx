@@ -13,7 +13,7 @@ import { useAppDispatch, useAppSelector } from '../../hooks/stateHooks';
 export interface DetailsCardProps {
   rank?: number;
   countryContestant: CountryContestant;
-  className: string;
+  className?: string;
   isDragging: boolean;
   categoryScrollPosition: number;
   onCategoryScroll: (callback: React.UIEvent<HTMLDivElement>) => void;
@@ -77,16 +77,19 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
   return (
     <div>
       <div
-        key={props.rank ? 'ranked-' : `unranked-card-${country.name}`}
+        key={props.rank ? 'ranked-' : `unranked-card-${contestant?.id ?? country.id}`}
         className={classNames(
           props.className,
-          "relative mx-[.5rem] min-h-[2.5em] py-[0.4em] flex flex-row items-stretch !cursor-grabber whitespace-normal text-sm overflow-hidden shadow rounded border border-0.5 border-gray-400",
+          "m-auto text-slate-400 bg-[#22222f]x bg-[#03022d] no-select",
+          "relative mx-[.5rem] min-h-[2.5em] py-[0.4em] flex flex-row", 
+          "items-stretch !cursor-grabber whitespace-normal text-sm overflow-hidden",
+          "shadow rounded border border-0.5 border-gray-400",
           props.isDragging ? "shadow-slate-400 shadow-sm border-solid" : "",
           !props.isDragging && props.rank === 1 ? "first-card-glow" : "",
           props.rank ? "border-solid border-gray" : "border-dashed",
         )}
       >
-        <div className="-my-2 flex-shrink-0 pb-[1px] mr-3 font-bold w-8 pr-[0.01em] border-r-[0.01em] border-[#334678]x border-gray-400 bg-[#283a6d] bg-opacity-100 text-slate-300 tracking-tighter items-center justify-center flex text-lg font-monox rounded-sm">
+        <div className="-my-2 flex-shrink-0 pb-[1px] mr-3 font-bold w-8 pr-[0.01em] border-r-[0.01em] border-[#334678]x border-gray-400 bg-[#334678] bg-opacity-100 text-slate-300 tracking-tighter items-center justify-center flex text-lg font-monox rounded-sm">
           {props.rank}
         </div>
 
@@ -109,7 +112,7 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
           </div>
         </div>
 
-        <div className={classNames("flex-grow text-slate-400 font-bold")}>
+        <div className={classNames("flex-grow text-slate-300 font-bold")}>
           <div className={`overflow-hidden overflow-ellipsis`}>
             <span className="float-right flex flex-row items-center">
               {contestant?.youtube &&
@@ -134,10 +137,10 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
             <div className="">
               {contestant ? (
                 <>
-                  <span className="font-xs text-sm text-gray-500">
+                  <span className="font-xs text-sm text-slate-400">
                     {contestant?.artist}
                   </span>
-                  <span className="ml-2 font-xs text-xs text-gray-500">
+                  <span className="ml-2 font-xs text-xs text-slate-400">
                     {contestant.song?.length && !contestant.song?.includes("TBD") ? `"${contestant.song}"` : `${contestant.song}`}
                   </span>
 

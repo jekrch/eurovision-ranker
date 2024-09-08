@@ -131,7 +131,7 @@ const ContestantTable: React.FC = () => {
                         </div>
                         <IconButton
                             className={classNames(
-                                "tada-animation bg-[#3068ba] hover:bg-blue-700 text-white font-normal py-1 pl-[0.7em] pr-[0.9em] rounded-md text-xs w-[6em]",
+                                "tada-animation pl-[0.7em] pr-[0.9em] w-[6em]",
                                 { "tada-animation": showUnranked && rankedItems?.length }
                             )}
                             onClick={() => dispatch(setShowUnranked(!showUnranked))}

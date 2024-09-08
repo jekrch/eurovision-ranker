@@ -108,7 +108,7 @@ const RankedCountriesList: React.FC<RankedCountriesListProps> = ({
                                 {...provided.droppableProps}
                                 ref={provided.innerRef}
                                 className={classNames(
-                                    "overflow-y-auto overflow-x-hidden pt-3 bg-[#1d1b54]x ranked-items-background w-full h-full",
+                                    "overflow-y-auto overflow-x-hidden pt-3 ranked-items-background w-full h-full",
                                     showUnranked
                                         ? "min-w-[9em] max-w-50vw-6em"
                                         : "w-[80vw] max-w-[30em] min-w-[20em]",
@@ -157,7 +157,7 @@ const RankedCountriesList: React.FC<RankedCountriesListProps> = ({
                                                 {showUnranked ? (
                                                     <Card
                                                         key={`card-${countryContestant?.uid ?? countryContestant.id}`}
-                                                        className="m-auto text-slate-400 bg- bg-[#03022d] no-select"
+                                                        className="m-auto text-slate-400 bg-[#03022d] no-select"
                                                         rank={index + 1}
                                                         countryContestant={countryContestant}
                                                         isDeleteMode={showUnranked && isDeleteMode}
@@ -167,7 +167,6 @@ const RankedCountriesList: React.FC<RankedCountriesListProps> = ({
                                                 ) : (
                                                     <DetailsCard
                                                         key={`card-${countryContestant?.uid ?? countryContestant.id}`}
-                                                        className="m-auto text-slate-400 bg- bg-[#03022d] no-select"
                                                         rank={index + 1}
                                                         countryContestant={countryContestant}
                                                         openSongModal={() => openSongModal(countryContestant)}
@@ -187,7 +186,7 @@ const RankedCountriesList: React.FC<RankedCountriesListProps> = ({
                             <div className="pl-2 rounded-b-md h-8 bg-blue-900 ranked-bar-background text-slate-300 items-center flex shadow-md gradient-background">
                                 <IconButton
                                     className={classNames(
-                                        "tour-step-4 ml-auto bg-blue-600 hover:bg-blue-700 text-white font-normal py-1 pl-[0.7em] pr-[0.9em] rounded-md text-xs mr-0 w-[6em]",
+                                        "tour-step-4 ml-auto py-1 pl-[0.7em] pr-[0.9em] mr-0 w-[6em]",
                                         { "tada-animation": showUnranked && rankedItems?.length }
                                     )}
                                     onClick={() => dispatch(

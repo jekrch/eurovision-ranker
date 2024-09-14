@@ -7,6 +7,21 @@
   <meta name="theme-color" content="#000000" />
   <meta name="description" content="An app for ranking your favorite Eurovision Song Contest participants" />
 
+  <meta 
+    http-equiv="Content-Security-Policy" 
+    content="
+      default-src 'self';
+      script-src 'self' 'unsafe-inline' https://www.googletagmanager.com;
+      style-src 'self' 'unsafe-inline';
+      img-src 'self' data: https:;
+      connect-src 'self' https://www.google-analytics.com;
+      font-src 'self';
+      object-src 'none';
+      media-src 'self';
+      frame-src 'none';
+    "
+  >
+  
   <!-- Preconnect to external domains -->
   <link rel="preconnect" href="https://www.googletagmanager.com">
 
@@ -29,7 +44,7 @@
     gtag('config', 'G-2EJQ73Z228');
   </script>
 
-  <script type="module" crossorigin src="/assets/index-B5akD7K7.js"></script>
+  <script type="module" crossorigin src="/assets/index-Dak1ZoGv.js"></script>
   <link rel="modulepreload" crossorigin href="/assets/react-VFLnq-og.js">
   <link rel="modulepreload" crossorigin href="/assets/redux-QBcbxzSO.js">
   <link rel="stylesheet" crossorigin href="/assets/index-ORcQJvsn.css">

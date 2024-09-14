@@ -7,8 +7,6 @@ import compression from 'vite-plugin-compression';
 import autoprefixer from 'autoprefixer';
 
 export default defineConfig({
-    // depending on your application, base can also be "/"
-    //base: '',
     plugins: [
       react(), 
       viteTsconfigPaths(),

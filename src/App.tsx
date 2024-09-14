@@ -16,6 +16,7 @@ import { Switch } from './components/Switch';
 import TooltipHelp from './components/TooltipHelp';
 import ContentPlaceholder from './components/ranking/ContentPlaceholder';
 import EditNav from './components/nav/EditNav';
+import { deleteRankedCountry } from './redux/rankingActions';
 
 // lazy load components to reduce initial bundle size
 const LazyRankedCountriesList = React.lazy(() => import('./components/ranking/RankedCountriesList'));
@@ -39,18 +40,16 @@ const App: React.FC = () => {
   const [configModalTab, setConfigModalTab] = useState('display')
   const dispatch: AppDispatch = useAppDispatch();
 
-  const {
-    showUnranked,
-    year,
-    name,
-    theme,
-    categories,
-    activeCategory,
-    showTotalRank,
-    rankedItems,
-    unrankedItems,
-    globalSearch
-  } = useAppSelector((state: AppState) => state);
+  const showUnranked = useAppSelector((state: AppState) => state.showUnranked);
+  const theme = useAppSelector((state: AppState) => state.theme);
+  const name = useAppSelector((state: AppState) => state.name);
+  const showTotalRank = useAppSelector((state: AppState) => state.showTotalRank);
+  const rankedItems = useAppSelector((state: AppState) => state.rankedItems);
+  const unrankedItems = useAppSelector((state: AppState) => state.unrankedItems);
+  const year = useAppSelector((state: AppState) => state.year);
+  const globalSearch = useAppSelector((state: AppState) => state.globalSearch);
+  const categories = useAppSelector((state: AppState) => state.categories);
+  const activeCategory = useAppSelector((state: AppState) => state.activeCategory);
 
   const [isSongModalOpen, setIsSongModalOpen] = useState(false);
   const [selectedCountryContestant, setSelectedCountryContestant] = useState<CountryContestant | undefined>(undefined);
@@ -70,6 +69,26 @@ const App: React.FC = () => {
       loadAuroralCSS();
     }
   }, [theme]);
+
+  /**
+   * If we're switching to the unranked selection view from the 
+   * total category ranking view, we should activate the first 
+   * category. This is because the "total" is a pseudo ranking 
+   * and immutable, whereas in the select view we want to 
+   * add/remove contestants
+   */
+  useEffect(() => {
+    if (showUnranked && categories?.length > 0 && showTotalRank) {
+      dispatch(
+        setShowTotalRank(false)
+      )
+      dispatch(
+        setActiveCategory(
+          0
+        )
+      )
+    }
+  }, [showUnranked]);
 
   /**
    * Determines whether any rankings are set in the url
@@ -160,10 +179,17 @@ const App: React.FC = () => {
    */
   useEffect(() => {
     const updateRankedItems = async () => {
-
       if (!showTotalRank) {
         const rankingsExist = await loadRankingsFromURL(
           activeCategory,
+          dispatch
+        );
+      } else if (activeCategory === undefined && categories?.length) {
+        // if this is the first page load and we have categories we 
+        // should load the first so that Total tab has contestants 
+        // available to populated the total ranking
+        const rankingsExist = await loadRankingsFromURL(
+          0,
           dispatch
         );
       }
@@ -249,11 +275,22 @@ const App: React.FC = () => {
         window.history.replaceState(null, '', newUrl);
       }
 
-      // Set activeCategory to 0 if it's currently undefined
+      // If active category is undefined, then this is the 
+      // first page load. In that case either
+      // 1. if there are more than 1 categories, show the total view 
+      // or 
+      // 2. if there is only 1 category, just show that category ranking
       if (activeCategory === undefined) {
-        dispatch(
-          setActiveCategory(0)
-        );
+        
+        if (categories?.length > 1) {
+          dispatch(
+            setShowTotalRank(true)          
+          );
+        } else {
+          dispatch(
+            setActiveCategory(0)          
+          );
+        }
       }
     } else {
       // if there are no categories, make sure showTotalRank is false
@@ -276,7 +313,11 @@ const App: React.FC = () => {
     if (!destination) return;
 
     let activeList, setActiveList, otherList, setOtherList;
+    
 
+    const isDeleteFromRanking = source.droppableId === 'rankedItems' && 
+                              destination.droppableId === 'unrankedItems' ;
+    
     if (source.droppableId === 'unrankedItems') {
       activeList = memoizedUnrankedItems;
       setActiveList = setUnrankedItems;
@@ -298,15 +339,26 @@ const App: React.FC = () => {
 
       destinationItems.splice(destination.index, 0, reorderedItem);
 
-      dispatch(setOtherList(destinationItems));
+      if (isDeleteFromRanking) {
+        // this is here especially to ensure that we delete from all category rankings,
+        // and not just the currently selected one
+        dispatch(
+          deleteRankedCountry(reorderedItem.id)
+        );
+        setRefreshUrl(Math.random());
+      } else {
+        // Update the URL parameters for all categories 
+        // (this adds the new item to all category rankings)
+        let id = globalSearch ? reorderedItem.uid : reorderedItem.country.id;
+        if (id) {
+          addNewItemToAllCategoryRankings(id);
+        } else {
+          console.error('Contestant lacks valid ID:')
+          console.error(reorderedItem);
+        }
+      }
 
-      // Update the URL parameters for all categories
-      categories.forEach((_, index) => {
-        const categoryParam = `r${index + 1}`;
-        const currentRanking = new URLSearchParams(window.location.search).get(categoryParam) || '';
-        const updatedRanking = `${currentRanking}${reorderedItem.country.id}`;
-        updateQueryParams({ [categoryParam]: updatedRanking });
-      });
+      dispatch(setOtherList(destinationItems));
 
     } else {
       items.splice(destination.index, 0, reorderedItem);
@@ -316,6 +368,15 @@ const App: React.FC = () => {
     dispatch(setActiveList(items));
     setRefreshUrl(Math.random());
   }, [memoizedUnrankedItems, memoizedRankedItems, categories, dispatch]);
+
+  function addNewItemToAllCategoryRankings(newContestantId: String) {
+    categories.forEach((_, index) => {
+      const categoryParam = `r${index + 1}`;
+      const currentRanking = new URLSearchParams(window.location.search).get(categoryParam) || '';
+      const updatedRanking = `${currentRanking}${newContestantId}`;
+      updateQueryParams({ [categoryParam]: updatedRanking });
+    });
+  }
 
   function openMainModal(tabName: string): void {
     setModalTab(tabName);

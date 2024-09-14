@@ -1,4 +1,4 @@
-import React, { lazy, Suspense } from 'react';
+import { lazy, Suspense } from 'react';
 import { Provider } from 'react-redux';
 import ReactDOM from 'react-dom/client';
 import store from './redux/store';
@@ -10,7 +10,7 @@ import './auroral.css';
 // lazy load the App component
 const App = lazy(() => import('./App'));
 
-const LoadingFallback = () => <div className="w-full h-full normal-bg"/>;
+const LoadingFallback = () => <div className="w-full h-full normal-bg" aria-label="Loading"/>;
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement

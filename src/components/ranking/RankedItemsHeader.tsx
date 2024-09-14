@@ -34,7 +34,7 @@ const RankedItemsHeader: React.FC<IRankedItemsHeaderProps> = ({
     const categories = useAppSelector((state: AppState) => state.categories);
     const showUnranked = useAppSelector((state: AppState) => state.showUnranked);
     const activeCategory = useAppSelector((state: AppState) => state.activeCategory);
-    const [activeTab, setActiveTab] = useState(categories?.length > 0 ? 1 : 0);
+    const [activeTab, setActiveTab] = useState(0);
     
     useEffect(() => {
 

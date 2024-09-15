@@ -63,13 +63,13 @@ code {
 
 /* Styling the scrollbar handle */
 ::-webkit-scrollbar-thumb {
-  background: #7d7aa5;
-  border-radius: 5px;
+  background: #7d7aa585;
+  border-radius: 5px;  
 }
 
 /* Handle hover */
 ::-webkit-scrollbar-thumb:hover {
-  background: #52506c;
+  background: #484663;
 }
 
 .custom-scrollbar::-webkit-scrollbar {
@@ -147,6 +147,19 @@ code {
 .nav-diagonal-split-bg {
   /*background: linear-gradient(135deg, #13172b 60%, #283760  40%);*/
   background: linear-gradient(135deg, #13172b, #334678);
+}
+
+@keyframes phantomArrow {
+  0% { transform: translateY(-50%) translateX(0); opacity: 0; }
+  /* 10% { transform: translateY(-50%) translateX(0); opacity: 0.5; } */
+  25% { transform: translateY(-50%) translateX(15px); opacity: 0.5; }
+  47.5% { transform: translateY(-50%) translateX(0); opacity: 0.5; }
+  70% { transform: translateY(-50%) translateX(20px); opacity: 0; }
+  100% { transform: translateY(-50%) translateX(20px); opacity: 0; }
+}
+
+.animate-phantomArrow {
+  animation: phantomArrow 3s ease-in-out forwards;
 }
 
 .houseUser {
@@ -329,7 +342,40 @@ code {
 }
 
 .bounce-right {
-  animation: bounceRight 12s ease-out infinite;
+  animation: bounceRight 6s ease-out infinite;
+}
+
+@keyframes tada-6s {
+  0%,
+  71.43% {
+    /* 5s out of 7s as static */
+    transform: scale(1) rotate(0deg);
+  }
+
+  74.29%,
+  82.86% {
+    transform: scale(1) rotate(0deg);
+  }
+
+  87.14%,
+  91.43%,
+  95.71% {
+    transform: scale(1.1) rotate(3deg);
+  }
+
+  89.29%,
+  93.57% {
+    transform: scale(1.1) rotate(-3deg);
+  }
+
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+.tada-animation-6s {
+  animation: tada-6s 6s ease-in-out infinite;
+  will-change: transform;
 }
 
 .max-w-50vw-6em {

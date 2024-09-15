@@ -23,7 +23,8 @@ interface AppState {
     activeCategory: number | undefined;
     showTotalRank: boolean;
     showComparison: boolean;
-    tableState: TableState
+    tableState: TableState,
+    welcomeOverlayIsOpen: boolean;
 }
 
 const initialState: AppState = {
@@ -42,6 +43,7 @@ const initialState: AppState = {
     activeCategory: undefined,
     showTotalRank: false,
     showComparison: false,
+    welcomeOverlayIsOpen: false,
     tableState: {
         sortColumn: 'year',
         sortDirection: 'desc',
@@ -80,6 +82,9 @@ const rootSlice = createSlice({
         },
         setHeaderMenuOpen: (state, action: PayloadAction<boolean>) => {
             state.headerMenuOpen = action.payload;
+        },
+        setWelcomeOverlayIsOpen: (state, action: PayloadAction<boolean>) => {
+            state.welcomeOverlayIsOpen = action.payload;
         },
         setRankedItems: (state, action: PayloadAction<CountryContestant[]>) => {
             state.rankedItems = action.payload;
@@ -200,7 +205,8 @@ export const {
     setSelectedContestants,
     setPaginatedContestants,
     addAllPaginatedContestants,
-    setGlobalSearch
+    setGlobalSearch,
+    setWelcomeOverlayIsOpen
 } = rootSlice.actions;
 
 export default rootSlice.reducer;

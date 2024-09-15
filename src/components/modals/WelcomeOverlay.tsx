@@ -1,8 +1,11 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { FaList, FaTv, FaGlobe, FaCog, FaHeart } from 'react-icons/fa';
 import IconButton from '../IconButton';
 import { faCheck, faGlasses } from '@fortawesome/free-solid-svg-icons';
 import classNames from 'classnames';
+import { AppDispatch, AppState } from '../../redux/store';
+import { useAppDispatch, useAppSelector } from '../../hooks/stateHooks';
+import { setWelcomeOverlayIsOpen } from '../../redux/rootSlice';
 
 interface WelcomeOverlayProps {
     exiting: boolean;
@@ -20,13 +23,32 @@ interface WelcomeOverlayProps {
  */
 const WelcomeOverlay: React.FC<WelcomeOverlayProps> = ({ handleGetStarted, handleTakeTour, exiting }) => {
 
+    const dispatch: AppDispatch = useAppDispatch();
+    const welcomeOverlayIsOpen = useAppSelector((state: AppState) => state.welcomeOverlayIsOpen);
     const overlayContentRef = useRef<HTMLDivElement>(null);
+    const [closed, setClosed] = useState(false);
+    
+    if (!welcomeOverlayIsOpen && !closed) {
+        dispatch(
+            setWelcomeOverlayIsOpen(true)
+        )
+        console.log("set")
+    }
 
     const handleClickOutside = (event: React.MouseEvent) => {
         if (overlayContentRef.current && !overlayContentRef.current.contains(event.target as Node)) {
-            handleGetStarted();
+            getStarted();
         }
     };
+
+    function getStarted(){
+        dispatch(
+            setWelcomeOverlayIsOpen(false)
+        );
+        setClosed(true);
+        console.log('closed')
+        handleGetStarted();
+    }
 
     return (
         <div
@@ -77,7 +99,7 @@ const WelcomeOverlay: React.FC<WelcomeOverlayProps> = ({ handleGetStarted, handl
                         className="w-[9em] py-2 rounded-lg"
                         iconClassName='mr-[3px]'
                         title='Get Started'
-                        onClick={handleGetStarted}
+                        onClick={getStarted}
                     />
                     <IconButton
                         icon={faGlasses}

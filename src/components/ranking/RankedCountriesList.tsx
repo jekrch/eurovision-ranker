@@ -187,7 +187,7 @@ const RankedCountriesList: React.FC<RankedCountriesListProps> = ({
                                 <IconButton
                                     className={classNames(
                                         "tour-step-4 ml-auto py-1 pl-[0.7em] pr-[0.9em] mr-0 w-[6em]",
-                                        { "tada-animation": showUnranked && rankedItems?.length }
+                                        { "tada-animation-6s": showUnranked && rankedItems?.length }
                                     )}
                                     onClick={() => dispatch(
                                         setShowUnranked(!showUnranked)

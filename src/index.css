@@ -262,30 +262,31 @@ code {
   }
 }
 
-@keyframes pulse {
-  0% {
+@keyframes pulseOnLoad {
+  0%, 100% {
     transform: scale(1);
   }
-
   50% {
-    transform: scale(1.3);
-  }
-
-  100% {
-    transform: scale(1);
+    transform: scale(1.15);
   }
 }
 
-.pulse-on-load:hover {
-  transform-origin: center center;
-  will-change: transform;
-  animation: pulse 1s ease-in-out infinite;
+@keyframes pulseOnHover {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.15);
+  }
 }
 
 .pulse-on-load {
   transform-origin: center center;
-  will-change: transform;
-  animation: pulse 1s ease-in-out 2;
+  animation: pulseOnLoad 1s ease-in-out 2;
+}
+
+.pulse-on-load:hover {
+  animation: pulseOnHover 1s ease-in-out infinite;
 }
 
 @keyframes tada {

@@ -63,7 +63,7 @@ Multiple rankings can be created by category with different weights given to eac
 npm run start
 ```
 
-The application will be available at `http://localhost:3000`.
+The application will be available at `http://localhost:3000`
 
 ### Running Tests
 

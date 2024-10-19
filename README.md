@@ -63,7 +63,7 @@ Multiple rankings can be created by category with different weights given to eac
 npm run start
 ```
 
-The application will be available at `http://localhost:3000`.
+The application will be available at `http://localhost:3000`
 
 ### Running Tests
 
@@ -81,7 +81,7 @@ Eurovision Ranker utilizes data from the [Eurovision-Dataset](https://github.com
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the [MIT License](LICENSE).
 
 ## Acknowledgments
 

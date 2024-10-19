@@ -80,7 +80,7 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
         key={props.rank ? 'ranked-' : `unranked-card-${contestant?.id ?? country.id}`}
         className={classNames(
           props.className,
-          "m-auto text-slate-400 bg-[#22222f]x bg-[#03022d] no-select",
+          "m-auto text-slate-400 bg-[#22222f]x bg-[#03022d] bg-opacity-30 no-select",
           "relative mx-[.5rem] min-h-[2.5em] py-[0.4em] flex flex-row", 
           "items-stretch !cursor-grabber whitespace-normal text-sm overflow-hidden",
           "shadow rounded border border-0.5 border-gray-400",
@@ -89,7 +89,7 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
           props.rank ? "border-solid border-gray" : "border-dashed",
         )}
       >
-        <div className="-my-2 flex-shrink-0 pb-[1px] mr-3 font-bold w-8 pr-[0.01em] border-r-[0.01em] border-[#334678]x border-gray-400 bg-[#334678] bg-opacity-100 text-slate-300 tracking-tighter items-center justify-center flex text-lg font-monox rounded-sm">
+        <div className="-my-2 flex-shrink-0 pb-[1px] mr-3 font-bold w-8 pr-[0.01em] border-r-[0.01em] border-[#334678]x border-gray-400 bg-[#334678] bg-opacity-80 text-slate-300 tracking-tighter items-center justify-center flex text-lg font-monox rounded-sm">
           {props.rank}
         </div>
 
@@ -194,7 +194,7 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
       {categories?.length > 0 && (showTotalRank || showComparison) && (
         <div
           ref={categoryRankingsRef}
-          className="mt-0 mx-[0.6em] shadow-lg rounded-b-md bg-[#1c214c] bg-opacity-100 border-gray-600 border-x-[0.01em] border-b-[0.01em] overflow-x-auto relative"
+          className="mt-0 mx-[0.6em] shadow-lg rounded-b-md bg-[#1c214c] bg-opacity-100 border-gray-600 border-x-[0.01em] border-b-[0.01em] overflow-x-auto relative ml-[2em]"
           onScroll={props.onCategoryScroll}
         >
           <div className="flex">

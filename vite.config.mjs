@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react'
 import viteTsconfigPaths from 'vite-tsconfig-paths'
 import postcss from 'postcss';
 import tailwindcss from 'tailwindcss';
-import compression from 'vite-plugin-compression';
+import compression from 'vite-plugin-compression2';
 import autoprefixer from 'autoprefixer';
 
 export default defineConfig({

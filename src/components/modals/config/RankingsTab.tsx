@@ -9,10 +9,9 @@ import Dropdown from '../../Dropdown';
 import IconButton from '../../IconButton';
 import { goToUrl } from '../../../utilities/UrlUtil';
 import TooltipHelp from '../../TooltipHelp';
-import { useAppDispatch, useAppSelector } from '../../../hooks/stateHooks';
+import { useAppSelector } from '../../../hooks/stateHooks';
 
 const RankingsTab: React.FC = () => {
-    const dispatch = useAppDispatch();
     const year = useAppSelector((state: AppState) => state.year);
     const theme = useAppSelector((state: AppState) => state.theme);
     const [rankingYear, setRankingYear] = useState(year);
@@ -158,7 +157,7 @@ const RankingsTab: React.FC = () => {
                             menuClassName=""
                             value={rankingYear ?? year}
                             onChange={(y) => setRankingYear(y)}
-                            options={supportedYears.filter((i) => i !== '2020')}
+                            options={supportedYears.filter((i) => i !== '2020' && i !== '2025')}
                             showSearch={true}
                         />
                         <span className="ml-2 text-sm">from</span>

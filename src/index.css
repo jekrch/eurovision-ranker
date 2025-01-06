@@ -586,3 +586,25 @@ https://codepen.io/chris22smith/pen/RZogMa */
   vertical-align: middle;
   margin-right: 8px;
 }
+
+.cookie-consent-enter {
+  transform: translateY(100%);
+  opacity: 0;
+}
+
+.cookie-consent-enter-active {
+  transform: translateY(0);
+  opacity: 1;
+  transition: transform 300ms ease-out, opacity 300ms ease-out;
+}
+
+.cookie-consent-exit {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.cookie-consent-exit-active {
+  transform: translateY(100%);
+  opacity: 0;
+  transition: transform 300ms ease-out, opacity 300ms ease-out;
+}

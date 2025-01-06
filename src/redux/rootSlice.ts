@@ -6,6 +6,7 @@ import { assignVotes } from '../utilities/VoteUtil';
 import { clone } from '../utilities/ContestantUtil';
 import { ContestantRow, TableState } from '../components/table/tableTypes';
 import { changePageSize, filterTable, sortTable } from './tableSlice';
+import { CookieConsent, CookieConsentState } from '../utilities/cookiesStorage';
 
 interface AppState {
     name: string;
@@ -25,6 +26,7 @@ interface AppState {
     showComparison: boolean;
     tableState: TableState,
     welcomeOverlayIsOpen: boolean;
+    cookieConsent: CookieConsentState;
 }
 
 const initialState: AppState = {
@@ -44,6 +46,7 @@ const initialState: AppState = {
     showTotalRank: false,
     showComparison: false,
     welcomeOverlayIsOpen: false,
+    cookieConsent: { isOpen: true, consent: null},
     tableState: {
         sortColumn: 'year',
         sortDirection: 'desc',
@@ -131,6 +134,14 @@ const rootSlice = createSlice({
         setEntries: (state, action: PayloadAction<ContestantRow[]>) => {
             state.tableState.entries = action.payload;
         },
+        setConsent: (state, action: PayloadAction<CookieConsent>) => {
+            state.cookieConsent.consent = action.payload;
+            state.cookieConsent.isOpen = false;
+          },
+          resetConsent: (state) => {
+            state.cookieConsent.consent = null;
+            state.cookieConsent.isOpen = true;
+          },
         setSelectedContestants: (state, action: PayloadAction<ContestantRow[]>) => {
             state.tableState.selectedContestants = action.payload;
         },
@@ -206,7 +217,9 @@ export const {
     setPaginatedContestants,
     addAllPaginatedContestants,
     setGlobalSearch,
-    setWelcomeOverlayIsOpen
+    setWelcomeOverlayIsOpen,
+    setConsent,
+    resetConsent,
 } = rootSlice.actions;
 
 export default rootSlice.reducer;

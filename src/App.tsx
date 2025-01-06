@@ -17,6 +17,7 @@ import TooltipHelp from './components/TooltipHelp';
 import ContentPlaceholder from './components/ranking/ContentPlaceholder';
 import EditNav from './components/nav/EditNav';
 import { deleteRankedCountry } from './redux/rankingActions';
+import { CookieConsent } from './components/CookiesConsent';
 
 // lazy load components to reduce initial bundle size
 const LazyRankedCountriesList = React.lazy(() => import('./components/ranking/RankedCountriesList'));
@@ -578,6 +579,7 @@ const App: React.FC = () => {
         position="top-center"
       />
 
+      <CookieConsent />
     </div>
   );
 };

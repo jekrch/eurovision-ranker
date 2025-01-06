@@ -32,7 +32,6 @@ const WelcomeOverlay: React.FC<WelcomeOverlayProps> = ({ handleGetStarted, handl
         dispatch(
             setWelcomeOverlayIsOpen(true)
         )
-        console.log("set")
     }
 
     const handleClickOutside = (event: React.MouseEvent) => {
@@ -46,7 +45,6 @@ const WelcomeOverlay: React.FC<WelcomeOverlayProps> = ({ handleGetStarted, handl
             setWelcomeOverlayIsOpen(false)
         );
         setClosed(true);
-        console.log('closed')
         handleGetStarted();
     }
 

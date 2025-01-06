@@ -16,6 +16,17 @@ const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 
+declare global {
+  interface Window {
+    gtag: (
+      command: string,
+      action: string,
+      params?: Record<string, any>
+    ) => void;
+    dataLayer: any[];
+  }
+}
+
 root.render(
     <Provider store={store}>
       <Suspense fallback={<LoadingFallback />}>

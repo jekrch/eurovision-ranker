@@ -58,13 +58,13 @@ export const CookieConsent: React.FC = () => {
               onClick={handleAcceptNecessary}
               className="px-4 py-2 text-sm text-gray-200 border border-gray-300 rounded-md hover:bg-gray-500"
             >
-              Accept Necessary
+              Decline
             </button>
             <button
               onClick={handleAcceptAll}
               className="px-4 py-2 text-sm text-white bg-blue-600 rounded-md hover:bg-blue-700"
             >
-              Accept All
+              Accept
             </button>
           </div>
         </div>

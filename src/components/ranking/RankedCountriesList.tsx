@@ -111,7 +111,7 @@ const RankedCountriesList: React.FC<RankedCountriesListProps> = ({
                                     "overflow-y-auto overflow-x-hidden pt-3 ranked-items-background w-full h-full",
                                     showUnranked
                                         ? "min-w-[9em] max-w-50vw-6em"
-                                        : "w-[80vw] max-w-[30em] min-w-[20em]",
+                                        : "w-[85vw] max-w-[30em] min-w-[20em]",
                                     { "auroral-background": theme.includes("ab") }
                                 )}
                             >
@@ -150,7 +150,7 @@ const RankedCountriesList: React.FC<RankedCountriesListProps> = ({
                                                 ref={provided.innerRef}
                                                 {...provided.draggableProps}
                                                 {...provided.dragHandleProps}
-                                                className={classNames("no-select m-2", {
+                                                className={classNames("no-select m-2 mx-1", {
                                                     "mt-0": index === 0,
                                                 })}
                                             >

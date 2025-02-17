@@ -83,10 +83,10 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
           "m-auto text-slate-400 bg-[#22222f]x bg-[#03022d] bg-opacity-30 no-select",
           "relative mx-[.5rem] min-h-[2.5em] py-[0.4em] flex flex-row", 
           "items-stretch !cursor-grabber whitespace-normal text-sm overflow-hidden",
-          "shadow rounded  border border-0.5 border-slate-500",
+          "shadow rounded  border border-0.5",
           props.isDragging ? "shadow-slate-700 shadow-sm border-solid" : "",
           !props.isDragging && props.rank === 1 ? "first-card-glow" : "",
-          props.rank ? "border-solid border-slate-500" : "border-dashed",
+          props.rank ? "border-solid border-slate-400" : "border-dashed",
         )}
       >
         <div className="-my-2 flex-shrink-0 pb-[1px] mr-3 font-bold w-8 pr-[0.01em] border-r-[0.05em] border-[#334678]x border-slate-500 bg-[#334678] bg-opacity-80 text-slate-300 tracking-tighter items-center justify-center flex text-lg font-monox rounded-sm">

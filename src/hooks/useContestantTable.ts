@@ -9,7 +9,7 @@ import { getCountryContestantsByUids } from '../utilities/ContestantRepository';
 import { changePageSize, filterTable, sortTable } from '../redux/tableSlice';
 import { AppState } from '../redux/store';
 import { convertRankingUrlParamsByMode } from '../utilities/ContestantUtil';
-import { isArrayEqual } from '../utilities/RankAnalyzer';
+import { fetchContestantCsv } from '../utilities/CsvCache';
 
 export const useContestantTable = () => {
     const dispatch = useAppDispatch();
@@ -37,8 +37,8 @@ export const useContestantTable = () => {
                 let allEntries: ContestantRow[] = entries;
                 
                 if (!entries?.length) {
-                    const response = await fetch('/contestants.csv');
-                    const text = await response.text();
+                    const response = await fetchContestantCsv();
+                    const text = await response;
                     allEntries = parseCSV(text);
                     dispatch(setEntries(allEntries));
                 }

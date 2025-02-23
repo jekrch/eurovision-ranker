@@ -20,9 +20,23 @@ export function fetchContestantCsv(): Promise<string> {
         return cachedContestantCsvPromise;
     }
 
-    const promise = fetch(`${import.meta.env.BASE_URL}contestants.csv`)
+    const promise = fetch(`${import.meta.env.BASE_URL}main.csv`)
         .then(response => response.text());
 
     cachedContestantCsvPromise = promise;
+    return promise;
+}
+
+let cachedLyricsCsvPromise: Promise<string> | null = null;
+
+export function fetchLyricsCsv(): Promise<string> {
+    if (cachedLyricsCsvPromise) {
+        return cachedLyricsCsvPromise;
+    }
+
+    const promise = fetch(`${import.meta.env.BASE_URL}lyrics.csv`)
+        .then(response => response.text());
+
+        cachedLyricsCsvPromise = promise;
     return promise;
 }

@@ -5,7 +5,7 @@ import Papa from 'papaparse';
 import { assignVotesByCode, assignVotesByContestants, voteCodeHasSourceCountry } from "./VoteProcessor";
 import { cachedYear, initialCountryContestantCache } from "../data/InitialContestants";
 import { SongDetails } from "../data/SongDetails";
-import { fetchContestantCsv } from "./CsvCache";
+import { fetchContestantCsv, fetchLyricsCsv } from "./CsvCache";
 import { clone } from "./ContestantUtil";
 import { sanitizeYear } from "../data/Contestants";
 import { getUrlParam } from "./UrlUtil";
@@ -338,35 +338,54 @@ export function getContestantsByUids(ids: string[]): Promise<Contestant[]> {
       return [...cachedContestants, ...fetchedContestants];
     });
 }
+
 export function getSongDetails(
   uid: string
 ): Promise<SongDetails | undefined> {
-
   return new Promise((resolve, reject) => {
-
-    fetch('/contestants.csv')
-      .then(response => response.text())
-      .then(csvString => {
-
-        Papa.parse(csvString, {
+    // first fetch composers and lyricists from main.csv
+    fetchContestantCsv()
+      .then(response => response)
+      .then(mainCsvString => {
+        Papa.parse(mainCsvString, {
           header: true,
-          complete: (results: any) => {
-            const matchingRow = results.data.find(
+          complete: (mainResults: any) => {
+            const mainRow = mainResults.data.find(
               (row: any) => row.id === uid
             );
 
-            if (matchingRow) {
-              //console.log(matchingRow)
-              resolve({
-                lyrics: matchingRow.lyrics,
-                engLyrics: matchingRow.eng_lyrics,
-                composers: matchingRow.composers,
-                lyricists: matchingRow.lyricists
-              } as SongDetails);
-
-            } else {
+            if (!mainRow) {
               resolve(undefined);
+              return;
             }
+
+            // Then fetch lyrics from lyrics.csv
+            fetchLyricsCsv()
+              .then(response => response)
+              .then(lyricsCsvString => {
+                Papa.parse(lyricsCsvString, {
+                  header: true,
+                  complete: (lyricsResults: any) => {
+                    const lyricsRow = lyricsResults.data.find(
+                      (row: any) => row.id === uid
+                    );
+
+                    if (!lyricsRow) {
+                      resolve(undefined);
+                      return;
+                    }
+
+                    resolve({
+                      lyrics: lyricsRow.lyrics,
+                      engLyrics: lyricsRow.eng_lyrics,
+                      composers: mainRow.composers,
+                      lyricists: mainRow.lyricists
+                    } as SongDetails);
+                  },
+                  error: (error: any) => reject(error)
+                });
+              })
+              .catch(error => reject(error));
           },
           error: (error: any) => reject(error)
         });

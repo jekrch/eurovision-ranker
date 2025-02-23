@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { AppState } from '../../../redux/store';
-import { setTheme, setVote, setContestants, setShowComparison, setRankedItems, assignVotesToContestants } from '../../../redux/rootSlice';
+import { setTheme, setVote, setContestants, setShowComparison, setRankedItems, assignVotesToContestants, setShowThumbnail } from '../../../redux/rootSlice';
 import { assignVotesByCode, assignVotesByContestants, fetchVotesByCode, updateVoteTypeCode, voteCodeHasType } from '../../../utilities/VoteProcessor';
 import { countries } from '../../../data/Countries';
 import Dropdown from '../../Dropdown';
@@ -16,6 +16,7 @@ const DisplayTab: React.FC = () => {
     const vote = useAppSelector((state: AppState) => state.vote);
     const theme = useAppSelector((state: AppState) => state.theme);
     const showComparison = useAppSelector((state: AppState) => state.showComparison);
+    const showThumbnail = useAppSelector((state: AppState) => state.showThumbnail);
     const rankedItems = useAppSelector((state: AppState) => state.rankedItems);
     const year = useAppSelector((state: AppState) => state.year);
     const globalSearch = useAppSelector((state: AppState) => state.globalSearch);
@@ -87,6 +88,13 @@ const DisplayTab: React.FC = () => {
         updateQueryParams({ cm: checked === true ? 't' : 'f' })
         dispatch(
             setShowComparison(checked === true)
+        );
+    };
+
+    const onShowThumbnailsChange = (checked: boolean) => {
+        updateQueryParams({ p: checked === true ? 't' : 'f' })
+        dispatch(
+            setShowThumbnail(checked === true)
         );
     };
 
@@ -208,6 +216,18 @@ const DisplayTab: React.FC = () => {
 
                 <div className="mt-4">
                     <div>
+                        <div className="mb-0">
+                            <TooltipHelp
+                                content="Determine whether to show a thumbnail of the song video"
+                                className="ml-4 pb-1"
+                            />
+                            <Checkbox
+                                id="thumbnail-checkbox"
+                                checked={showThumbnail}
+                                onChange={(c) => onShowThumbnailsChange(c)}
+                                label="Show Video Thumbnails"
+                            />
+                        </div>
                         <div className="mb-2">
                             <TooltipHelp
                                 content="When viewing a category ranking, also display the contestant's rank in each other category"

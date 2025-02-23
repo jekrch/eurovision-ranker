@@ -9,6 +9,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAngleDoubleDown, faAngleDoubleUp, faAngleDown, faAngleUp } from '@fortawesome/free-solid-svg-icons';
 import { getContestantCategoryRankingsFromUrl } from '../../utilities/CategoryUtil';
 import { useAppSelector } from '../../hooks/stateHooks';
+import { setShowThumbnail } from '../../redux/rootSlice';
 
 export interface DetailsCardProps {
   rank?: number;
@@ -20,14 +21,14 @@ export interface DetailsCardProps {
   openSongModal: () => void;
 }
 
-// Function to extract YouTube video ID
+// function to extract YouTube video ID
 const getYouTubeVideoId = (url: string): string | null => {
   const regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
   const match = url.match(regExp);
   return (match && match[7].length === 11) ? match[7] : null;
 };
 
-// Function to get YouTube thumbnail URL
+// function to get YouTube thumbnail URL
 const getYouTubeThumbnailUrl = (videoId: string | null): string | null => {
   if (!videoId) return null;
   return `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
@@ -47,6 +48,7 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
   const isGlobalMode = useAppSelector((state: AppState) => state.globalSearch);
   const showTotalRank = useAppSelector((state: AppState) => state.showTotalRank);
   const showComparison = useAppSelector((state: AppState) => state.showComparison);
+  const showThumbnail = useAppSelector((state: AppState) => state.showThumbnail);
   const contestant = props.countryContestant.contestant;
   const country = props.countryContestant.country;
   const categoryRankingsRef = useRef<HTMLDivElement>(null);
@@ -96,7 +98,7 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
         className={classNames(
           props.className,
           "m-auto text-slate-400 bg-[#03022d] bg-opacity-30 no-select",
-          "relative mx-[.5rem] min-h-[2.5em] py-[0.4em] flex flex-row", 
+          "relative mx-[.5rem] min-h-[2.5em] py-[0.4em] flex flex-row",
           "items-stretch !cursor-grabber whitespace-normal text-sm overflow-hidden",
           "shadow rounded border border-0.5",
           props.isDragging ? "shadow-slate-700 shadow-sm border-solid" : "",
@@ -108,25 +110,32 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
         }}
       >
         {/* YouTube thumbnail background */}
-        {youtubeThumb && (
+        {youtubeThumb && showThumbnail && (
           <div className="absolute top-0 right-0 h-full w-[30%] pointer-events-none overflow-hidden">
-            <img 
-              src={youtubeThumb}
-              className="w-full h-full object-cover opacity-40"
-              onError={(e) => {
-                const target = e.target as HTMLImageElement;
-                target.parentElement!.style.display = 'none';
-              }}
-              onLoad={(e) => {
-                const target = e.target as HTMLImageElement;
-                // YouTube's default "no thumbnail" image is 120x90 or 320x240
-                if (target.naturalWidth === 120 || target.naturalWidth === 320) {
-                  target.parentElement!.style.display = 'none';
-                }
-              }}
-              alt=""
-              style={{ display: 'block' }}
-            />
+            <div className="relative w-full h-full">
+              <img
+                src={youtubeThumb}
+                className="w-full h-full object-cover opacity-40"
+                style={{
+                  display: 'block',
+                  WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 30%)',
+                  maskImage: 'linear-gradient(to right, transparent 0%, black 30%)',
+                  objectPosition: '50% 50%',
+                  scale: '1.1',  
+                }}
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  target.parentElement!.parentElement!.style.display = 'none';
+                }}
+                onLoad={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  if (target.naturalWidth === 120 || target.naturalWidth === 320) {
+                    target.parentElement!.parentElement!.style.display = 'none';
+                  }
+                }}
+                alt=""
+              />
+            </div>
           </div>
         )}
 
@@ -157,17 +166,17 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
 
           <div className={classNames("flex-grow text-slate-300 font-bold")}>
             <div className={`overflow-hidden overflow-ellipsis`}>
-              <span className="float-right flex flex-row items-center bg-[#1c214c] border-2 border-gray-600 rounded-md px-[0.5em] py-[0.1em] mr-[0.5em]">
+              <span className="float-right flex flex-row items-center bg-opacity-90 bg-[#1c214c] border-2 border-gray-600 rounded-md px-[0.5em] py-[0.1em] mr-[0.5em]">
                 {contestant?.youtube &&
                   <div
                     onClick={() => { props.openSongModal() }}
-                    className='cursor-pointer rounded text-slate-500 hover:text-slate-100 mr-[0.7em]'>
-                    <FaFileAlt className='text-base' />
+                    className='cursor-pointer rounded text-slate-500 hover:text-slate-300 mr-[0.7em]'>
+                    <FaFileAlt className='text-base' title="lyrics"/>
                   </div>
                 }
                 {contestant?.youtube &&
-                  <a href={contestant?.youtube} target="_blank" rel="noopener noreferrer" className='rounded text-slate-500 hover:text-slate-100'>
-                    <FaTv className='text-xl mr-[0.3em]' />
+                  <a href={contestant?.youtube} target="_blank" rel="noopener noreferrer" className='rounded text-slate-500 hover:text-slate-300'>
+                    <FaTv className='text-xl mr-[0.3em]' title="youtube"/>
                   </a>
                 }
               </span>
@@ -181,7 +190,7 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
                     <span className="font-xs text-sm text-slate-400">
                       {contestant?.artist}
                     </span>
-                    <span className={classNames("ml-2 font-xs text-xs text-slate-400 bg-opacity-80 bg-[#1c214c]")}>
+                    <span className={classNames("ml-2 font-xs text-xs text-slate-400 rounded-sm bg-[#1c214c] bg-opacity-60")}>
                       {contestant.song?.length && !contestant.song?.includes("TBD") ? `"${contestant.song}"` : `${contestant.song}`}
                     </span>
 
@@ -215,7 +224,7 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
             </div>
           </div>
 
-        {/* 
+          {/* 
           if we are not in the immutable, categorized total rank mode,
           show a gripper indicating that the cards can be dragged
         */}

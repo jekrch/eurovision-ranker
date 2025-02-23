@@ -1,5 +1,5 @@
 import { UrlParams, convertRankingsStrToArray, extractParams, updateStates } from "./UrlUtil";
-import { setName, setYear, setTheme, setVote, setShowComparison, setGlobalSearch } from '../redux/rootSlice';
+import { setName, setYear, setTheme, setVote, setShowComparison, setGlobalSearch, setShowThumbnail } from '../redux/rootSlice';
 import { defaultYear } from "../data/Contestants";
 import { JSDOM } from 'jsdom';
 
@@ -62,6 +62,7 @@ describe('extractParams', () => {
             voteCode: 'f-tv',
             comparisonMode: null,
             globalMode: null,
+            showThumbnail: null,
         });
     });
 
@@ -80,7 +81,8 @@ describe('extractParams', () => {
             theme: null,
             globalMode: null,
             voteCode: null,
-            comparisonMode: null
+            comparisonMode: null,
+            showThumbnail: null,
         });
     });
 });
@@ -91,6 +93,7 @@ vi.mock('../redux/rootSlice', () => ({
     setTheme: vi.fn(),
     setVote: vi.fn(),
     setShowComparison: vi.fn(),
+    setShowThumbnail: vi.fn(),
     setGlobalSearch: vi.fn()
 }));
 

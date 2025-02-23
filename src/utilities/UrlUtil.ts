@@ -1,5 +1,5 @@
 
-import { setName, setYear, setRankedItems, setUnrankedItems, setContestants, setTheme, setVote, setShowComparison, setGlobalSearch } from '../redux/rootSlice';
+import { setName, setYear, setRankedItems, setUnrankedItems, setContestants, setTheme, setVote, setShowComparison, setGlobalSearch, setShowThumbnail } from '../redux/rootSlice';
 import { fetchCountryContestantsByYear, getContestantsByUids, getCountryContestantsByUids } from './ContestantRepository';
 import { CountryContestant, createCountryContestant } from '../data/CountryContestant';
 import { countries } from '../data/Countries';
@@ -17,6 +17,7 @@ export type UrlParams = {
     voteCode: string | null;        // v: {round}-{type}-{fromCountryKey} f-t-gb
     comparisonMode: string | null;  // cm: t/f
     globalMode: string | null       // g: t/f/null
+    showThumbnail: string | null    // p: t/f
 }
 
 /**
@@ -26,7 +27,7 @@ export const updateStates = (
     params: UrlParams,
     dispatch: AppDispatch
 ) => {
-    let { rankingName, contestYear, theme, voteCode, comparisonMode, globalMode } = params;
+    let { rankingName, contestYear, theme, voteCode, comparisonMode, globalMode, showThumbnail } = params;
 
     if (rankingName) {
         dispatch(
@@ -40,6 +41,10 @@ export const updateStates = (
 
     dispatch(
         setShowComparison(comparisonMode === 't')
+    );
+
+    dispatch(
+        setShowThumbnail(showThumbnail === 't')
     );
 
     dispatch(
@@ -300,7 +305,8 @@ export const extractParams = (params: URLSearchParams, activeCategory: number | 
         theme: params.get('t'),           // e.g. ab
         voteCode: params.get('v'),        // e.g. {round}-{type}-{fromCountryKey} f-t-gb
         comparisonMode: params.get('cm'), // e.g. t/f
-        globalMode: params.get('g')       // e.g. t/f/null
+        globalMode: params.get('g'),       // e.g. t/f/null
+        showThumbnail: params.get('p')       // e.g. t/f/null
     } as UrlParams;
 };
 

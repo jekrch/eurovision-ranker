@@ -88,7 +88,7 @@ const MainModal: React.FC<MainModalProps> = (props: MainModalProps) => {
                         target="_blank"
                         rel="noopener noreferrer"
                         href="https://github.com/jekrch/eurovision-ranker/releases"
-                    >v5.11</a>
+                    >v6.0</a>
                 </span>
                 <span className="text-right">
                     {`Copyright (c) 2023${new Date().getFullYear()?.toString() !== '2023' ? '-' + new Date().getFullYear() : ''} `}

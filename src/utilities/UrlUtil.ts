@@ -44,7 +44,7 @@ export const updateStates = (
     );
 
     dispatch(
-        setShowThumbnail(showThumbnail === 't')
+        setShowThumbnail(showThumbnail !== 'f')
     );
 
     dispatch(

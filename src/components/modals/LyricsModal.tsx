@@ -5,6 +5,8 @@ import { CountryContestant } from '../../data/CountryContestant';
 import { getSongDetails } from '../../utilities/ContestantRepository';
 import { useAppSelector } from '../../hooks/stateHooks';
 import Flag from 'react-world-flags';
+import { FaYoutube } from 'react-icons/fa';
+import { getYoutubeThumbnail } from '../../utilities/YoutubeUtil';
 
 type SongModalProps = {
     isOpen: boolean;
@@ -25,7 +27,8 @@ const SongModal: React.FC<SongModalProps> = (props: SongModalProps) => {
     const [lyricists, setLyricists] = useState('');
     const [showEngLyrics, setShowEngLyrics] = useState<boolean>(false);
     const contestant = props.countryContestant?.contestant;
-
+    //const thumbnailUrl: string | null = getYoutubeThumbnail(contestant?.youtube);
+    
     useEffect(() => {
         if (year && contestant?.song) {
 
@@ -113,6 +116,16 @@ const SongModal: React.FC<SongModalProps> = (props: SongModalProps) => {
             <div className="-mt-[0.5em] mr-[1.2em] mb-3 font-semibold text-base text-slate-[400px]">
                 <span>
                     {props.countryContestant?.country.name} - {contestant?.artist} - "{contestant?.song}"
+                    {contestant?.youtube &&
+                        <span className="inline-block ml-3 -mb-1">
+                            <a href={contestant?.youtube} target="_blank" rel="noopener noreferrer" 
+                            className=' float-right rounded text-slate-500 hover:text-slate-300'
+                            >
+                            <FaYoutube className='text-xl' title="youtube"/>
+                            </a>
+                        </span>
+                        }
+
                     {engLyrics &&
                     <label className="inline-flex float-right mr-2 mt-1 items-center cursor-pointer" title="translate">
                         <input type="checkbox" 
@@ -161,6 +174,26 @@ const SongModal: React.FC<SongModalProps> = (props: SongModalProps) => {
                         </div>
                     </div>
                 </div>
+                {/* {thumbnailUrl && (
+                    <div className="absolute scale-[0.4] bottom-0 right-0 -mr-[8em] -mb-[6em] overflow-hidden pointer-events-none ">
+                    <img
+                        src={thumbnailUrl}
+                        className="object-cover w-full h-full opacity-20 rounded-lg  "
+                        onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.style.display = 'none';
+                        }}
+                        onLoad={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            if (target.naturalWidth === 120 || target.naturalWidth === 320) {
+                                target.style.display = 'none';
+                            }
+                        }}
+                        alt=""
+                    />
+                    </div>
+ 
+                )} */}
             </div>
         </Modal>
     );

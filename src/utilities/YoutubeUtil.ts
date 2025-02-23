@@ -32,3 +32,36 @@ export const rankedHasAnyYoutubeLinks = (rankedItems: CountryContestant[]): bool
         item => item?.contestant?.youtube?.length
     );
 };
+
+/**
+ * Get's the youtube thumbnail for a given url
+ * @param url 
+ * @returns 
+ */
+export const getYoutubeThumbnail = (url?: string): string | null => {
+    if (!url) return null;
+
+    const videoId = getYouTubeVideoId(url);
+    return getYouTubeThumbnailUrl(videoId) || null;
+}
+
+/**
+ * Extracts the youtube video id from a given url
+ * @param url 
+ * @returns 
+ */
+export const getYouTubeVideoId = (url: string): string | null => {
+    const regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
+    const match = url.match(regExp);
+    return (match && match[7].length === 11) ? match[7] : null;
+  };
+  
+  /**
+   * Generates a youtube thumbnail url from a given video id
+   * @param videoId 
+   * @returns 
+   */
+  export const getYouTubeThumbnailUrl = (videoId: string | null): string | null => {
+    if (!videoId) return null;
+    return `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+  };

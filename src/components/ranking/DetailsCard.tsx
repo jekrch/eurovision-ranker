@@ -9,7 +9,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAngleDoubleDown, faAngleDoubleUp, faAngleDown, faAngleUp } from '@fortawesome/free-solid-svg-icons';
 import { getContestantCategoryRankingsFromUrl } from '../../utilities/CategoryUtil';
 import { useAppSelector } from '../../hooks/stateHooks';
-import { setShowThumbnail } from '../../redux/rootSlice';
+import { getYoutubeThumbnail, } from '../../utilities/YoutubeUtil';
 
 export interface DetailsCardProps {
   rank?: number;
@@ -20,19 +20,6 @@ export interface DetailsCardProps {
   onCategoryScroll: (callback: React.UIEvent<HTMLDivElement>) => void;
   openSongModal: () => void;
 }
-
-// function to extract YouTube video ID
-const getYouTubeVideoId = (url: string): string | null => {
-  const regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
-  const match = url.match(regExp);
-  return (match && match[7].length === 11) ? match[7] : null;
-};
-
-// function to get YouTube thumbnail URL
-const getYouTubeThumbnailUrl = (videoId: string | null): string | null => {
-  if (!videoId) return null;
-  return `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
-};
 
 /**
  * The country contestant card that is displayed per ranked item in the 
@@ -54,9 +41,8 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
   const categoryRankingsRef = useRef<HTMLDivElement>(null);
   const theme = useAppSelector((state: AppState) => state.theme);
 
-  // Get YouTube thumbnail if video URL exists
-  const videoId = contestant?.youtube ? getYouTubeVideoId(contestant.youtube) : null;
-  const youtubeThumb = videoId ? getYouTubeThumbnailUrl(videoId) : null;
+  // get YouTube thumbnail if video URL exists
+  const youtubeThumb = getYoutubeThumbnail(contestant?.youtube);
 
   useEffect(() => {
     if (categoryRankingsRef.current) {
@@ -166,7 +152,7 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
 
           <div className={classNames("flex-grow text-slate-300 font-bold")}>
             <div className={`overflow-hidden overflow-ellipsis`}>
-              <span className="float-right flex flex-row items-center bg-opacity-90 bg-[#1c214c] border-2 border-gray-600 rounded-md px-[0.5em] py-[0.1em] mr-[0.5em]">
+              <span className={classNames("float-right flex flex-row items-center", contestant?.youtube ? 'bg-opacity-80 bg-[#1c214c] border-[0.1em] border-gray-600 rounded-[0.2em] px-[0.5em] py-[0.1em] mr-[0.4em]': '')}>
                 {contestant?.youtube &&
                   <div
                     onClick={() => { props.openSongModal() }}
@@ -176,7 +162,7 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
                 }
                 {contestant?.youtube &&
                   <a href={contestant?.youtube} target="_blank" rel="noopener noreferrer" className='rounded text-slate-500 hover:text-slate-300'>
-                    <FaTv className='text-xl mr-[0.3em]' title="youtube"/>
+                    <FaTv className='text-xl mr-[0.1em]' title="youtube"/>
                   </a>
                 }
               </span>
@@ -230,7 +216,7 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
         */}
 
           {!showTotalRank &&
-            <div id="right-edge" className="mb-[0.2em] absolute bottom-0 right-0 flex-shrink-0 flex flex-row justify-between text-xl font-bold text-slate-500 z-10">
+            <div id="right-edge" className="mb-[0em] absolute bottom-0 right-0 flex-shrink-0 flex flex-row justify-between text-xl font-bold text-slate-500 z-10">
               <div id="gripper" className="text-right pl-[0.3em] mr-[0.3em]">
                 &#8942;&#8942;
               </div>

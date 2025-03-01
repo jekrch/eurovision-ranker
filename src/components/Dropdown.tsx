@@ -38,8 +38,8 @@ const Dropdown: React.FC<DropdownProps> = ({ value, onChange, options, className
   const updateMenuPosition = () => {
     if (buttonRef.current) {
       const rect = buttonRef.current.getBoundingClientRect();
-      const bottomSpace = window.innerHeight - rect.bottom; // Space available below the button
-      const maxHeight = Math.min(bottomSpace - 10, 300); // Example max height
+      const bottomSpace = window.innerHeight - rect.bottom; // space available below the button
+      const maxHeight = Math.min(bottomSpace - 10, 300); // max height
   
       setMenuPosition({
         top: rect.bottom + window.scrollY,
@@ -59,15 +59,15 @@ const Dropdown: React.FC<DropdownProps> = ({ value, onChange, options, className
             updateMenuPosition();
           }}
           className={classNames(
-            "inline-flex w-full justify-center gap-x-1.5 rounded-md",
+            "inline-flex w-full justify-between gap-x-1.5 rounded-md", 
             "bg-slate-700 bg-opacity-10 px-3 py-[0.2em] h-6 text-sm font-bold",
             "text-gray-400 shadow-sm ring-1 ring-inset ring-gray-400 hover:bg-opacity-30",
             "h-[2em] items-center", 
             buttonClassName
           )}>
-          {value}
+          <span className="truncate min-h-[1.2em] inline-block">{value || '\u00A0'}</span> {/* truncate to handle overflow */}
           
-          {!mini && <FontAwesomeIcon className="-mr-1 h-[0.8em] w-5 text-gray-400" icon={faChevronDown} /> }
+          {!mini && <FontAwesomeIcon className="flex-shrink-0 h-[0.8em] w-5 text-gray-400" icon={faChevronDown} /> }
         </Menu.Button>
       </div>
 

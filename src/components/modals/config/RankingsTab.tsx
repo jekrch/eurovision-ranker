@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { AppState } from '../../../redux/store';
 import { sortByVotes } from '../../../utilities/VoteProcessor';
 import { getVoteCode, hasAnyJuryVotes, hasAnyTeleVotes } from '../../../utilities/VoteUtil';
-import { fetchCountryContestantsByYear } from '../../../utilities/ContestantRepository';
+import { fetchCountryContestantsByYear, getContestantsByCountry } from '../../../utilities/ContestantRepository';
 import { sanitizeYear, supportedYears } from '../../../data/Contestants';
 import { countries } from '../../../data/Countries';
 import Dropdown from '../../Dropdown';
@@ -10,6 +10,7 @@ import IconButton from '../../IconButton';
 import { goToUrl } from '../../../utilities/UrlUtil';
 import TooltipHelp from '../../TooltipHelp';
 import { useAppSelector } from '../../../hooks/stateHooks';
+import { Contestant } from '../../../data/Contestant';
 
 const RankingsTab: React.FC = () => {
     const year = useAppSelector((state: AppState) => state.year);
@@ -23,6 +24,11 @@ const RankingsTab: React.FC = () => {
     const [hasJuryVotes, setHasJuryVotes] = useState(false);
     const [hasTeleVotes, setHasTeleVotes] = useState(false);
 
+    const [contestantCountries, setContestantCountries] = useState<string[]>([
+        '',
+        ...countries.sort((a, b) => a.name.localeCompare(b.name)).map((c) => c.name),
+    ]);
+    const [contestantCountry, setContestantCountry] = useState('');
     // Update vote source options based on the selected year
     useEffect(() => {
         const updateVoteSourceOptions = async () => {
@@ -84,6 +90,22 @@ const RankingsTab: React.FC = () => {
         );
 
         return sortedContestants.map((cc) => cc.id).join('');
+    };
+
+
+    // Open total ranking based on the selected year and vote source
+    const openAllContestantsByCountry = async () => {
+        const contestants: Contestant[] = await getContestantsByCountry(contestantCountry);
+        const concatenatedIds = contestants.sort(
+            (cc1, cc2) => Number(cc2.year) - Number(cc1.year)
+        ).map((cc) => cc.id).join('');
+        goToUrl(
+            `?r=>${concatenatedIds}&` +
+            `g=t&` +
+            `n=${contestantCountry}&`, //+
+            //`v=${getVoteCode('f', 't', voteSource)}`,
+            theme
+        );
     };
 
     // Open total ranking based on the selected year and vote source
@@ -153,7 +175,7 @@ const RankingsTab: React.FC = () => {
                 <div className=" mt-[0.7em]">
                     <div>
                         <Dropdown
-                            className="w-20 mx-auto mb-2"
+                            className="w-22 mx-auto mb-2"
                             menuClassName=""
                             value={rankingYear ?? year}
                             onChange={(y) => setRankingYear(y)}
@@ -199,6 +221,34 @@ const RankingsTab: React.FC = () => {
                             )}
                         </span>
                     </div>
+                </div>
+            </div>
+            <div className="mt-5">
+                <span className="font-bold ml-0 whitespace-nowrap">Contestants by country </span>                        
+                    <TooltipHelp
+                        content="Display all past and current contestants for a specific country"
+                        className="ml-0 z-50"
+                    />
+                <div className=" mt-[0.7em]">
+                    <div>
+                       
+                        <Dropdown
+                            key="country-selector"
+                            className=" mx-auto mb-2 min-w-[5em]"
+                            menuClassName="w-auto h-[4em]"
+                            value={contestantCountry}
+                            onChange={(s) => setContestantCountry(s)}
+                            options={contestantCountries}
+                            showSearch={true}
+                        />
+                        <IconButton
+                                onClick={openAllContestantsByCountry}
+                                className="ml-4 pl-[1em] pr-[1em] rounded-md"
+                                title="all"
+                                disabled={!contestantCountry}
+                            />
+                    </div>
+
                 </div>
             </div>
         </div>

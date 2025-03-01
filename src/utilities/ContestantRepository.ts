@@ -339,6 +339,27 @@ export function getContestantsByUids(ids: string[]): Promise<Contestant[]> {
     });
 }
 
+/**
+ * get all contestants for a specific country
+ * @param country 
+ * @returns 
+ */
+export function getContestantsByCountry(country: string): Promise<Contestant[]> {
+
+  if (!country?.length) {
+    return Promise.resolve([]);
+  }
+
+  return fetchAndParseCsv()
+    .then(results => {
+      const fetchedContestants = processContestants(results, row => {
+        return row.to_country?.toLowerCase() === country?.toLowerCase();
+      });
+
+      return fetchedContestants;
+    });
+}
+
 export function getSongDetails(
   uid: string
 ): Promise<SongDetails | undefined> {

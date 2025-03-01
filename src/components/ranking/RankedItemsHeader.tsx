@@ -74,7 +74,7 @@ const RankedItemsHeader: React.FC<IRankedItemsHeaderProps> = ({
             {showUnranked ? (
                 <div className="w-full m-auto flex items-center justify-center">
                     <Dropdown
-                        className="tour-step-1 w-[5em]"
+                        className="tour-step-1 min-w-[5em] w-auto"
                         buttonClassName='!h-[1.8em]'
                         value={year}
                         onChange={y => { dispatch(setYear(y)); }}

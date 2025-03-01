@@ -14,10 +14,11 @@ Users can also view a geographical heat map of their ranking, which is implement
 
 Multiple rankings can be created by category with different weights given to each category to reflect the user's preferences. A weighted total ranking can then be calculated, which reflects the competing values contributing to the user's final judgment.
 
-<img width="300" alt="image" src="https://github.com/user-attachments/assets/8e89f5b5-1a5b-4e68-b36d-6efbac6c089a">
-<img width="300" alt="image" src="https://github.com/user-attachments/assets/496d3d67-8375-4659-b906-dee288aec8b0">
+<img width="300" alt="image" src="https://github.com/user-attachments/assets/46bce748-9fb5-404f-8325-544a396adbf8">
+<img width="300" alt="image" src="https://github.com/user-attachments/assets/bd0525c2-50ef-49ff-87b0-efa8b6adc50b">
 <br/><br/>
-<img width="300" alt="image" src="https://github.com/user-attachments/assets/84f77d90-5849-43f9-b78d-7aff544470ed">
+<img width="300" alt="image" src="https://github.com/user-attachments/assets/fd1c1f2b-e0fa-4bf9-ac23-41de32e70de0">
+<img width="300" alt="image" src="https://github.com/user-attachments/assets/755c132a-5c51-41cd-94c6-35d8baf8d3db">
 
 
 ## Features

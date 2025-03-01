@@ -121,7 +121,7 @@ const SongModal: React.FC<SongModalProps> = (props: SongModalProps) => {
                             <a href={contestant?.youtube} target="_blank" rel="noopener noreferrer" 
                             className=' float-right rounded text-slate-500 hover:text-slate-300'
                             >
-                            <FaYoutube className='text-xl' title="youtube"/>
+                            <FaYoutube className='text-xl text-[#FF0000]x -mb-[0.1em]' title="youtube"/>
                             </a>
                         </span>
                         }

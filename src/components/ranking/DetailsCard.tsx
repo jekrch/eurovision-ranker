@@ -156,13 +156,13 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
                 {contestant?.youtube &&
                   <div
                     onClick={() => { props.openSongModal() }}
-                    className='cursor-pointer rounded text-slate-500 hover:text-slate-300 mr-[0.7em]'>
+                    className='cursor-pointer rounded text-slate-500 hover:text-slate-300 mr-[0.9em] -ml-1'>
                     <FaFileAlt className='text-base' title="lyrics"/>
                   </div>
                 }
                 {contestant?.youtube &&
                   <a href={contestant?.youtube} target="_blank" rel="noopener noreferrer" className='rounded text-slate-500 hover:text-slate-300'>
-                    <FaTv className='text-xl mr-[0.1em]' title="youtube"/>
+                    <FaTv className='text-xl -m-[0.1em] my-[0.1em]' title="youtube"/>
                   </a>
                 }
               </span>

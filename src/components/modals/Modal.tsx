@@ -88,7 +88,7 @@ const Modal: React.FC<ModalContainerProps> = (props: ModalContainerProps) => {
                     type="button" 
                     className={
                         classNames(
-                            "absolute top-0 right-0 mt-4 mr-4 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white", 
+                            "absolute -top-1 right-0 mt-4 mr-4 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white", 
                             props.closeBtnClassName)}
                     data-modal-hide="default-modal"
                     onClick={props.onClose}

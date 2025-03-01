@@ -234,8 +234,8 @@ const RankingsTab: React.FC = () => {
                        
                         <Dropdown
                             key="country-selector"
-                            className=" mx-auto mb-2 min-w-[5em]"
-                            menuClassName="w-auto h-[4em]"
+                            className="mx-auto mb-2 min-w-[5em]"
+                            menuClassName="w-auto"
                             value={contestantCountry}
                             onChange={(s) => setContestantCountry(s)}
                             options={contestantCountries}

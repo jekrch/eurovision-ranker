@@ -63,6 +63,7 @@ describe('extractParams', () => {
             comparisonMode: null,
             globalMode: null,
             showThumbnail: null,
+            showPlace: null,
         });
     });
 
@@ -83,6 +84,7 @@ describe('extractParams', () => {
             voteCode: null,
             comparisonMode: null,
             showThumbnail: null,
+            showPlace: null,
         });
     });
 });
@@ -94,6 +96,7 @@ vi.mock('../redux/rootSlice', () => ({
     setVote: vi.fn(),
     setShowComparison: vi.fn(),
     setShowThumbnail: vi.fn(),
+    setShowPlace: vi.fn(),
     setGlobalSearch: vi.fn()
 }));
 

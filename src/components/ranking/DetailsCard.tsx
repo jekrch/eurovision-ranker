@@ -36,6 +36,7 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
   const showTotalRank = useAppSelector((state: AppState) => state.showTotalRank);
   const showComparison = useAppSelector((state: AppState) => state.showComparison);
   const showThumbnail = useAppSelector((state: AppState) => state.showThumbnail);
+  const showPlace = useAppSelector((state: AppState) => state.showPlace);
   const contestant = props.countryContestant.contestant;
   const country = props.countryContestant.country;
   const categoryRankingsRef = useRef<HTMLDivElement>(null);
@@ -200,6 +201,12 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
                         </div>
                       }
                     </div>
+                    {(contestant?.finalsRank && showPlace) &&
+                        <div className="mt-1 font-xs text-xs text-gray-400 mb-0 flex flex-wrap items-center mr-2">
+                          <span className="text-gray-500">place:&nbsp;</span>
+                          <span>{`${contestant?.finalsRank}`}</span>
+                        </div>
+                      }
                   </>
                 ) : (
                   <span className="font-xs text-xs text-gray-500 strong">

@@ -186,7 +186,7 @@ function createContestant(row: any): Contestant {
     artist: row.performer,
     song: row.song,
     youtube: row.youtube_url,
-    finalsRank: row.place_final ?? row.place_contest,
+    finalsRank: row.place_contest?.length ? row.place_contest : row.place_final,
     semiFinalsRank: row.place_sf,
     year: row.year,
     votes: {

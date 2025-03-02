@@ -23,6 +23,7 @@ interface AppState {
     activeCategory: number | undefined;
     showTotalRank: boolean;
     showComparison: boolean;
+    showPlace: boolean;
     showThumbnail: boolean;
     tableState: TableState,
     welcomeOverlayIsOpen: boolean;
@@ -45,6 +46,7 @@ const initialState: AppState = {
     showTotalRank: false,
     showComparison: false,
     showThumbnail: true,
+    showPlace: false,
     welcomeOverlayIsOpen: false,
     tableState: {
         sortColumn: 'year',
@@ -111,6 +113,9 @@ const rootSlice = createSlice({
         },
         setShowThumbnail: (state, action: PayloadAction<boolean>) => {
             state.showThumbnail = action.payload;
+        },
+        setShowPlace: (state, action: PayloadAction<boolean>) => {
+            state.showPlace = action.payload;
         },
         setGlobalSearch: (state, action: PayloadAction<boolean>) => {
             state.globalSearch = action.payload;
@@ -204,6 +209,7 @@ export const {
     setShowTotalRank,
     setShowComparison,
     setShowThumbnail,
+    setShowPlace,
     assignVotesToContestants,
     setTableCurrentPage,
     setEntries,

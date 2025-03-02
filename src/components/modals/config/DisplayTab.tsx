@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { AppState } from '../../../redux/store';
-import { setTheme, setVote, setContestants, setShowComparison, setRankedItems, assignVotesToContestants, setShowThumbnail } from '../../../redux/rootSlice';
+import { setTheme, setVote, setContestants, setShowComparison, setRankedItems, assignVotesToContestants, setShowThumbnail, setShowPlace } from '../../../redux/rootSlice';
 import { assignVotesByCode, assignVotesByContestants, fetchVotesByCode, updateVoteTypeCode, voteCodeHasType } from '../../../utilities/VoteProcessor';
 import { countries } from '../../../data/Countries';
 import Dropdown from '../../Dropdown';
@@ -17,6 +17,7 @@ const DisplayTab: React.FC = () => {
     const theme = useAppSelector((state: AppState) => state.theme);
     const showComparison = useAppSelector((state: AppState) => state.showComparison);
     const showThumbnail = useAppSelector((state: AppState) => state.showThumbnail);
+    const showPlace = useAppSelector((state: AppState) => state.showPlace);
     const rankedItems = useAppSelector((state: AppState) => state.rankedItems);
     const year = useAppSelector((state: AppState) => state.year);
     const globalSearch = useAppSelector((state: AppState) => state.globalSearch);
@@ -98,6 +99,13 @@ const DisplayTab: React.FC = () => {
         );
     };
 
+    const onShowPlaceChange = (checked: boolean) => {
+        updateQueryParams({ pl: checked === true ? 't' : 'f' })
+        dispatch(
+            setShowPlace(checked === true)
+        );
+    };
+
     // Get vote source code from option
     const getVoteSourceCodeFromOption = (optionName: string) => {
         if (!optionName?.length || optionName === 'All') return '';
@@ -158,6 +166,20 @@ const DisplayTab: React.FC = () => {
         <div className="mb-0">
             <div>
                 <div className="mb-[0.5em] border-slate-700 border-b-[1px] pb-2 -mt-2">
+                <span className="flex items-center ml-2">
+                        <TooltipHelp
+                            content="Display the contestant's place in the final contest if applicable"
+                        />
+                        <span className="ml-3 text-sm font-semibold">
+                            Show Place:
+                        </span>
+                        <Checkbox
+                            id="place-checkbox"
+                            checked={showPlace}
+                            label=""
+                            onChange={(c) => onShowPlaceChange(c)}
+                        />
+                    </span>
                     <span className="flex items-center ml-2">
                         <TooltipHelp
                             content="Select which types of votes to display with each ranked country"

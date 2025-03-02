@@ -40,13 +40,15 @@ export const initialCountryContestantCache = [
             "artist": "LADANIVA",
             "song": "Jako",
             "youtube": "https://www.youtube.com/watch?v=_6xfmW0Fc40",
-            "finalsRank": "",
+            "finalsRank": "8",
             "semiFinalsRank": "",
             "year": "2024",
             "votes": {
                 "totalPoints": 183,
                 "juryPoints": 101,
-                "telePoints": 82
+                "telePoints": 82,
+                "year": "2024",
+                "round": "Final"
             }
         }
     },
@@ -85,13 +87,15 @@ export const initialCountryContestantCache = [
             "artist": "Kaleen",
             "song": "We Will Rave",
             "youtube": "https://www.youtube.com/watch?v=Kqda15G4T-4",
-            "finalsRank": "",
+            "finalsRank": "24",
             "semiFinalsRank": "",
             "year": "2024",
             "votes": {
                 "totalPoints": 24,
                 "juryPoints": 19,
-                "telePoints": 5
+                "telePoints": 5,
+                "year": "2024",
+                "round": "Final"
             }
         }
     },
@@ -150,13 +154,15 @@ export const initialCountryContestantCache = [
             "artist": "Baby Lasagna",
             "song": "Rim Tim Tagi Dim",
             "youtube": "https://www.youtube.com/watch?v=kmg8EAD-Kjw",
-            "finalsRank": "",
+            "finalsRank": "2",
             "semiFinalsRank": "",
             "year": "2024",
             "votes": {
                 "totalPoints": 547,
                 "juryPoints": 210,
-                "telePoints": 337
+                "telePoints": 337,
+                "year": "2024",
+                "round": "Final"
             }
         }
     },
@@ -175,13 +181,15 @@ export const initialCountryContestantCache = [
             "artist": "Silia Kapsis",
             "song": "Liar",
             "youtube": "https://www.youtube.com/watch?v=8q5QozrtEPA",
-            "finalsRank": "",
+            "finalsRank": "15",
             "semiFinalsRank": "",
             "year": "2024",
             "votes": {
                 "totalPoints": 78,
                 "juryPoints": 34,
-                "telePoints": 44
+                "telePoints": 44,
+                "year": "2024",
+                "round": "Final"
             }
         }
     },
@@ -240,13 +248,15 @@ export const initialCountryContestantCache = [
             "artist": "5miinust and Puuluup",
             "song": "(Nendest) narkootikumidest ei tea me (küll) midagi",
             "youtube": "https://www.youtube.com/watch?v=ui_u0M7_hjs",
-            "finalsRank": "",
+            "finalsRank": "20",
             "semiFinalsRank": "",
             "year": "2024",
             "votes": {
                 "totalPoints": 37,
                 "juryPoints": 4,
-                "telePoints": 33
+                "telePoints": 33,
+                "year": "2024",
+                "round": "Final"
             }
         }
     },
@@ -265,13 +275,15 @@ export const initialCountryContestantCache = [
             "artist": "Windows95man",
             "song": "No Rules!",
             "youtube": "https://www.youtube.com/watch?v=Tf1NS1vEhSg",
-            "finalsRank": "",
+            "finalsRank": "19",
             "semiFinalsRank": "",
             "year": "2024",
             "votes": {
                 "totalPoints": 38,
                 "juryPoints": 7,
-                "telePoints": 31
+                "telePoints": 31,
+                "year": "2024",
+                "round": "Final"
             }
         }
     },
@@ -290,13 +302,15 @@ export const initialCountryContestantCache = [
             "artist": "Slimane",
             "song": "Mon amour",
             "youtube": "https://www.youtube.com/watch?v=bal8oESDH7s",
-            "finalsRank": "",
+            "finalsRank": "4",
             "semiFinalsRank": "",
             "year": "2024",
             "votes": {
                 "totalPoints": 445,
                 "juryPoints": 218,
-                "telePoints": 227
+                "telePoints": 227,
+                "year": "2024",
+                "round": "Final"
             }
         }
     },
@@ -315,13 +329,15 @@ export const initialCountryContestantCache = [
             "artist": "Nutsa Buzaladze",
             "song": "Firefighter",
             "youtube": "https://www.youtube.com/watch?v=blMwY8Jabyk",
-            "finalsRank": "",
+            "finalsRank": "21",
             "semiFinalsRank": "",
             "year": "2024",
             "votes": {
                 "totalPoints": 34,
                 "juryPoints": 15,
-                "telePoints": 19
+                "telePoints": 19,
+                "year": "2024",
+                "round": "Final"
             }
         }
     },
@@ -340,13 +356,15 @@ export const initialCountryContestantCache = [
             "artist": "Isaak",
             "song": "Always on the Run",
             "youtube": "https://www.youtube.com/watch?v=twhq3S4YHdQ",
-            "finalsRank": "",
+            "finalsRank": "12",
             "semiFinalsRank": "",
             "year": "2024",
             "votes": {
                 "totalPoints": 117,
                 "juryPoints": 99,
-                "telePoints": 18
+                "telePoints": 18,
+                "year": "2024",
+                "round": "Final"
             }
         }
     },
@@ -365,13 +383,15 @@ export const initialCountryContestantCache = [
             "artist": "Marina Satti",
             "song": "ZARI",
             "youtube": "https://www.youtube.com/watch?v=mTSTnLWGUPs",
-            "finalsRank": "",
+            "finalsRank": "11",
             "semiFinalsRank": "",
             "year": "2024",
             "votes": {
                 "totalPoints": 126,
                 "juryPoints": 41,
-                "telePoints": 85
+                "telePoints": 85,
+                "year": "2024",
+                "round": "Final"
             }
         }
     },
@@ -410,13 +430,15 @@ export const initialCountryContestantCache = [
             "artist": "Bambie Thug",
             "song": "Doomsday Blue",
             "youtube": "https://www.youtube.com/watch?v=n73nIfFI3k4",
-            "finalsRank": "",
+            "finalsRank": "6",
             "semiFinalsRank": "",
             "year": "2024",
             "votes": {
                 "totalPoints": 278,
                 "juryPoints": 142,
-                "telePoints": 136
+                "telePoints": 136,
+                "year": "2024",
+                "round": "Final"
             }
         }
     },
@@ -435,13 +457,15 @@ export const initialCountryContestantCache = [
             "artist": "Eden Golan",
             "song": "Hurricane",
             "youtube": "https://www.youtube.com/watch?v=lJYn09tuPw4",
-            "finalsRank": "",
+            "finalsRank": "5",
             "semiFinalsRank": "",
             "year": "2024",
             "votes": {
                 "totalPoints": 375,
                 "juryPoints": 52,
-                "telePoints": 323
+                "telePoints": 323,
+                "year": "2024",
+                "round": "Final"
             }
         }
     },
@@ -460,13 +484,15 @@ export const initialCountryContestantCache = [
             "artist": "Angelina Mango",
             "song": "La noia",
             "youtube": "https://www.youtube.com/watch?v=psiytW9Or2s",
-            "finalsRank": "",
+            "finalsRank": "7",
             "semiFinalsRank": "",
             "year": "2024",
             "votes": {
                 "totalPoints": 268,
                 "juryPoints": 164,
-                "telePoints": 104
+                "telePoints": 104,
+                "year": "2024",
+                "round": "Final"
             }
         }
     },
@@ -485,13 +511,15 @@ export const initialCountryContestantCache = [
             "artist": "Dons",
             "song": "Hollow",
             "youtube": "https://www.youtube.com/watch?v=V_Jhif6qXyY",
-            "finalsRank": "",
+            "finalsRank": "16",
             "semiFinalsRank": "",
             "year": "2024",
             "votes": {
                 "totalPoints": 64,
                 "juryPoints": 36,
-                "telePoints": 28
+                "telePoints": 28,
+                "year": "2024",
+                "round": "Final"
             }
         }
     },
@@ -510,13 +538,15 @@ export const initialCountryContestantCache = [
             "artist": "Silvester Belt",
             "song": "Luktelk",
             "youtube": "https://www.youtube.com/watch?v=OrL668EQRu0",
-            "finalsRank": "",
+            "finalsRank": "14",
             "semiFinalsRank": "",
             "year": "2024",
             "votes": {
                 "totalPoints": 90,
                 "juryPoints": 32,
-                "telePoints": 58
+                "telePoints": 58,
+                "year": "2024",
+                "round": "Final"
             }
         }
     },
@@ -535,13 +565,15 @@ export const initialCountryContestantCache = [
             "artist": "Tali",
             "song": "Fighter",
             "youtube": "https://www.youtube.com/watch?v=HV3sORfrREE",
-            "finalsRank": "",
+            "finalsRank": "13",
             "semiFinalsRank": "",
             "year": "2024",
             "votes": {
                 "totalPoints": 103,
                 "juryPoints": 83,
-                "telePoints": 20
+                "telePoints": 20,
+                "year": "2024",
+                "round": "Final"
             }
         }
     },
@@ -620,13 +652,15 @@ export const initialCountryContestantCache = [
             "artist": "Gåte",
             "song": "Ulveham",
             "youtube": "https://www.youtube.com/watch?v=UipzszlJwRQ",
-            "finalsRank": "",
+            "finalsRank": "25",
             "semiFinalsRank": "",
             "year": "2024",
             "votes": {
                 "totalPoints": 16,
                 "juryPoints": 12,
-                "telePoints": 4
+                "telePoints": 4,
+                "year": "2024",
+                "round": "Final"
             }
         }
     },
@@ -665,13 +699,15 @@ export const initialCountryContestantCache = [
             "artist": "Iolanda",
             "song": "Grito",
             "youtube": "https://www.youtube.com/watch?v=K5wDGhcDSpQ",
-            "finalsRank": "",
+            "finalsRank": "10",
             "semiFinalsRank": "",
             "year": "2024",
             "votes": {
                 "totalPoints": 152,
                 "juryPoints": 139,
-                "telePoints": 13
+                "telePoints": 13,
+                "year": "2024",
+                "round": "Final"
             }
         }
     },
@@ -710,13 +746,15 @@ export const initialCountryContestantCache = [
             "artist": "Teya Dora",
             "song": "Ramonda",
             "youtube": "https://www.youtube.com/watch?v=SDXB0mXFR34",
-            "finalsRank": "",
+            "finalsRank": "17",
             "semiFinalsRank": "",
             "year": "2024",
             "votes": {
                 "totalPoints": 54,
                 "juryPoints": 22,
-                "telePoints": 32
+                "telePoints": 32,
+                "year": "2024",
+                "round": "Final"
             }
         }
     },
@@ -735,13 +773,15 @@ export const initialCountryContestantCache = [
             "artist": "Raiven",
             "song": "Veronika",
             "youtube": "https://www.youtube.com/watch?v=uWcSsi7SliI",
-            "finalsRank": "",
+            "finalsRank": "23",
             "semiFinalsRank": "",
             "year": "2024",
             "votes": {
                 "totalPoints": 27,
                 "juryPoints": 15,
-                "telePoints": 12
+                "telePoints": 12,
+                "year": "2024",
+                "round": "Final"
             }
         }
     },
@@ -760,13 +800,15 @@ export const initialCountryContestantCache = [
             "artist": "Nebulossa",
             "song": "Zorra",
             "youtube": "https://www.youtube.com/watch?v=GdagS_0hX8k",
-            "finalsRank": "",
+            "finalsRank": "22",
             "semiFinalsRank": "",
             "year": "2024",
             "votes": {
                 "totalPoints": 30,
                 "juryPoints": 19,
-                "telePoints": 11
+                "telePoints": 11,
+                "year": "2024",
+                "round": "Final"
             }
         }
     },
@@ -785,13 +827,15 @@ export const initialCountryContestantCache = [
             "artist": "Marcus & Martinus",
             "song": "Unforgettable",
             "youtube": "https://www.youtube.com/watch?v=yekc8t0rJqA",
-            "finalsRank": "",
+            "finalsRank": "9",
             "semiFinalsRank": "",
             "year": "2024",
             "votes": {
                 "totalPoints": 166,
                 "juryPoints": 117,
-                "telePoints": 49
+                "telePoints": 49,
+                "year": "2024",
+                "round": "Final"
             }
         }
     },
@@ -810,13 +854,15 @@ export const initialCountryContestantCache = [
             "artist": "Nemo",
             "song": "The Code",
             "youtube": "https://www.youtube.com/watch?v=kiGDvM14Kwg",
-            "finalsRank": "",
+            "finalsRank": "1",
             "semiFinalsRank": "",
             "year": "2024",
             "votes": {
                 "totalPoints": 591,
                 "juryPoints": 365,
-                "telePoints": 226
+                "telePoints": 226,
+                "year": "2024",
+                "round": "Final"
             }
         }
     },
@@ -835,13 +881,15 @@ export const initialCountryContestantCache = [
             "artist": "Alyona Alyona and Jerry Heil",
             "song": "Teresa & Maria",
             "youtube": "https://www.youtube.com/watch?v=k_8cNbF8FLI",
-            "finalsRank": "",
+            "finalsRank": "3",
             "semiFinalsRank": "",
             "year": "2024",
             "votes": {
                 "totalPoints": 453,
                 "juryPoints": 146,
-                "telePoints": 307
+                "telePoints": 307,
+                "year": "2024",
+                "round": "Final"
             }
         }
     },
@@ -860,13 +908,14 @@ export const initialCountryContestantCache = [
             "artist": "Olly Alexander",
             "song": "Dizzy",
             "youtube": "https://www.youtube.com/watch?v=lLNUj7kvn2w",
-            "finalsRank": "",
+            "finalsRank": "18",
             "semiFinalsRank": "",
             "year": "2024",
             "votes": {
                 "totalPoints": 46,
                 "juryPoints": 46,
-                "telePoints": 0
+                "year": "2024",
+                "round": "Final"
             }
         }
     }

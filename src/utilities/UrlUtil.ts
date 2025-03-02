@@ -1,5 +1,5 @@
 
-import { setName, setYear, setRankedItems, setUnrankedItems, setContestants, setTheme, setVote, setShowComparison, setGlobalSearch, setShowThumbnail } from '../redux/rootSlice';
+import { setName, setYear, setRankedItems, setUnrankedItems, setContestants, setTheme, setVote, setShowComparison, setGlobalSearch, setShowThumbnail, setShowPlace } from '../redux/rootSlice';
 import { fetchCountryContestantsByYear, getContestantsByUids, getCountryContestantsByUids } from './ContestantRepository';
 import { CountryContestant, createCountryContestant } from '../data/CountryContestant';
 import { countries } from '../data/Countries';
@@ -18,6 +18,7 @@ export type UrlParams = {
     comparisonMode: string | null;  // cm: t/f
     globalMode: string | null       // g: t/f/null
     showThumbnail: string | null    // p: t/f
+    showPlace: string | null        // pl: t/f
 }
 
 /**
@@ -27,7 +28,7 @@ export const updateStates = (
     params: UrlParams,
     dispatch: AppDispatch
 ) => {
-    let { rankingName, contestYear, theme, voteCode, comparisonMode, globalMode, showThumbnail } = params;
+    let { rankingName, contestYear, theme, voteCode, comparisonMode, globalMode, showThumbnail, showPlace } = params;
 
     if (rankingName) {
         dispatch(
@@ -45,6 +46,10 @@ export const updateStates = (
 
     dispatch(
         setShowThumbnail(showThumbnail !== 'f')
+    );
+
+    dispatch(
+        setShowPlace(showPlace === 't')
     );
 
     dispatch(
@@ -302,11 +307,12 @@ export const extractParams = (params: URLSearchParams, activeCategory: number | 
         rankingName: params.get('n'),
         contestYear: params.get('y'),
         rankings: params.get(`r${activeCategory !== undefined ? activeCategory + 1 : ''}`),
-        theme: params.get('t'),           // e.g. ab
-        voteCode: params.get('v'),        // e.g. {round}-{type}-{fromCountryKey} f-t-gb
-        comparisonMode: params.get('cm'), // e.g. t/f
+        theme: params.get('t'),            // e.g. ab
+        voteCode: params.get('v'),         // e.g. {round}-{type}-{fromCountryKey} f-t-gb
+        comparisonMode: params.get('cm'),  // e.g. t/f
         globalMode: params.get('g'),       // e.g. t/f/null
-        showThumbnail: params.get('p')       // e.g. t/f/null
+        showThumbnail: params.get('p'),    // e.g. t/f/null
+        showPlace: params.get('pl')        // e.g. t/f/null
     } as UrlParams;
 };
 

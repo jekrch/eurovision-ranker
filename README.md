@@ -38,6 +38,7 @@ Multiple rankings can be created by category with different weights given to eac
 - Tailwind CSS
 - Vite
 - Umami
+- GO/Python for ETL scripts
 
 ## Getting Started
 

@@ -1,4 +1,4 @@
-import { Contestant } from "../data/Contestant";
+import { Contestant, ContestantData } from '../data/Contestant';
 import { CountryContestant } from "../data/CountryContestant";
 import { countries } from '../data/Countries';
 import Papa from 'papaparse';
@@ -180,7 +180,7 @@ function processContestants(
  * @returns contestant object
  */
 function createContestant(row: any): Contestant {
-  return {
+  const contestantData: ContestantData = {
     id: row.id,
     countryKey: row.to_country_id,
     artist: row.performer,
@@ -197,6 +197,8 @@ function createContestant(row: any): Contestant {
       juryPoints: row.points_jury_final
     }
   };
+
+  return new Contestant(contestantData);
 }
 
 /**
@@ -224,10 +226,13 @@ function handleDuplicateEntry(
     }
   } else {
     // since 1956 had two songs per country, allow country dupes here
-    tempStorage.set(`${id}-2`, {
-      ...createContestant(row),
-      countryKey: `${countryKey}-2`,
-    });
+    // tempStorage.set(`${id}-2`, {
+    //   ...createContestant(row),
+    //   countryKey: `${countryKey}-2`,
+    // });
+    const contestant = createContestant(row);
+    contestant.countryKey = `${countryKey}-2`;
+    tempStorage.set(`${id}-2`, contestant);
   }
 }
 

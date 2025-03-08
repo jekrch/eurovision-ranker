@@ -50,8 +50,8 @@ const RankedCountriesList: React.FC<RankedCountriesListProps> = ({
     const rankedItems = useAppSelector((state: AppState) => state.rankedItems);
     const categories = useAppSelector((state: AppState) => state.categories);
     const activeCategory = useAppSelector((state: AppState) => state.activeCategory);
-      
-    /**
+
+   /**
    * used to synchronize the horizontal scrollbar on detail cards across all ranked items
    */
     const [categoryScrollPosition, setCategoryScrollPosition] = useState(0);

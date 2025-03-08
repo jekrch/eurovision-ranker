@@ -366,5 +366,6 @@ export function goToUrl(queryString: string, theme: string | undefined) {
     if (theme) {
         url += `&t=${theme}`;
     }
+    //console.log(url);
     window.location.href = url;
 }

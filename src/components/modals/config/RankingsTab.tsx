@@ -29,6 +29,7 @@ const RankingsTab: React.FC = () => {
         ...countries.sort((a, b) => a.name.localeCompare(b.name)).map((c) => c.name),
     ]);
     const [contestantCountry, setContestantCountry] = useState('');
+    const [contestantCountryOrder, setContestantCountryOrder] = useState('Year');
     // Update vote source options based on the selected year
     useEffect(() => {
         const updateVoteSourceOptions = async () => {
@@ -92,17 +93,42 @@ const RankingsTab: React.FC = () => {
         return sortedContestants.map((cc) => cc.id).join('');
     };
 
-
     // Open total ranking based on the selected year and vote source
-    const openAllContestantsByCountry = async () => {
-        const contestants: Contestant[] = await getContestantsByCountry(contestantCountry);
-        const concatenatedIds = contestants.sort(
-            (cc1, cc2) => Number(cc2.year) - Number(cc1.year)
-        ).map((cc) => cc.id).join('');
+    const openAllContestantsByCountry = async (onlyFinalists: boolean = false) => {
+        let contestants: Contestant[] = await getContestantsByCountry(contestantCountry);
+
+        if (onlyFinalists) {
+            contestants = contestants.filter((cc) => cc.finalsRank);
+        }
+
+        switch (contestantCountryOrder) {
+            case 'Year':
+                contestants = contestants.sort(
+                    (cc1, cc2) => Number(cc2.year) - Number(cc1.year)
+                );
+                break;
+            case 'Rank':
+                contestants = contestants.sort((cc1, cc2) => {
+                    // no rank should be last
+                    if (!cc1.finalsRank && !cc2.finalsRank) return 0;
+                    if (!cc1.finalsRank) return 1;
+                    if (!cc2.finalsRank) return -1;
+                    
+                    // lower rank first
+                    return Number(cc1.finalsRank) - Number(cc2.finalsRank);
+                  });
+                break
+        }
+
+        const concatenatedIds = contestants.map((cc) => cc.id).join('');
+        
+        const displayStr = (contestantCountryOrder === 'Rank') ? 'pl=t&' : '';
+
         goToUrl(
             `?r=>${concatenatedIds}&` +
             `g=t&` +
-            `n=${contestantCountry}&`, //+
+            displayStr +
+            `n=${encodeURIComponent(contestantCountry)}&`, //+
             //`v=${getVoteCode('f', 't', voteSource)}`,
             theme
         );
@@ -162,16 +188,20 @@ const RankingsTab: React.FC = () => {
         if (!sourceCountry?.length || sourceCountry === 'All') {
             return '';
         }
-        return `+from+${sourceCountry.replaceAll(' ', '+')}`;
+        return `+from+${encodeURIComponent(sourceCountry).replaceAll(' ', '+')}`;
     };
 
     return (
         <div className="mb-0">
             <p className="relative mb-[1em] mt-2 text-sm">
-                Select a year and voting country, then click one of the buttons to see official final rankings
+                Generate rankings based on selected year, or see all contestants for a selected country.
             </p>
             <div className="mt-5">
-                <span className="font-bold ml-0 whitespace-nowrap">ESC final rankings</span>
+                <span className="font-bold ml-0 whitespace-nowrap">ESC final rankings</span>               
+                <TooltipHelp
+                    content="Select a year and voting country, then click one of the buttons to see official final rankings"
+                    className="ml-0 z-50"
+                />
                 <div className=" mt-[0.7em]">
                     <div>
                         <Dropdown
@@ -231,7 +261,7 @@ const RankingsTab: React.FC = () => {
                     />
                 <div className=" mt-[0.7em]">
                     <div>
-                       
+                       <div>
                         <Dropdown
                             key="country-selector"
                             className="mx-auto mb-2 min-w-[5em]"
@@ -240,15 +270,33 @@ const RankingsTab: React.FC = () => {
                             onChange={(s) => setContestantCountry(s)}
                             options={contestantCountries}
                             showSearch={true}
+                        /> 
+                        <span className="mx-2">order by</span> 
+                        <Dropdown
+                            key="country-order-selector"
+                            className="mx-auto mb-2 min-w-[5em]"
+                            menuClassName="w-auto"
+                            value={contestantCountryOrder}
+                            onChange={(s) => setContestantCountryOrder(s)}
+                            options={['Year', 'Rank']}
+                            showSearch={false}
                         />
-                        <IconButton
+                        </div>
+                        <div className="mt-2 -ml-4">
+                            <IconButton
                                 onClick={openAllContestantsByCountry}
                                 className="ml-4 pl-[1em] pr-[1em] rounded-md"
                                 title="all"
                                 disabled={!contestantCountry}
                             />
+                            <IconButton
+                                onClick={() => openAllContestantsByCountry(true)}
+                                className="ml-4 pl-[1em] pr-[1em] rounded-md"
+                                title="finalists"
+                                disabled={!contestantCountry}
+                            />
+                        </div>
                     </div>
-
                 </div>
             </div>
         </div>

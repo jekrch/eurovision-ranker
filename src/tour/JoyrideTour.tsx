@@ -5,7 +5,7 @@ import { setYear, setName, setShowUnranked, setRankedItems, setUnrankedItems, se
 import { fetchCountryContestantsByYear } from '../utilities/ContestantRepository';
 import { tourSteps } from '../tour/steps';
 import { joyrideOptions } from '../utilities/JoyrideUtil';
-import Joyride from 'react-joyride';
+import type Joyride from 'react-joyride';
 import { clearCategories, clearCategories as clearCategoriesUtil } from '../utilities/CategoryUtil';
 import { CountryContestant } from '../data/CountryContestant';
 import { clearAllRankingParams, goToUrl, updateQueryParams } from '../utilities/UrlUtil';
@@ -17,113 +17,122 @@ interface JoyrideTourProps {
   setRefreshUrl: (num: number) => void;
   openConfigModal: (tabName: string) => void;
   setConfigModalShow: (show: boolean) => void;
-  setRunTour:(run: boolean) => void;
+  setRunTour: (run: boolean) => void;
   runTour: boolean;
 }
 
 const JoyrideTour: React.FC<JoyrideTourProps> = (props: JoyrideTourProps) => {
-    const dispatch: AppDispatch = useAppDispatch();
-    const year = useAppSelector((state: AppState) => state.year);
-    const categories = useAppSelector((state: AppState) => state.categories);
-    const rankedItems = useAppSelector((state: AppState) => state.rankedItems);
-    const unrankedItems = useAppSelector((state: AppState) => state.unrankedItems);
-    const [startTour, setStartTour] = useState<boolean>(false);
-    const resetRanking = useResetRanking();
-    const [originalUrlQuery, setOriginalUrlQuery] = useState<string>('');
-    const [joyrideStepIndex, setJoyrideStepIndex] = useState(0);
-  
-    useEffect(() => {
-      if (props.runTour !== startTour) {
+  const dispatch: AppDispatch = useAppDispatch();
+  const year = useAppSelector((state: AppState) => state.year);
+  const categories = useAppSelector((state: AppState) => state.categories);
+  const rankedItems = useAppSelector((state: AppState) => state.rankedItems);
+  const unrankedItems = useAppSelector((state: AppState) => state.unrankedItems);
+  const [startTour, setStartTour] = useState<boolean>(false);
+  const resetRanking = useResetRanking();
+  const [originalUrlQuery, setOriginalUrlQuery] = useState<string>('');
+  const [joyrideStepIndex, setJoyrideStepIndex] = useState(0);
+  const [JoyrideComponent, setJoyrideComponent] = useState<typeof Joyride | null>(null);
 
-        // if we're starting the tour, save the current URL so we can 
-        // restore it after exiting the tour. Then clear the current 
-        // ranking state.
-        if (props.runTour) {
-          setOriginalUrlQuery(window.location.search);
-          clearRankingForTour();
+  useEffect(() => {
 
-        }
-
-        setStartTour(props.runTour);
-
-        // if we're exiting the tour, return to the URL we had 
-        // when the tour began 
-        if (!props.runTour) {
-          goToUrl(originalUrlQuery, undefined);
-        }
-      }
-
-    }, [props.runTour]);
-
-    /**
-     * In order to prepare for a tour, we should clear the theme, ensure 
-     * that we're not in advanced/global mode, and clear any current ranking.
-     * Note that the original ranking will be restored when the tour ends. 
-     */
-    function clearRankingForTour() {
-      updateQueryParams({
-        'g': undefined,
-        t: ''
-      }
-      );
-    
-      dispatch(
-        setGlobalSearch(false)
-      );
-
-      dispatch(
-        setTheme('')
-      );
-    
-      resetRanking();
+    if (props.runTour) {
+      // Only import when the tour is about to run
+      import('react-joyride').then((module) => {
+        setJoyrideComponent(() => module.default);
+      });
     }
 
-    useEffect(() => {
-      const executeJoyRideStep = async () => {
-        await executeTourStepActions(joyrideStepIndex);
+    if (props.runTour !== startTour) {
+
+      // if we're starting the tour, save the current URL so we can 
+      // restore it after exiting the tour. Then clear the current 
+      // ranking state.
+      if (props.runTour) {
+        setOriginalUrlQuery(window.location.search);
+        clearRankingForTour();
+
       }
-      executeJoyRideStep();
-    }, [joyrideStepIndex])
 
-    const handleJoyrideCallback = useCallback((data: CallBackProps) => {
-      const { action, index, status, type } = data;
+      setStartTour(props.runTour);
 
-      if (type === EVENTS.STEP_BEFORE && index === 0) {
-        clearRanking(year);
+      // if we're exiting the tour, return to the URL we had 
+      // when the tour began 
+      if (!props.runTour) {
+        goToUrl(originalUrlQuery, undefined);
       }
-  
-      if (
-        [STATUS.FINISHED, STATUS.SKIPPED].includes(status as any) ||
-        (action === ACTIONS.CLOSE && type === EVENTS.STEP_AFTER)
-      ) {
-        props.setRunTour(false); // End the tour
-        setJoyrideStepIndex(0);
-      } else if (type === EVENTS.STEP_AFTER || type === EVENTS.TARGET_NOT_FOUND) {
-        setJoyrideStepIndex(index + (action === ACTIONS.PREV ? -1 : 1));
-      }
-    }, []);
-
-    async function clearRanking(year: string) {
-
-      let yearContestants = await fetchCountryContestantsByYear(
-        year, ''
-      );
-  
-      dispatch(
-        setContestants(yearContestants)
-      );
-      dispatch(
-        setUnrankedItems(yearContestants)
-      );
-  
-      dispatch(
-        setRankedItems([])
-      );
-  
-      clearAllRankingParams(categories);
-  
-      props.setRefreshUrl(Math.random());
     }
+
+  }, [props.runTour]);
+
+  /**
+   * In order to prepare for a tour, we should clear the theme, ensure 
+   * that we're not in advanced/global mode, and clear any current ranking.
+   * Note that the original ranking will be restored when the tour ends. 
+   */
+  function clearRankingForTour() {
+    updateQueryParams({
+      'g': undefined,
+      t: ''
+    }
+    );
+
+    dispatch(
+      setGlobalSearch(false)
+    );
+
+    dispatch(
+      setTheme('')
+    );
+
+    resetRanking();
+  }
+
+  useEffect(() => {
+    const executeJoyRideStep = async () => {
+      await executeTourStepActions(joyrideStepIndex);
+    }
+    executeJoyRideStep();
+  }, [joyrideStepIndex])
+
+  const handleJoyrideCallback = useCallback((data: CallBackProps) => {
+    const { action, index, status, type } = data;
+
+    if (type === EVENTS.STEP_BEFORE && index === 0) {
+      clearRanking(year);
+    }
+
+    if (
+      [STATUS.FINISHED, STATUS.SKIPPED].includes(status as any) ||
+      (action === ACTIONS.CLOSE && type === EVENTS.STEP_AFTER)
+    ) {
+      props.setRunTour(false); // End the tour
+      setJoyrideStepIndex(0);
+    } else if (type === EVENTS.STEP_AFTER || type === EVENTS.TARGET_NOT_FOUND) {
+      setJoyrideStepIndex(index + (action === ACTIONS.PREV ? -1 : 1));
+    }
+  }, []);
+
+  async function clearRanking(year: string) {
+
+    let yearContestants = await fetchCountryContestantsByYear(
+      year, ''
+    );
+
+    dispatch(
+      setContestants(yearContestants)
+    );
+    dispatch(
+      setUnrankedItems(yearContestants)
+    );
+
+    dispatch(
+      setRankedItems([])
+    );
+
+    clearAllRankingParams(categories);
+
+    props.setRefreshUrl(Math.random());
+  }
 
   /**
    * Each case statement corresponds to a step in the tour
@@ -139,13 +148,13 @@ const JoyrideTour: React.FC<JoyrideTourProps> = (props: JoyrideTourProps) => {
           dispatch(setYear('2023'));
           props.setRefreshUrl(Math.random());
         }
-        
+
         await clearRanking(year);
 
         dispatch(
           setName('')
         );
-        
+
         dispatch(
           setShowUnranked(true)
         );
@@ -203,7 +212,7 @@ const JoyrideTour: React.FC<JoyrideTourProps> = (props: JoyrideTourProps) => {
 
         if (rankedItems.length >= 2) {
           // swap the first two elements
-          
+
           swappedRankedItems[0] = rankedItems[1];
           swappedRankedItems[1] = rankedItems[0];
         }
@@ -211,7 +220,7 @@ const JoyrideTour: React.FC<JoyrideTourProps> = (props: JoyrideTourProps) => {
         dispatch(
           setRankedItems(swappedRankedItems)
         );
-        
+
         props.setRefreshUrl(Math.random());
 
         dispatch(
@@ -251,21 +260,23 @@ const JoyrideTour: React.FC<JoyrideTourProps> = (props: JoyrideTourProps) => {
         break;
     }
   }
-  
-    return (
-      <Joyride
-        disableScrolling={true}
-        disableScrollParentFix={true}
-        continuous
-        run={startTour}
-        steps={tourSteps}
-        stepIndex={joyrideStepIndex}
-        callback={handleJoyrideCallback}
-        showProgress={true}
-        disableOverlay={false}
-        styles={joyrideOptions}
-      />
-    );
-  };
-  
-  export default JoyrideTour;
+
+  if (!JoyrideComponent) return null;
+
+  return (
+    <JoyrideComponent
+      disableScrolling={true}
+      disableScrollParentFix={true}
+      continuous
+      run={startTour}
+      steps={tourSteps}
+      stepIndex={joyrideStepIndex}
+      callback={handleJoyrideCallback}
+      showProgress={true}
+      disableOverlay={false}
+      styles={joyrideOptions}
+    />
+  );
+};
+
+export default JoyrideTour;

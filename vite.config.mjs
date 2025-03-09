@@ -5,6 +5,7 @@ import postcss from 'postcss';
 import tailwindcss from 'tailwindcss';
 import compression from 'vite-plugin-compression2';
 import autoprefixer from 'autoprefixer';
+import { visualizer } from 'rollup-plugin-visualizer';
 
 export default defineConfig({
     plugins: [
@@ -13,7 +14,13 @@ export default defineConfig({
       compression({
         algorithm: 'gzip',
         ext: '.gz',
-      })
+      }),
+      visualizer({
+        open: true, 
+        filename: 'stats.html',
+        gzipSize: true,
+        brotliSize: true,
+      }),
     ],
     build: {
       minify: 'terser',

@@ -1,7 +1,8 @@
 import classNames from 'classnames';
 import { type FC, useRef, useEffect, useState } from 'react';
 import { FaFileAlt, FaTv } from 'react-icons/fa';
-import Flag from "react-world-flags"
+//import Flag from "react-world-flags"
+import { LazyLoadedFlag } from '../LazyFlag';
 import { CountryContestant } from '../../data/CountryContestant';
 import { AppState } from '../../redux/store';
 import { voteCodeHasType } from '../../utilities/VoteProcessor';
@@ -135,7 +136,7 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
           <div className="relative w-12 mr-3 flex items-center">
             <div className="relative w-full">
               {country.key !== 'yu' ? (
-                <Flag code={country.key} className="w-full opacity-80" />
+                <LazyLoadedFlag code={country.key} className="w-full opacity-80" />
               ) : (
                 <img
                   src="https://upload.wikimedia.org/wikipedia/commons/6/61/Flag_of_Yugoslavia_%281946-1992%29.svg"

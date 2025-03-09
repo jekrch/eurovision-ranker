@@ -24,4 +24,4 @@ export function sanitizeYear(contestYear: string | null): string {
   return defaultYear;
 }
 
-export const defaultYear = '2024';
+export const defaultYear = '2025';

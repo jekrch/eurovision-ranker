@@ -16,7 +16,6 @@ export default defineConfig({
         ext: '.gz',
       }),
       visualizer({
-        open: true, 
         filename: 'stats.html',
         gzipSize: true,
         brotliSize: true,

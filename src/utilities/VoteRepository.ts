@@ -36,7 +36,7 @@ export function fetchVotesForYear(
   }
 
   return new Promise((resolve, reject) => {
-    fetchVoteCsv()
+    fetchVoteCsv(year)
       .then(response => response)
       .then(csvString => {
         Papa.parse(csvString, {
@@ -103,7 +103,7 @@ export async function fetchVotesForYearsAndCountries(
   }
 
   return new Promise((resolve, reject) => {
-    fetchVoteCsv()
+    fetchVoteCsv('')
       .then(response => response)
       .then(csvString => {
         Papa.parse(csvString, {

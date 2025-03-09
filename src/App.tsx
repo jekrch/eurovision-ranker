@@ -17,6 +17,7 @@ import TooltipHelp from './components/TooltipHelp';
 import ContentPlaceholder from './components/ranking/ContentPlaceholder';
 import EditNav from './components/nav/EditNav';
 import { deleteRankedCountry } from './redux/rankingActions';
+import { useModal, ModalType } from './hooks/useModal';
 
 // lazy load components to reduce initial bundle size
 const LazyRankedCountriesList = React.lazy(() => import('./components/ranking/RankedCountriesList'));
@@ -31,23 +32,9 @@ const LazySongModal = React.lazy(() => import('./components/modals/LyricsModal')
 const LazyJoyrideTour = React.lazy(() => import('./tour/JoyrideTour'));
 
 const App: React.FC = () => {
-  const [mainModalShow, setMainModalShow] = useState(false);
-  const [nameModalShow, setNameModalShow] = useState(false);
-  const [mapModalShow, setMapModalShow] = useState(false);
-  const [isSongModalOpen, setIsSongModalOpen] = useState(false);
-  const [runTour, setRunTour] = useState(false);
-
-  const [hasMainModalShow, setHasMainModalShow] = useState(false);
-  const [hasNameModalShow, setHasNameModalShow] = useState(false);
-  const [hasMapModalShow, setHasMapModalShow] = useState(false);
-  const [hasSongModalOpen, setHasSongModalOpen] = useState(false);
-  const [hasConfigModalShow, setHasConfigModalShow] = useState(false);
-  const [hasRunTour, setHasRunTour] = useState(false);
-
-  const [configModalShow, setConfigModalShow] = useState(false);
+  const { modalState, openModal, closeModal, setModalTab, currentTab } = useModal('about');
+  const [configModalTab, setConfigModalTab] = useState('display');
   const [refreshUrl, setRefreshUrl] = useState(0);
-  const [modalTab, setModalTab] = useState('about')
-  const [configModalTab, setConfigModalTab] = useState('display')
   const dispatch: AppDispatch = useAppDispatch();
 
   const showUnranked = useAppSelector((state: AppState) => state.showUnranked);
@@ -77,40 +64,6 @@ const App: React.FC = () => {
       loadAuroralCSS();
     }
   }, [theme]);
-
-  /**
-   * These are used to ensure that we don't hide immediately on closing
-   * which defeats the closing animation
-   */
-  useEffect(() => {
-    if (isSongModalOpen)
-      setHasSongModalOpen(isSongModalOpen);
-  }, [isSongModalOpen]);
-  
-  useEffect(() => {
-    if (mainModalShow)
-      setHasMainModalShow(mainModalShow);
-  }, [mainModalShow]);
-
-  useEffect(() => {
-    if (nameModalShow)
-      setHasNameModalShow(nameModalShow);
-  }, [nameModalShow]);
-
-  useEffect(() => {
-    if (mapModalShow)
-      setHasMapModalShow(mapModalShow);
-  }, [mapModalShow]);
-  
-  useEffect(() => {
-    if (configModalShow)
-      setHasConfigModalShow(configModalShow);
-  }, [configModalShow]);
-
-  useEffect(() => {
-    if (runTour)
-      setHasRunTour(runTour);
-  }, [runTour]);
 
   /**
    * If we're switching to the unranked selection view from the 
@@ -420,19 +373,20 @@ const App: React.FC = () => {
     });
   }
 
-  function openMainModal(tabName: string): void {
+  // Helper functions to handle modal operations with selected tab
+  function openMainModalWithTab(tabName: string): void {
     setModalTab(tabName);
-    setMainModalShow(true)
+    openModal('main');
   }
 
-  function openConfigModal(tabName: string): void {
+  function openConfigModalWithTab(tabName: string): void {
     setConfigModalTab(tabName);
-    setConfigModalShow(true)
+    openModal('config');
   }
 
-  function openSongModal(countryCountestant: CountryContestant) {
-    setSelectedCountryContestant(countryCountestant);
-    setIsSongModalOpen(true);
+  function openSongModalWithData(countryContestant: CountryContestant) {
+    setSelectedCountryContestant(countryContestant);
+    openModal('song');
   }
 
   return (
@@ -444,7 +398,7 @@ const App: React.FC = () => {
           handleGetStarted={handleGetStarted}
           handleTakeTour={() => {
             handleGetStarted();
-            setRunTour(true);
+            openModal('tour');
           }}
         />
       )}
@@ -464,8 +418,8 @@ const App: React.FC = () => {
         }
         <Suspense fallback={<div />}>
           <LazyNavbar
-            openModal={openMainModal}
-            openConfigModal={openConfigModal}
+            openModal={openMainModalWithTab}
+            openConfigModal={openConfigModalWithTab}
           />
         </Suspense>
 
@@ -516,12 +470,12 @@ const App: React.FC = () => {
               ) :
                 <Suspense fallback={<ContentPlaceholder />}>
                   <LazyRankedCountriesList
-                    openSongModal={openSongModal}
-                    openModal={openMainModal}
-                    openConfigModal={openConfigModal}
-                    setRunTour={setRunTour}
-                    openNameModal={() => setNameModalShow(true)}
-                    openMapModal={() => setMapModalShow(true)}
+                    openSongModal={openSongModalWithData}
+                    openModal={openMainModalWithTab}
+                    openConfigModal={openConfigModalWithTab}
+                    setRunTour={() => openModal('tour')}
+                    openNameModal={() => openModal('name')}
+                    openMapModal={() => openModal('map')}
                   />
                 </Suspense>
               }
@@ -554,82 +508,75 @@ const App: React.FC = () => {
         {(showUnranked && (!showOverlay || isOverlayExit)) &&
           <div className={`edit-nav-container ${(!showOverlay || isOverlayExit) && 'slide-up-animation'}`}>
             <EditNav
-              setNameModalShow={setNameModalShow}
+              setNameModalShow={() => openModal('name')}
             />
           </div>
         }
       </div>
 
+      {/* Render all modals conditionally */}
       <Suspense fallback={<div />}>
-        <div>
-          {(mainModalShow || hasMainModalShow) && (
-            <LazyMainModal
-              tab={modalTab}
-              isOpen={mainModalShow}
-              onClose={() => setMainModalShow(false)}
-              startTour={() => {
-                dispatch(
-                  setShowUnranked(true)
-                );
-                setRunTour(true);
-              }}
-            />
-          )}
-        </div>
+        {(modalState.main.isOpen || modalState.main.hasRendered) && (
+          <LazyMainModal
+            tab={currentTab}
+            isOpen={modalState.main.isOpen}
+            onClose={() => closeModal('main')}
+            startTour={() => {
+              dispatch(setShowUnranked(true));
+              openModal('tour');
+            }}
+          />
+        )}
 
-          {(nameModalShow || hasNameModalShow) && (
-              <LazyNameModal
-              isOpen={nameModalShow}
-              onClose={() => {
-                setNameModalShow(false);
-              }}
-            />
-          )}
+        {(modalState.name.isOpen || modalState.name.hasRendered) && (
+          <LazyNameModal
+            isOpen={modalState.name.isOpen}
+            onClose={() => closeModal('name')}
+          />
+        )}
 
-        {(isSongModalOpen || hasSongModalOpen) && (
-            <LazySongModal
-            isOpen={isSongModalOpen}
+        {(modalState.song.isOpen || modalState.song.hasRendered) && (
+          <LazySongModal
+            isOpen={modalState.song.isOpen}
             countryContestant={selectedCountryContestant}
-            onClose={() => setIsSongModalOpen(false)}
+            onClose={() => closeModal('song')}
           />
         )}
       </Suspense>
 
       <div className="tour-step-13">
-        {(configModalShow || hasConfigModalShow) && (
+        {(modalState.config.isOpen || modalState.config.hasRendered) && (
           <Suspense fallback={<div />}>
             <LazyConfigModal
               tab={configModalTab}
-              isOpen={configModalShow}
-              onClose={() => setConfigModalShow(false)}
+              isOpen={modalState.config.isOpen}
+              onClose={() => closeModal('config')}
               startTour={() => {
-                dispatch(
-                  setShowUnranked(true)
-                );
-                setRunTour(true);
+                dispatch(setShowUnranked(true));
+                openModal('tour');
               }}
             />
           </Suspense>
         )}
       </div>
 
-      {(mapModalShow || hasMapModalShow) && (
+      {(modalState.map.isOpen || modalState.map.hasRendered) && (
         <Suspense fallback={<div />}>
           <LazyMapModal
-            isOpen={mapModalShow}
-            onClose={() => { setMapModalShow(false) }}
+            isOpen={modalState.map.isOpen}
+            onClose={() => closeModal('map')}
           />
         </Suspense>
       )}
 
-      {(runTour || hasRunTour) && (
+      {(modalState.tour.isOpen || modalState.tour.hasRendered) && (
         <Suspense fallback={<div />}>
           <LazyJoyrideTour
             setRefreshUrl={setRefreshUrl}
-            openConfigModal={openConfigModal}
-            setConfigModalShow={setConfigModalShow}
-            setRunTour={setRunTour}
-            runTour={runTour}
+            openConfigModal={openConfigModalWithTab}
+            setConfigModalShow={(show) => show ? openModal('config') : closeModal('config')}
+            setRunTour={(run) => run ? openModal('tour') : closeModal('tour')}
+            runTour={modalState.tour.isOpen}
           />
         </Suspense>
       )}

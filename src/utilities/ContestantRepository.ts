@@ -2,7 +2,7 @@ import { Contestant, ContestantData } from '../data/Contestant';
 import { CountryContestant } from "../data/CountryContestant";
 import { countries } from '../data/Countries';
 import Papa from 'papaparse';
-import { assignVotesByCode, assignVotesByContestants, voteCodeHasSourceCountry } from "./VoteProcessor";
+import { assignVotesByContestants, voteCodeHasSourceCountry } from "./VoteProcessor";
 import { cachedYear, initialCountryContestantCache } from "../data/InitialContestants";
 import { SongDetails } from "../data/SongDetails";
 import { fetchContestantCsv, fetchLyricsCsv } from "./CsvCache";
@@ -241,9 +241,9 @@ function handleDuplicateEntry(
  * 
  * @returns promise resolving to parsed CSV data
  */
-function fetchAndParseCsv(): Promise<any> {
+function fetchAndParseCsv(year: string = ''): Promise<any> {
   return new Promise((resolve, reject) => {
-    fetchContestantCsv()
+    fetchContestantCsv(year)
       .then(response => response)
       .then(csvString => {
         Papa.parse(csvString, {
@@ -268,7 +268,7 @@ export function getContestantsForYear(year: string): Promise<Contestant[]> {
     return Promise.resolve(contestantCache[year]);
   }
 
-  return fetchAndParseCsv()
+  return fetchAndParseCsv(year)
     .then(results => {
       const contestants = processContestants(results, row => row.year === year);
       contestantCache[year] = contestants;
@@ -370,7 +370,7 @@ export function getSongDetails(
 ): Promise<SongDetails | undefined> {
   return new Promise((resolve, reject) => {
     // first fetch composers and lyricists from main.csv
-    fetchContestantCsv()
+    fetchContestantCsv('')
       .then(response => response)
       .then(mainCsvString => {
         Papa.parse(mainCsvString, {

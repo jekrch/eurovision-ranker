@@ -18,14 +18,14 @@ export async function fetchCountryContestantsByYear(
   voteCode: string = ''
 ): Promise<CountryContestant[]> {
 
-  // if we're requesting the cached year and there's no source country in 
-  // the vote code, return an already parsed json array (for performance)
-  if (
-    sanitizeYear(year) === cachedYear &&
-    !voteCodeHasSourceCountry(voteCode)
-  ) {
-    return clone(initialCountryContestantCache);
-  }
+  // // if we're requesting the cached year and there's no source country in 
+  // // the vote code, return an already parsed json array (for performance)
+  // if (
+  //   sanitizeYear(year) === cachedYear &&
+  //   !voteCodeHasSourceCountry(voteCode)
+  // ) {
+  //   return clone(initialCountryContestantCache);
+  // }
 
   return await fetchAndProcessCountryContestants(
     year, voteCode

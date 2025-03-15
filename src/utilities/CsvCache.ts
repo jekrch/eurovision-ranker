@@ -34,27 +34,30 @@ export function fetchContestantCsv(year: string = ''): Promise<string> {
 
     const isCurrentYear = year === defaultYear;
 
-    const file: string = isCurrentYear ? 'mainCurrent.csv' : `main.csv`;
-
     if (!isCurrentYear && cachedContestantCsvPromise) {
         return cachedContestantCsvPromise;
     } else if (isCurrentYear && cachedContestantCurrentCsvPromise) {
         return cachedContestantCurrentCsvPromise;
     }
 
-    const promise = fetch(`${import.meta.env.BASE_URL}${file}`)
-        .then(response => response.text());
-
     if (isCurrentYear) {
-        cachedContestantCurrentCsvPromise = promise;
+        cachedContestantCurrentCsvPromise = getFileContents('mainCurrent.csv')
+        return cachedContestantCurrentCsvPromise;
     } else {
-        cachedContestantCsvPromise = promise;
-    }
-    
-    return promise;
+        const promiseMain = getFileContents('main.csv')
+        const promiseMainCurrent = getFileContents('mainCurrent.csv')
+        cachedContestantCsvPromise = cachedContestantCurrentCsvPromise = Promise.all([promiseMain, promiseMainCurrent])
+                        .then(([mainContent, mainCurrentContent]) => mainContent + mainCurrentContent);
+        return cachedContestantCsvPromise
+    }    
 }
 
 let cachedLyricsCsvPromise: Promise<string> | null = null;
+
+function getFileContents(file: string) {
+    return fetch(`${import.meta.env.BASE_URL}${file}`)
+        .then(response => response.text());
+}
 
 export function fetchLyricsCsv(): Promise<string> {
     if (cachedLyricsCsvPromise) {

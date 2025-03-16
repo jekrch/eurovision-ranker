@@ -11,6 +11,7 @@ import { EXPORT_TYPE } from '../../utilities/export/ExportType';
 import { rankedHasAnyYoutubeLinks } from '../../utilities/YoutubeUtil';
 import { setHeaderMenuOpen } from '../../redux/rootSlice';
 import { useAppDispatch, useAppSelector } from '../../hooks/stateHooks';
+import ImageCaptureMenuItem from './ImageCaptureMenuItem';
 
 interface RankedHeaderMenuProps {
   onMapClick?: () => void;
@@ -162,6 +163,14 @@ const RankedHeaderMenu: React.FC<RankedHeaderMenuProps> = (props: RankedHeaderMe
             onClick={() => props.openConfig("display")}
             afterClick={close} 
           />
+
+          {rankedItems.length > 0 && (
+                <ImageCaptureMenuItem 
+                    className="text-blue-300 hover:text-white mr-2" 
+                    iconClassName="text-lg"
+                    afterClick={close}
+                />
+            )}
 
           <SubmenuItem
             text="Copy"

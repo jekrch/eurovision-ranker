@@ -18,6 +18,7 @@ import ContentPlaceholder from './components/ranking/ContentPlaceholder';
 import EditNav from './components/nav/EditNav';
 import { deleteRankedCountry } from './redux/rankingActions';
 import { useModal, ModalType } from './hooks/useModal';
+import CanvasDevModal from './components/ranking/CanvasDevModal';
 
 // lazy load components to reduce initial bundle size
 const LazyRankedCountriesList = React.lazy(() => import('./components/ranking/RankedCountriesList'));
@@ -51,6 +52,7 @@ const App: React.FC = () => {
   const [selectedCountryContestant, setSelectedCountryContestant] = useState<CountryContestant | undefined>(undefined);
   const [showOverlay, setShowOverlay] = useState(!areRankingsSet());
   const [isOverlayExit, setIsOverlayExit] = useState(false);
+  const [isDevModalOpen, setIsDevModalOpen] = useState(true);
 
   const memoizedRankedItems = useMemo(() => rankedItems, [rankedItems]);
   const memoizedUnrankedItems = useMemo(() => unrankedItems, [unrankedItems]);
@@ -580,6 +582,11 @@ const App: React.FC = () => {
           />
         </Suspense>
       )}
+
+        {/* <CanvasDevModal
+          isOpen={isDevModalOpen}
+          onClose={() => setIsDevModalOpen(false)}
+        /> */}
 
       <Toaster
         toastOptions={toastOptions}

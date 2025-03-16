@@ -1,7 +1,6 @@
 import classNames from 'classnames';
 import { type FC, useRef, useEffect, useState } from 'react';
 import { FaFileAlt, FaTv } from 'react-icons/fa';
-//import Flag from "react-world-flags"
 import { LazyLoadedFlag } from '../LazyFlag';
 import { CountryContestant } from '../../data/CountryContestant';
 import { AppState } from '../../redux/store';

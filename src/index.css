@@ -193,11 +193,11 @@ code {
 
 
 .configCog:hover {
-  -webkit-animation: spin 900ms none normal;
-  animation: spin 900ms none normal;
+  -webkit-animation: cog-spin 900ms none normal;
+  animation: cog-spin 900ms none normal;
 }
 
-@-webkit-keyframes spin {
+@-webkit-keyframes cog-spin {
   0% {
     -webkit-transform: rotate(0deg);
     transform: rotate(0deg);
@@ -209,7 +209,7 @@ code {
   }
 }
 
-@keyframes spin {
+@keyframes cog-spin {
   0% {
     -webkit-transform: rotate(0deg);
     transform: rotate(0deg);

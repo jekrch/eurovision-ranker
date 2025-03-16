@@ -1,4 +1,4 @@
-import React, { Dispatch, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Dropdown from '../Dropdown';
 import { CountryContestant } from '../../data/CountryContestant';
 import { AppDispatch, AppState } from '../../redux/store';
@@ -15,6 +15,7 @@ interface IRankedItemsHeaderProps {
     generateYoutubePlaylistUrl: (rankedItems: CountryContestant[]) => string;
     supportedYears: string[];
     className: string;
+    downloadButton?: React.ReactNode
 }
 
 const RankedItemsHeader: React.FC<IRankedItemsHeaderProps> = ({
@@ -23,7 +24,8 @@ const RankedItemsHeader: React.FC<IRankedItemsHeaderProps> = ({
     openNameModal,
     openConfig,
     supportedYears,
-    className
+    className, 
+    downloadButton
 }) => {
     const dispatch: AppDispatch = useAppDispatch();
     const year = useAppSelector((state: AppState) => state.year);

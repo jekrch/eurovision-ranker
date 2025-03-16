@@ -161,6 +161,12 @@ export function voteCodeHasType(voteCode: string, typeCode: string): boolean {
     return typeCodes?.includes(typeCode);
 }
 
+export function voteCodeHasAnyType(voteCode: string){
+    return voteCodeHasType(voteCode, 'tv') || 
+            voteCodeHasType(voteCode, 'j') ||
+            voteCodeHasType(voteCode, 't');
+}
+
 export function updateVoteTypeCode(
     currentCode: string | undefined,
     voteType: string,

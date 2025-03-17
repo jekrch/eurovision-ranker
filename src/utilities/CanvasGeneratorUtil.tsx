@@ -63,8 +63,8 @@ const DEFAULT_CONFIG: RankingCanvasConfig = {
   footerMargin: 10,
   maxSongWidth: 300,
   flagSize: 60,
-  rankWidth: 40,
-  cardCornerRadius: 5,
+  rankWidth: 45,
+  cardCornerRadius: 4,
   fontFamily: 'Arial',
   pixelRatio: 3,
   fontSizes: {
@@ -137,7 +137,7 @@ const loadSvgAsImage = (url: string, width: number, height: number): Promise<HTM
 const loadFlagImage = async (countryCode: string, width: number, height: number): Promise<HTMLImageElement | null> => {
   try {
     const sources = [
-      `https://cdn.jsdelivr.net/gh/lipis/flag-icons/flags/4x3/${countryCode.toLowerCase()}.svg`,
+      //`https://cdn.jsdelivr.net/gh/lipis/flag-icons/flags/4x3/${countryCode.toLowerCase()}.svg`,
       `https://flagcdn.com/w320/${countryCode.toLowerCase()}.png`,
       `https://flagsapi.com/${countryCode.toUpperCase()}/flat/64.png`
     ];
@@ -568,7 +568,7 @@ const drawRankedItem = (
     const verticalPadding = (itemHeight - totalContentHeight) / 2;
     
     // This moves everything down slightly 
-    const opticalAdjustment = voteCodeHasAnyType(config.voteCode) && contestant.votes ? 15 : 5;
+    const opticalAdjustment = voteCodeHasAnyType(config.voteCode) && contestant.votes ? 10 : 5;
     let startY = cardY + verticalPadding + opticalAdjustment;
     
     // Set current Y to start position

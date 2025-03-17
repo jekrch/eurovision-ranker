@@ -29,7 +29,6 @@ export interface DetailsCardProps {
  * @returns 
  */
 export const DetailsCard: FC<DetailsCardProps> = (props) => {
-  const vote = useAppSelector((state: AppState) => state.vote);
   const categories = useAppSelector((state: AppState) => state.categories);
   const activeCategory = useAppSelector((state: AppState) => state.activeCategory);
   const isGlobalMode = useAppSelector((state: AppState) => state.globalSearch);
@@ -37,6 +36,7 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
   const showComparison = useAppSelector((state: AppState) => state.showComparison);
   const showThumbnail = useAppSelector((state: AppState) => state.showThumbnail);
   const showPlace = useAppSelector((state: AppState) => state.showPlace);
+  const vote = useAppSelector((state: AppState) => state.vote);
   const contestant = props.countryContestant.contestant;
   const country = props.countryContestant.country;
   const categoryRankingsRef = useRef<HTMLDivElement>(null);
@@ -132,7 +132,7 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
             {props.rank}
           </div>
 
-          <div className="relative w-12 mr-3 flex items-center">
+          <div className="relative w-14 min-w-14 mr-3 flex items-center">
             <div className="relative w-full">
               {country.key !== 'yu' ? (
                 <LazyLoadedFlag code={country.key} className="w-full opacity-80" />

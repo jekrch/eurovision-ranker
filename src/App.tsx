@@ -582,8 +582,8 @@ const App: React.FC = () => {
           />
         </Suspense>
       )}
-
-        {/* <CanvasDevModal
+{/* 
+        <CanvasDevModal
           isOpen={isDevModalOpen}
           onClose={() => setIsDevModalOpen(false)}
         /> */}

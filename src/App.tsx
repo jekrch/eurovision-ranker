@@ -19,6 +19,8 @@ import EditNav from './components/nav/EditNav';
 import { deleteRankedCountry } from './redux/rankingActions';
 import { useModal, ModalType } from './hooks/useModal';
 import CanvasDevModal from './components/ranking/CanvasDevModal';
+import SorterModal from './components/ranking/SorterModal';
+import useSorterModal from './hooks/useSortModal';
 
 // lazy load components to reduce initial bundle size
 const LazyRankedCountriesList = React.lazy(() => import('./components/ranking/RankedCountriesList'));
@@ -57,6 +59,13 @@ const App: React.FC = () => {
   const memoizedRankedItems = useMemo(() => rankedItems, [rankedItems]);
   const memoizedUnrankedItems = useMemo(() => unrankedItems, [unrankedItems]);
 
+  const { 
+    isSorterModalOpen, 
+    openSorterModal, 
+    closeSorterModal,
+    getItemsToSort
+  } = useSorterModal();
+  
   const loadAuroralCSS = () => {
     return import('./auroral.css');
   };
@@ -582,7 +591,14 @@ const App: React.FC = () => {
           />
         </Suspense>
       )}
-{/* 
+
+       {/* Include the sorter modal */}
+       <SorterModal
+        isOpen={isSorterModalOpen}
+        onClose={closeSorterModal}
+        initialItems={getItemsToSort()}
+      />
+      {/* 
         <CanvasDevModal
           isOpen={isDevModalOpen}
           onClose={() => setIsDevModalOpen(false)}

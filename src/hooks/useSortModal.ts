@@ -7,7 +7,7 @@ import { useAppSelector } from './stateHooks';
  * Provides handlers and state for opening and closing the modal
  */
 export const useSorterModal = () => {
-  const [isSorterModalOpen, setIsSorterModalOpen] = useState(true);
+  const [isSorterModalOpen, setIsSorterModalOpen] = useState(false);
   const rankedItems = useAppSelector((state) => state.rankedItems);
   const unrankedItems = useAppSelector((state) => state.unrankedItems);
 

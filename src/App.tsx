@@ -59,13 +59,13 @@ const App: React.FC = () => {
   const memoizedRankedItems = useMemo(() => rankedItems, [rankedItems]);
   const memoizedUnrankedItems = useMemo(() => unrankedItems, [unrankedItems]);
 
-  const { 
-    isSorterModalOpen, 
-    openSorterModal, 
+  const {
+    isSorterModalOpen,
+    openSorterModal,
     closeSorterModal,
     getItemsToSort
   } = useSorterModal();
-  
+
   const loadAuroralCSS = () => {
     return import('./auroral.css');
   };
@@ -487,6 +487,7 @@ const App: React.FC = () => {
                     setRunTour={() => openModal('tour')}
                     openNameModal={() => openModal('name')}
                     openMapModal={() => openModal('map')}
+                    openSorterModal={openSorterModal}
                   />
                 </Suspense>
               }
@@ -592,8 +593,8 @@ const App: React.FC = () => {
         </Suspense>
       )}
 
-       {/* Include the sorter modal */}
-       <SorterModal
+      {/* Include the sorter modal */}
+      <SorterModal
         isOpen={isSorterModalOpen}
         onClose={closeSorterModal}
         initialItems={getItemsToSort()}

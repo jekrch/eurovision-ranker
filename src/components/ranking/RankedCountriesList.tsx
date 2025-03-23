@@ -24,6 +24,7 @@ interface RankedCountriesListProps {
     setRunTour: (run: boolean) => void;
     openNameModal: () => void;
     openMapModal: () => void;
+    openSorterModal: () => void;
 }
 
 /**
@@ -39,7 +40,8 @@ const RankedCountriesList: React.FC<RankedCountriesListProps> = ({
     openConfigModal,
     setRunTour,
     openNameModal,
-    openMapModal
+    openMapModal,
+    openSorterModal
 }) => {
     const dispatch: AppDispatch = useAppDispatch();
     const [refreshUrl, setRefreshUrl] = useState(0);
@@ -96,6 +98,7 @@ const RankedCountriesList: React.FC<RankedCountriesListProps> = ({
                             supportedYears={supportedYears}
                             openNameModal={openNameModal}
                             openConfig={openConfigModal}
+                            openSorterModal={openSorterModal}
                             className={
                                 showUnranked
                                     ? "min-w-[9em] max-w-50vw-6em"

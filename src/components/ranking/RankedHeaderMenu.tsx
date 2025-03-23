@@ -30,6 +30,7 @@ const RankedHeaderMenu: React.FC<RankedHeaderMenuProps> = (props: RankedHeaderMe
   const dispatch: AppDispatch = useAppDispatch();
   const CLOSING_DURATION = 300;
   const menuNodeRef = useRef(null);
+  const showTotalRank = useAppSelector((state: AppState) => state.showTotalRank);
   const toggleMenu = () => {
     const shouldClose = isMenuOpen;
     setIsMenuOpen(!isMenuOpen);
@@ -171,6 +172,7 @@ const RankedHeaderMenu: React.FC<RankedHeaderMenuProps> = (props: RankedHeaderMe
             icon={faSort}
             text="Use Sorter"
             onClick={props.openSorterModal}
+            disabled={rankedItems.length < 2 || showTotalRank}
             afterClick={close}
           />
 

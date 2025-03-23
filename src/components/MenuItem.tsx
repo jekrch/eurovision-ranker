@@ -7,14 +7,18 @@ interface MenuItemProps {
     icon?: IconDefinition;
     text: string;
     url?: string;
+    disabled?: boolean;
     className?: string;
     onClick?: () => void;
     afterClick?: () => void;
 }
 
-const MenuItem: React.FC<MenuItemProps> = ({ icon, text, className, url, onClick, afterClick }) => {
+const MenuItem: React.FC<MenuItemProps> = ({ icon, text, className, url, onClick, afterClick, disabled }) => {
 
     const openUrlInNewTab = (url: string): void => {
+        if (disabled) {
+            return;
+        }
         window.open(url, '_blank', 'noopener,noreferrer');
     };
 
@@ -29,15 +33,18 @@ const MenuItem: React.FC<MenuItemProps> = ({ icon, text, className, url, onClick
             onClick={
                 url !== undefined ? () => openUrlInNewTab(url) : 
                 () => { 
+                    if (disabled) {
+                        return;
+                    }
                     onClick?.(); 
                     afterClick?.();                    
                 } 
             }
         >
             <div className="w-[1.2em] text-center">
-              { icon && <FontAwesomeIcon icon={icon} />}
+              { icon && <FontAwesomeIcon icon={icon} color={disabled ? "gray" : ""} className={classNames(disabled ? "fill-slate-300" : "")} />}
             </div>
-            <p className="text-sm font-medium">{text}</p>
+            <p className={classNames("text-sm font-medium", disabled ? "text-gray-400" : "")}>{text}</p>
         </li>
     );
 };

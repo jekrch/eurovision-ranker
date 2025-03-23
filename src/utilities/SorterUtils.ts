@@ -22,7 +22,7 @@ export const generateInitialComparisons = (items: CountryContestant[]): Comparis
 
 /**
  * check if a comparison would be redundant based on existing choices
- * MODIFIED: This now only checks for direct comparisons, not transitive ones
+ * this now only checks for direct comparisons, not transitive ones
  */
 export const isRedundantComparison = (
     itemA: CountryContestant,
@@ -30,15 +30,12 @@ export const isRedundantComparison = (
     existingComparisons: Comparison[],
     allItems: CountryContestant[]
 ): boolean => {
-    // Only consider direct comparisons as redundant
+    // Only consider direct comparisons as redundant 
     return existingComparisons.some(comp =>
-        (comp.leftItem.id === itemA.id && comp.rightItem.id === itemB.id) ||
-        (comp.leftItem.id === itemB.id && comp.rightItem.id === itemA.id)
+        (comp.leftItem.uid === itemA.uid && comp.rightItem.uid === itemB.uid) ||
+        (comp.leftItem.uid === itemB.uid && comp.rightItem.uid === itemA.uid)
     );
-
-    // Original transitive redundancy checking removed
 };
-
 /**
  * generate additional comparisons to improve ranking accuracy
  * prioritizing adjacent items and important comparisons
@@ -57,8 +54,8 @@ export const generateAdditionalComparisons = (
 
         // check if these items have been directly compared
         const alreadyCompared = existingComparisons.some(comp =>
-            (comp.leftItem.id === itemA.id && comp.rightItem.id === itemB.id) ||
-            (comp.leftItem.id === itemB.id && comp.rightItem.id === itemA.id)
+            (comp.leftItem.uid === itemA.uid && comp.rightItem.uid === itemB.uid) ||
+            (comp.leftItem.uid === itemB.uid && comp.rightItem.uid === itemA.uid)
         );
 
         if (!alreadyCompared) {
@@ -74,7 +71,7 @@ export const generateAdditionalComparisons = (
         // create a map of approximate ratings based on current ranking
         const ratingMap = new Map<string, number>();
         currentRanking.forEach((item, index) => {
-            ratingMap.set(item.id, currentRanking.length - index); // higher rank = higher rating
+            ratingMap.set(item.uid!, currentRanking.length - index); // higher rank = higher rating
         });
 
         // find pairs of items with close ratings that haven't been compared
@@ -85,14 +82,14 @@ export const generateAdditionalComparisons = (
 
                 // skip if already in additionalComps
                 if (additionalComps.some(comp =>
-                    (comp.leftItem.id === itemA.id && comp.rightItem.id === itemB.id) ||
-                    (comp.leftItem.id === itemB.id && comp.rightItem.id === itemA.id)
+                    (comp.leftItem.uid === itemA.uid && comp.rightItem.uid === itemB.uid) ||
+                    (comp.leftItem.uid === itemB.uid && comp.rightItem.uid === itemA.uid)
                 )) continue;
 
                 // check if these items have been directly compared
                 const alreadyCompared = existingComparisons.some(comp =>
-                    (comp.leftItem.id === itemA.id && comp.rightItem.id === itemB.id) ||
-                    (comp.leftItem.id === itemB.id && comp.rightItem.id === itemA.id)
+                    (comp.leftItem.uid === itemA.uid && comp.rightItem.uid === itemB.uid) ||
+                    (comp.leftItem.uid === itemB.uid && comp.rightItem.uid === itemA.uid)
                 );
 
                 if (!alreadyCompared) {
@@ -131,8 +128,8 @@ export const shouldAddMoreComparisons = (
         const itemB = currentRanking[i + 1];
 
         const hasDirectComparison = existingComparisons.some(comp =>
-            (comp.leftItem.id === itemA.id && comp.rightItem.id === itemB.id && comp.choice) ||
-            (comp.leftItem.id === itemB.id && comp.rightItem.id === itemA.id && comp.choice)
+            (comp.leftItem.uid === itemA.uid && comp.rightItem.uid === itemB.uid && comp.choice) ||
+            (comp.leftItem.uid === itemB.uid && comp.rightItem.uid === itemA.uid && comp.choice)
         );
 
         if (!hasDirectComparison) {
@@ -163,20 +160,20 @@ export const calculateRanking = (
     // use elo-like rating system
     const ratingMap = new Map<string, number>();
 
-    // initialize all items with base rating
+    // initialize all items with base rating using uid instead of id
     items.forEach(item => {
-        ratingMap.set(item.id, 1500); // standard ELO starting value
+        ratingMap.set(item.uid!, 1500); // standard ELO starting value
     });
 
     // apply all comparisons sequentially
     allComparisons.forEach(comp => {
         if (!comp.choice) return; // skip unanswered comparisons
 
-        const leftId = comp.leftItem.id;
-        const rightId = comp.rightItem.id;
+        const leftId = comp.leftItem.uid;  // Use uid instead of id
+        const rightId = comp.rightItem.uid; // Use uid instead of id
 
-        const leftRating = ratingMap.get(leftId) || 1500;
-        const rightRating = ratingMap.get(rightId) || 1500;
+        const leftRating = ratingMap.get(leftId!) || 1500;
+        const rightRating = ratingMap.get(rightId!) || 1500;
 
         // calculate expected outcomes
         const expectedLeft = 1 / (1 + Math.pow(10, (rightRating - leftRating) / 400));
@@ -190,14 +187,14 @@ export const calculateRanking = (
         const kFactor = 32;
 
         // update ratings
-        ratingMap.set(leftId, leftRating + kFactor * (actualLeft - expectedLeft));
-        ratingMap.set(rightId, rightRating + kFactor * (actualRight - expectedRight));
+        ratingMap.set(leftId!, leftRating + kFactor * (actualLeft - expectedLeft));
+        ratingMap.set(rightId!, rightRating + kFactor * (actualRight - expectedRight));
     });
 
     // sort items by final rating (descending)
     return items.sort((a, b) => {
-        const ratingA = ratingMap.get(a.id) || 1500;
-        const ratingB = ratingMap.get(b.id) || 1500;
+        const ratingA = ratingMap.get(a.uid!) || 1500;
+        const ratingB = ratingMap.get(b.uid!) || 1500;
         return ratingB - ratingA;
     });
 };

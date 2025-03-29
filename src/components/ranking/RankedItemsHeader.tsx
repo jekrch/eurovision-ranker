@@ -15,7 +15,8 @@ interface IRankedItemsHeaderProps {
     generateYoutubePlaylistUrl: (rankedItems: CountryContestant[]) => string;
     supportedYears: string[];
     className: string;
-    downloadButton?: React.ReactNode
+    downloadButton?: React.ReactNode,
+    openSorterModal: () => void;
 }
 
 const RankedItemsHeader: React.FC<IRankedItemsHeaderProps> = ({
@@ -25,7 +26,8 @@ const RankedItemsHeader: React.FC<IRankedItemsHeaderProps> = ({
     openConfig,
     supportedYears,
     className, 
-    downloadButton
+    downloadButton,
+    openSorterModal
 }) => {
     const dispatch: AppDispatch = useAppDispatch();
     const year = useAppSelector((state: AppState) => state.year);
@@ -103,6 +105,7 @@ const RankedItemsHeader: React.FC<IRankedItemsHeaderProps> = ({
                         openNameModal={openNameModal}
                         openConfig={openConfig}
                         onMapClick={setMapModalShow}
+                        openSorterModal={openSorterModal}
                         generateYoutubePlaylistUrl={() => { return generateYoutubePlaylistUrl(rankedItems) }}
                     />
                 </div>

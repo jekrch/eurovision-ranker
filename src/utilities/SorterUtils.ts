@@ -1,436 +1,513 @@
 import { Comparison } from "../components/ranking/SorterModal";
 import { CountryContestant } from "../data/CountryContestant";
 
-
-// Simple direct sorting state
+// sortState holds the state for the sorting algorithm.
 export interface SortState {
-  action: ActionType;
-  allItems: CountryContestant[];
-  comparisons: Comparison[];
-  currentIndex: number;
-  isComplete: boolean;
-  totalComparisons: number;
-  estimatedTotalComparisons: number;
-  currentRanking: CountryContestant[];
-  itemsToCompare: [number, number][];
-  stack: any[];
-  aux: any;
+    action: ActionType;
+    allItems: CountryContestant[];
+    comparisons: Comparison[];
+    currentIndex: number;
+    isComplete: boolean;
+    totalComparisons: number;
+    estimatedTotalComparisons: number;
+    currentRanking: CountryContestant[];
+    itemsToCompare: [number, number][];
+    stack: any[];
+    aux: any;
+
+    // graph represents the relationships between items; a > b means there's an edge from a to b.
+    graph: Map<string, Set<string>>;
+    // rankingStableCount tracks how many iterations the ranking has remained unchanged.
+    rankingStableCount: number;
+    // confidenceThreshold sets the confidence level to stop sorting.
+    confidenceThreshold: number;
 }
 
-// Simple enum to track algorithm state
+// actionType enum tracks the state of the sorting algorithm.
 export enum ActionType {
-  COMPARE = "COMPARE",
-  DONE = "DONE"
+    COMPARE = "COMPARE",
+    DONE = "DONE"
 }
+
 
 /**
- * Initialize a simple direct sorting algorithm
+ * initialize a simple direct sorting algorithm.
  */
 export const initSortState = (items: CountryContestant[]): SortState => {
-  // Filter out any undefined or null items but NEVER modify UIDs
-  const validItems = items.filter((item): item is CountryContestant => !!item);
+    // filter out any undefined or null items but never modify uids.
+    const validItems = items.filter((item): item is CountryContestant => !!item);
 
-  if (validItems.length <= 1) {
-    return {
-      action: ActionType.DONE,
-      allItems: validItems,
-      comparisons: [],
-      currentIndex: 0,
-      isComplete: true,
-      totalComparisons: 0,
-      estimatedTotalComparisons: 0,
-      currentRanking: validItems,
-      itemsToCompare: [],
-      stack: [],
-      aux: validItems
-    };
-  }
-
-  // Shuffle the items initially to avoid bias
-  const shuffledItems = shuffleArray([...validItems]);
-  
-  // Create all possible pairs to compare
-  const allPairs: [number, number][] = [];
-  for (let i = 0; i < shuffledItems.length; i++) {
-    for (let j = i + 1; j < shuffledItems.length; j++) {
-      allPairs.push([i, j]);
+    if (validItems.length <= 1) {
+        return {
+            action: ActionType.DONE,
+            allItems: validItems,
+            comparisons: [],
+            currentIndex: 0,
+            isComplete: true,
+            totalComparisons: 0,
+            estimatedTotalComparisons: 0,
+            currentRanking: validItems,
+            itemsToCompare: [],
+            stack: [],
+            aux: validItems,
+            graph: new Map(),
+            rankingStableCount: 0,
+            confidenceThreshold: 0.95,
+        };
     }
-  }
-  
-  // Shuffle the pairs to avoid predictable ordering
-  const shuffledPairs = shuffleArray(allPairs);
-  
-  // Calculate total possible comparisons
-  const totalPossible = shuffledItems.length * (shuffledItems.length - 1) / 2;
-  
-  const initialState: SortState = {
-    action: ActionType.COMPARE, // Tentative, advanceAlgorithm might change if no pairs
-    allItems: shuffledItems,
-    comparisons: [],
-    currentIndex: -1, // Nothing selected initially
-    isComplete: false,
-    totalComparisons: 0,
-    estimatedTotalComparisons: totalPossible,
-    currentRanking: shuffledItems, // Start with shuffled
-    itemsToCompare: shuffledPairs,
-    stack: [],
-    aux: undefined
-  };
 
- // If there are pairs to compare, advance to the first one
- if (initialState.itemsToCompare.length > 0) {
-    return advanceAlgorithm(initialState); // Prepare the first comparison
- } else {
-    // No pairs to compare (e.g., n=0 or n=1 after filtering)
-    // initSortState already handles n<=1 returning a DONE state,
-    // but this is a safeguard if filtering produced n>1 but pairs logic failed.
-    initialState.action = ActionType.DONE;
-    initialState.isComplete = true;
-    initialState.currentRanking = initialState.allItems; // Should be correct based on filter
-    return initialState;
- }
+    // shuffle the items initially to avoid bias.
+    const shuffledItems = shuffleArray([...validItems]);
+
+    // create the initial graph.
+    const initialGraph = new Map<string, Set<string>>();
+    shuffledItems.forEach(item => {
+        if (item.uid) {
+            initialGraph.set(item.uid, new Set());
+        }
+    });
+
+    // precompute all possible pairs to be compared at the start.
+    let allPossiblePairs: [number, number][] = [];
+    for (let i = 0; i < shuffledItems.length; i++) {
+        for (let j = i + 1; j < shuffledItems.length; j++) {
+            allPossiblePairs.push([i, j]);
+        }
+    }
+
+    const initialState: SortState = {
+        action: ActionType.COMPARE, // tentative, advanceAlgorithm might change if no pairs
+        allItems: shuffledItems,
+        comparisons: [],
+        currentIndex: -1, // nothing selected initially
+        isComplete: false,
+        totalComparisons: 0,
+        estimatedTotalComparisons: allPossiblePairs.length, // correct initial estimate
+        currentRanking: shuffledItems, // start with shuffled
+        itemsToCompare: allPossiblePairs, // start with all pairs, then filter
+        stack: [],
+        aux: undefined,
+        graph: initialGraph,
+        rankingStableCount: 0,
+        confidenceThreshold: 0.95,
+
+    };
+
+    // filter itemsToCompare based on transitivity.
+    const filteredPairs = initialState.itemsToCompare.filter(([indexA, indexB]) => {
+        const itemA = shuffledItems[indexA];
+        const itemB = shuffledItems[indexB];
+
+        if (!itemA?.uid || !itemB?.uid) return false;
+
+        return !(hasPath(initialState.graph, itemA.uid, itemB.uid) || hasPath(initialState.graph, itemB.uid, itemA.uid));
+    });
+
+    initialState.itemsToCompare = filteredPairs;
+    initialState.estimatedTotalComparisons = filteredPairs.length;  // update estimate
+
+    if (initialState.itemsToCompare.length > 0) {
+        return advanceAlgorithm(initialState);
+    } else {
+        initialState.action = ActionType.DONE;
+        initialState.isComplete = true;
+        return initialState;
+    }
 };
 
+export const selectNextComparisons = (state: SortState): [number, number][] => { // possible pairs passed from processChoice now
+    const { allItems, graph, itemsToCompare } = state;
+
+    // filter out comparisons for which a choice can already be inferred.
+    const filteredPairs = itemsToCompare.filter(([indexA, indexB]) => {
+        const itemA = allItems[indexA];
+        const itemB = allItems[indexB];
+
+        if (!itemA?.uid || !itemB?.uid) return false;
+
+        return !(hasPath(graph, itemA.uid, itemB.uid) || hasPath(graph, itemB.uid, itemA.uid));
+    });
+    return filteredPairs;
+
+};
+
+// hasPath checks for a directed path between two nodes in the graph.
+const hasPath = (graph: Map<string, Set<string>>, startUid: string, endUid: string): boolean => {
+    const visited = new Set<string>();
+    const stack: string[] = [startUid];
+
+    while (stack.length > 0) {
+        const currentUid = stack.pop()!;
+
+        if (currentUid === endUid) {
+            return true; // path found
+        }
+
+        if (visited.has(currentUid)) {
+            continue; // skip already visited
+        }
+        visited.add(currentUid);
+
+        const edges = graph.get(currentUid);
+        if (edges) {
+            for (const neighbor of edges) {
+                stack.push(neighbor);
+            }
+        }
+    }
+
+    return false; // no path found
+};
+
+
 /**
- * Process user's choice and update the ranking
+ * process user's choice and update the ranking.
  */
 export const processChoice = (state: SortState, choice: 'left' | 'right'): SortState => {
-  const newState = { ...state };
-  newState.comparisons = [...state.comparisons]; // Ensure copy
+    const newState = { ...state };
+    newState.comparisons = [...state.comparisons]; // ensure copy
 
-  // --- Record the choice for the current comparison ---
-  if (newState.currentIndex < newState.comparisons.length) {
-    // Find the comparison object added by the last advanceAlgorithm call
-    const currentComparisonIndex = newState.currentIndex; // This should be the index of the pair we just decided on
-    // Make sure it exists and doesn't already have a choice (e.g., back button logic)
-    if(newState.comparisons[currentComparisonIndex] && !newState.comparisons[currentComparisonIndex].choice) {
-         newState.comparisons[currentComparisonIndex] = {
-            ...newState.comparisons[currentComparisonIndex],
-            choice // Add the user's choice
-         };
-         newState.totalComparisons += 1; // Increment only when a choice is made
+    // record the choice for the current comparison.
+    if (newState.currentIndex < newState.comparisons.length) {
+        // find the comparison object added by the last advanceAlgorithm call
+        const currentComparisonIndex = newState.currentIndex; // this should be the index of the pair we just decided on
+        // make sure it exists and doesn't already have a choice (e.g., back button logic)
+        if (newState.comparisons[currentComparisonIndex] && !newState.comparisons[currentComparisonIndex].choice) {
+            newState.comparisons[currentComparisonIndex] = {
+                ...newState.comparisons[currentComparisonIndex],
+                choice // add the user's choice
+            };
+            newState.totalComparisons += 1; // increment only when a choice is made
+        } else {
+            // this might happen if logic gets confused (e.g. double click, back button issues)
+            console.warn("attempted to process choice for an invalid or already-chosen comparison index:", newState.currentIndex);
+            // potentially just return the current state or handle error appropriately
+            return state; // avoid proceeding with bad state
+        }
+
     } else {
-        // This might happen if logic gets confused (e.g. double click, back button issues)
-        console.warn("Attempted to process choice for an invalid or already-chosen comparison index:", newState.currentIndex);
-        // Potentially just return the current state or handle error appropriately
-        return state; // Avoid proceeding with bad state
+        console.warn("currentIndex out of bounds during processChoice");
+        return state; // avoid proceeding
     }
 
-  } else {
-     console.warn("CurrentIndex out of bounds during processChoice");
-     return state; // Avoid proceeding
-  }
+    // update the graph based on this choice.
+    const comp = newState.comparisons[newState.currentIndex];
+    if (comp.leftItem?.uid && comp.rightItem?.uid) {
+        const preferredUid = choice === 'left' ? comp.leftItem.uid : comp.rightItem.uid;
+        const lessPreferredUid = choice === 'left' ? comp.rightItem.uid : comp.leftItem.uid;
 
+        // add an edge from preferred to lessPreferred.
+        const edges = newState.graph.get(preferredUid) || new Set();
+        edges.add(lessPreferredUid);
+        newState.graph.set(preferredUid, edges);
 
-  // --- Update Ranking (always do this after a choice) ---
-  const graph = new Map<string, Set<string>>();
-  newState.allItems.forEach((item: CountryContestant) => {
-    if (item?.uid) {
-      graph.set(item.uid, new Set());
+        // update all transitive relationships.
+        updateTransitiveClosure(newState.graph, preferredUid, lessPreferredUid);
     }
-  });
 
-  // Add *all completed* comparisons to the graph
-  newState.comparisons.forEach((comp: Comparison) => { // Iterate ALL comparisons
-    if (comp.leftItem?.uid && comp.rightItem?.uid && comp.choice) { // Only use ones with a choice
-      const preferredUid = comp.choice === 'left' ? comp.leftItem.uid : comp.rightItem.uid;
-      const lessPreferredUid = comp.choice === 'left' ? comp.rightItem.uid : comp.leftItem.uid;
-      const edges = graph.get(preferredUid) || new Set();
-      edges.add(lessPreferredUid);
-      graph.set(preferredUid, edges);
-    }
-  });
 
-  newState.currentRanking = topologicalSort(newState.allItems, graph);
+    // update Ranking (always do this after a choice).
+    const graph = newState.graph;
+    newState.currentRanking = topologicalSort(newState.allItems, graph);
 
-  // --- Decide Next Step ---
-  // Check if there are still pairs waiting in the queue
-  if (newState.itemsToCompare.length > 0) {
-      // If yes, prepare the *next* comparison
-      return advanceAlgorithm(newState);
-  } else {
-      // If no more pairs in the queue, we are done.
-      newState.isComplete = true;
-      newState.action = ActionType.DONE;
-      console.log("Final ranking by year:", newState.currentRanking.map((item: CountryContestant) => item.contestant?.year).join(", "));
-      return newState;
-  }
-};
+    // the itemsToCompare array in the state is updated by calling the
+    // adaptive question selection function to strategically choose the next questions.
+    const nextComparisons = selectNextComparisons(newState);
+    newState.itemsToCompare = nextComparisons;
 
-/**
- * Advance to the next comparison (sets up the state FOR the next choice)
- * Assumes state passed in is one where a choice was just made or initialization occurred.
- */
-export const advanceAlgorithm = (state: SortState): SortState => {
-  // This function should ONLY set up the next comparison pair
-  // It should assume the calling function (processChoice or initSortState)
-  // has already determined that we *should* advance.
+    // update estimated total comparisons.
+    newState.estimatedTotalComparisons = newState.comparisons.filter(c => c.choice).length + nextComparisons.length;
 
-  const newState = { ...state };
-
-  // If we've somehow been called when complete, or itemsToCompare is empty, just return
-  // (This check prevents errors but shouldn't be the primary completion logic)
-   if (newState.isComplete || newState.itemsToCompare.length === 0) {
-     // If itemsToCompare is empty here, it means processChoice should have caught it.
-     // Log a warning potentially.
-     if(!newState.isComplete) {
-        console.warn("advanceAlgorithm called with empty itemsToCompare but not complete.");
-        // Force completion as a fallback
+    if (newState.itemsToCompare.length === 0) {
         newState.isComplete = true;
         newState.action = ActionType.DONE;
-     }
-     return newState;
-   }
+    }
 
-  // Get the next pair to compare
-  const [leftIndex, rightIndex] = newState.itemsToCompare[0];
+    if (!newState.isComplete) {
+        return advanceAlgorithm(newState);
+    } else {
+        // if no more pairs in the queue, we are done.
+        newState.isComplete = true;
+        newState.action = ActionType.DONE;
+        console.log("final ranking by year:", newState.currentRanking.map((item: CountryContestant) => item.contestant?.year).join(", "));
+        return newState;
+    }
+};
 
-  // Remove this pair from the list *before* adding it to comparisons
-  newState.itemsToCompare = newState.itemsToCompare.slice(1);
+/**
+ * advance to the next comparison (sets up the state for the next choice).
+ */
+export const advanceAlgorithm = (state: SortState): SortState => {
+    const newState = { ...state };
 
-  const leftItem = newState.allItems[leftIndex];
-  const rightItem = newState.allItems[rightIndex];
+    if (newState.isComplete || newState.itemsToCompare.length === 0) {
+        if (!newState.isComplete) {
+            console.warn("advanceAlgorithm called with empty itemsToCompare but not complete.");
+            newState.isComplete = true;
+            newState.action = ActionType.DONE;
+        }
+        return newState;
+    }
 
-  if (leftItem && rightItem) {
-    // Add the new comparison object *without* a choice yet
-    newState.comparisons.push({
-      leftItem,
-      rightItem
-      // No choice here! Choice comes from processChoice
-    });
+    const [leftIndex, rightIndex] = newState.itemsToCompare.shift()!; // use shift to take from the beginning
 
-    // Update current index to point to this new, unchosen comparison
-    newState.currentIndex = newState.comparisons.length - 1;
-    newState.action = ActionType.COMPARE; // Ensure action is COMPARE
+    const leftItem = newState.allItems[leftIndex];
+    const rightItem = newState.allItems[rightIndex];
 
-    return newState;
-  } else {
-     // Handle error: Invalid items found at indices
-     console.error("Invalid items found when advancing algorithm.");
-     // Potentially mark as done/error state? For now, return current state.
-     // Or filter itemsToCompare? This case indicates a deeper issue maybe.
-     return state;
-  }
+    if (leftItem && rightItem) {
+        newState.comparisons.push({
+            leftItem,
+            rightItem
+        });
+
+        newState.currentIndex = newState.comparisons.length - 1;
+        newState.action = ActionType.COMPARE;
+
+        return newState;
+    } else {
+        console.error("invalid items found when advancing algorithm.");
+        return state;
+    }
 };
 
 
+
 /**
- * Determine if we should continue sorting
+ * determine if we should continue sorting.
  */
 export const shouldContinueSorting = (state: SortState): boolean => {
-  // Simply check if there are more pairs designated for comparison.
-  return state.itemsToCompare.length > 0;
+    // simply check if there are more pairs designated for comparison.
+    return state.itemsToCompare.length > 0;
 };
 
 /**
- * Calculate progress percentage for the progress bar
- */
-export const calculateProgress = (state: SortState): number => {
-  if (state.isComplete) return 100;
-  
-  const n = state.allItems.length;
-  const totalPossible = n * (n - 1) / 2;
-  
-  // Calculate based on the total number of comparisons done vs possible
-  const progress = Math.min(95, Math.round((state.totalComparisons / totalPossible) * 100));
-  
-  return progress;
-};
-
-/**
- * Perform a topological sort on the items based on comparison results
+ * perform a topological sort on the items based on comparison results.
  */
 export const topologicalSort = (
-  items: CountryContestant[],
-  graph: Map<string, Set<string>>
+    items: CountryContestant[],
+    graph: Map<string, Set<string>>
 ): CountryContestant[] => {
-  // Create a map from UID to item
-  const itemMap = new Map<string, CountryContestant>();
-  items.forEach((item: CountryContestant) => {
-    if (item?.uid) {
-      itemMap.set(item.uid, item);
-    }
-  });
-  
-  // Create a map to track in-degree of each node
-  const inDegree = new Map<string, number>();
-  
-  // Initialize in-degree for all nodes
-  for (const uid of graph.keys()) {
-    inDegree.set(uid, 0);
-  }
-  
-  // Calculate in-degree for each node
-  for (const [uid, edges] of graph.entries()) {
-    for (const target of edges) {
-      inDegree.set(target, (inDegree.get(target) || 0) + 1);
-    }
-  }
-  
-  // Queue of nodes with no incoming edges
-  const queue: string[] = [];
-  
-  // Add all nodes with in-degree 0 to the queue
-  for (const [uid, degree] of inDegree.entries()) {
-    if (degree === 0) {
-      queue.push(uid);
-    }
-  }
-  
-  // Result array to hold sorted items
-  const result: CountryContestant[] = [];
-  
-  // Process the queue
-  while (queue.length > 0) {
-    // Remove a node with no incoming edges
-    const uid = queue.shift()!;
-    
-    // Add the corresponding item to the result
-    const item = itemMap.get(uid);
-    if (item) {
-      result.push(item);
-    }
-    
-    // Reduce the in-degree of adjacent nodes
-    const edges = graph.get(uid) || new Set();
-    for (const target of edges) {
-      const newDegree = (inDegree.get(target) || 0) - 1;
-      inDegree.set(target, newDegree);
-      
-      // If the in-degree becomes 0, add to the queue
-      if (newDegree === 0) {
-        queue.push(target);
-      }
-    }
-  }
-  
-  // If we couldn't add all items (cycle in graph), add the remaining items
-  // This shouldn't happen if preferences are consistent, but we handle it just in case
-  if (result.length < items.length) {
-    // Add any remaining items that weren't included
-    const includedUids = new Set(result.map((item: CountryContestant) => item.uid));
+    // create a map from uid to item.
+    const itemMap = new Map<string, CountryContestant>();
     items.forEach((item: CountryContestant) => {
-      if (item?.uid && !includedUids.has(item.uid)) {
-        result.push(item);
-      }
+        if (item?.uid) {
+            itemMap.set(item.uid, item);
+        }
     });
-  }
-  
-  return result;
+
+    // create a map to track in-degree of each node.
+    const inDegree = new Map<string, number>();
+
+    // initialize in-degree for all nodes.
+    for (const uid of graph.keys()) {
+        inDegree.set(uid, 0);
+    }
+
+    // calculate in-degree for each node.
+    for (const [uid, edges] of graph.entries()) {
+        for (const target of edges) {
+            inDegree.set(target, (inDegree.get(target) || 0) + 1);
+        }
+    }
+
+    // queue of nodes with no incoming edges.
+    const queue: string[] = [];
+
+    // add all nodes with in-degree 0 to the queue.
+    for (const [uid, degree] of inDegree.entries()) {
+        if (degree === 0) {
+            queue.push(uid);
+        }
+    }
+
+    // result array to hold sorted items.
+    const result: CountryContestant[] = [];
+
+    // process the queue.
+    while (queue.length > 0) {
+        // remove a node with no incoming edges.
+        const uid = queue.shift()!;
+
+        // add the corresponding item to the result.
+        const item = itemMap.get(uid);
+        if (item) {
+            result.push(item);
+        }
+
+        // reduce the in-degree of adjacent nodes.
+        const edges = graph.get(uid) || new Set();
+        for (const target of edges) {
+            const newDegree = (inDegree.get(target) || 0) - 1;
+            inDegree.set(target, newDegree);
+
+            // if the in-degree becomes 0, add to the queue.
+            if (newDegree === 0) {
+                queue.push(target);
+            }
+        }
+    }
+
+    // if we couldn't add all items (cycle in graph), add the remaining items
+    // this shouldn't happen if preferences are consistent, but we handle it just in case.
+    if (result.length < items.length) {
+        // add any remaining items that weren't included.
+        const includedUids = new Set(result.map((item: CountryContestant) => item.uid));
+        items.forEach((item: CountryContestant) => {
+            if (item?.uid && !includedUids.has(item.uid)) {
+                result.push(item);
+            }
+        });
+    }
+
+    return result;
 };
 
 /**
- * Generate a ranking directly from the comparisons data
+ * generate a ranking directly from the comparisons data.
  */
 export const generateRankingFromComparisons = (state: SortState): CountryContestant[] => {
-  // We'll use a simple "win count" approach to start
-  const winCounts = new Map<string, number>();
-  const itemMap = new Map<string, CountryContestant>();
-  
-  // Initialize with all items
-  state.allItems.forEach((item: CountryContestant) => {
-    if (item?.uid) {
-      winCounts.set(item.uid, 0);
-      itemMap.set(item.uid, item);
-    }
-  });
-  
-  // Count wins for each item
-  state.comparisons.forEach((comp: Comparison) => {
-    if (comp.choice) {
-      const winnerId = comp.choice === 'left' ? comp.leftItem?.uid : comp.rightItem?.uid;
-      
-      if (winnerId) {
-        winCounts.set(winnerId, (winCounts.get(winnerId) || 0) + 1);
-      }
-    }
-  });
-  
-  // For more refined ranking, we can use a tournament-style approach
-  // Instead of just counting wins, we'll calculate a score based on who the item beat
-  // This is similar to PageRank or ELO algorithms
-  const scores = new Map<string, number>(winCounts);
-  
-  // Do multiple iterations to refine the scores
-  for (let iteration = 0; iteration < 5; iteration++) {
-    const newScores = new Map<string, number>();
-    
-    // Initialize with small base score
+    // we'll use a simple "win count" approach to start.
+    const winCounts = new Map<string, number>();
+    const itemMap = new Map<string, CountryContestant>();
+
+    // initialize with all items.
     state.allItems.forEach((item: CountryContestant) => {
-      if (item?.uid) {
-        newScores.set(item.uid, 0.1);
-      }
+        if (item?.uid) {
+            winCounts.set(item.uid, 0);
+            itemMap.set(item.uid, item);
+        }
     });
-    
-    // Update scores based on comparisons
+
+    // count wins for each item.
     state.comparisons.forEach((comp: Comparison) => {
-      if (comp.leftItem?.uid && comp.rightItem?.uid && comp.choice) {
-        const winnerId = comp.choice === 'left' ? comp.leftItem.uid : comp.rightItem.uid;
-        const loserId = comp.choice === 'left' ? comp.rightItem.uid : comp.leftItem.uid;
-        
-        // Add to winner's score based on loser's current score
-        const loserScore = scores.get(loserId) || 0;
-        newScores.set(winnerId, (newScores.get(winnerId) || 0) + loserScore + 1);
-      }
+        if (comp.choice) {
+            const winnerId = comp.choice === 'left' ? comp.leftItem?.uid : comp.rightItem?.uid;
+
+            if (winnerId) {
+                winCounts.set(winnerId, (winCounts.get(winnerId) || 0) + 1);
+            }
+        }
     });
-    
-    // Update scores for next iteration
-    for (const [uid, score] of newScores.entries()) {
-      scores.set(uid, score);
+
+    // for more refined ranking, we can use a tournament-style approach
+    // instead of just counting wins, we'll calculate a score based on who the item beat
+    // this is similar to pagerank or elo algorithms
+    const scores = new Map<string, number>(winCounts);
+
+    // do multiple iterations to refine the scores.
+    for (let iteration = 0; iteration < 5; iteration++) {
+        const newScores = new Map<string, number>();
+
+        // initialize with small base score.
+        state.allItems.forEach((item: CountryContestant) => {
+            if (item?.uid) {
+                newScores.set(item.uid, 0.1);
+            }
+        });
+
+        // update scores based on comparisons.
+        state.comparisons.forEach((comp: Comparison) => {
+            if (comp.leftItem?.uid && comp.rightItem?.uid && comp.choice) {
+                const winnerId = comp.choice === 'left' ? comp.leftItem.uid : comp.rightItem.uid;
+                const loserId = comp.choice === 'left' ? comp.rightItem.uid : comp.leftItem.uid;
+
+                // add to winner's score based on loser's current score.
+                const loserScore = scores.get(loserId) || 0;
+                newScores.set(winnerId, (newScores.get(winnerId) || 0) + loserScore + 1);
+            }
+        });
+
+        // update scores for next iteration.
+        for (const [uid, score] of newScores.entries()) {
+            scores.set(uid, score);
+        }
     }
-  }
-  
-  // Sort items by their final score (descending)
-  const rankedItems = [...scores.entries()]
-    .sort((a: [string, number], b: [string, number]) => b[1] - a[1])
-    .map(([uid]: [string, number]) => itemMap.get(uid))
-    .filter((item): item is CountryContestant => item !== undefined);
-  
-  console.log("Generated ranking from comparisons:", rankedItems.map((item: CountryContestant) => item.uid));
-  return rankedItems;
+
+    // sort items by their final score (descending).
+    const rankedItems = [...scores.entries()]
+        .sort((a: [string, number], b: [string, number]) => b[1] - a[1])
+        .map(([uid]: [string, number]) => itemMap.get(uid))
+        .filter((item): item is CountryContestant => item !== undefined);
+
+    console.log("generated ranking from comparisons:", rankedItems.map((item: CountryContestant) => item.uid));
+    return rankedItems;
 };
 
 /**
- * Get the final sorted items
+ * get the final sorted items.
  */
 export const getSortedItems = (state: SortState): CountryContestant[] => {
-  if (!state.isComplete) return [];
-  
-  // Use the final ranking as the result
-  let result = [...state.currentRanking];
-  
-  // Ensure all items are in the result (do NOT change existing UIDs)
-  const includedIds = new Set(result.map((item: CountryContestant) => item.uid));
-  const missingItems = state.allItems.filter((item: CountryContestant) => 
-    item && item.uid && !includedIds.has(item.uid));
-  
-  if (missingItems.length > 0) {
-    console.log(`Adding ${missingItems.length} missing items to result`);
-    result = [...result, ...missingItems];
-  }
-  
-  // Double-check that we have all items
-  if (result.length !== state.allItems.length) {
-    console.warn(`Warning: Result has ${result.length} items, expected ${state.allItems.length}`);
-    
-    // If we somehow ended up with too many items, truncate
-    if (result.length > state.allItems.length) {
-      console.warn(`Truncating result from ${result.length} to ${state.allItems.length} items`);
-      result = result.slice(0, state.allItems.length);
+    if (!state.isComplete) return [];
+
+    // use the final ranking as the result.
+    let result = [...state.currentRanking];
+
+    // ensure all items are in the result (do not change existing uids).
+    const includedIds = new Set(result.map((item: CountryContestant) => item.uid));
+    const missingItems = state.allItems.filter((item: CountryContestant) =>
+        item && item.uid && !includedIds.has(item.uid));
+
+    if (missingItems.length > 0) {
+        console.log(`adding ${missingItems.length} missing items to result`);
+        result = [...result, ...missingItems];
     }
-  }
-  
-  return result;
+
+    // double-check that we have all items.
+    if (result.length !== state.allItems.length) {
+        console.warn(`warning: result has ${result.length} items, expected ${state.allItems.length}`);
+
+        // if we somehow ended up with too many items, truncate
+        if (result.length > state.allItems.length) {
+            console.warn(`truncating result from ${result.length} to ${state.allItems.length} items`);
+            result = result.slice(0, state.allItems.length);
+        }
+    }
+
+    return result;
 };
 
 /**
- * Fisher-Yates shuffle algorithm to randomize array
+ * fisher-yates shuffle algorithm to randomize array.
  */
 export const shuffleArray = <T>(array: T[]): T[] => {
-  const result = [...array];
-  for (let i = result.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [result[i], result[j]] = [result[j], result[i]];
-  }
-  return result;
+    const result = [...array];
+    for (let i = result.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [result[i], result[j]] = [result[j], result[i]];
+    }
+    return result;
 };
+
+function updateTransitiveClosure(graph: Map<string, Set<string>>, preferredUid: string, lessPreferredUid: string) {
+    // get all nodes less preferred than lessPreferredUid (recursively).
+    const toUpdate = findAllLessPreferred(graph, lessPreferredUid);
+
+    // for each of those nodes, add an edge from preferredUid to that node.
+    toUpdate.forEach(uid => {
+        const edges = graph.get(preferredUid) || new Set();
+        edges.add(uid);
+        graph.set(preferredUid, edges);
+    });
+}
+
+function findAllLessPreferred(graph: Map<string, Set<string>>, startUid: string): Set<string> {
+    const visited = new Set<string>();
+    const stack: string[] = [startUid];
+
+    while (stack.length > 0) {
+        const currentUid = stack.pop()!;
+
+        if (visited.has(currentUid)) {
+            continue;
+        }
+        visited.add(currentUid);
+
+        const edges = graph.get(currentUid);
+        if (edges) {
+            edges.forEach(neighbor => {
+                stack.push(neighbor);
+            });
+        }
+    }
+    return visited;
+}

@@ -291,7 +291,7 @@ const SorterModal: React.FC<SorterModalProps> = ({
                     ) : (
                         currentComparison && (
                             <div className="flex justify-between mt-1">
-                                <IconButton
+                                {/* <IconButton
                                     onClick={handleBack}
                                     disabled={!sortState || sortState.currentIndex === 0}
                                     className={classNames(
@@ -302,14 +302,14 @@ const SorterModal: React.FC<SorterModalProps> = ({
                                     )}
                                     title="back"
                                     icon={faChevronLeft}
-                                />
+                                /> */}
                                 <IconButton
                                     onClick={onClose}
                                     className="px-4 py-2 text-sm text-white bg-gray-500 rounded hover:bg-gray-600"
                                     title="skip sorting"
                                     icon={faTimes}
                                 />
-                                <IconButton
+                                {/* <IconButton
                                     onClick={() => handleChoice(currentComparison.choice || 'left')}
                                     className={classNames(
                                         "flex items-center px-4 py-2 text-sm text-white rounded",
@@ -320,7 +320,7 @@ const SorterModal: React.FC<SorterModalProps> = ({
                                     disabled={!currentComparison.choice}
                                     title="next"
                                     icon={faChevronRight}
-                                />
+                                /> */}
                             </div>
                         )
                     )}

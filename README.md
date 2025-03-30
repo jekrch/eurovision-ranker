@@ -1,6 +1,6 @@
 # Eurovision Ranker :yellow_heart:
 
-![Version](https://img.shields.io/badge/version-7.0-blue)
+![Version](https://img.shields.io/badge/version-8.0-blue)
 ![Run Tests](https://github.com/jekrch/eurovision-ranker/actions/workflows/test_on_push.yml/badge.svg)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
@@ -29,6 +29,16 @@ Multiple rankings can be created by category with different weights given to eac
 - Explore official voting results from previous years
 - View geographical heat map of rankings
 - Create multi-category rankings with weighted totals
+
+## Pairwise Comparison Sorter
+
+Want to rank contestants from different years side-by-side? Eurovision Ranker includes a smart sorter tool:
+
+*   **Pick Any Mix:** Select any group of contestants you want to compare, regardless of the year they competed.
+*   **Simple Choices:** The tool shows you two contestants at a time, and you simply pick your preference.
+*   **Efficient Ranking:** Based on your choices, the sorter infers other relationships. For example, if you prefer A over B, and B over C, it learns you prefer A over C *without asking again*. This process minimizes the number of comparisons needed to generate your complete, personalized ranking for the selected group.
+
+This lets you create rankings that accurately reflect your preferences in a quick and simple way.
 
 ## Stack
 

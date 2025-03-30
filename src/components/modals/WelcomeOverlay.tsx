@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { FaList, FaTv, FaGlobe, FaCog, FaHeart } from 'react-icons/fa';
+import { FaList, FaTv, FaGlobe, FaCog, FaHeart, FaSort } from 'react-icons/fa';
 import IconButton from '../IconButton';
 import { faCheck, faGlasses } from '@fortawesome/free-solid-svg-icons';
 import classNames from 'classnames';
@@ -65,7 +65,7 @@ const WelcomeOverlay: React.FC<WelcomeOverlayProps> = ({ handleGetStarted, handl
                     classNames(
                         "flex flex-col justify-between z-50 overlay left-5 right-5 top-[3em] ",
                         "bottom-[1em] rounded-xl absolute bg-[#1d2344] gradient-background-modalx opacity-98 pb-6 pt-6",
-                        "m-auto shadow-lg max-w-[20em] max-h-[20em] text-slate-400 opacity-96"
+                        "m-auto shadow-lg max-w-[20em] max-h-[22em] text-slate-400 opacity-96"
                     )}
                 style={{ zIndex: 300 }}
             >
@@ -88,7 +88,23 @@ const WelcomeOverlay: React.FC<WelcomeOverlayProps> = ({ handleGetStarted, handl
                         <li className="flex items-start"> <FaList className="mt-1 mr-2 text-indigo-500" /> <span>rank contests going back to 1956</span></li>
                         <li className="flex items-start"> <FaTv className="mt-1 mr-2 text-blue-500" /> <span>create YouTube playlists </span></li>
                         <li className="flex items-start"> <FaGlobe className='mt-1 mr-2 text-sky-500' /> <span>view a heat map of your ranking</span></li>
+                        
                         <li className="flex items-start"> <FaCog className='mt-1 mr-2 text-slate-500' /> <span>explore past voting records</span></li>
+                        <li className="flex items-start"> 
+                            <FaSort className='mt-1 mr-2 text-purple-500' /> 
+                            <span>use a sorter to generate rankings</span>
+                            <span className={classNames(
+                                "absolute -left-[0.5em] subtle-pulse", 
+                                "inline-block bg-gradient-to-r from-slate-500 to-blue-800 text-slate-300", 
+                                "text-[0.6rem] font-bold pl-[1.2em] pr-[1.5em] py-0.2", 
+                                "transition-opacity duration-[2000] ease-in", 
+                                (welcomeOverlayIsOpen && !exiting) ? 'opacity-100' : 'opacity-0'
+                            )}
+                            style={{
+                                clipPath: 'polygon(0% 0%, 80% 0%, 100% 50%, 80% 100%, 0% 100%)'
+                            }}
+                            >NEW</span>
+                        </li>
                         <li className="flex items-start"> <FaHeart className='mt-1 mr-2 opacity-0' /> <span>...and more!</span></li>
                     </ol>
                 </div>

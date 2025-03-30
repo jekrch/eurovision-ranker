@@ -1,14 +1,50 @@
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHouseUser, faHeart, faList, faGlasses } from '@fortawesome/free-solid-svg-icons';
+import { faHouseUser, faHeart, faList, faGlasses, faSort } from '@fortawesome/free-solid-svg-icons';
+import { IconDefinition } from '@fortawesome/free-solid-svg-icons';
 
 export type IntroColumnProps = {
     openModal: (tabName: string) => void;
     openConfigModal: (tabName: string) => void;
-    setRunTour:  (runTour: boolean) => void;
+    setRunTour: (runTour: boolean) => void;
+    setRunSortTour: (runSortTour: boolean) => void;
 };
 
-const IntroColumn: React.FC<IntroColumnProps> = ({ openModal, openConfigModal, setRunTour }) => {
+type MenuItemProps = {
+    icon: IconDefinition;
+    text: string;
+    onClick: () => void;
+    isCustomIcon?: boolean;
+    className?: string;
+};
+
+const MenuItem: React.FC<MenuItemProps> = ({ icon, text, onClick, isCustomIcon = false, className = "mb-7" }) => {
+    return (
+        <div
+            className={`houseUser flex items-center ${className} cursor-pointer`}
+            onClick={onClick}
+        >
+            <div className="w-8 flex">
+                {isCustomIcon ? (
+                    <div className="flex items-center justify-center w-6 h-6 rounded-md border-slate-600 border-[0.1em] flex-shrink-0">
+                        <FontAwesomeIcon
+                            className="text-[1.3em]"
+                            icon={icon}
+                        />
+                    </div>
+                ) : (
+                    <FontAwesomeIcon
+                        className="text-xl flex-shrink-0"
+                        icon={icon}
+                    />
+                )}
+            </div>
+            <span className="font-bold">{text}</span>
+        </div>
+    );
+};
+
+const IntroColumn: React.FC<IntroColumnProps> = ({ openModal, openConfigModal, setRunTour, setRunSortTour }) => {
     return (
         <div className="flex justify-left items-center">
             <div className="text-gray-400 font-normal tracking-tight font-sans text-italic text-left ml-7 m-4 text-xs whitespace-normal max-w-[10em] mt-3">
@@ -19,50 +55,37 @@ const IntroColumn: React.FC<IntroColumnProps> = ({ openModal, openConfigModal, s
                 </ol>
 
                 <div className="">
-                    <div
-                        className="flex items-center houseUser mb-7"
+                    <MenuItem 
+                        icon={faHouseUser}
+                        text="About"
                         onClick={() => openModal('about')}
-                    >
-                        <FontAwesomeIcon
-                            className="mr-2 ml-0 text-xl"
-                            icon={faHouseUser}
-                        />
-                        <span className="ml-[0.2em] mt-[0.2em] font-bold">About</span>
-                    </div>
+                    />
 
-                    <div
-                        className="houseUser flex items-center mb-7"
+                    <MenuItem 
+                        icon={faHeart}
+                        text="Donate"
                         onClick={() => openModal('donate')}
-                    >
-                        <FontAwesomeIcon
-                            className="mr-2 ml-0 text-xl"
-                            icon={faHeart}
-                        />
-                        <span className="ml-[0.2em] mt-[0.2em] font-bold">Donate</span>
-                    </div>
+                    />
 
-                    <div
-                        className="houseUser flex items-center mb-7"
+                    <MenuItem 
+                        icon={faList}
+                        text="Rankings"
                         onClick={() => openConfigModal('rankings')}
-                    >
-                        <FontAwesomeIcon
-                            className="mr-2 ml-0 text-xl"
-                            icon={faList}
-                        />
-                        <span className="ml-[0.2em] mt-[0.2em] font-bold">Rankings</span>
-                    </div>
+                    />
 
-                    <div
-                        className="houseUser flex items-center mb-2"
+                    <MenuItem 
+                        icon={faGlasses}
+                        text="Tour"
                         onClick={() => setRunTour(true)}
-                    >
-                        <FontAwesomeIcon
-                            className="mr-2 ml-0 text-xl"
-                            icon={faGlasses}
-                        />
-                        <span className="ml-[0.2em] mt-[0.2em] font-bold">Tour</span>
-                    </div>
+                    />
                     
+                    <MenuItem 
+                        icon={faSort}
+                        text="Sorter"
+                        onClick={() => setRunSortTour(true)}
+                        isCustomIcon={true}
+                        className="mb-2"
+                    />
                 </div>
             </div>
         </div>

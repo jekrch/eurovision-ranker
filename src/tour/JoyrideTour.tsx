@@ -234,23 +234,23 @@ const JoyrideTour: React.FC<JoyrideTourProps> = (props: JoyrideTourProps) => {
           setHeaderMenuOpen(true)
         );
         break;
-
-      case 10:
+      
+      case 11:
         dispatch(
           setShowUnranked(true)
         );
         //openModal('rankings');
         break;
 
-      case 12:
+      case 13:
         props.openConfigModal('rankings');
         break;
 
-      case 13:
+      case 14:
         props.setConfigModalShow(false);
         break;
 
-      case 15:
+      case 16:
         props.setConfigModalShow(false);
         dispatch(setName(""));
         await clearRanking(year);

@@ -37,34 +37,38 @@ export const tourSteps = [
   },
   {
     target: '.tour-step-10',
-    content: 'Click "Select" to go back to the country picker',
+    content: 'Click over here to use a sorter to rank your countries according to your pairwise preferences',
   },
   {
     target: '.tour-step-11',
-    content: 'Click the home icon for more info on this project',
+    content: 'Click "Select" to go back to the country picker',
   },
   {
     target: '.tour-step-12',
-    content: 'Click the cog icon to access advanced controls',
+    content: 'Click the home icon for more info on this project',
   },
   {
     target: '.tour-step-13',
-    content: 'In "Rankings" you can select a year and click the links to see the official ranking by voting type (tele, jury, total)',
+    content: 'Click the cog icon to access advanced controls',
   },
   {
     target: '.tour-step-14',
-    content: 'You can select contestants from multiple years by enabling "Advanced Mode"',
+    content: 'In "Rankings" you can select a year and click the links to see the official ranking by voting type (tele, jury, total)',
   },
   {
     target: '.tour-step-15',
-    content: 'Want to save or share your ranking? Just copy the URL! All of your ranking data is stored there.',
+    content: 'You can select contestants from multiple years by enabling "Advanced Mode"',
   },
   {
     target: '.tour-step-16',
-    content: 'e.g. your current URL is: eurovision-ranker.com?n=Sigrit%27s+Top+Picks&y=23&r=nidk4t',
+    content: 'Want to save or share your ranking? Just copy the URL! All of your ranking data is stored there.',
   },
   {
     target: '.tour-step-17',
+    content: 'e.g. your current URL is: eurovision-ranker.com?n=Sigrit%27s+Top+Picks&y=23&r=nidk4t',
+  },
+  {
+    target: '.tour-step-18',
     content: 'Enjoy, friends ❤️',
   }
 ].map(step => ({ ...step, disableBeacon: true }));

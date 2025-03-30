@@ -33,6 +33,7 @@ const LazyMapModal = React.lazy(() => import('./components/modals/MapModal'));
 const LazyConfigModal = React.lazy(() => import('./components/modals/config/ConfigModal'));
 const LazySongModal = React.lazy(() => import('./components/modals/LyricsModal'));
 const LazyJoyrideTour = React.lazy(() => import('./tour/JoyrideTour'));
+const LazyJoyrideTourSort = React.lazy(() => import('./tour/JoyrideTourSort'));
 
 const App: React.FC = () => {
   const { modalState, openModal, closeModal, setModalTab, currentTab } = useModal('about');
@@ -416,7 +417,7 @@ const App: React.FC = () => {
 
       <div
         className={classNames(
-          "site-content flex flex-col h-screen tour-step-15 tour-step-16 tour-step-17 normal-bg",
+          "site-content flex flex-col h-screen tour-step-16 tour-step-17 tour-step-18 normal-bg",
           { 'star-sky': theme.includes('ab') }
         )}>
 
@@ -451,7 +452,7 @@ const App: React.FC = () => {
               {showUnranked && !globalSearch && (
 
                 <div className="relative flex flex-col">
-                  <div className="tour-step-14 sticky top-0 rounded-t-md round-b-sm text-center font-bold bg-blue-900 gradient-background-reverse text-slate-300 tracking-tighter shadow-md z-50">
+                  <div className="tour-step-15 sticky top-0 rounded-t-md round-b-sm text-center font-bold bg-blue-900 gradient-background-reverse text-slate-300 tracking-tighter shadow-md z-50">
                     <div className="flex items-center justify-center py-1 px-0">
                       <TooltipHelp
                         content="Select countries across all contest years"
@@ -485,6 +486,7 @@ const App: React.FC = () => {
                     openModal={openMainModalWithTab}
                     openConfigModal={openConfigModalWithTab}
                     setRunTour={() => openModal('tour')}
+                    setRunSortTour={() => openModal('sortTour')}
                     openNameModal={() => openModal('name')}
                     openMapModal={() => openModal('map')}
                     openSorterModal={openSorterModal}
@@ -556,7 +558,7 @@ const App: React.FC = () => {
         )}
       </Suspense>
 
-      <div className="tour-step-13">
+      <div className="tour-step-14 sort-tour-step-modal">
         {(modalState.config.isOpen || modalState.config.hasRendered) && (
           <Suspense fallback={<div />}>
             <LazyConfigModal
@@ -589,6 +591,20 @@ const App: React.FC = () => {
             setConfigModalShow={(show) => show ? openModal('config') : closeModal('config')}
             setRunTour={(run) => run ? openModal('tour') : closeModal('tour')}
             runTour={modalState.tour.isOpen}
+          />
+        </Suspense>
+      )}
+
+    {(modalState.sortTour.isOpen || modalState.sortTour.hasRendered) && (
+        <Suspense fallback={<div />}>
+          <LazyJoyrideTourSort
+            openSortModal={openSorterModal}
+            setRefreshUrl={setRefreshUrl}
+            openConfigModal={openConfigModalWithTab}
+            setConfigModalShow={(show) => show ? openModal('config') : closeModal('config')}
+            setRunTour={(run) => run ? openModal('sortTour') : closeModal('sortTour')}
+            runTour={modalState.sortTour.isOpen}
+            closeSortModal={closeSorterModal}
           />
         </Suspense>
       )}

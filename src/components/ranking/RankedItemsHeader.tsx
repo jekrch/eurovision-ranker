@@ -7,6 +7,8 @@ import RankedHeaderMenu from './RankedHeaderMenu';
 import classNames from 'classnames';
 import Ripples from 'react-ripples';
 import { useAppDispatch, useAppSelector } from '../../hooks/stateHooks';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSort } from '@fortawesome/free-solid-svg-icons';
 
 interface IRankedItemsHeaderProps {
     setMapModalShow: () => void;
@@ -15,7 +17,7 @@ interface IRankedItemsHeaderProps {
     generateYoutubePlaylistUrl: (rankedItems: CountryContestant[]) => string;
     supportedYears: string[];
     className: string;
-    downloadButton?: React.ReactNode,
+    downloadButton?: React.ReactNode;
     openSorterModal: () => void;
 }
 
@@ -25,7 +27,7 @@ const RankedItemsHeader: React.FC<IRankedItemsHeaderProps> = ({
     openNameModal,
     openConfig,
     supportedYears,
-    className, 
+    className,
     downloadButton,
     openSorterModal
 }) => {
@@ -39,35 +41,25 @@ const RankedItemsHeader: React.FC<IRankedItemsHeaderProps> = ({
     const showUnranked = useAppSelector((state: AppState) => state.showUnranked);
     const activeCategory = useAppSelector((state: AppState) => state.activeCategory);
     const [activeTab, setActiveTab] = useState(0);
-    
-    useEffect(() => {
 
-        // if we're setting the tab to 0 this is the 'Total' rank
+    useEffect(() => {
         if (activeTab === 0) {
-            // set the state flag if it's not already set and exit
             if (!showTotalRank && categories?.length) {
-                dispatch(
-                    setShowTotalRank(true)
-                );
+                dispatch(setShowTotalRank(true));
             }
             return;
-
-        // if we're not switching to the total rank tab, make sure the state
-        // flag is set to false
         } else if (showTotalRank) {
-            dispatch(
-                setShowTotalRank(false)
-            );
+            dispatch(setShowTotalRank(false));
         }
-
-        dispatch(
-            setActiveCategory(activeTab - 1)
-        );
+        dispatch(setActiveCategory(activeTab - 1));
     }, [activeTab]);
 
     useEffect(() => {
         setActiveTab(activeCategory !== undefined ? activeCategory + 1 : 0);
     }, [activeCategory]);
+
+    // condition for disabling the sorter button
+    const isSorterDisabled = rankedItems.length < 2 || showTotalRank;
 
     return (
         <div className={classNames(
@@ -87,31 +79,58 @@ const RankedItemsHeader: React.FC<IRankedItemsHeaderProps> = ({
                     />
                 </div>
             ) : (
-                <div className="mr-2 ml-5 flex justify-between items-center">
-                    {rankedItems?.length > 0 && (
-                        <></>
-                    )}
+                // ---- main container for header content ----
+                <div className="mx-2 flex justify-between items-center">
 
-                    <div className="justify-center w-full ml-2 mr-2">
+                    <div className="w-6 h-6 tour-step-10"> {/* Container to maintain layout space even if button isn't rendered, or helps with alignment */}
+                        {rankedItems?.length > 0 && ( // Only show if there are items
+                            <button
+                                title={isSorterDisabled ? "Sorter unavailable (need >1 item and not on Total Rank tab)" : "Open Sorter"}
+                                aria-label="Open Sorter"                                
+                                className={classNames(
+                                    "w-6 h-6 bg-[#6e6795] rounded-full flex justify-center items-center text-slate-400 hover:text-slate-500",
+                                    {
+                                        "hover:bg-slate-400 hover:cursor-pointer": !isSorterDisabled,
+                                        "opacity-50 cursor-not-allowed": isSorterDisabled 
+                                    }
+                                )}
+                                onClick={openSorterModal}
+                                disabled={isSorterDisabled} 
+                            >
+                                <FontAwesomeIcon
+                                    className="" 
+                                    icon={faSort}
+                                />
+                            </button>
+                        )}
+                    </div>
+                   
+
+                    {/* ---- Center Content (Title) ---- */}
+                    <div className="justify-center text-center flex-grow mx-2"> {/* Use flex-grow to take available space, mx-2 for spacing */}
                         {!globalSearch ? year : null}
                         {name && (
-                            <span className="font-bold text-slate-400 text-md"> 
+                            <span className="font-bold text-slate-400 text-md">
                                 {!globalSearch ? ` - ` : ``}{name}
                             </span>
                         )}
                     </div>
-                    
+                    {/* ---- End Center Content ---- */}
+
+                    {/* ---- Right Side Menu Button ---- */}
                     <RankedHeaderMenu
                         openNameModal={openNameModal}
                         openConfig={openConfig}
                         onMapClick={setMapModalShow}
-                        openSorterModal={openSorterModal}
-                        generateYoutubePlaylistUrl={() => { return generateYoutubePlaylistUrl(rankedItems) }}
+                        openSorterModal={openSorterModal} // This is still needed for the menu item
+                        generateYoutubePlaylistUrl={() => generateYoutubePlaylistUrl(rankedItems)}
                     />
+                    {/* ---- End Right Side Menu Button ---- */}
                 </div>
             )}
 
-            {(!showUnranked && categories.length > 0) && (
+            {/* ... rest of the component (tabs) ... */}
+             {(!showUnranked && categories.length > 0) && (
                 <div key={`total-tab-container`} className="flex bg-gray-800 bg-opacity-40 border-gray-200 mt-1 -mb-[0.2em] overflow-x-auto">
                 <Ripples key="total-ripple" placeholder={<></>}>
                   <button

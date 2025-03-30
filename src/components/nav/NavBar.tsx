@@ -46,19 +46,19 @@ const Navbar: React.FC<NavbarProps> = ({ openModal, openConfigModal }) => {
                             <IconButton
                                 className={
                                     classNames(
-                                        "tour-step-10 py-1 pl-[0.7em] pr-[0.9em] rounded-full text-xs mr-0 w-[5em]",                                        
+                                        "tour-step-11 py-1 pl-[0.7em] pr-[0.9em] rounded-full text-xs mr-0 w-[5em]",                                        
                                     )
                                 }
                                 onClick={() => dispatch(setShowUnranked(!showUnranked))}
                                 title={showUnranked ? 'Details' : 'Select'}
                             />
                             <FontAwesomeIcon
-                                className="tour-step-11 houseUser mr-1 mb-1 ml-3 text-xl"
+                                className="tour-step-12 houseUser mr-1 mb-1 ml-3 text-xl"
                                 icon={faHouseUser}
                                 onClick={() => openModal('about')}
                             />
 
-                            <div className="tour-step-12">
+                            <div className="tour-step-13">
                                 <FontAwesomeIcon
                                     className="configCog ml-2 mr-1 mb-0 text-xl float-right"
                                     icon={faCog}

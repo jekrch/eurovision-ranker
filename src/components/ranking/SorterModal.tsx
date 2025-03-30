@@ -78,15 +78,17 @@ const SorterModal: React.FC<SorterModalProps> = ({
             setSortState(newState);
         } else {
             // we're done - set the sorted items and mark as complete
-            //console.log("sorting complete!");
+            console.log("sorting complete!");
 
+            //console.error(newState);
             // // log the final ranking for debugging
-            // const sortedItems = getSortedItems(newState);
-            // if (sortedItems.length > 0 && sortedItems[0]?.contestant?.year) {
-            //     console.log("final ranking by year:", sortedItems.map(item => item.contestant?.year).join(", "));
-            // }
-
             setSortState(newState);
+        }
+
+        // remove focus from last selected item otherwise this carries to the 
+        // next comparison on mobile
+        if (document.activeElement instanceof HTMLElement) {
+          document.activeElement.blur();
         }
     }, [sortState]);
 
@@ -167,9 +169,9 @@ const SorterModal: React.FC<SorterModalProps> = ({
 
             setSortState(newSortState); // set the initial state directly
 
-            if (newSortState.action === ActionType.COMPARE) {
-                setSortState(advanceAlgorithm(newSortState));
-            }
+            // if (newSortState.action === ActionType.COMPARE) {
+            //     setSortState(advanceAlgorithm(newSortState));
+            // }
         } else {
             setSortState(null);  // clear the state when closing or with <= 1 items
         }

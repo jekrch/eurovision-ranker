@@ -201,7 +201,7 @@ const SorterModal: React.FC<SorterModalProps> = ({
                 "text-xl font-bold text-center w-full",
                 "text-slate-300"
               )}>
-                {sortState?.isComplete ? "Ranking complete" : "Choose your preference"}
+                {sortState?.isComplete ? "Ranking complete" : "Choose Your Preference"}
                 {!sortState?.isComplete && <TooltipHelp
                   content="Answer with your preferences and a ranking will be generated that reflects your choices. If you want to skip this, just close the window or click 'skip sorting' below."
                   className="text-slate-300 align-middle mb-1 -mr-1"
@@ -232,7 +232,7 @@ const SorterModal: React.FC<SorterModalProps> = ({
         </div>
 
         {/* main content area - scrollable when needed */}
-        <div className="flex-grow overflow-y-auto px-2 py-1">
+        <div className="flex-grow overflow-y-auto px-0 py-0">
           {sortState?.isComplete ? (
             <div className="flex flex-col items-center justify-center">
               <p className="mb-6 text-center text-slate-200">
@@ -241,12 +241,12 @@ const SorterModal: React.FC<SorterModalProps> = ({
             </div>
           ) : (
             currentComparison && (
-              <div className="flex flex-col justify-center items-center gap-4 mb-8">
+              <div className="flex flex-col justify-center items-center gap-2 mb-2">
                 {/* left card */}
                 <div
                   onClick={() => handleChoice('left')}
                   className={classNames(
-                    "w-full cursor-pointer transition-colors duration-200 md:hover:ring-2 md:hover:ring-blue-400",
+                    "w-full cursor-pointer transition-colors duration-200 md:hover:ring-2 md:hover:ring-blue-400 active:ring-2 active:ring-blue-400",
                     currentComparison.choice === 'left' ? "ring-4 ring-blue-500 rounded-lg" : "rounded-lg"
                   )}
                 >
@@ -264,7 +264,7 @@ const SorterModal: React.FC<SorterModalProps> = ({
                 <div
                   onClick={() => handleChoice('right')}
                   className={classNames(
-                    "w-full cursor-pointer transition-colors duration-200 md:hover:ring-2 md:hover:ring-blue-400",
+                    "w-full cursor-pointer transition-colors duration-200 md:hover:ring-2 md:hover:ring-blue-400 active:ring-2 active:ring-blue-400",
                     currentComparison.choice === 'right' ? "ring-4 ring-blue-500 rounded-lg" : "rounded-lg"
                   )}
                 >
@@ -355,12 +355,12 @@ const ContestantCard: React.FC<ContestantCardProps> = ({
     <div>
       <div
         className={classNames(
-          "m-auto text-slate-400 bg-[#03022d] bg-opacity-30 no-select",
+          "m-auto text-slate-400 bg-[#03022d] bg-opacity-30 no-select choice-background",
           "relative mx-auto min-h-[9em] py-[0.4em] flex flex-col",
           "items-stretch whitespace-normal text-sm overflow-hidden",
           "shadow rounded border border-0.5",
           isSelected ? "border-blue-500 border-solid" : "border-solid border-slate-400",
-          "w-full"
+          "w-full z-100"
         )}
         style={{ position: 'relative' }}
       >

@@ -190,11 +190,11 @@ const SorterModal: React.FC<SorterModalProps> = ({
     sortState.comparisons[sortState.currentIndex] : null;
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} className="!max-h-[95vh] sort-tour-step-modal">
+    <Modal isOpen={isOpen} onClose={onClose} className="!max-h-[95vh] sort-tour-step-modal px-0">
       {/* modal content wrapper with max-height and overflow styling */}
       <div className="flex flex-col max-h-[90vh] overflow-hidden">
         {/* header section - fixed at top */}
-        <div className="flex-shrink-0">
+        <div className="flex-shrink-0 px-4">
           <div className="mb-4">
             <div className="flex items-center justify-between">
               <h2 className={classNames(
@@ -232,9 +232,9 @@ const SorterModal: React.FC<SorterModalProps> = ({
         </div>
 
         {/* main content area - scrollable when needed */}
-        <div className="flex-grow overflow-y-auto px-0 py-0">
+        <div className="flex-grow overflow-y-auto px-0 py-0 pt-1">
           {sortState?.isComplete ? (
-            <div className="flex flex-col items-center justify-center">
+            <div className="flex flex-col items-center justify-center px-4">
               <p className="mb-6 text-center text-slate-200">
                 based on your choices, we've created your ranking
               </p>
@@ -279,7 +279,7 @@ const SorterModal: React.FC<SorterModalProps> = ({
         </div>
 
         {/* footer section with buttons - fixed at bottom */}
-        <div className="flex-shrink-0 mt-2">
+        <div className="flex-shrink-0 mt-2 px-4">
           {sortState?.isComplete ? (
             <div className="flex justify-center space-x-4">
               <IconButton
@@ -358,7 +358,7 @@ const ContestantCard: React.FC<ContestantCardProps> = ({
           "m-auto text-slate-400 bg-[#03022d] bg-opacity-30 no-select choice-background",
           "relative mx-auto min-h-[9em] py-[0.4em] flex flex-col",
           "items-stretch whitespace-normal text-sm overflow-hidden",
-          "shadow rounded border border-0.5",
+          "shadow border-y border-0.5",
           isSelected ? "border-blue-500 border-solid" : "border-solid border-slate-400",
           "w-full z-100"
         )}

@@ -86,7 +86,8 @@ const RankedItemsHeader: React.FC<IRankedItemsHeaderProps> = ({
                         {rankedItems?.length > 0 && ( // Only show if there are items
                             <button
                                 title={isSorterDisabled ? "Sorter unavailable (need >1 item and not on Total Rank tab)" : "Open Sorter"}
-                                aria-label="Open Sorter"                                
+                                aria-label="Open Sorter"  
+                                data-umami-event="Sorter Button (header)"                              
                                 className={classNames(
                                     "w-6 h-6 bg-[#6e6795] rounded-full flex justify-center items-center text-slate-400 hover:text-slate-500",
                                     {

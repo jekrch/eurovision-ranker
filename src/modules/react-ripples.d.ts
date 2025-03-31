@@ -1,4 +1,3 @@
-// src/global.d.ts
 import 'react'
 
 declare module 'react' {

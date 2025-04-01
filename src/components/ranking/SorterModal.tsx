@@ -187,7 +187,7 @@ const SorterModal: React.FC<SorterModalProps> = ({
             <div className="flex items-center justify-between">
               <h2 className={classNames(
                 "text-xl font-bold text-center w-full",
-                "text-slate-300"
+                "text-slate-200"
               )}>
                 {sortState?.isComplete ? "Ranking complete" : "Choose Your Preference"}
                 {!sortState?.isComplete && <TooltipHelp
@@ -197,10 +197,10 @@ const SorterModal: React.FC<SorterModalProps> = ({
               </h2>
             </div>
             {activeCategory !== undefined && (
-              <div className="items-center w-full mb-2 text-center">{categories[activeCategory!]?.name} </div>
+              <div className="items-center w-full mb-0 text-center">{categories[activeCategory!]?.name} </div>
             )}
           </div>
-          <div className="mb-6">
+          <div className="mb-3">
             <div className="w-full bg-gray-700 rounded-full h-2">
               <div
                 className="h-2 rounded-full bg-blue-600 transition-all duration-300"
@@ -433,10 +433,10 @@ const ContestantCard: React.FC<ContestantCardProps> = ({
 
         {/* content */}
         <div className="relative z-10 flex flex-col items-stretch justify-center w-full p-2 pl-32 h-full">
-          <div className="flex-grow text-slate-200 font-bold flex flex-col justify-center">
+          <div className="flex-grow text-slate-300 font-bold flex flex-col justify-center">
             {/* country name and youtube link */}
             <div className="overflow-hidden overflow-ellipsis flex justify-between items-center mb-2">
-              <span className="overflow-hidden overflow-ellipsis text-lg tracking-wide bg-[#1c214c] bg-opacity-75 rounded-md px-2 py-1 shadow-sm">
+              <span className="overflow-hidden overflow-ellipsis text-lg tracking-wide bg-[#301c4c] bg-opacity-35 rounded-md px-2 py-1 shadow-sm">
                 {country?.name}
               </span>
               <span className="flex flex-row items-center">
@@ -458,10 +458,10 @@ const ContestantCard: React.FC<ContestantCardProps> = ({
             <div className="pr-2 font-normal">
               {contestant ? (
                 <>
-                  <div className="font-medium text-base bg-[#1c214c] bg-opacity-75 rounded-md inline-block px-2 py-1 text-slate-200 shadow-sm">
+                  <div className="font-medium text-base bg-[#301c4c] bg-opacity-35 rounded-md inline-block px-2 py-1 text-slate-200 shadow-sm">
                     {contestant?.artist}
                   </div>
-                  <div className="mt-2 font-medium text-sm bg-[#1c214c] bg-opacity-75 rounded-md inline-block px-2 py-1 text-slate-200 shadow-sm">
+                  <div className="mt-2 font-medium text-sm bg-[#301c4c] bg-opacity-35 rounded-md inline-block px-2 py-1 text-slate-200 shadow-sm">
                     {contestant.song?.length && !contestant.song?.includes("TBD")
                       ? `"${contestant.song}"`
                       : `${contestant.song}`

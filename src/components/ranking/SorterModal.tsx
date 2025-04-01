@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, CSSProperties } from 'react';
 import { CountryContestant } from '../../data/CountryContestant';
 import { faChevronLeft, faChevronRight, faTimes, faCheck } from '@fortawesome/free-solid-svg-icons';
 import { AppDispatch, AppState } from '../../redux/store';
@@ -66,11 +66,6 @@ const SorterModal: React.FC<SorterModalProps> = ({
     const currentComparison = sortState.comparisons[sortState.currentIndex];
     if (!currentComparison) return;
 
-    // log the choice for debugging
-    // if (currentComparison.leftItem?.contestant?.year && currentComparison.rightItem?.contestant?.year) {
-    //     console.log(`comparing years: ${currentComparison.leftItem.contestant.year} vs ${currentComparison.rightItem.contestant.year}, chose: ${choice}`);
-    // }
-
     // process the user's choice and advance the algorithm
     const newState = processChoice(sortState, choice);
 
@@ -80,13 +75,10 @@ const SorterModal: React.FC<SorterModalProps> = ({
     } else {
       // we're done - set the sorted items and mark as complete
       console.log("sorting complete!");
-
-      //console.error(newState);
-      // // log the final ranking for debugging
       setSortState(newState);
     }
 
-    // remove focus from last selected item otherwise this carries to the 
+    // remove focus from last selected item otherwise this carries to the
     // next comparison on mobile
     if (document.activeElement instanceof HTMLElement) {
       document.activeElement.blur();
@@ -169,22 +161,18 @@ const SorterModal: React.FC<SorterModalProps> = ({
       let newSortState = initSortState(initialItems);
 
       setSortState(newSortState); // set the initial state directly
-
-      // if (newSortState.action === ActionType.COMPARE) {
-      //     setSortState(advanceAlgorithm(newSortState));
-      // }
     } else {
       setSortState(null);  // clear the state when closing or with <= 1 items
     }
   }, [isOpen, initialItems]);
 
 
-  // calculate dynamic progress for the progress bar.
+  // calculate progress percentage for the bar
   const progress = sortState
     ? (sortState.comparisons.filter(c => c.choice).length / sortState.estimatedTotalComparisons) * 100
     : 0;
 
-  // get the current comparison to display
+  // get current comparison
   const currentComparison = sortState &&
     sortState.currentIndex < sortState.comparisons.length ?
     sortState.comparisons[sortState.currentIndex] : null;
@@ -312,7 +300,7 @@ const SorterModal: React.FC<SorterModalProps> = ({
                                 /> */}
                 <IconButton
                   onClick={onClose}
-                  className="px-4 py-2 text-sm text-white bg-gray-500 rounded hover:bg-gray-600"
+                  className="px-4 py-2 pr-[1.2em] text-sm text-white bg-gray-500 rounded hover:bg-gray-600"
                   title="skip sorting"
                   icon={faTimes}
                 />
@@ -351,33 +339,92 @@ const ContestantCard: React.FC<ContestantCardProps> = ({
   // get youtube thumbnail if video url exists
   const youtubeThumb = getYoutubeThumbnail(contestant?.youtube);
 
+  // flag styles
+  const flagContainerStyles = "absolute top-0 left-0 h-full w-[12em] pointer-events-none overflow-hidden";
+  const flagImageStyles = "w-full h-full object-cover opacity-60";
+
+  // add a css class for flag mask in the component
+  useEffect(() => {
+    // create a style element
+    const styleEl = document.createElement('style');
+    // add the css for the flag mask
+    styleEl.innerHTML = `
+      .flag-mask {
+        -webkit-mask-image: linear-gradient(to right, rgba(0,0,0,0.9) 40%, transparent 100%);
+        mask-image: linear-gradient(to right, rgba(0,0,0,0.9) 40%, transparent 100%);
+        object-position: center center;
+        object-fit: cover;
+      }
+    `;
+    // append to head
+    document.head.appendChild(styleEl);
+
+    // cleanup on unmount
+    return () => {
+      document.head.removeChild(styleEl);
+    };
+  }, []);
+
+  // gradient mask for flag
+  const flagMaskStyle: React.CSSProperties = {
+    display: 'block',
+    WebkitMaskImage: 'linear-gradient(to right, rgba(0,0,0,0.9) 40%, transparent 100%)',
+    maskImage: 'linear-gradient(to right, rgba(0,0,0,0.9) 40%, transparent 100%)',
+    objectPosition: 'center center',
+    objectFit: 'cover',
+  };
+
+  // youtube thumbnail styles
+  const thumbContainerStyles = "absolute top-0 right-0 h-full w-[35%] pointer-events-none overflow-hidden";
+  const thumbImageStyles = "w-full h-full object-cover opacity-50";
+  const thumbMaskStyle: React.CSSProperties = {
+    display: 'block',
+    WebkitMaskImage: 'linear-gradient(to right, transparent 0%, rgba(0,0,0,0.7) 40%)',
+    maskImage: 'linear-gradient(to right, transparent 0%, rgba(0,0,0,0.7) 40%)',
+    objectPosition: '50% 50%',
+    objectFit: 'cover',
+    transform: 'scale(1.05)',
+  };
+
   return (
     <div>
       <div
         className={classNames(
           "m-auto text-slate-400 bg-[#03022d] bg-opacity-30 no-select choice-background",
-          "relative mx-auto min-h-[9em] py-[0.4em] flex flex-col",
-          "items-stretch whitespace-normal text-sm overflow-hidden",
-          "shadow border-y border-0.5",
-          isSelected ? "border-blue-500 border-solid" : "border-solid border-slate-400",
+          "relative mx-auto min-h-[9em] py-[0.4em]", // relative positioning for absolute children
+          "flex flex-col items-stretch whitespace-normal text-sm overflow-hidden", // overflow hidden needed for mask/absolute children
+          "shadow border-y border-0.5 rounded-md", // Added rounded corners
+          isSelected ? "border-blue-500 border-solid" : "border-solid border-slate-700", // Darker border when not selected
           "w-full z-100"
         )}
-        style={{ position: 'relative' }}
       >
-        {/* youtube thumbnail background */}
+        {/* flag background */}
+        <div className={flagContainerStyles}>
+          <div className="relative w-full h-full">
+            {country.key !== 'yu' ? (
+              <LazyLoadedFlag
+                code={country.key}
+                className={`${flagImageStyles} flag-mask`}
+              />
+            ) : (
+              <img
+                src="https://upload.wikimedia.org/wikipedia/commons/6/61/Flag_of_Yugoslavia_%281946-1992%29.svg"
+                alt="flag of yugoslavia"
+                className={flagImageStyles}
+                style={flagMaskStyle}
+              />
+            )}
+          </div>
+        </div>
+
+        {/* youtube thumbnail */}
         {youtubeThumb && showThumbnail && (
-          <div className="absolute top-0 right-0 h-full w-[30%] pointer-events-none overflow-hidden">
+          <div className={thumbContainerStyles}>
             <div className="relative w-full h-full">
               <img
                 src={youtubeThumb}
-                className="w-full h-full object-cover opacity-40"
-                style={{
-                  display: 'block',
-                  WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 30%)',
-                  maskImage: 'linear-gradient(to right, transparent 0%, black 30%)',
-                  objectPosition: '50% 50%',
-                  scale: '1.1',
-                }}
+                className={thumbImageStyles}
+                style={thumbMaskStyle}
                 alt=""
               />
             </div>
@@ -385,67 +432,53 @@ const ContestantCard: React.FC<ContestantCardProps> = ({
         )}
 
         {/* content */}
-        <div className="relative z-10 flex flex-col items-stretch justify-center w-full p-2 h-full">
-          <div className="flex flex-row mb-2 items-center">
-            <div className="relative w-20 min-w-16 mr-4 flex items-center justify-center">
-              <div className="flex flex-col items-center">
-                <div className="w-full pl-1">
-                  {country.key !== 'yu' ? (
-                    <LazyLoadedFlag code={country.key} className="w-full opacity-80" />
-                  ) : (
-                    <img
-                      src="https://upload.wikimedia.org/wikipedia/commons/6/61/Flag_of_Yugoslavia_%281946-1992%29.svg"
-                      alt="flag of yugoslavia"
-                      className="w-full h-auto opacity-80"
-                    />
-                  )}
-                </div>
-                {isGlobalMode && contestant && (
-                  <div className="bg-slate-600 bg-opacity-30 text-slate-300 text-base font-bold text-center py-1 mt-1 w-full">
-                    {contestant.year}
-                  </div>
+        <div className="relative z-10 flex flex-col items-stretch justify-center w-full p-2 pl-32 h-full">
+          <div className="flex-grow text-slate-200 font-bold flex flex-col justify-center">
+            {/* country name and youtube link */}
+            <div className="overflow-hidden overflow-ellipsis flex justify-between items-center mb-2">
+              <span className="overflow-hidden overflow-ellipsis text-lg tracking-wide bg-[#1c214c] bg-opacity-75 rounded-md px-2 py-1 shadow-sm">
+                {country?.name}
+              </span>
+              <span className="flex flex-row items-center">
+                {contestant?.youtube && (
+                  <a
+                    href={contestant?.youtube}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className='rounded text-red-500 hover:text-red-400 transition-colors duration-200'
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <FaYoutube className='text-4xl' title="watch on youtube" />
+                  </a>
                 )}
-              </div>
+              </span>
             </div>
 
-            <div className="flex-grow text-slate-300 font-bold flex flex-col justify-center">
-              <div className="overflow-hidden overflow-ellipsis flex justify-between items-center">
-                <span className="overflow-hidden overflow-ellipsis text-base">{country?.name}</span>
-
-                <span className="flex flex-row items-center">
-                  {contestant?.youtube && (
-                    <a
-                      href={contestant?.youtube}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className='rounded text-red-500 hover:text-red-400'
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <FaYoutube className='text-4xl' title="watch on youtube" />
-                    </a>
+            {/* artist, song, and year info */}
+            <div className="pr-2 font-normal">
+              {contestant ? (
+                <>
+                  <div className="font-medium text-base bg-[#1c214c] bg-opacity-75 rounded-md inline-block px-2 py-1 text-slate-200 shadow-sm">
+                    {contestant?.artist}
+                  </div>
+                  <div className="mt-2 font-medium text-sm bg-[#1c214c] bg-opacity-75 rounded-md inline-block px-2 py-1 text-slate-200 shadow-sm">
+                    {contestant.song?.length && !contestant.song?.includes("TBD")
+                      ? `"${contestant.song}"`
+                      : `${contestant.song}`
+                    }
+                  </div>
+                  {/* year display */}
+                  {isGlobalMode && contestant && (
+                    <div className="bg-[#1c214c] bg-opacity-75 text-slate-200 text-xs font-bold text-center py-1 px-2 mt-2 inline-block rounded-md ml-2 shadow-sm">
+                      {contestant.year}
+                    </div>
                   )}
+                </>
+              ) : (
+                <span className="font-medium text-sm bg-[#1c214c] bg-opacity-75 rounded-md inline-block px-2 py-1 text-slate-200 shadow-sm italic">
+                  did not participate
                 </span>
-              </div>
-
-              <div className="pr-2 font-normal">
-                {contestant ? (
-                  <>
-                    <div className="font-xs text-base text-slate-400">
-                      {contestant?.artist}
-                    </div>
-                    <div className="mt-1 font-xs text-sm bg-[#1c214c] bg-opacity-60 rounded-sm inline-block px-1 py-0.5 text-slate-400">
-                      {contestant.song?.length && !contestant.song?.includes("TBD")
-                        ? `"${contestant.song}"`
-                        : `${contestant.song}`
-                      }
-                    </div>
-                  </>
-                ) : (
-                  <span className="font-xs text-sm text-gray-500 strong">
-                    did not participate
-                  </span>
-                )}
-              </div>
+              )}
             </div>
           </div>
         </div>

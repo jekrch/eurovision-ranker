@@ -5,9 +5,10 @@ const LazyFlag = lazy(() => import('react-world-flags').then(module => ({ defaul
 interface FlagProps {
   code: string;
   className?: string;
+  style?: any;
 }
 
-export const LazyLoadedFlag: React.FC<FlagProps> = ({ code, className }) => {
+export const LazyLoadedFlag: React.FC<FlagProps> = ({ code, className, style }) => {
   const [isClient, setIsClient] = useState(false);
   
   useEffect(() => {
@@ -21,7 +22,7 @@ export const LazyLoadedFlag: React.FC<FlagProps> = ({ code, className }) => {
 
   return (
     <Suspense fallback={<div className={`${className} bg-slate-700`}></div>}>
-      <LazyFlag code={code} className={className} />
+      <LazyFlag code={code} className={className} style={style}/>
     </Suspense>
   );
 };

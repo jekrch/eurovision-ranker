@@ -1,4 +1,3 @@
-import { Comparison } from "../components/ranking/SorterModal";
 import { CountryContestant } from "../data/CountryContestant";
 
 // sortState holds the state for the sorting algorithm.
@@ -31,6 +30,12 @@ export enum ActionType {
     DONE = "DONE"
 }
 
+
+export interface Comparison { 
+    leftItem: CountryContestant;
+    rightItem: CountryContestant;
+    choice?: 'left' | 'right';
+  }
 
 /**
  * initialize the state for the pairwise comparison sorting algorithm.

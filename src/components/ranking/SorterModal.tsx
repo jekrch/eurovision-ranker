@@ -156,13 +156,13 @@ const SorterModal: React.FC<SorterModalProps> = ({
   useEffect(() => {
     if (isOpen && initialItems.length > 1) {
       console.log(`starting sorter with ${initialItems.length} items`);
-
+ 
       // initialize the sorting algorithm
       let newSortState = initSortState(initialItems);
 
       setSortState(newSortState); // set the initial state directly
     } else {
-      setSortState(null);  // clear the state when closing or with <= 1 items
+      //setSortState(null);  // clear the state when closing or with <= 1 items
     }
   }, [isOpen, initialItems]);
 
@@ -211,8 +211,8 @@ const SorterModal: React.FC<SorterModalProps> = ({
             <div className="text-xs text-slate-400 text-right mt-1">
               {sortState && (
                 <span>
-                  comparisons: {sortState.comparisons.filter(c => c.choice).length}
-                  {/* ~{sortState.estimatedTotalComparisons} */}
+                  comparisons: {sortState.comparisons.filter(c => c.choice).length} /
+                  ~{sortState.estimatedTotalComparisons}
                 </span>
               )}
             </div>

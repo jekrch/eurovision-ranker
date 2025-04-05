@@ -9,7 +9,7 @@ export interface SortState {
     allItems: ReadonlyArray<CountryContestant>;
     // comparisons stores the history of pairwise comparisons made so far.
     comparisons: Comparison[];
-    // currentIndex points to the index in the `comparisons` array for the current pair being presented.
+    // currentIndex points to the index in the comparisons array for the current pair being presented.
     currentIndex: number;
     // isComplete flags whether the sorting process has finished.
     isComplete: boolean;
@@ -23,8 +23,6 @@ export interface SortState {
     remainingPairIndices: [number, number][];
     // graph represents preferred > lessPreferred relationships; an edge from A to B means A is preferred over B.
     graph: Map<string, Set<string>>;
-    // note: the properties 'stack', 'aux', 'rankingStableCount', and 'confidenceThreshold' from a previous version
-    // were removed as they were not used in the current sorting logic.
 }
 
 // actionType enum tracks the state of the sorting algorithm.
@@ -38,7 +36,7 @@ export enum ActionType {
  * initialize the state for the pairwise comparison sorting algorithm.
  */
 export const initSortState = (items: CountryContestant[]): SortState => {
-    // filter out any undefined or null items but never modify original items.
+    // filter out any undefined
     const validItems = items.filter((item): item is CountryContestant => !!item);
 
     // if there's 0 or 1 item, sorting is already done.
@@ -47,7 +45,7 @@ export const initSortState = (items: CountryContestant[]): SortState => {
             action: ActionType.DONE,
             allItems: validItems,
             comparisons: [],
-            currentIndex: 0, // consistent starting index even if done
+            currentIndex: 0, 
             isComplete: true,
             totalComparisons: 0,
             estimatedTotalComparisons: 0,
@@ -474,7 +472,6 @@ export const getSortedItems = (state: SortState): CountryContestant[] => {
  * shuffle array
  */
 export const shuffleArray = <T>(array: T[]): T[] => {
-    // create a copy to avoid modifying the original array.
     const result = [...array];
     // loop backwards through the array.
     for (let i = result.length - 1; i > 0; i--) {
@@ -483,7 +480,7 @@ export const shuffleArray = <T>(array: T[]): T[] => {
         // swap the elements at indices i and j.
         [result[i], result[j]] = [result[j], result[i]];
     }
-    return result; // return the new shuffled array
+    return result;
 };
 
 /**

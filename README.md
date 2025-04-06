@@ -32,12 +32,14 @@ Multiple rankings can be created by category with different weights given to eac
 
 ## Pairwise Comparison Sorter
 
+<img width="300" alt="image" src="https://github.com/user-attachments/assets/5cf4e450-4534-4725-92a2-329d1181b149">
+
 Want to rank contestants from different years side-by-side? Eurovision Ranker includes a smart sorter tool:
 
 *   **Pick Any Mix:** Select any group of contestants you want to compare, regardless of the year they competed.
 *   **Simple Choices:** The tool shows you two contestants at a time, and you simply pick your preference.
 *   **Efficient Ranking:** Based on your choices, the sorter infers other relationships. For example, if you prefer A over B, and B over C, it learns you prefer A over C *without asking again*. This process minimizes the number of comparisons needed to generate your complete, personalized ranking for the selected group.
-* **Review and Undo** Use back button to review your previous choices and fix any mistakes!
+* **Review and Undo:** Use back button to review your previous choices and fix any mistakes!
 
 This lets you create rankings that accurately reflect your preferences in a quick and simple way.
 

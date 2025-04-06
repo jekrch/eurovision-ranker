@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react'
 import pako from 'pako';
 import { CountryContestant } from '../../data/CountryContestant';
 import { faChevronLeft, faChevronRight, faTimes, faCheck, faCheckCircle } from '@fortawesome/free-solid-svg-icons'; // added faCheckCircle
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'; // import FontAwesomeIcon
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'; 
 import { AppDispatch, AppState } from '../../redux/store';
 import { useAppDispatch, useAppSelector } from '../../hooks/stateHooks';
 import classNames from 'classnames';
@@ -15,10 +15,8 @@ import {
   ActionType,
 } from '../../utilities/SorterUtils';
 import { LazyLoadedFlag } from '../LazyFlag';
-import { getYoutubeThumbnail } from '../../utilities/YoutubeUtil';
 import Modal from '../modals/Modal';
 import IconButton from '../IconButton';
-import { FaYoutube } from 'react-icons/fa';
 import { updateUrlFromRankedItems } from '../../utilities/UrlUtil';
 import TooltipHelp from '../TooltipHelp';
 import SorterContestantCard from './SorterContestantCard';
@@ -429,7 +427,7 @@ const SorterModal: React.FC<SorterModalProps> = ({
           Your ranking is ready based on your choices!
         </p>
 
-        {/* show top 3 preview */}
+        {/* show top choices preview */}
         {topItems.length > 0 && (
           <div className="mb-6 w-full max-w-xs">
             <h4 className="text-md font-semibold text-slate-300 mb-3">Your Top {topItems.length}:</h4>
@@ -539,7 +537,7 @@ const SorterModal: React.FC<SorterModalProps> = ({
                     {isComputing && <span className="ml-2 text-orange-400">(Computing...)</span>}
                   </span>
                 ) : (
-                  <span> </span>
+                  <span>  </span>
                 )}
               </div>
             </div>
@@ -580,7 +578,6 @@ const SorterModal: React.FC<SorterModalProps> = ({
                 icon={faTimes}
               />
 
-              {/* make apply button slightly more prominent */}
               <IconButton
                 onClick={handleApplyRanking}
                 disabled={!canInteract || !currentSortState?.isComplete}

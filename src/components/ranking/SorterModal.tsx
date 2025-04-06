@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import pako from 'pako';
 import { CountryContestant } from '../../data/CountryContestant';
-import { faChevronLeft, faChevronRight, faTimes, faCheck, faCheckCircle } from '@fortawesome/free-solid-svg-icons'; // added faCheckCircle
+import { faChevronLeft, faChevronRight, faTimes, faCheck, faCheckCircle, faCancel } from '@fortawesome/free-solid-svg-icons'; 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'; 
 import { AppDispatch, AppState } from '../../redux/store';
 import { useAppDispatch, useAppSelector } from '../../hooks/stateHooks';
@@ -420,10 +420,10 @@ const SorterModal: React.FC<SorterModalProps> = ({
     content = (
       <div className="flex flex-col items-center justify-center px-4 pb-6 min-h-[20em] text-center">
         {/* large checkmark */}
-        <FontAwesomeIcon icon={faCheckCircle} className="text-5xl text-green-500 mb-4" />
+        <FontAwesomeIcon icon={faCheckCircle} className="text-5xl text-[#119822] mb-4" />
 
         {/* completion message */}
-        <p className="mb-6 text-slate-200">
+        <p className="mb-6 text-slate-300">
           Your ranking is ready based on your choices!
         </p>
 
@@ -455,7 +455,7 @@ const SorterModal: React.FC<SorterModalProps> = ({
   } else if (isSessionLoaded && currentComparison) {
     // render comparison cards
     content = (
-      <div className="flex flex-col justify-start items-center gap-2 mb-2 min-h-[20em] px-4">
+      <div className="flex flex-col justify-start items-center gap-2 mb-2 min-h-[20em] px-[0.1em]">
         <div
           onClick={() => handleChoice('left')}
           className={classNames(
@@ -500,7 +500,7 @@ const SorterModal: React.FC<SorterModalProps> = ({
           {/* title, category */}
           <div className="mb-4">
             <div className="flex items-center justify-between">
-              <h2 className={classNames("text-xl font-bold text-center w-full text-slate-200")}>
+              <h2 className={classNames("text-xl font-bold text-center w-full text-slate-300")}>
                 {isSessionLoaded && currentSortState?.isComplete ? "Ranking Complete" : "Choose Your Preference"}
                 {isSessionLoaded && !currentSortState?.isComplete &&
                   <TooltipHelp
@@ -575,13 +575,13 @@ const SorterModal: React.FC<SorterModalProps> = ({
                 disabled={isComputing}
                 className="px-4 pr-4 py-2 text-sm text-white bg-gray-500 rounded hover:bg-gray-600 disabled:bg-gray-700 disabled:text-gray-500"
                 title="Cancel" // more explicit title
-                icon={faTimes}
+                icon={faCancel}
               />
 
               <IconButton
                 onClick={handleApplyRanking}
                 disabled={!canInteract || !currentSortState?.isComplete}
-                className="px-5 pr-4 py-2 text-sm font-semibold text-white bg-green-600 rounded hover:bg-green-700 disabled:bg-gray-700 disabled:text-gray-500"
+                className="px-5 pr-4 py-2 text-sm font-semibold text-white bg-[#2A7221] rounded hover:bg-[#119822] disabled:bg-gray-700 disabled:text-gray-500"
                 title="Apply Ranking"
                 icon={faCheck}
               />
@@ -628,7 +628,7 @@ const SorterModal: React.FC<SorterModalProps> = ({
                     disabled={isComputing}
                     className="px-4 py-2 pr-[1.2em] text-sm text-white bg-gray-500 rounded hover:bg-gray-600 disabled:bg-gray-700 disabled:text-gray-500"
                     title="Cancel"
-                    icon={faTimes}
+                    icon={faCancel}
                   />
                 </div>
 

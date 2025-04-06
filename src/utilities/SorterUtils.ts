@@ -250,8 +250,7 @@ export const processChoice = (state: SortState, choice: 'left' | 'right'): SortS
     // check if the sorting process is complete (no more pairs to compare).
     if (newState.remainingPairIndices.length === 0) {
         newState.isComplete = true;
-        newState.action = ActionType.DONE;
-        console.log("sorting complete. final ranking by year:", newState.currentRanking.map((item: CountryContestant) => item.contestant?.year).join(", "));
+        newState.action = ActionType.DONE;        
         return newState; // return the final state
     } else {
         // if not complete, advance to the next comparison.
@@ -278,8 +277,8 @@ export const advanceAlgorithm = (state: SortState): SortState => {
         return newState; // return the completed state
     }
 
-    // create a mutable copy of the pairs array to use shift().
-    const remainingPairs = [...newState.remainingPairIndices];
+    // create a mutable copy of the pairs array and shuffle before getting next
+    const remainingPairs = shuffleArray([...newState.remainingPairIndices]);
     // get the next pair from the start of the queue (fifo). use non-null assertion as length > 0 is checked.
     const [leftIndex, rightIndex] = remainingPairs.shift()!;
     // update the state with the modified queue.
@@ -474,7 +473,7 @@ export const getSortedItems = (state: SortState): CountryContestant[] => {
 };
 
 /**
- * shuffle array
+ * randomize array
  */
 export const shuffleArray = <T>(array: T[]): T[] => {
     const result = [...array];

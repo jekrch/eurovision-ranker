@@ -1,12 +1,14 @@
 import React from 'react';
 import Modal from '../modals/Modal';
 import IconButton from '../IconButton';
+import classNames from 'classnames';
 
 interface GlobalConfirmationModalProps {
     isOpen: boolean;
     onClose: () => void;
     onConfirm: () => void;
     message: string;
+    className?: string;
 }
 
 /**
@@ -17,7 +19,8 @@ const GlobalConfirmationModal: React.FC<GlobalConfirmationModalProps> = ({
     isOpen,
     onClose,
     onConfirm,
-    message
+    message, 
+    className
 }) => {
     const handleConfirm = () => {
         onConfirm();
@@ -28,7 +31,7 @@ const GlobalConfirmationModal: React.FC<GlobalConfirmationModalProps> = ({
         <Modal 
             isOpen={isOpen} 
             onClose={onClose} 
-            className="max-w-[28em]" 
+            className={classNames("max-w-[28em]", className)} 
             closeBtnClassName="hidden"
         >
             <div className="mb-4 text-sm text-gray-900 dark:text-slate-300 whitespace-pre-line leading-[1.2em]">

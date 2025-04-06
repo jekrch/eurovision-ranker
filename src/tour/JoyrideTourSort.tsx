@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { CallBackProps, EVENTS, ACTIONS, STATUS } from 'react-joyride';
 import { AppDispatch, AppState } from '../redux/store';
 import { setYear, setName, setShowUnranked, setRankedItems, setUnrankedItems, 
@@ -163,8 +163,8 @@ const JoyrideTourSort: React.FC<JoyrideTourSortProps> = (props: JoyrideTourSortP
     
     // handle tour completion
     if ([STATUS.FINISHED, STATUS.SKIPPED].includes(status as any)) {
-      console.log('[JoyrideTourSort] Tour completed or skipped');
       props.setRunTour(false);
+      setJoyrideStepIndex(0);
       return;
     }
     
@@ -214,10 +214,9 @@ const JoyrideTourSort: React.FC<JoyrideTourSortProps> = (props: JoyrideTourSortP
 
   // move selected countries to ranked items
   function moveCountriesToRanked() {
-    console.log('[JoyrideTourSort] Moving selected countries to ranked items');
     
-    // list of country codes to select (like in the original tour)
-    const specificCountryCodes = ['fi', 'hr', 'es', 'cz', 'no', 'is'];
+    // list of country codes to select
+    const specificCountryCodes = ['fi', 'se', 'dk', 'al', 'ee', 'pt'];
     
     // filter out the specific items based on country codes
     const specificItems = unrankedItems.filter(
@@ -273,9 +272,9 @@ const JoyrideTourSort: React.FC<JoyrideTourSortProps> = (props: JoyrideTourSortP
     try {
       switch (index) {
         case 0: // first step - initialize ranking state and add ranked items
-          console.log('[JoyrideTourSort] Step 0: Initializing ranking state');
-          if (year !== '2023') {
-            dispatch(setYear('2023'));
+          
+          if (year !== '2025') {
+            dispatch(setYear('2025'));
             props.setRefreshUrl(Math.random());
           }
           
@@ -291,8 +290,7 @@ const JoyrideTourSort: React.FC<JoyrideTourSortProps> = (props: JoyrideTourSortP
           }, 500);
           break;
           
-        case 1: // second step - view details
-          console.log('[JoyrideTourSort] Step 1: Preparing view details');
+        case 1: // second step - view details          
           // ensure countries are showing in ranked view
           if (rankedItems.length === 0) {
             console.log('[JoyrideTourSort] No ranked items found, adding them now');
@@ -303,14 +301,12 @@ const JoyrideTourSort: React.FC<JoyrideTourSortProps> = (props: JoyrideTourSortP
           break;
           
         case 2: // third step - sort button
-          console.log('[JoyrideTourSort] Step 2: Preparing sort button');
           // critical: toggle to show only ranked items (details view)
           dispatch(setShowUnranked(false));
           props.setRefreshUrl(Math.random());
           break;
           
-        case 3: // fourth step - open sort modal
-          console.log('[JoyrideTourSort] Step 3: Opening sort modal');
+        case 3: // fourth step - open sort modal    
           // use a delay to ensure UI is ready
           setTimeout(() => {
             console.log('[JoyrideTourSort] Opening sort modal now');
@@ -319,7 +315,6 @@ const JoyrideTourSort: React.FC<JoyrideTourSortProps> = (props: JoyrideTourSortP
           break;
           
         case 4: // fifth step - close sort modal
-          console.log('[JoyrideTourSort] Step 4: Closing sort modal');
           // close the sort modal with a delay
           setTimeout(() => {
             console.log('[JoyrideTourSort] Closing sort modal now');
@@ -334,6 +329,11 @@ const JoyrideTourSort: React.FC<JoyrideTourSortProps> = (props: JoyrideTourSortP
           dispatch(setShowUnranked(true));
           break;
           
+        case 6: // end of tour
+          props.setRunTour(false);
+          setJoyrideStepIndex(0);
+          break;
+
         default:
           console.log(`[JoyrideTourSort] No actions for step ${index}`);
       }

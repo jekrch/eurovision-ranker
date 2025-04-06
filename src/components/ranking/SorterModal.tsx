@@ -493,7 +493,13 @@ const SorterModal: React.FC<SorterModalProps> = ({
   }
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} className="!max-h-[95vh] sort-tour-step-modal px-0 py-0">
+    <Modal 
+      isOpen={isOpen} 
+      onClose={onClose} 
+      closeWarning={'You have unsaved changes. Are you sure you want to close?'}
+      shouldCloseWarn={isOpen && isSessionLoaded && !currentSortState?.isComplete}
+      className="!max-h-[95vh] sort-tour-step-modal px-0 py-0"
+    >
       <div className="flex flex-col max-h-[calc(95vh-2rem)] h-full">
         {/* header */}
         <div className="flex-shrink-0 px-4 pt-4">
@@ -501,13 +507,14 @@ const SorterModal: React.FC<SorterModalProps> = ({
           <div className="mb-4">
             <div className="flex items-center justify-between">
               <h2 className={classNames("text-xl font-bold text-center w-full text-slate-300")}>
-                {isSessionLoaded && currentSortState?.isComplete ? "Ranking Complete" : "Choose Your Preference"}
-                {isSessionLoaded && !currentSortState?.isComplete &&
+              {isSessionLoaded && !currentSortState?.isComplete &&
                   <TooltipHelp
-                    content="Answer with your preferences and a ranking will be generated..."
-                    className="text-slate-300 align-middle mb-1 -mr-1"
+                    content="Answer with your preferences and a ranking will be generated"
+                    className="text-slate-300 align-middle mb-1 mr-2"
+                    place='bottom-start'
                   />
                 }
+                {isSessionLoaded && currentSortState?.isComplete ? "Ranking Complete" : "Choose Your Preference"}
               </h2>
             </div>
             {activeCategory !== undefined && categories[activeCategory]?.name &&

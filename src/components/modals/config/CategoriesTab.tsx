@@ -141,7 +141,7 @@ const CategoriesTab: React.FC = () => {
                 <td className="px-2">
                   <button
                     onClick={() => deleteCategory(index, dispatch, categories, activeCategory)}
-                    className="bg-rose-700 hover:bg-rose-600 text-white rounded-md px-2 py-[0.1em]"
+                    className="bg-rose-800 hover:bg-rose-700 text-white rounded-md px-[0.5em] py-[0.1em]"
                   >
                     X
                   </button>

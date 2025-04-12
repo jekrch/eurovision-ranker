@@ -25,7 +25,7 @@ Multiple rankings can be created by category with different weights given to eac
 
 - Rank Eurovision contestants from 1956 to present
 - Share rankings via URL
-- Generate YouTube playlists
+- Generate YouTube playlists from your ranking
 - Explore official voting results from previous years
 - View geographical heat map of rankings
 - Create multi-category rankings with weighted totals

@@ -595,7 +595,7 @@ const SorterModal: React.FC<SorterModalProps> = ({
                             {topItems.map((item, index) => (
                                 <li key={item.uid || index} className="flex items-center justify-start bg-slate-700/50 p-2 rounded">
                                     <span className="text-lg font-bold text-slate-400 w-6 mr-3">{index + 1}.</span>
-                                    {item.country?.key && <LazyLoadedFlag code={item.country.key} className="w-6 h-auto mr-3 rounded-sm" />}
+                                    {item.country?.key && <LazyLoadedFlag code={item.country.key} className="w-8 h-auto mr-3 rounded-sm" />}
                                     <span className="text-slate-200 truncate flex-1 text-left">
                                         {item.contestant?.artist}
                                         <span className="text-xs text-slate-400 block truncate">
@@ -615,7 +615,7 @@ const SorterModal: React.FC<SorterModalProps> = ({
     } else if (isSessionLoaded && currentComparison) {
         // render active comparison screen
         content = (
-            <div className="flex flex-col justify-start items-center gap-2 mb-2 min-h-[20em] px-[0.1em]">
+            <div className="flex flex-col justify-start items-center gap-2 mb-2 min-h-[20em] px-[0.1em] pt-1">
                 {/* left choice card */}
                 <div
                     onClick={() => handleChoice('left')}
@@ -665,11 +665,11 @@ const SorterModal: React.FC<SorterModalProps> = ({
             onClose={onClose}
             closeWarning={'You have unsaved progress. Are you sure you want to close?'}
             shouldCloseWarn={isOpen && isSessionLoaded && !currentSortState?.isComplete && choiceLog.length > 0} // warn only if progress made
-            className="!max-h-[95vh] sort-tour-step-modal px-0 py-0"
+            className="!max-h-[95vh] sort-tour-step-modal px-0 py-1"
         >
             <div className="flex flex-col max-h-[calc(95vh-2rem)] h-full bg-slate-800 text-slate-200">
                 {/* header */}
-                <div className="flex-shrink-0 px-4 pt-4">
+                <div className="flex-shrink-0 px-4 pt-3">
                     {/* title and category */}
                      <div className="mb-4">
                          <div className="flex items-center justify-between">
@@ -714,18 +714,18 @@ const SorterModal: React.FC<SorterModalProps> = ({
                         </div>
                     )}
                     {/* maintain space when progress bar is hidden to prevent layout shifts */}
-                    {currentSortState?.isComplete && <div className="h-[calc(0.75rem+0.5rem+1em)]"></div>}
+                    {currentSortState?.isComplete && <div className="h-[0.5rem]"></div>}
 
 
                 </div>
 
                 {/* main content (scrollable) */}
-                <div className="flex-grow overflow-y-auto px-0 py-0 pt-1">
+                <div className="flex-grow overflow-y-auto px-0 py-0 pt-0">
                     {content}
                 </div>
 
                 {/* footer buttons */}
-                 <div className="flex-shrink-0 mt-auto px-4 pb-4 pt-2 border-t border-slate-700">
+                 <div className="flex-shrink-0 mt-auto px-4 pb-3 pt-3 border-t border-slate-700">
                     {isSessionLoaded && currentSortState?.isComplete ? (
                          // footer buttons for completed state
                          <div className="flex justify-center items-center space-x-4">
@@ -747,7 +747,7 @@ const SorterModal: React.FC<SorterModalProps> = ({
                             <IconButton
                                 onClick={onClose}
                                 disabled={isComputing}
-                                className="px-4 pr-4 py-2 text-sm text-white bg-red-600 rounded hover:bg-red-700 disabled:bg-gray-700 disabled:text-gray-400"
+                                className="px-4 pr-4 py-2 text-sm text-white  bg-gray-500 rounded hover:bg-gray-600 disabled:bg-gray-700 disabled:text-gray-500"
                                 title="Cancel"
                                 icon={faCancel}
                             />
@@ -806,7 +806,7 @@ const SorterModal: React.FC<SorterModalProps> = ({
                                     <IconButton
                                         onClick={onClose}
                                         disabled={isComputing}
-                                        className="px-4 pr-4 py-2 text-sm text-white bg-red-600 rounded hover:bg-red-700 disabled:bg-gray-700 disabled:text-gray-400"
+                                        className="px-4 pr-4 py-2 text-sm text-white  bg-gray-500 rounded hover:bg-gray-600 disabled:bg-gray-700 disabled:text-gray-500"
                                         title="Cancel"
                                         icon={faCancel}
                                     />

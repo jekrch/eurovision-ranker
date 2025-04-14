@@ -1,6 +1,6 @@
 # Eurovision Ranker :light_blue_heart:
 
-![Version](https://img.shields.io/badge/version-8.1-blue)
+![Version](https://img.shields.io/badge/version-8.2-blue)
 ![Run Tests](https://github.com/jekrch/eurovision-ranker/actions/workflows/test_on_push.yml/badge.svg)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
@@ -38,7 +38,6 @@ Eurovision Ranker includes a sorter, which generates a ranking from a user's pai
 
 *   **Pick Any Mix:** Select any group of contestants you want to compare, regardless of the year they competed.
 *   **Review and Undo:** Use back button to review your previous choices and fix any mistakes!
-*   **Efficient Ranking:** Based on your choices, the sorter infers other relationships. For example, if you prefer A over B, and B over C, it learns you prefer A over C *without asking again*. This process minimizes the number of comparisons needed to generate your complete, personalized ranking for the selected group.
 
 This lets you create rankings that accurately reflect your preferences in a quick and simple way.
 

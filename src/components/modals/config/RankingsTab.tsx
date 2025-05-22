@@ -15,7 +15,7 @@ import { Contestant } from '../../../data/Contestant';
 const RankingsTab: React.FC = () => {
     const year = useAppSelector((state: AppState) => state.year);
     const theme = useAppSelector((state: AppState) => state.theme);
-    const [rankingYear, setRankingYear] = useState(year !== '2025' ? year : '2024');
+    const [rankingYear, setRankingYear] = useState(year !== '2026' ? year : '2025');
     const [voteSource, setVoteSource] = useState('All');
     const [voteSourceOptions, setVoteSourceOptions] = useState<string[]>([
         'All',
@@ -230,13 +230,13 @@ const RankingsTab: React.FC = () => {
 
                     <div className="mt-2 ml-0">
                         <span className="">
-                            {rankingYear !== '2025' ? (
+                            {rankingYear !== '2026' ? (
                                 <IconButton
                                     onClick={openTotalRanking}
                                     className="pl-[1em] pr-[1em] rounded-md"
                                     title="total"
                                 />
-                            ) : ( <>No voting data available yet for 2025</> )}
+                            ) : ( <>No voting data available yet for 2026</> )}
                             {hasTeleVotes && (
                                 <IconButton
                                     onClick={openTotalTelevoteRanking}

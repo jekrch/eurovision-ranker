@@ -209,7 +209,7 @@ const RankingsTab: React.FC = () => {
                             menuClassName=""
                             value={rankingYear ?? year}
                             onChange={(y) => setRankingYear(y)}
-                            options={supportedYears.filter((i) => i !== '2020' && i !== '2025')}
+                            options={supportedYears.filter((i) => i !== '2020' && i !== '2026')}
                             showSearch={true}
                         />
                         <span className="ml-2 text-sm">from</span>

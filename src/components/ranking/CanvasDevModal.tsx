@@ -24,9 +24,7 @@ const CanvasDevModal: React.FC<{
   const rankingName = useAppSelector((state: AppState) => state.name);
   
   let customConfig: Partial<RankingCanvasConfig>  = {};
-  customConfig.showPlace = showPlace;
-  customConfig.voteCode = vote;
-  
+
   // Import canvas utilities dynamically to avoid loading them when not in use
   const [canvasUtils, setCanvasUtils] = useState<any>(null);
   

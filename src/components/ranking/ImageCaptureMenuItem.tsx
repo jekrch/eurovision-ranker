@@ -34,8 +34,6 @@ const ImageCaptureMenuItem: React.FC<CanvasDownloadButtonProps> = ({
   const vote = useAppSelector((state: AppState) => state.vote);
 
   let customConfig: Partial<RankingCanvasConfig>  = {};
-  customConfig.showPlace = showPlace;
-  customConfig.voteCode = vote;
 
 
   const handleDownload = async () => {

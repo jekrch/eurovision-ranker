@@ -1,6 +1,6 @@
 # Eurovision Ranker :light_blue_heart:
 
-![Version](https://img.shields.io/badge/version-8.3-blue)
+![Version](https://img.shields.io/badge/version-9.0-blue)
 ![Run Tests](https://github.com/jekrch/eurovision-ranker/actions/workflows/test_on_push.yml/badge.svg)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 

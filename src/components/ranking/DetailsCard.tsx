@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { type FC, useRef, useEffect, useState } from 'react';
+import { type FC, useRef, useEffect } from 'react';
 import { FaFileAlt, FaTv } from 'react-icons/fa';
 import { LazyLoadedFlag } from '../LazyFlag';
 import { CountryContestant } from '../../data/CountryContestant';
@@ -17,7 +17,7 @@ export interface DetailsCardProps {
   className?: string;
   isDragging: boolean;
   categoryScrollPosition: number;
-  onCategoryScroll: (callback: React.UIEvent<HTMLDivElement>) => void;
+  onCategoryScroll: (event: React.UIEvent<HTMLDivElement>) => void;
   openSongModal: () => void;
 }
 
@@ -40,9 +40,7 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
   const contestant = props.countryContestant.contestant;
   const country = props.countryContestant.country;
   const categoryRankingsRef = useRef<HTMLDivElement>(null);
-  const theme = useAppSelector((state: AppState) => state.theme);
 
-  // get YouTube thumbnail if video URL exists
   const youtubeThumb = getYoutubeThumbnail(contestant?.youtube);
 
   useEffect(() => {
@@ -58,7 +56,7 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
 
   const categoryRankings = getCategoryRankings();
 
-  /**
+ /**
    * Returns the difference between the provided category rank and the actualRank along 
    * with an up/down angle icon to represent the diff. 
    * 
@@ -66,9 +64,8 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
    * @param categoryRank 
    * @returns 
    */
-  function getRankIconaAndDiff(actualRank: number | undefined, categoryRank: number | undefined) {
+  function getRankIconAndDiff(actualRank: number | undefined, categoryRank: number | undefined) {
     const rankDifference = actualRank && categoryRank ? categoryRank - actualRank : 0;
-
     let arrowIcon = null;
     if (rankDifference < 0) {
       arrowIcon = Math.abs(rankDifference) >= 3 ? faAngleDoubleUp : faAngleUp;
@@ -84,19 +81,17 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
         key={props.rank ? 'ranked-' : `unranked-card-${contestant?.id ?? country.id}`}
         className={classNames(
           props.className,
-          "m-auto text-slate-400 bg-[#03022d] bg-opacity-30 no-select",
-          "relative mx-[.5rem] min-h-[2.5em] py-[0.4em] flex flex-row",
+          "m-auto text-slate-400 bg-[#03022d]x bg-opacity-30 no-select",
+          "relative mx-[.5rem] min-h-[2.5em] py-[0.4em] flex flex-row", // Main card padding is py-[0.4em]
           "items-stretch !cursor-grabber whitespace-normal text-sm overflow-hidden",
-          "shadow rounded border border-0.5",
+          "shadow border border-0.5 border-solid border-slate-400/90 rounded-l-lg rounded-r-sm",
           props.isDragging ? "shadow-slate-700 shadow-sm border-solid" : "",
-          !props.isDragging && props.rank === 1 ? "first-card-glow" : "",
-          props.rank ? "border-solid border-slate-400" : "border-dashed",
+          !props.isDragging && props.rank === 1 ? "first-card-glow" : ""
         )}
         style={{
           position: 'relative',
         }}
       >
-        {/* YouTube thumbnail background */}
         {youtubeThumb && showThumbnail && (
           <div className="absolute top-0 right-0 h-full w-[30%] pointer-events-none overflow-hidden">
             <div className="relative w-full h-full">
@@ -108,7 +103,7 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
                   WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 30%)',
                   maskImage: 'linear-gradient(to right, transparent 0%, black 30%)',
                   objectPosition: '50% 50%',
-                  scale: '1.1',  
+                  transform: 'scale(1.1)',
                 }}
                 onError={(e) => {
                   const target = e.target as HTMLImageElement;
@@ -126,38 +121,49 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
           </div>
         )}
 
-        {/* Existing content with higher z-index to appear above background */}
         <div className="relative z-10 flex flex-row items-stretch w-full">
-          <div className="-my-2 flex-shrink-0 pb-[1px] mr-3 font-bold w-8 pr-[0.01em] border-r-[0.05em] border-slate-500 bg-[#334678] bg-opacity-80 text-slate-300 tracking-tighter items-center justify-center flex text-lg rounded-sm">
+
+          <div className="-my-2 flex-shrink-0 pb-[1px] mr-0 font-bold w-8 pr-[0.01em] border-r-[0.05em] border-slate-500 bg-[#334678] bg-opacity-70 text-slate-200 tracking-tighter items-center justify-center flex text-lg rounded-sm">
             {props.rank}
           </div>
 
-          <div className="relative w-14 min-w-14 mr-3 flex items-center">
-            <div className="relative w-full">
-              {country.key !== 'yu' ? (
-                <LazyLoadedFlag code={country.key} className="w-full opacity-80" />
-              ) : (
-                <img
-                  src="https://upload.wikimedia.org/wikipedia/commons/6/61/Flag_of_Yugoslavia_%281946-1992%29.svg"
-                  alt="Flag of Yugoslavia"
-                  className="w-full h-auto opacity-80"
-                />
-              )}
-              {isGlobalMode && contestant && (
-                <div className="bottom-0 left-0 right-0 bg-slate-600 bg-opacity-30 text-slate-300 text-sm font-bold text-center py-1">
-                  {contestant.year}
-                </div>
-              )}
-            </div>
+          <div className="relative w-[5em] min-w-[4rem] -my-[0.2em]x my-1 ml-[0.2em]x ml-2 -mr-3 self-stretch overflow-hidden">
+            {country.key !== 'yu' ? (
+              <LazyLoadedFlag
+                code={country.key}
+                className="block w-full h-full object-cover opacity-80"
+                style={{
+                     WebkitMaskImage: 'linear-gradient(to right, rgba(0,0,0,0.9) 50%, transparent 100%)',
+    maskImage: 'linear-gradient(to right, rgba(0,0,0,0.9) 50%, transparent 100%)',
+                }}
+              />
+            ) : (
+              <img
+                src="https://upload.wikimedia.org/wikipedia/commons/6/61/Flag_of_Yugoslavia_%281946-1992%29.svg"
+                alt="Flag of Yugoslavia"
+                className="block w-full h-full object-cover opacity-80"
+                style={{
+                  WebkitMaskImage: 'linear-gradient(to right, black 70%, transparent 100%)',
+                  maskImage: 'linear-gradient(to right, black 70%, transparent 100%)',
+                }}
+              />
+            )}
+            {isGlobalMode && contestant && (
+              <div className="absolute bottom-0 left-0 right-0 bg-slate-600 bg-opacity-30 text-slate-300 text-sm font-bold text-center py-1 z-10">
+                {contestant.year}
+              </div>
+            )}
           </div>
+          {/* END OF UPDATED FLAG SECTION */}
 
-          <div className={classNames("flex-grow text-slate-300 font-bold")}>
+          {/* Text content section. Starts immediately after the flag container */}
+          <div className={classNames("flex-grow text-slate-300 font-bold pl-3")}> {/* Added pl-3 for spacing if flag edge is too abrupt */}
             <div className={`overflow-hidden overflow-ellipsis`}>
-              <span className={classNames("float-right flex flex-row items-center", contestant?.youtube ? 'bg-opacity-80 bg-[#1c214c] border-[0.1em] border-gray-600 rounded-[0.2em] px-[0.5em] py-[0.1em] mr-[0.4em]': '')}>
+              <span className={classNames("float-right flex flex-row items-center", contestant?.youtube ? 'bg-opacity-70 bg-[#1c214c] border-[0.1em] border-gray-600 rounded-[0.2em] px-[0.5em] py-[0.1em] mr-[0.4em]': '')}>
                 {contestant?.youtube &&
                   <div
                     onClick={() => { props.openSongModal() }}
-                    className='cursor-pointer rounded text-slate-500 hover:text-slate-300 mr-[0.9em] -ml-1'>
+                    className='cursor-pointer rounded text-slate-500 hover:text-slate-300 mr-[1.3em] -ml-1'>
                     <FaFileAlt className='text-base' title="lyrics"/>
                   </div>
                 }
@@ -209,7 +215,7 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
                       }
                   </>
                 ) : (
-                  <span className="font-xs text-xs text-gray-500 strong">
+                  <span className="font-xs text-xs text-gray-500 font-bold">
                     Did not participate
                   </span>
                 )}
@@ -218,9 +224,9 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
           </div>
 
           {/* 
-          if we are not in the immutable, categorized total rank mode,
-          show a gripper indicating that the cards can be dragged
-        */}
+            if we are not in the immutable, categorized total rank mode,
+            show a gripper indicating that the cards can be dragged
+          */}
 
           {!showTotalRank &&
             <div id="right-edge" className="mb-[0em] absolute bottom-0 right-0 flex-shrink-0 flex flex-row justify-between text-xl font-bold text-slate-500 z-10">
@@ -243,16 +249,14 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
               if (!showTotalRank && index === activeCategory) {
                 return null;
               }
-
               const categoryRankIndex = categoryRankings?.[category.name];
-              const { arrowIcon, rankDifference } = getRankIconaAndDiff(
+              const { arrowIcon, rankDifference } = getRankIconAndDiff(
                 props.rank, categoryRankIndex
               );
-
               return (
                 <div
                   key={index}
-                  className="px-2 py-1 text-xs flex-shrink-0 text-slate-400 h-[2em] flex"
+                  className="px-2 py-1 text-xs flex-shrink-0 text-slate-400 h-[2em] flex items-center"
                   title={`weight: ${category.weight}`}
                 >
                   <span className="">{category.name}:</span>{' '}
@@ -260,7 +264,7 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
                   {arrowIcon &&
                     <FontAwesomeIcon
                       icon={arrowIcon}
-                      className={classNames("pt-[0.2em] ml-1 inline-block text-sm text-opacity-40", rankDifference < 0 ? 'text-green-500' : 'text-red-500')}
+                      className={classNames("ml-1 inline-block text-sm text-opacity-40", rankDifference < 0 ? 'text-green-500' : 'text-red-500')}
                     />
                   }
                 </div>

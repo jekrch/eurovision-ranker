@@ -615,8 +615,8 @@ const App: React.FC = () => {
         onClose={closeSorterModal}
         initialItems={getItemsToSort()}
       />
-      {/* 
-        <CanvasDevModal
+      
+        {/* <CanvasDevModal
           isOpen={isDevModalOpen}
           onClose={() => setIsDevModalOpen(false)}
         /> */}

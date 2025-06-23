@@ -4,7 +4,7 @@
 ![Run Tests](https://github.com/jekrch/eurovision-ranker/actions/workflows/test_on_push.yml/badge.svg)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-[https://www.eurovision-ranker.com/](https://www.eurovision-ranker.com/)
+[eurovision-ranker.com/](https://www.eurovision-ranker.com/)
 
 [Eurovision Ranker](https://www.eurovision-ranker.com/) is a web application for creating, sharing, and analyzing rankings of Eurovision Song Contest participants.
 

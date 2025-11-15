@@ -18,7 +18,7 @@ export const Card: FC<CardProps> = (props) => {
     <div
       key={props.rank ? 'ranked-' : 'unranked-' + 'card-' + country.name}
       className={classNames(
-        props.className, "mx-[.5rem] min-h-[2.5em] py-[0.4em] flex flex-row items-stretch !cursor-grabber whitespace-normal text-sm overflow-hidden shadow rounded border border-0.5 border-gray-400",
+        props.className, "mx-[.5rem] min-h-[2.5em] py-[0.4em] flex flex-row items-stretch !cursor-grabber whitespace-normal text-sm overflow-hidden shadow rounded border border-0.5 border-[var(--er-border-default)]",
         props.isDragging ? "shadow-slate-400 shadow-sm border-solid" : "",
         !props.isDragging && props.rank === 1 ? "first-card-glow" : "",
         props.rank ? "border-solid border-gray" : "border-dashed",

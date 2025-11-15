@@ -14,7 +14,7 @@ const TabButton: React.FC<TabButtonProps> = ({ isActive, onClick, icon, label })
         <li className="mr-2">
             <button
                 onClick={onClick}
-                className={`inline-flex items-center justify-center p-4 ${isActive ? 'text-[var(--er-interactive-primary)] border-[var(--er-interactive-primary)] border-b-2' : 'hover:text-[var(--er-text-muted)] hover:border-gray-300'}`}
+                className={`inline-flex items-center justify-center p-4 ${isActive ? 'text-[var(--er-interactive-primary)] border-[var(--er-interactive-primary)] border-b-2' : 'hover:text-[var(--er-text-muted)] hover:border-[var(--er-border-lighter)]'}`}
             >
                 <FontAwesomeIcon className="mr-2 text-md" icon={icon} />
                 {label}

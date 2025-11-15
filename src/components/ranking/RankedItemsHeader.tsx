@@ -132,7 +132,7 @@ const RankedItemsHeader: React.FC<IRankedItemsHeaderProps> = ({
 
             {/* ... rest of the component (tabs) ... */}
              {(!showUnranked && categories.length > 0) && (
-                <div key={`total-tab-container`} className="flex bg-gray-800 bg-opacity-40 border-gray-200 mt-1 -mb-[0.2em] overflow-x-auto">
+                <div key={`total-tab-container`} className="flex bg-gray-800 bg-opacity-40 border-[var(--er-border-lightest)] mt-1 -mb-[0.2em] overflow-x-auto">
                 <Ripples key="total-ripple" placeholder={<></>}>
                   <button
                     key="total-tab"

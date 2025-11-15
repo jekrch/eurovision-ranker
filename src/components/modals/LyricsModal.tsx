@@ -135,7 +135,7 @@ const SongModal: React.FC<SongModalProps> = (props: SongModalProps) => {
                             onChange={(e: any) => { setShowEngLyrics(e.target.checked);} }
                             className="sr-only peer" 
                         />
-                        <div className="relative w-7 h-4 bg-gray-00 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--r-accent-blue)] dark:peer-focus:ring-[var(--er-interactive-dark)] rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-gray-400 after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-gray-400 after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all dark:border-gray-600 peer-checked:bg-[var(--er-interactive-secondary)]"></div>
+                        <div className="relative w-7 h-4 bg-gray-00 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--r-accent-blue)] dark:peer-focus:ring-[var(--er-interactive-dark)] rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-[var(--er-border-default)] after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-gray-400 after:border-[var(--er-border-lighter)] after:border after:rounded-full after:h-3 after:w-3 after:transition-all dark:border-[var(--er-border-medium)] peer-checked:bg-[var(--er-interactive-secondary)]"></div>
                         <span className="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300"><LazyLoadedFlag code={'gb'} className="mr-3 w-6 opacity-60  float-right text-md flag-icon mr-1" /> </span>
                     </label>
                     }

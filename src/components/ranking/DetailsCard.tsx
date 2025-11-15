@@ -159,7 +159,7 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
           {/* Text content section. Starts immediately after the flag container */}
           <div className={classNames("flex-grow text-[var(--er-text-secondary)] font-bold pl-3")}> {/* Added pl-3 for spacing if flag edge is too abrupt */}
             <div className={`overflow-hidden overflow-ellipsis`}>
-              <span className={classNames("float-right flex flex-row items-center", contestant?.youtube ? 'bg-opacity-70 bg-[var(--er-surface-tertiary)] border-[0.1em] border-gray-600 rounded-[0.2em] px-[0.5em] py-[0.1em] mr-[0.4em]': '')}>
+              <span className={classNames("float-right flex flex-row items-center", contestant?.youtube ? 'bg-opacity-70 bg-[var(--er-surface-tertiary)] border-[0.1em] border-[var(--er-border-medium)] rounded-[0.2em] px-[0.5em] py-[0.1em] mr-[0.4em]': '')}>
                 {contestant?.youtube &&
                   <div
                     onClick={() => { props.openSongModal() }}
@@ -241,7 +241,7 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
       {categories?.length > 0 && (showTotalRank || showComparison) && (
         <div
           ref={categoryRankingsRef}
-          className="mt-0 mx-[0.6em] shadow-lg rounded-b-md bg-[var(--er-surface-tertiary)] bg-opacity-100 border-gray-600 border-x-[0.01em] border-b-[0.01em] overflow-x-auto relative ml-[2em]"
+          className="mt-0 mx-[0.6em] shadow-lg rounded-b-md bg-[var(--er-surface-tertiary)] bg-opacity-100 border-[var(--er-border-medium)] border-x-[0.01em] border-b-[0.01em] overflow-x-auto relative ml-[2em]"
           onScroll={props.onCategoryScroll}
         >
           <div className="flex">

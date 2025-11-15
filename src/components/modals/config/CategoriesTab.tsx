@@ -71,7 +71,7 @@ const CategoriesTab: React.FC = () => {
             onKeyDown={(e) => {
               if (e.key === 'Enter') addCategory();
             }}
-            className="px-2.5 py-1.5 ml-1 mr-3 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+            className="px-2.5 py-1.5 ml-1 mr-3 bg-gray-50 border border-[var(--er-border-lighter)] text-gray-900 text-sm rounded-lg dark:bg-gray-700 dark:border-[var(--er-border-medium)] dark:placeholder-gray-400 dark:text-white"
           />
           <IconButton
             className="ml-1 pl-[0.7em] py-[0.5em] pr-[1em]"
@@ -121,7 +121,7 @@ const CategoriesTab: React.FC = () => {
                     type="text"
                     value={category.name}
                     onChange={(e) => updateCategoryName(index, e.target.value)}
-                    className="px-2.5 py-1.5 mr-3 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white w-full"
+                    className="px-2.5 py-1.5 mr-3 bg-gray-50 border border-[var(--er-border-lighter)] text-gray-900 text-sm rounded-lg dark:bg-gray-700 dark:border-[var(--er-border-medium)] dark:placeholder-gray-400 dark:text-white w-full"
                   />
                 </td>
                 <td className="px-2">

@@ -135,7 +135,7 @@
   /* Maps to: border-slate-600 */
   --er-border-tertiary: #475569;
   
-  /* Maps to: border-slate-700, border-gray-600 */
+  /* Maps to: border-slate-700, border-[var(--er-border-medium)] */
   --er-border-subtle: #334155;
   
   /* === OVERLAY/OPACITY COLORS === */
@@ -193,6 +193,11 @@
   --er-border-secondary: #7c3aed;
   --er-border-tertiary: #6d28d9;
   --er-border-subtle: #5b21b6;
+  --er-border-lightest: #f3e8ff;
+  --er-border-lighter: #e9d5ff;
+  --er-border-default: #c4b5fd;
+  --er-border-medium: #7c3aed;
+  --er-border-darker: #6d28d9;
   
   /* === OVERLAY/OPACITY COLORS === */
   --er-overlay-light: rgba(15, 8, 24, 0.3);
@@ -300,6 +305,11 @@
   --er-border-secondary: #0d9488;
   --er-border-tertiary: #0f766e;
   --er-border-subtle: #115e59;
+  --er-border-lightest: #f0fdfa;
+  --er-border-lighter: #ccfbf1;
+  --er-border-default: #99f6e4;
+  --er-border-medium: #0f766e;
+  --er-border-darker: #115e59;
   
   /* === OVERLAY/OPACITY COLORS === */
   --er-overlay-light: rgba(4, 47, 46, 0.3);
@@ -407,6 +417,11 @@
   --er-border-secondary: #f97316;
   --er-border-tertiary: #ea580c;
   --er-border-subtle: #c2410c;
+  --er-border-lightest: #fff7ed;
+  --er-border-lighter: #fed7aa;
+  --er-border-default: #fdba74;
+  --er-border-medium: #ea580c;
+  --er-border-darker: #c2410c;
   
   /* === OVERLAY/OPACITY COLORS === */
   --er-overlay-light: rgba(30, 10, 20, 0.3);

@@ -93,13 +93,13 @@ const CanvasDevModal: React.FC<{
   
   return (
     <div className="fixed inset-0 z-50 overflow-auto bg-black bg-opacity-75 flex items-center justify-center p-4">
-      <div className="bg-slate-900 border border-slate-700 rounded-lg w-full max-w-6xl max-h-screen overflow-hidden flex flex-col">
+      <div className="bg-slate-900 border border-[var(--er-border-subtle)] rounded-lg w-full max-w-6xl max-h-screen overflow-hidden flex flex-col">
         {/* Modal Header */}
-        <div className="p-4 border-b border-slate-700 flex justify-between items-center">
+        <div className="p-4 border-b border-[var(--er-border-subtle)] flex justify-between items-center">
           <h2 className="text-xl font-bold text-white">Canvas Development Tools</h2>
           <button 
             onClick={onClose}
-            className="text-slate-400 hover:text-white"
+            className="text-[var(--er-text-tertiary)] hover:text-white"
             aria-label="Close"
           >
             ✕
@@ -109,9 +109,9 @@ const CanvasDevModal: React.FC<{
         {/* Modal Body */}
         <div className="flex-1 overflow-auto p-4">
           {/* Controls */}
-          <div className="mb-4 border border-slate-600 rounded bg-slate-800 bg-opacity-30 p-4">
+          <div className="mb-4 border border-[var(--er-border-tertiary)] rounded bg-[var(--er-surface-dark)] bg-opacity-30 p-4">
             <div className="flex justify-between items-center">
-              <h3 className="text-slate-300 font-medium">Canvas Preview Controls</h3>
+              <h3 className="text-[var(--er-text-secondary)] font-medium">Canvas Preview Controls</h3>
               <button 
                 onClick={handleRefresh}
                 className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700"
@@ -122,7 +122,7 @@ const CanvasDevModal: React.FC<{
           </div>
           
           {/* Canvas Preview */}
-          <div className="border border-slate-700 rounded-lg p-4 bg-[#0a0a3a] mb-4">
+          <div className="border border-[var(--er-border-subtle)] rounded-lg p-4 bg-[#0a0a3a] mb-4">
             <h3 className="text-lg text-white font-semibold mb-4">Canvas Preview</h3>
             
             {error && (
@@ -133,7 +133,7 @@ const CanvasDevModal: React.FC<{
             )}
             
             {rankedItems.length === 0 ? (
-              <div className="text-slate-400 text-center py-8">
+              <div className="text-[var(--er-text-tertiary)] text-center py-8">
                 Please rank some countries to see the preview
               </div>
             ) : (

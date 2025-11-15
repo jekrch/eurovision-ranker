@@ -1,0 +1,587 @@
+/* Base Theme Variables - matches current app colors */
+:root {
+  /* === BACKGROUND COLORS === */
+  /* Maps to: bg-[#03022d] - main card backgrounds, detail cards */
+  --er-surface-primary: #03022d;
+  
+  /* Maps to: bg-[#22283e] - modal backgrounds */
+  --er-surface-secondary: #22283e;
+  
+  /* Maps to: bg-[#1c214c] - various UI elements, badges, subcards */
+  --er-surface-tertiary: #1c214c;
+  
+  /* Maps to: bg-[#334678] - rank number backgrounds */
+  --er-surface-accent: #334678;
+  
+  /* Maps to: bg-blue-900 - ranked bar background */
+  --er-surface-bar: #1e3a8a;
+  
+  /* === GRADIENT SPECIFIC COLORS === */
+  /* Maps to: .nav-diagonal-split-bg gradient start */
+  --er-nav-gradient-start: #13172b;
+  
+  /* Maps to: .nav-diagonal-split-bg gradient end */
+  --er-nav-gradient-end: #334678;
+  
+  /* Maps to: .ranked-items-background gradient start */
+  --er-ranked-bg-start: #13172b;
+  
+  /* Maps to: .ranked-items-background gradient end */
+  --er-ranked-bg-end: #28315b;
+  
+  /* === INTERACTIVE/BUTTON COLORS === */
+  /* Maps to: bg-[#3068ba] - primary button background */
+  --er-button-primary: #3068ba;
+  
+  /* Maps to: hover:bg-blue-700 - primary button hover */
+  --er-button-primary-hover: #1d4ed8;
+  
+  /* Maps to: bg-gray-500 - secondary/cancel buttons */
+  --er-button-secondary: #6b7280;
+  
+  /* Maps to: hover:bg-gray-600 - secondary button hover */
+  --er-button-secondary-hover: #4b5563;
+  
+  /* Maps to: bg-slate-600, bg-slate-700 - gray theme buttons */
+  --er-button-neutral: #475569;
+  --er-button-neutral-hover: #334155;
+  
+  /* === TEXT COLORS === */
+  /* Maps to: text-slate-200 */
+  --er-text-primary: #e2e8f0;
+  
+  /* Maps to: text-slate-300 */
+  --er-text-secondary: #cbd5e1;
+  
+  /* Maps to: text-slate-400 */
+  --er-text-tertiary: #94a3b8;
+  
+  /* Maps to: text-slate-500, text-gray-500 */
+  --er-text-muted: #64748b;
+  
+  /* Maps to: text-gray-400 */
+  --er-text-subtle: #9ca3af;
+  
+  /* === SCROLLBAR COLORS === */
+  /* Maps to: scrollbar thumb */
+  --er-scrollbar-thumb: #7d7aa5;
+  --er-scrollbar-thumb-opacity: 0.52;
+  
+  /* Maps to: scrollbar thumb hover */
+  --er-scrollbar-thumb-hover: #484663;
+  
+  /* Maps to: custom scrollbar background */
+  --er-scrollbar-track: #56677d;
+  
+  /* === ICON COLORS === */
+  /* Maps to: .houseUser, .configCog */
+  --er-icon-muted: #808080;
+  
+  /* === LINK COLORS === */
+  /* Maps to: .text-link */
+  --er-link-primary: #3c72e7;
+  
+  /* Maps to: .text-link:hover */
+  --er-link-hover: #4a8df8;
+  
+  /* === GRADIENT TEXT COLORS === */
+  /* Maps to: .gradient-text */
+  --er-gradient-text-1: #abcbff;
+  --er-gradient-text-2: #6a91d1;
+  --er-gradient-text-3: #9e33ea;
+  
+  /* === GLOW ANIMATION COLORS === */
+  /* Maps to: .first-card-glow animation */
+  --er-glow-shadow-1: #132b28;
+  --er-glow-shadow-2: #694fd1;
+  --er-glow-shadow-3: #77378f;
+  --er-glow-bg-center: #321f52;
+  --er-glow-bg-outer-1: rgba(104, 78, 209, 0.1);
+  --er-glow-bg-outer-2: rgba(114, 66, 201, 0.15);
+  --er-glow-bg-outer-3: rgba(124, 55, 193, 0.2);
+  
+  /* === SPECIAL GRADIENT BACKGROUNDS === */
+  /* Maps to: .choice-background, .gradient-background-modal */
+  --er-choice-bg-1: #1d2344;
+  --er-choice-bg-2: #1d2344;
+  --er-choice-bg-3: #4b2764;
+  
+  /* Maps to: .gradient-background, .gradient-background-reverse */
+  --er-gradient-bg-1: #517cbc;
+  --er-gradient-bg-2: #1a2a45;
+  --er-gradient-bg-3: #9e33ea;
+  
+  /* Maps to: .gradient-background2 */
+  --er-gradient-bg2-1: #3d76cb;
+  --er-gradient-bg2-2: #1a2a45;
+  --er-gradient-bg2-3: #9e33ea;
+  
+  /* === WELCOME OVERLAY GRADIENT === */
+  /* Maps to: .overlay-bg */
+  --er-welcome-gradient-1: #03B5AA;
+  --er-welcome-gradient-2: #3B82F6;
+  
+  /* === BODY BACKGROUND === */
+  /* Maps to: body background-color */
+  --er-body-bg: #0d0f1d;
+  
+  /* === BORDER COLORS === */
+  /* Maps to: border-slate-400 */
+  --er-border-primary: #94a3b8;
+  
+  /* Maps to: border-slate-500 */
+  --er-border-secondary: #64748b;
+  
+  /* Maps to: border-slate-600 */
+  --er-border-tertiary: #475569;
+  
+  /* Maps to: border-slate-700, border-gray-600 */
+  --er-border-subtle: #334155;
+  
+  /* === OVERLAY/OPACITY COLORS === */
+  /* Maps to: bg-opacity-30, bg-opacity-60, bg-opacity-70 variants */
+  --er-overlay-light: rgba(3, 2, 45, 0.3);
+  --er-overlay-medium: rgba(3, 2, 45, 0.6);
+  --er-overlay-heavy: rgba(3, 2, 45, 0.7);
+  
+  /* === ACCENT COLORS === */
+  /* Maps to: text-blue-300, text-blue-400 */
+  --er-accent-blue: #93c5fd;
+  
+  /* Maps to: text-green-500 - success states */
+  --er-accent-success: #22c55e;
+  
+  /* Maps to: text-red-500 - error states */
+  --er-accent-error: #ef4444;
+  
+  /* Maps to: ring-blue-400 - focus rings */
+  --er-focus-ring: #60a5fa;
+}
+
+/* Midnight Theme - Modern dark purple/blue variant */
+[data-theme="midnight"] {
+  /* === BACKGROUND COLORS === */
+  --er-surface-primary: #0f0818;
+  --er-surface-secondary: #1a1326;
+  --er-surface-tertiary: #251b35;
+  --er-surface-accent: #3d2e52;
+  --er-surface-bar: #2d1b4e;
+  
+  /* === GRADIENT SPECIFIC COLORS === */
+  --er-nav-gradient-start: #0f0818;
+  --er-nav-gradient-end: #3d2e52;
+  --er-ranked-bg-start: #0f0818;
+  --er-ranked-bg-end: #251b35;
+  
+  /* === INTERACTIVE/BUTTON COLORS === */
+  --er-button-primary: #6d28d9;
+  --er-button-primary-hover: #7c3aed;
+  --er-button-secondary: #4c1d95;
+  --er-button-secondary-hover: #5b21b6;
+  --er-button-neutral: #4a3866;
+  --er-button-neutral-hover: #5b4475;
+  
+  /* === TEXT COLORS === */
+  --er-text-primary: #f3e8ff;
+  --er-text-secondary: #e9d5ff;
+  --er-text-tertiary: #d8b4fe;
+  --er-text-muted: #c4b5fd;
+  --er-text-subtle: #a78bfa;
+  
+  /* === BORDER COLORS === */
+  --er-border-primary: #8b5cf6;
+  --er-border-secondary: #7c3aed;
+  --er-border-tertiary: #6d28d9;
+  --er-border-subtle: #5b21b6;
+  
+  /* === OVERLAY/OPACITY COLORS === */
+  --er-overlay-light: rgba(15, 8, 24, 0.3);
+  --er-overlay-medium: rgba(15, 8, 24, 0.6);
+  --er-overlay-heavy: rgba(15, 8, 24, 0.7);
+  
+  /* === ACCENT COLORS === */
+  --er-accent-blue: #a78bfa;
+  --er-accent-success: #34d399;
+  --er-accent-error: #f87171;
+  --er-focus-ring: #a78bfa;
+  
+  /* === SCROLLBAR COLORS === */
+  --er-scrollbar-thumb: #8b5cf6;
+  --er-scrollbar-thumb-opacity: 0.52;
+  --er-scrollbar-thumb-hover: #6d28d9;
+  --er-scrollbar-track: #4c1d95;
+  
+  /* === ICON COLORS === */
+  --er-icon-muted: #a78bfa;
+  
+  /* === LINK COLORS === */
+  --er-link-primary: #a78bfa;
+  --er-link-hover: #c4b5fd;
+  
+  /* === GRADIENT TEXT COLORS === */
+  --er-gradient-text-1: #e9d5ff;
+  --er-gradient-text-2: #c4b5fd;
+  --er-gradient-text-3: #a78bfa;
+  
+  /* === GLOW ANIMATION COLORS === */
+  --er-glow-shadow-1: #2d1b4e;
+  --er-glow-shadow-2: #7c3aed;
+  --er-glow-shadow-3: #a78bfa;
+  --er-glow-bg-center: #3d2e52;
+  --er-glow-bg-outer-1: rgba(139, 92, 246, 0.1);
+  --er-glow-bg-outer-2: rgba(124, 58, 237, 0.15);
+  --er-glow-bg-outer-3: rgba(167, 139, 250, 0.2);
+  
+  /* === SPECIAL GRADIENT BACKGROUNDS === */
+  --er-choice-bg-1: #1a1326;
+  --er-choice-bg-2: #251b35;
+  --er-choice-bg-3: #5b21b6;
+  
+  --er-gradient-bg-1: #7c3aed;
+  --er-gradient-bg-2: #251b35;
+  --er-gradient-bg-3: #c4b5fd;
+  
+  --er-gradient-bg2-1: #8b5cf6;
+  --er-gradient-bg2-2: #251b35;
+  --er-gradient-bg2-3: #a78bfa;
+  
+  /* === WELCOME OVERLAY GRADIENT === */
+  --er-welcome-gradient-1: #7c3aed;
+  --er-welcome-gradient-2: #a78bfa;
+  
+  /* === BODY BACKGROUND === */
+  --er-body-bg: #0a0512;
+  
+  /* === INTERACTIVE COLORS === */
+  --er-interactive-secondary: #7c3aed;
+  --er-interactive-primary: #8b5cf6;
+  --er-interactive-dark: #6d28d9;
+  --er-interactive-text-light: #f3e8ff;
+  
+  /* === SURFACE VARIANTS === */
+  --er-surface-dark: #1a1326;
+  --er-surface-medium: #6d28d9;
+  --er-surface-light: #8b5cf6;
+  --er-surface-muted-accent: #7c3aed;
+}
+
+/* Ocean Theme - Teal/cyan modern variant */
+[data-theme="ocean"] {
+  /* === BACKGROUND COLORS === */
+  --er-surface-primary: #042f2e;
+  --er-surface-secondary: #134e4a;
+  --er-surface-tertiary: #0f766e;
+  --er-surface-accent: #14b8a6;
+  --er-surface-bar: #115e59;
+  
+  /* === GRADIENT SPECIFIC COLORS === */
+  --er-nav-gradient-start: #042f2e;
+  --er-nav-gradient-end: #14b8a6;
+  --er-ranked-bg-start: #042f2e;
+  --er-ranked-bg-end: #0f766e;
+  
+  /* === INTERACTIVE/BUTTON COLORS === */
+  --er-button-primary: #0d9488;
+  --er-button-primary-hover: #14b8a6;
+  --er-button-secondary: #0f766e;
+  --er-button-secondary-hover: #115e59;
+  --er-button-neutral: #134e4a;
+  --er-button-neutral-hover: #0f766e;
+  
+  /* === TEXT COLORS === */
+  --er-text-primary: #f0fdfa;
+  --er-text-secondary: #ccfbf1;
+  --er-text-tertiary: #99f6e4;
+  --er-text-muted: #5eead4;
+  --er-text-subtle: #2dd4bf;
+  
+  /* === BORDER COLORS === */
+  --er-border-primary: #14b8a6;
+  --er-border-secondary: #0d9488;
+  --er-border-tertiary: #0f766e;
+  --er-border-subtle: #115e59;
+  
+  /* === OVERLAY/OPACITY COLORS === */
+  --er-overlay-light: rgba(4, 47, 46, 0.3);
+  --er-overlay-medium: rgba(4, 47, 46, 0.6);
+  --er-overlay-heavy: rgba(4, 47, 46, 0.7);
+  
+  /* === ACCENT COLORS === */
+  --er-accent-blue: #5eead4;
+  --er-accent-success: #34d399;
+  --er-accent-error: #f87171;
+  --er-focus-ring: #2dd4bf;
+  
+  /* === SCROLLBAR COLORS === */
+  --er-scrollbar-thumb: #14b8a6;
+  --er-scrollbar-thumb-opacity: 0.52;
+  --er-scrollbar-thumb-hover: #0d9488;
+  --er-scrollbar-track: #0f766e;
+  
+  /* === ICON COLORS === */
+  --er-icon-muted: #5eead4;
+  
+  /* === LINK COLORS === */
+  --er-link-primary: #14b8a6;
+  --er-link-hover: #2dd4bf;
+  
+  /* === GRADIENT TEXT COLORS === */
+  --er-gradient-text-1: #ccfbf1;
+  --er-gradient-text-2: #5eead4;
+  --er-gradient-text-3: #2dd4bf;
+  
+  /* === GLOW ANIMATION COLORS === */
+  --er-glow-shadow-1: #115e59;
+  --er-glow-shadow-2: #14b8a6;
+  --er-glow-shadow-3: #5eead4;
+  --er-glow-bg-center: #0f766e;
+  --er-glow-bg-outer-1: rgba(20, 184, 166, 0.1);
+  --er-glow-bg-outer-2: rgba(13, 148, 136, 0.15);
+  --er-glow-bg-outer-3: rgba(45, 212, 191, 0.2);
+  
+  /* === SPECIAL GRADIENT BACKGROUNDS === */
+  --er-choice-bg-1: #134e4a;
+  --er-choice-bg-2: #0f766e;
+  --er-choice-bg-3: #14532d;
+  
+  --er-gradient-bg-1: #14b8a6;
+  --er-gradient-bg-2: #0f766e;
+  --er-gradient-bg-3: #5eead4;
+  
+  --er-gradient-bg2-1: #0d9488;
+  --er-gradient-bg2-2: #0f766e;
+  --er-gradient-bg2-3: #2dd4bf;
+  
+  /* === WELCOME OVERLAY GRADIENT === */
+  --er-welcome-gradient-1: #14b8a6;
+  --er-welcome-gradient-2: #2dd4bf;
+  
+  /* === BODY BACKGROUND === */
+  --er-body-bg: #021716;
+  
+  /* === INTERACTIVE COLORS === */
+  --er-interactive-secondary: #0d9488;
+  --er-interactive-primary: #14b8a6;
+  --er-interactive-dark: #115e59;
+  --er-interactive-text-light: #ccfbf1;
+  
+  /* === SURFACE VARIANTS === */
+  --er-surface-dark: #134e4a;
+  --er-surface-medium: #115e59;
+  --er-surface-light: #14b8a6;
+  --er-surface-muted-accent: #0d9488;
+}
+
+/* Sunset Theme - Warm orange/purple gradient variant */
+[data-theme="sunset"] {
+  /* === BACKGROUND COLORS === */
+  --er-surface-primary: #1e0a14;
+  --er-surface-secondary: #2d1420;
+  --er-surface-tertiary: #4c1d2e;
+  --er-surface-accent: #7c2d47;
+  --er-surface-bar: #881337;
+  
+  /* === GRADIENT SPECIFIC COLORS === */
+  --er-nav-gradient-start: #1e0a14;
+  --er-nav-gradient-end: #7c2d47;
+  --er-ranked-bg-start: #1e0a14;
+  --er-ranked-bg-end: #4c1d2e;
+  
+  /* === INTERACTIVE/BUTTON COLORS === */
+  --er-button-primary: #ea580c;
+  --er-button-primary-hover: #f97316;
+  --er-button-secondary: #9f1239;
+  --er-button-secondary-hover: #be123c;
+  --er-button-neutral: #7c2d47;
+  --er-button-neutral-hover: #9f1239;
+  
+  /* === TEXT COLORS === */
+  --er-text-primary: #fff7ed;
+  --er-text-secondary: #fed7aa;
+  --er-text-tertiary: #fdba74;
+  --er-text-muted: #fb923c;
+  --er-text-subtle: #f97316;
+  
+  /* === BORDER COLORS === */
+  --er-border-primary: #fb923c;
+  --er-border-secondary: #f97316;
+  --er-border-tertiary: #ea580c;
+  --er-border-subtle: #c2410c;
+  
+  /* === OVERLAY/OPACITY COLORS === */
+  --er-overlay-light: rgba(30, 10, 20, 0.3);
+  --er-overlay-medium: rgba(30, 10, 20, 0.6);
+  --er-overlay-heavy: rgba(30, 10, 20, 0.7);
+  
+  /* === ACCENT COLORS === */
+  --er-accent-blue: #fdba74;
+  --er-accent-success: #34d399;
+  --er-accent-error: #f87171;
+  --er-focus-ring: #fb923c;
+  
+  /* === SCROLLBAR COLORS === */
+  --er-scrollbar-thumb: #fb923c;
+  --er-scrollbar-thumb-opacity: 0.52;
+  --er-scrollbar-thumb-hover: #ea580c;
+  --er-scrollbar-track: #9f1239;
+  
+  /* === ICON COLORS === */
+  --er-icon-muted: #fdba74;
+  
+  /* === LINK COLORS === */
+  --er-link-primary: #fb923c;
+  --er-link-hover: #fdba74;
+  
+  /* === GRADIENT TEXT COLORS === */
+  --er-gradient-text-1: #fed7aa;
+  --er-gradient-text-2: #fb923c;
+  --er-gradient-text-3: #f97316;
+  
+  /* === GLOW ANIMATION COLORS === */
+  --er-glow-shadow-1: #881337;
+  --er-glow-shadow-2: #ea580c;
+  --er-glow-shadow-3: #fb923c;
+  --er-glow-bg-center: #7c2d47;
+  --er-glow-bg-outer-1: rgba(234, 88, 12, 0.1);
+  --er-glow-bg-outer-2: rgba(249, 115, 22, 0.15);
+  --er-glow-bg-outer-3: rgba(251, 146, 60, 0.2);
+  
+  /* === SPECIAL GRADIENT BACKGROUNDS === */
+  --er-choice-bg-1: #2d1420;
+  --er-choice-bg-2: #4c1d2e;
+  --er-choice-bg-3: #9f1239;
+  
+  --er-gradient-bg-1: #ea580c;
+  --er-gradient-bg-2: #4c1d2e;
+  --er-gradient-bg-3: #fdba74;
+  
+  --er-gradient-bg2-1: #f97316;
+  --er-gradient-bg2-2: #4c1d2e;
+  --er-gradient-bg2-3: #fb923c;
+  
+  /* === WELCOME OVERLAY GRADIENT === */
+  --er-welcome-gradient-1: #ea580c;
+  --er-welcome-gradient-2: #f97316;
+  
+  /* === BODY BACKGROUND === */
+  --er-body-bg: #120509;
+  
+  /* === INTERACTIVE COLORS === */
+  --er-interactive-secondary: #ea580c;
+  --er-interactive-primary: #f97316;
+  --er-interactive-dark: #881337;
+  --er-interactive-text-light: #fed7aa;
+  
+  /* === SURFACE VARIANTS === */
+  --er-surface-dark: #2d1420;
+  --er-surface-medium: #881337;
+  --er-surface-light: #fb923c;
+  --er-surface-muted-accent: #ea580c;
+}
+
+/* Forest Theme - Deep green nature-inspired variant */
+[data-theme="forest"] {
+  /* === BACKGROUND COLORS === */
+  --er-surface-primary: #0a1810;
+  --er-surface-secondary: #14241c;
+  --er-surface-tertiary: #1e3a2a;
+  --er-surface-accent: #2d5440;
+  --er-surface-bar: #14532d;
+  
+  /* === GRADIENT SPECIFIC COLORS === */
+  --er-nav-gradient-start: #0a1810;
+  --er-nav-gradient-end: #2d5440;
+  --er-ranked-bg-start: #0a1810;
+  --er-ranked-bg-end: #1e3a2a;
+  
+  /* === INTERACTIVE/BUTTON COLORS === */
+  --er-button-primary: #16a34a;
+  --er-button-primary-hover: #22c55e;
+  --er-button-secondary: #15803d;
+  --er-button-secondary-hover: #166534;
+  --er-button-neutral: #1e3a2a;
+  --er-button-neutral-hover: #2d5440;
+  
+  /* === TEXT COLORS === */
+  --er-text-primary: #f0fdf4;
+  --er-text-secondary: #dcfce7;
+  --er-text-tertiary: #bbf7d0;
+  --er-text-muted: #86efac;
+  --er-text-subtle: #4ade80;
+  
+  /* === BORDER COLORS === */
+  --er-border-primary: #22c55e;
+  --er-border-secondary: #16a34a;
+  --er-border-tertiary: #15803d;
+  --er-border-subtle: #166534;
+  
+  /* === OVERLAY/OPACITY COLORS === */
+  --er-overlay-light: rgba(10, 24, 16, 0.3);
+  --er-overlay-medium: rgba(10, 24, 16, 0.6);
+  --er-overlay-heavy: rgba(10, 24, 16, 0.7);
+  
+  /* === ACCENT COLORS === */
+  --er-accent-blue: #86efac;
+  --er-accent-success: #22c55e;
+  --er-accent-error: #f87171;
+  --er-focus-ring: #4ade80;
+  
+  /* === SCROLLBAR COLORS === */
+  --er-scrollbar-thumb: #22c55e;
+  --er-scrollbar-thumb-opacity: 0.52;
+  --er-scrollbar-thumb-hover: #16a34a;
+  --er-scrollbar-track: #15803d;
+  
+  /* === ICON COLORS === */
+  --er-icon-muted: #86efac;
+  
+  /* === LINK COLORS === */
+  --er-link-primary: #22c55e;
+  --er-link-hover: #4ade80;
+  
+  /* === GRADIENT TEXT COLORS === */
+  --er-gradient-text-1: #dcfce7;
+  --er-gradient-text-2: #86efac;
+  --er-gradient-text-3: #4ade80;
+  
+  /* === GLOW ANIMATION COLORS === */
+  --er-glow-shadow-1: #14532d;
+  --er-glow-shadow-2: #16a34a;
+  --er-glow-shadow-3: #4ade80;
+  --er-glow-bg-center: #1e3a2a;
+  --er-glow-bg-outer-1: rgba(22, 163, 74, 0.1);
+  --er-glow-bg-outer-2: rgba(34, 197, 94, 0.15);
+  --er-glow-bg-outer-3: rgba(74, 222, 128, 0.2);
+  
+  /* === SPECIAL GRADIENT BACKGROUNDS === */
+  --er-choice-bg-1: #14241c;
+  --er-choice-bg-2: #1e3a2a;
+  --er-choice-bg-3: #15803d;
+  
+  --er-gradient-bg-1: #16a34a;
+  --er-gradient-bg-2: #1e3a2a;
+  --er-gradient-bg-3: #86efac;
+  
+  --er-gradient-bg2-1: #22c55e;
+  --er-gradient-bg2-2: #1e3a2a;
+  --er-gradient-bg2-3: #4ade80;
+  
+  /* === WELCOME OVERLAY GRADIENT === */
+  --er-welcome-gradient-1: #16a34a;
+  --er-welcome-gradient-2: #22c55e;
+  
+  /* === BODY BACKGROUND === */
+  --er-body-bg: #050c08;
+  
+  /* === INTERACTIVE COLORS === */
+  --er-interactive-secondary: #16a34a;
+  --er-interactive-primary: #22c55e;
+  --er-interactive-dark: #14532d;
+  --er-interactive-text-light: #dcfce7;
+  
+  /* === SURFACE VARIANTS === */
+  --er-surface-dark: #14241c;
+  --er-surface-medium: #14532d;
+  --er-surface-light: #22c55e;
+  --er-surface-muted-accent: #16a34a;
+}

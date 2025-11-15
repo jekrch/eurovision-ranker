@@ -63,7 +63,7 @@ const RankedItemsHeader: React.FC<IRankedItemsHeaderProps> = ({
 
     return (
         <div className={classNames(
-            "z-40 rounded-t-md round-b-sm w-full text-center font-bold bg-blue-900 gradient-background text-slate-300 py-1 text-md tracking-tighter shadow-md ranked-bar-background",
+            "z-40 rounded-t-md round-b-sm w-full text-center font-bold bg-[var(--er-surface-bar)] gradient-background text-[var(--er-text-secondary)] py-1 text-md tracking-tighter shadow-md ranked-bar-background",
             className
         )}
         >
@@ -89,9 +89,9 @@ const RankedItemsHeader: React.FC<IRankedItemsHeaderProps> = ({
                                 aria-label="Open Sorter"  
                                 data-umami-event="Sorter Button (header)"                              
                                 className={classNames(
-                                    "w-6 h-6 bg-[#6e6795] rounded-full flex justify-center items-center text-slate-400 hover:text-slate-500",
+                                    "w-6 h-6 bg-[var(--er-surface-muted-accent)] rounded-full flex justify-center items-center text-[var(--er-text-tertiary)] hover:text-[var(--er-text-muted)]",
                                     {
-                                        "hover:bg-slate-400 hover:cursor-pointer": !isSorterDisabled,
+                                        "hover:bg-[var(--er-surface-light)] hover:cursor-pointer": !isSorterDisabled,
                                         "opacity-50 cursor-not-allowed": isSorterDisabled 
                                     }
                                 )}
@@ -111,7 +111,7 @@ const RankedItemsHeader: React.FC<IRankedItemsHeaderProps> = ({
                     <div className="justify-center text-center flex-grow mx-2"> {/* Use flex-grow to take available space, mx-2 for spacing */}
                         {!globalSearch ? year : null}
                         {name && (
-                            <span className="font-bold text-slate-400 text-md">
+                            <span className="font-bold text-[var(--er-text-tertiary)] text-md">
                                 {!globalSearch ? ` - ` : ``}{name}
                             </span>
                         )}
@@ -138,7 +138,7 @@ const RankedItemsHeader: React.FC<IRankedItemsHeaderProps> = ({
                     key="total-tab"
                     className={classNames(
                       "px-4 py-[0.2em] text-sm font-strong flex-shrink-0",
-                      activeTab === 0 ? "text-blue-400 border-b-0 border-blue-400" : "text-gray-400 hover:text-blue-500"
+                      activeTab === 0 ? "text-[var(--r-accent-blue)] border-b-0 border-[var(--r-accent-ring)]" : "text-[var(--er-text-subtle)] hover:text-[var(--er-interactive-primary)]"
                     )}
                     onClick={() => setActiveTab(0)}
                   >
@@ -151,7 +151,7 @@ const RankedItemsHeader: React.FC<IRankedItemsHeaderProps> = ({
                       key={`cat-btn-${index + 1}`}
                       className={classNames(
                         "px-4 py-[0.2em] text-sm font-medium flex-shrink-0",
-                        activeTab === index + 1 ? "text-blue-400 border-b-0 border-blue-400" : "text-gray-500 hover:text-blue-500"
+                        activeTab === index + 1 ? "text-[var(--r-accent-blue)] border-b-0 border-[var(--r-accent-ring)]" : "text-[var(--er-text-muted)] hover:text-[var(--er-interactive-primary)]"
                       )}
                       onClick={() => setActiveTab(index + 1)}
                     >

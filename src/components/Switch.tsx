@@ -16,12 +16,12 @@ export const Switch: React.FC<SwitchProps> = ({ checked: checked, setChecked, cl
     <Field>
       <div className={classNames("flex items-right items-center", className)}>
         <Label 
-            className={classNames("cursor-pointer ml-3 mr-2 text-slate-300 text-md", labelClass)}
+            className={classNames("cursor-pointer ml-3 mr-2 text-[var(--er-text-secondary)] text-md", labelClass)}
         >{label}</Label>
         <HeadlessSwitch
             checked={checked}
             onChange={setChecked}
-            className={`${checked ? 'bg-[#3068ba]' : 'bg-slate-600'
+            className={`${checked ? 'bg-[var(--er-button-primary)]' : 'bg-[var(--er-button-neutral)]'
                 } cursor-pointer relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-slate-600 mr-6`}
         >
             <span

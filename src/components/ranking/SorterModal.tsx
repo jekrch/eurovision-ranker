@@ -570,13 +570,13 @@ const SorterModal: React.FC<SorterModalProps> = ({
 
     // show loading indicators first
     if (isComputing) {
-        content = <div className="text-center p-8 text-slate-400 min-h-[20em] flex items-center justify-center">Loading...</div>;
+        content = <div className="text-center p-8 text-[var(--er-text-tertiary)] min-h-[20em] flex items-center justify-center">Loading...</div>;
     } else if (isOpen && !isSessionLoaded && initialItems.length > 1) {
         // initializing message
-        content = <div className="text-center p-8 text-slate-400 min-h-[20em] flex items-center justify-center">Initializing sorter...</div>;
+        content = <div className="text-center p-8 text-[var(--er-text-tertiary)] min-h-[20em] flex items-center justify-center">Initializing sorter...</div>;
     } else if (isOpen && initialItems.length <= 1) {
         // message for insufficient items
-        content = <div className="text-center p-8 text-slate-400 min-h-[20em] flex items-center justify-center">Need at least two items to sort.</div>;
+        content = <div className="text-center p-8 text-[var(--er-text-tertiary)] min-h-[20em] flex items-center justify-center">Need at least two items to sort.</div>;
     } else if (isSessionLoaded && currentSortState?.isComplete) {
         // render completion screen
         const finalRanking = currentSortState ? getSortedItems(currentSortState) : [];
@@ -585,20 +585,20 @@ const SorterModal: React.FC<SorterModalProps> = ({
         content = (
             <div className="flex flex-col items-center justify-center px-4 pb-6 min-h-[20em] text-center">
                 <FontAwesomeIcon icon={faCheckCircle} className="text-5xl text-[#119822] mb-4" />
-                <p className="mb-6 text-slate-300">
+                <p className="mb-6 text-[var(--er-text-secondary)]">
                     Your ranking is ready based on {currentSortState.totalComparisons} choices!
                 </p>
                 {topItems.length > 0 && (
                     <div className="mb-6 w-full max-w-xs">
-                        <h4 className="text-md font-semibold text-slate-300 mb-3">Your Top {topItems.length}:</h4>
+                        <h4 className="text-md font-semibold text-[var(--er-text-secondary)] mb-3">Your Top {topItems.length}:</h4>
                         <ol className="list-none p-0 m-0 space-y-2">
                             {topItems.map((item, index) => (
-                                <li key={item.uid || index} className="flex items-center justify-start bg-slate-700/50 p-2 rounded">
-                                    <span className="text-lg font-bold text-slate-400 w-6 mr-3">{index + 1}.</span>
+                                <li key={item.uid || index} className="flex items-center justify-start bg-[var(--er-button-neutral-hover)]/50 p-2 rounded">
+                                    <span className="text-lg font-bold text-[var(--er-text-tertiary)] w-6 mr-3">{index + 1}.</span>
                                     {item.country?.key && <LazyLoadedFlag code={item.country.key} className="w-8 h-auto mr-3 rounded-sm" />}
-                                    <span className="text-slate-200 truncate flex-1 text-left">
+                                    <span className="text-[var(--er-text-primary)] truncate flex-1 text-left">
                                         {item.contestant?.artist}
-                                        <span className="text-xs text-slate-400 block truncate">
+                                        <span className="text-xs text-[var(--er-text-tertiary)] block truncate">
                                             {item.contestant?.song}
                                         </span>
                                     </span>
@@ -607,7 +607,7 @@ const SorterModal: React.FC<SorterModalProps> = ({
                         </ol>
                     </div>
                 )}
-                <p className="text-sm text-slate-400">
+                <p className="text-sm text-[var(--er-text-tertiary)]">
                     You can go back to review choices, cancel, or apply this ranking.
                 </p>
             </div>
@@ -621,7 +621,7 @@ const SorterModal: React.FC<SorterModalProps> = ({
                     onClick={() => handleChoice('left')}
                     className={classNames(
                         "w-full cursor-pointer transition-colors duration-200 rounded-lg",
-                        { "md:hover:ring-2 md:hover:ring-blue-400 active:ring-2 active:ring-blue-400": canInteract },
+                        { "md:hover:ring-2 md:hover:ring-[var(--r-accent-ring)] active:ring-2 active:ring-[var(--r-accent-ring)]": canInteract },
                         { "pointer-events-none opacity-75": !canInteract } // disable interaction when computing
                     )}
                 >
@@ -631,14 +631,14 @@ const SorterModal: React.FC<SorterModalProps> = ({
                     />
                 </div>
 
-                <div className="text-md font-bold text-slate-300 my-1">vs</div>
+                <div className="text-md font-bold text-[var(--er-text-secondary)] my-1">vs</div>
 
                 {/* right choice card */}
                 <div
                     onClick={() => handleChoice('right')}
                      className={classNames(
                         "w-full cursor-pointer transition-colors duration-200 rounded-lg",
-                        { "md:hover:ring-2 md:hover:ring-blue-400 active:ring-2 active:ring-blue-400": canInteract },
+                        { "md:hover:ring-2 md:hover:ring-[var(--r-accent-ring)] active:ring-2 active:ring-[var(--r-accent-ring)]": canInteract },
                         { "pointer-events-none opacity-75": !canInteract }
                     )}
                 >
@@ -651,7 +651,7 @@ const SorterModal: React.FC<SorterModalProps> = ({
         );
     } else if (isSessionLoaded) {
         // fallback view if state is indeterminate
-        content = <div className="text-center p-8 text-slate-400 min-h-[20em] flex items-center justify-center">Preparing comparison...</div>;
+        content = <div className="text-center p-8 text-[var(--er-text-tertiary)] min-h-[20em] flex items-center justify-center">Preparing comparison...</div>;
     } else {
         // default view (or null) if modal open but nothing else matches
         content = null;
@@ -667,17 +667,17 @@ const SorterModal: React.FC<SorterModalProps> = ({
             shouldCloseWarn={isOpen && isSessionLoaded && !currentSortState?.isComplete && choiceLog.length > 0} // warn only if progress made
             className="!max-h-[95vh] sort-tour-step-modal px-0 py-1"
         >
-            <div className="flex flex-col max-h-[calc(95vh-2rem)] h-full bg-slate-800 text-slate-200">
+            <div className="flex flex-col max-h-[calc(95vh-2rem)] h-full bg-[var(--er-surface-dark)] text-[var(--er-text-primary)]">
                 {/* header */}
                 <div className="flex-shrink-0 px-4 pt-3">
                     {/* title and category */}
                      <div className="mb-4">
                          <div className="flex items-center justify-between">
-                             <h2 className={classNames("text-xl font-bold text-center w-full text-slate-300")}>
+                             <h2 className={classNames("text-xl font-bold text-center w-full text-[var(--er-text-secondary)]")}>
                                 {isSessionLoaded && !currentSortState?.isComplete &&
                                      <TooltipHelp
                                         content="Answer with your preferences and a ranking will be generated"
-                                        className="text-slate-300 align-middle mb-1 mr-2"
+                                        className="text-[var(--er-text-secondary)] align-middle mb-1 mr-2"
                                         place='bottom-start'
                                     />
                                 }
@@ -685,7 +685,7 @@ const SorterModal: React.FC<SorterModalProps> = ({
                             </h2>
                         </div>
                         {activeCategory !== undefined && categories[activeCategory]?.name &&
-                             <div className="items-center w-full mb-0 text-center text-slate-400 text-sm">
+                             <div className="items-center w-full mb-0 text-center text-[var(--er-text-tertiary)] text-sm">
                                 {categories[activeCategory]?.name}
                             </div>
                         }
@@ -697,11 +697,11 @@ const SorterModal: React.FC<SorterModalProps> = ({
                          <div className="mb-3">
                             <div className="w-full bg-gray-700 rounded-full h-2">
                                  <div
-                                    className="h-2 rounded-full bg-blue-600 transition-all duration-300"
+                                    className="h-2 rounded-full bg-[var(--er-interactive-secondary)] transition-all duration-300"
                                     style={{ width: `${progress}%` }}
                                 />
                             </div>
-                             <div className="text-xs text-slate-400 text-right mt-1 min-h-[1em]">
+                             <div className="text-xs text-[var(--er-text-tertiary)] text-right mt-1 min-h-[1em]">
                                 {currentSortState ? (
                                      <span>
                                         Comparisons: {currentSortState.totalComparisons} / ~{comparisonDenominator}
@@ -725,7 +725,7 @@ const SorterModal: React.FC<SorterModalProps> = ({
                 </div>
 
                 {/* footer buttons */}
-                 <div className="flex-shrink-0 mt-auto px-4 pb-3 pt-3 border-t border-slate-700">
+                 <div className="flex-shrink-0 mt-auto px-4 pb-3 pt-3 border-t border-[var(--er-border-subtle)]">
                     {isSessionLoaded && currentSortState?.isComplete ? (
                          // footer buttons for completed state
                          <div className="flex justify-center items-center space-x-4">
@@ -736,8 +736,8 @@ const SorterModal: React.FC<SorterModalProps> = ({
                                 className={classNames(
                                     "px-4 py-2 text-sm text-white rounded",
                                     (!canGoBack || !canInteract)
-                                        ? "bg-gray-600 text-gray-400 cursor-not-allowed"
-                                        : "bg-blue-600 hover:bg-blue-700"
+                                        ? "bg-gray-600 text-[var(--er-text-subtle)] cursor-not-allowed"
+                                        : "bg-[var(--er-interactive-secondary)] hover:bg-[var(--er-button-primary-hover)]"
                                 )}
                                 title="Back"
                                 icon={faChevronLeft}
@@ -747,7 +747,7 @@ const SorterModal: React.FC<SorterModalProps> = ({
                             <IconButton
                                 onClick={onClose}
                                 disabled={isComputing}
-                                className="px-4 pr-4 py-2 text-sm text-white  bg-gray-500 rounded hover:bg-gray-600 disabled:bg-gray-700 disabled:text-gray-500"
+                                className="px-4 pr-4 py-2 text-sm text-white  bg-[var(--er-button-secondary)] rounded hover:bg-[var(--er-button-secondary-hover)] disabled:bg-gray-700 disabled:text-[var(--er-text-muted)]"
                                 title="Cancel"
                                 icon={faCancel}
                             />
@@ -756,7 +756,7 @@ const SorterModal: React.FC<SorterModalProps> = ({
                             <IconButton
                                 onClick={handleApplyRanking}
                                 disabled={!canInteract || !currentSortState?.isComplete}
-                                className="pr-4 py-2 text-sm font-semibold text-white bg-green-600 rounded hover:bg-green-700 disabled:bg-gray-700 disabled:text-gray-400"
+                                className="pr-4 py-2 text-sm font-semibold text-white bg-green-600 rounded hover:bg-green-700 disabled:bg-gray-700 disabled:text-[var(--er-text-subtle)]"
                                 title="Apply"
                                 icon={faCheck}
                             />
@@ -771,8 +771,8 @@ const SorterModal: React.FC<SorterModalProps> = ({
                                         className={classNames(
                                             "px-4 py-2 text-sm text-white rounded",
                                             (!canGoForward || !canInteract)
-                                                ? "bg-gray-600 text-gray-400 cursor-not-allowed"
-                                                : "bg-blue-600 hover:bg-blue-700"
+                                                ? "bg-gray-600 text-[var(--er-text-subtle)] cursor-not-allowed"
+                                                : "bg-[var(--er-interactive-secondary)] hover:bg-[var(--er-button-primary-hover)]"
                                         )}
                                         title="Forward"
                                         icon={faChevronRight}
@@ -792,8 +792,8 @@ const SorterModal: React.FC<SorterModalProps> = ({
                                         className={classNames(
                                             "flex items-center px-4 py-2 text-sm rounded text-white",
                                             (!canGoBack || !canInteract)
-                                                ? "bg-gray-600 text-gray-400 cursor-not-allowed"
-                                                : "bg-blue-600 hover:bg-blue-700",
+                                                ? "bg-gray-600 text-[var(--er-text-subtle)] cursor-not-allowed"
+                                                : "bg-[var(--er-interactive-secondary)] hover:bg-[var(--er-button-primary-hover)]",
                                             !canGoBack && "invisible" // hide but maintain space
                                         )}
                                         title="Back"
@@ -806,7 +806,7 @@ const SorterModal: React.FC<SorterModalProps> = ({
                                     <IconButton
                                         onClick={onClose}
                                         disabled={isComputing}
-                                        className="px-4 pr-4 py-2 text-sm text-white  bg-gray-500 rounded hover:bg-gray-600 disabled:bg-gray-700 disabled:text-gray-500"
+                                        className="px-4 pr-4 py-2 text-sm text-white  bg-[var(--er-button-secondary)] rounded hover:bg-[var(--er-button-secondary-hover)] disabled:bg-gray-700 disabled:text-[var(--er-text-muted)]"
                                         title="Cancel"
                                         icon={faCancel}
                                     />
@@ -820,8 +820,8 @@ const SorterModal: React.FC<SorterModalProps> = ({
                                         className={classNames(
                                             "flex items-center px-4 py-2 text-sm rounded text-white",
                                             (!canGoForward || !canInteract)
-                                                ? "bg-gray-600 text-gray-400 cursor-not-allowed"
-                                                : "bg-blue-600 hover:bg-blue-700",
+                                                ? "bg-gray-600 text-[var(--er-text-subtle)] cursor-not-allowed"
+                                                : "bg-[var(--er-interactive-secondary)] hover:bg-[var(--er-button-primary-hover)]",
                                              !canGoForward && "invisible" // hide but maintain space
                                         )}
                                         title="Forward"

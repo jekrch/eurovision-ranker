@@ -81,10 +81,10 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
         key={props.rank ? 'ranked-' : `unranked-card-${contestant?.id ?? country.id}`}
         className={classNames(
           props.className,
-          "m-auto text-slate-400 bg-[#03022d]x bg-opacity-30 no-select",
+          "m-auto text-[var(--er-text-tertiary)] bg-[var(--er-surface-primary)]x bg-opacity-30 no-select",
           "relative mx-[.5rem] min-h-[2.5em] py-[0.4em] flex flex-row", // Main card padding is py-[0.4em]
           "items-stretch !cursor-grabber whitespace-normal text-sm overflow-hidden",
-          "shadow border border-0.5 border-solid border-slate-400/90 rounded-l-lg rounded-r-sm",
+          "shadow border border-0.5 border-solid border-[var(--er-border-primary)]/90 rounded-l-lg rounded-r-sm",
           props.isDragging ? "shadow-slate-700 shadow-sm border-solid" : "",
           !props.isDragging && props.rank === 1 ? "first-card-glow" : ""
         )}
@@ -123,7 +123,7 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
 
         <div className="relative z-10 flex flex-row items-stretch w-full">
 
-          <div className="-my-2 flex-shrink-0 pb-[1px] mr-0 font-bold w-8 pr-[0.01em] border-r-[0.05em] border-slate-500 bg-[#334678] bg-opacity-70 text-slate-200 tracking-tighter items-center justify-center flex text-lg rounded-sm">
+          <div className="-my-2 flex-shrink-0 pb-[1px] mr-0 font-bold w-8 pr-[0.01em] border-r-[0.05em] border-[var(--er-border-secondary)] bg-[var(--er-surface-accent)] bg-opacity-70 text-[var(--er-text-primary)] tracking-tighter items-center justify-center flex text-lg rounded-sm">
             {props.rank}
           </div>
 
@@ -149,7 +149,7 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
               />
             )}
             {isGlobalMode && contestant && (
-              <div className="absolute bottom-0 left-0 right-0 bg-slate-600 bg-opacity-30 text-slate-300 text-sm font-bold text-center py-1 z-10">
+              <div className="absolute bottom-0 left-0 right-0 bg-[var(--er-button-neutral)] bg-opacity-30 text-[var(--er-text-secondary)] text-sm font-bold text-center py-1 z-10">
                 {contestant.year}
               </div>
             )}
@@ -157,18 +157,18 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
           {/* END OF UPDATED FLAG SECTION */}
 
           {/* Text content section. Starts immediately after the flag container */}
-          <div className={classNames("flex-grow text-slate-300 font-bold pl-3")}> {/* Added pl-3 for spacing if flag edge is too abrupt */}
+          <div className={classNames("flex-grow text-[var(--er-text-secondary)] font-bold pl-3")}> {/* Added pl-3 for spacing if flag edge is too abrupt */}
             <div className={`overflow-hidden overflow-ellipsis`}>
-              <span className={classNames("float-right flex flex-row items-center", contestant?.youtube ? 'bg-opacity-70 bg-[#1c214c] border-[0.1em] border-gray-600 rounded-[0.2em] px-[0.5em] py-[0.1em] mr-[0.4em]': '')}>
+              <span className={classNames("float-right flex flex-row items-center", contestant?.youtube ? 'bg-opacity-70 bg-[var(--er-surface-tertiary)] border-[0.1em] border-gray-600 rounded-[0.2em] px-[0.5em] py-[0.1em] mr-[0.4em]': '')}>
                 {contestant?.youtube &&
                   <div
                     onClick={() => { props.openSongModal() }}
-                    className='cursor-pointer rounded text-slate-500 hover:text-slate-300 mr-[1.3em] -ml-1'>
+                    className='cursor-pointer rounded text-[var(--er-text-muted)] hover:text-[var(--er-text-secondary)] mr-[1.3em] -ml-1'>
                     <FaFileAlt className='text-base' title="lyrics"/>
                   </div>
                 }
                 {contestant?.youtube &&
-                  <a href={contestant?.youtube} target="_blank" rel="noopener noreferrer" className='rounded text-slate-500 hover:text-slate-300'>
+                  <a href={contestant?.youtube} target="_blank" rel="noopener noreferrer" className='rounded text-[var(--er-text-muted)] hover:text-[var(--er-text-secondary)]'>
                     <FaTv className='text-xl -m-[0.1em] my-[0.1em]' title="youtube"/>
                   </a>
                 }
@@ -180,42 +180,42 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
               <div className="">
                 {contestant ? (
                   <>
-                    <span className="font-xs text-sm text-slate-400">
+                    <span className="font-xs text-sm text-[var(--er-text-tertiary)]">
                       {contestant?.artist}
                     </span>
-                    <span className={classNames("ml-2 font-xs text-xs text-slate-400 rounded-sm bg-[#1c214c] bg-opacity-60")}>
+                    <span className={classNames("ml-2 font-xs text-xs text-[var(--er-text-tertiary)] rounded-sm bg-[var(--er-surface-tertiary)] bg-opacity-60")}>
                       {contestant.song?.length && !contestant.song?.includes("TBD") ? `"${contestant.song}"` : `${contestant.song}`}
                     </span>
 
-                    <div className="mt-1 font-xs text-xs text-gray-400 mb-1 flex flex-wrap">
+                    <div className="mt-1 font-xs text-xs text-[var(--er-text-subtle)] mb-1 flex flex-wrap">
                       {(contestant?.votes?.totalPoints !== undefined && voteCodeHasType(vote, 't')) &&
                         <div className="flex items-center mr-2">
-                          <span className="text-gray-500">total:&nbsp;</span>
+                          <span className="text-[var(--er-text-muted)]">total:&nbsp;</span>
                           <span>{`${contestant?.votes?.totalPoints}`}</span>
                         </div>
                       }
                       {(contestant?.votes?.telePoints !== undefined && voteCodeHasType(vote, 'tv')) &&
                         <div className="flex items-center mr-2">
-                          <span className="text-gray-500">tele:&nbsp;</span>
+                          <span className="text-[var(--er-text-muted)]">tele:&nbsp;</span>
                           <span>{`${contestant?.votes?.telePoints}`}</span>
                         </div>
                       }
                       {(contestant?.votes?.juryPoints !== undefined && voteCodeHasType(vote, 'j')) &&
                         <div className="flex items-center mr-2">
-                          <span className="text-gray-500">jury:&nbsp;</span>
+                          <span className="text-[var(--er-text-muted)]">jury:&nbsp;</span>
                           <span>{`${contestant?.votes?.juryPoints}`}</span>
                         </div>
                       }
                     </div>
                     {(contestant?.finalsRank && showPlace) &&
-                        <div className="mt-1 font-xs text-xs text-gray-400 mb-0 flex flex-wrap items-center mr-2">
-                          <span className="text-gray-500">place:&nbsp;</span>
+                        <div className="mt-1 font-xs text-xs text-[var(--er-text-subtle)] mb-0 flex flex-wrap items-center mr-2">
+                          <span className="text-[var(--er-text-muted)]">place:&nbsp;</span>
                           <span>{`${contestant?.finalsRank}`}</span>
                         </div>
                       }
                   </>
                 ) : (
-                  <span className="font-xs text-xs text-gray-500 font-bold">
+                  <span className="font-xs text-xs text-[var(--er-text-muted)] font-bold">
                     Did not participate
                   </span>
                 )}
@@ -229,7 +229,7 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
           */}
 
           {!showTotalRank &&
-            <div id="right-edge" className="mb-[0em] absolute bottom-0 right-0 flex-shrink-0 flex flex-row justify-between text-xl font-bold text-slate-500 z-10">
+            <div id="right-edge" className="mb-[0em] absolute bottom-0 right-0 flex-shrink-0 flex flex-row justify-between text-xl font-bold text-[var(--er-text-muted)] z-10">
               <div id="gripper" className="text-right pl-[0.3em] mr-[0.3em]">
                 &#8942;&#8942;
               </div>
@@ -241,7 +241,7 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
       {categories?.length > 0 && (showTotalRank || showComparison) && (
         <div
           ref={categoryRankingsRef}
-          className="mt-0 mx-[0.6em] shadow-lg rounded-b-md bg-[#1c214c] bg-opacity-100 border-gray-600 border-x-[0.01em] border-b-[0.01em] overflow-x-auto relative ml-[2em]"
+          className="mt-0 mx-[0.6em] shadow-lg rounded-b-md bg-[var(--er-surface-tertiary)] bg-opacity-100 border-gray-600 border-x-[0.01em] border-b-[0.01em] overflow-x-auto relative ml-[2em]"
           onScroll={props.onCategoryScroll}
         >
           <div className="flex">
@@ -256,15 +256,15 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
               return (
                 <div
                   key={index}
-                  className="px-2 py-1 text-xs flex-shrink-0 text-slate-400 h-[2em] flex items-center"
+                  className="px-2 py-1 text-xs flex-shrink-0 text-[var(--er-text-tertiary)] h-[2em] flex items-center"
                   title={`weight: ${category.weight}`}
                 >
                   <span className="">{category.name}:</span>{' '}
-                  <span className="ml-1 font-medium text-slate-300">{categoryRankIndex || '--'}</span>
+                  <span className="ml-1 font-medium text-[var(--er-text-secondary)]">{categoryRankIndex || '--'}</span>
                   {arrowIcon &&
                     <FontAwesomeIcon
                       icon={arrowIcon}
-                      className={classNames("ml-1 inline-block text-sm text-opacity-40", rankDifference < 0 ? 'text-green-500' : 'text-red-500')}
+                      className={classNames("ml-1 inline-block text-sm text-opacity-40", rankDifference < 0 ? 'text-[var(--r-accent-success)]' : 'text-[var(--r-accent-error)]')}
                     />
                   }
                 </div>

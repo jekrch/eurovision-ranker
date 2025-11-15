@@ -26,7 +26,7 @@ const MenuItem: React.FC<MenuItemProps> = ({ icon, text, onClick, isCustomIcon =
         >
             <div className="w-8 flex">
                 {isCustomIcon ? (
-                    <div className="flex items-center justify-center w-6 h-6 rounded-md border-slate-600 border-[0.1em] flex-shrink-0">
+                    <div className="flex items-center justify-center w-6 h-6 rounded-md border-[var(--er-border-tertiary)] border-[0.1em] flex-shrink-0">
                         <FontAwesomeIcon
                             className="text-[1.3em]"
                             icon={icon}
@@ -47,7 +47,7 @@ const MenuItem: React.FC<MenuItemProps> = ({ icon, text, onClick, isCustomIcon =
 const IntroColumn: React.FC<IntroColumnProps> = ({ openModal, openConfigModal, setRunTour, setRunSortTour }) => {
     return (
         <div className="flex justify-left items-center">
-            <div className="text-gray-400 font-normal tracking-tight font-sans text-italic text-left ml-7 m-4 text-xs whitespace-normal max-w-[10em] mt-3">
+            <div className="text-[var(--er-text-subtle)] font-normal tracking-tight font-sans text-italic text-left ml-7 m-4 text-xs whitespace-normal max-w-[10em] mt-3">
                 <ol className="list-disc mb-7">
                     <li className="mb-3">Drag countries into this column to rank</li>
                     <li className="mb-3">Click 'Details' above to see more info on your ranked countries</li>

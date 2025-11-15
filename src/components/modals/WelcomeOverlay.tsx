@@ -65,12 +65,12 @@ const WelcomeOverlay: React.FC<WelcomeOverlayProps> = ({ handleGetStarted, handl
                     classNames(
                         "flex flex-col justify-between z-50 overlay left-5 right-5 top-[3em] ",
                         "bottom-[1em] rounded-xl absolute bg-[#1d2344] gradient-background-modalx opacity-98 pb-6 pt-6",
-                        "m-auto shadow-lg max-w-[20em] max-h-[22em] text-slate-400 opacity-96"
+                        "m-auto shadow-lg max-w-[20em] max-h-[22em] text-[var(--er-text-tertiary)] opacity-96"
                     )}
                 style={{ zIndex: 300 }}
             >
-                <div className="text-slate-400 mx-8 mt-0">
-                    <div className="text-md text-center font-semibold tracking-tight text-slate-400 mb-0 leading-tight">
+                <div className="text-[var(--er-text-tertiary)] mx-8 mt-0">
+                    <div className="text-md text-center font-semibold tracking-tight text-[var(--er-text-tertiary)] mb-0 leading-tight">
                         Welcome to
                         <div className="mt-0">
                             <span className="text-xl gradient-text font-bold">Eurovision Ranker <img
@@ -86,16 +86,16 @@ const WelcomeOverlay: React.FC<WelcomeOverlayProps> = ({ handleGetStarted, handl
                     <div className="mb-2 italic text-sm">where you can...</div>
                     <ol className="list-none text-md space-y-[2px]">
                         <li className="flex items-start"> <FaList className="mt-1 mr-2 text-indigo-500" /> <span>rank contests going back to 1956</span></li>
-                        <li className="flex items-start"> <FaTv className="mt-1 mr-2 text-blue-500" /> <span>create YouTube playlists </span></li>
+                        <li className="flex items-start"> <FaTv className="mt-1 mr-2 text-[var(--er-interactive-primary)]" /> <span>create YouTube playlists </span></li>
                         <li className="flex items-start"> <FaGlobe className='mt-1 mr-2 text-sky-500' /> <span>view a heat map of your ranking</span></li>
                         
-                        <li className="flex items-start"> <FaCog className='mt-1 mr-2 text-slate-500' /> <span>explore past voting records</span></li>
+                        <li className="flex items-start"> <FaCog className='mt-1 mr-2 text-[var(--er-text-muted)]' /> <span>explore past voting records</span></li>
                         <li className="flex items-start"> 
                             <FaSort className='mt-1 mr-2 text-purple-500' /> 
                             <span>use a sorter to generate rankings</span>
                             <span className={classNames(
                                 "absolute -left-[0.5em] subtle-pulse", 
-                                "inline-block bg-gradient-to-r from-slate-500 to-blue-800 text-slate-300", 
+                                "inline-block bg-gradient-to-r from-[var(--er-surface-medium)] to-[var(--er-interactive-dark)] text-[var(--er-text-secondary)]", 
                                 "text-[0.6rem] font-bold pl-[1.2em] pr-[1.5em] py-0.2", 
                                 "transition-opacity duration-[2000] ease-in", 
                                 (welcomeOverlayIsOpen && !exiting) ? 'opacity-100' : 'opacity-0'
@@ -119,7 +119,7 @@ const WelcomeOverlay: React.FC<WelcomeOverlayProps> = ({ handleGetStarted, handl
                     />
                     <IconButton
                         icon={faGlasses}
-                        className="w-[9em] py-2 rounded-lg bg-blue-700"
+                        className="w-[9em] py-2 rounded-lg bg-[var(--er-button-primary-hover)]"
                         title='Take Tour'
                         onClick={handleTakeTour}
                     />

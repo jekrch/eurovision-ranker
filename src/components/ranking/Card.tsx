@@ -33,7 +33,7 @@ export const Card: FC<CardProps> = (props) => {
       }
 
       {/* <i className={`z-0 float-right text-3xl ml-2 flag-icon -mr-2 ${props.country?.icon}`} /> */}
-      <div className={classNames("flex-grow text-slate-400 font-normal my-auto")}>
+      <div className={classNames("flex-grow text-[var(--er-text-tertiary)] font-normal my-auto")}>
         <div className={`overflow-hidden overflow-ellipsis ${(props.rank && props.isDeleteMode) && 'max-w-[3.9em]'}`}>
           <span className="overflow-hidden overflow-ellipsis">{country?.name}</span>
         </div>

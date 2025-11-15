@@ -121,7 +121,7 @@ const SongModal: React.FC<SongModalProps> = (props: SongModalProps) => {
                     {contestant?.youtube &&
                         <span className="inline-block ml-3 -mb-1">
                             <a href={contestant?.youtube} target="_blank" rel="noopener noreferrer" 
-                            className=' float-right rounded text-slate-500 hover:text-slate-300'
+                            className=' float-right rounded text-[var(--er-text-muted)] hover:text-[var(--er-text-secondary)]'
                             >
                             <FaYoutube className='text-xl text-[#FF0000]x -mb-[0.1em]' title="youtube"/>
                             </a>
@@ -135,14 +135,14 @@ const SongModal: React.FC<SongModalProps> = (props: SongModalProps) => {
                             onChange={(e: any) => { setShowEngLyrics(e.target.checked);} }
                             className="sr-only peer" 
                         />
-                        <div className="relative w-7 h-4 bg-gray-00 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-gray-400 after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-gray-400 after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                        <div className="relative w-7 h-4 bg-gray-00 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--r-accent-blue)] dark:peer-focus:ring-[var(--er-interactive-dark)] rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-gray-400 after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-gray-400 after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all dark:border-gray-600 peer-checked:bg-[var(--er-interactive-secondary)]"></div>
                         <span className="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300"><LazyLoadedFlag code={'gb'} className="mr-3 w-6 opacity-60  float-right text-md flag-icon mr-1" /> </span>
                     </label>
                     }
                 </span>
             </div>
 
-            <hr className="mb-[1em] border-slate-500" />
+            <hr className="mb-[1em] border-[var(--er-border-secondary)]" />
 
             <div className="overflow-auto">
                 <LabeledValue
@@ -153,7 +153,7 @@ const SongModal: React.FC<SongModalProps> = (props: SongModalProps) => {
                     label="Lyricist(s)"
                     value={lyricists?.replaceAll(';', ', ')}
                 />
-                <hr className="mt-[1em] mr-2 border-slate-500" />
+                <hr className="mt-[1em] mr-2 border-[var(--er-border-secondary)]" />
                 <div className="mt-[1em] relative overflow-hidden">
                     <div className="lyrics-wrapper">
                         <div

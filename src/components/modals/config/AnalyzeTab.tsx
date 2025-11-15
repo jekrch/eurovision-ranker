@@ -209,7 +209,7 @@ const AnalyzeTab: React.FC = () => {
                 <a href={getRankingUrl(comparison, country)}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className=" text-blue-500 hover:underline"
+                  className=" text-[var(--er-interactive-primary)] hover:underline"
                   title={getRankingTitle(voteType, country)}
                 >
                   <span className="mt-auto">

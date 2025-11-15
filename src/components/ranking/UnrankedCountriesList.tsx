@@ -41,7 +41,7 @@ const UnrankedCountriesList: React.FC = () => {
                   >
                     <Card
                       key={item.id.toString()}
-                      className="m-auto text-slate-400 bg-'blue' no-select"
+                      className="m-auto text-[var(--er-text-tertiary)] bg-'blue' no-select"
                       countryContestant={item}
                       isDragging={snapshot.isDragging}
                     />

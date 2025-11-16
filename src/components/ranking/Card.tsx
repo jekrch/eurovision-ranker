@@ -26,7 +26,7 @@ export const Card: FC<CardProps> = (props) => {
       )}
     >
       { props.rank ? (
-          <div className="flex-shrink-0 ml-2 mr-2 tracking-tighter items-center justify-center flex text-md rounded">
+          <div className="flex-shrink-0 ml-2 mr-2 tracking-tighter items-center justify-center flex text-md rounded text-[var(--er-text-tertiary)]">
             {props.rank}.
           </div>
         ) : (<div className="w-3"></div>)

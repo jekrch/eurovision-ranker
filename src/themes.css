@@ -29,6 +29,32 @@
   /* Maps to: .ranked-items-background gradient end */
   --er-ranked-bg-end: #28315b;
   
+  /* === INTERACTIVE COLORS === */
+  /* Maps to: bg-blue-600 - secondary interactive elements */
+  --er-interactive-secondary: #2563eb;
+  
+  /* Maps to: bg-blue-500, text-blue-500, border-blue-500 - primary interactive */
+  --er-interactive-primary: #3b82f6;
+  
+  /* Maps to: bg-blue-800, to-blue-800 - dark interactive/gradient end */
+  --er-interactive-dark: #1e40af;
+  
+  /* Maps to: text-blue-100 - light interactive text */
+  --er-interactive-text-light: #dbeafe;
+  
+  /* === SURFACE VARIANTS === */
+  /* Maps to: bg-slate-800 - darker surface variant */
+  --er-surface-dark: #1e293b;
+  
+  /* Maps to: bg-slate-500, from-slate-500 - medium surface/gradient start */
+  --er-surface-medium: #64748b;
+  
+  /* Maps to: bg-slate-400 - lighter surface variant */
+  --er-surface-light: #94a3b8;
+  
+  /* Maps to: bg-[#6e6795] - muted accent surface */
+  --er-surface-muted-accent: #6e6795;
+  
   /* === INTERACTIVE/BUTTON COLORS === */
   /* Maps to: bg-[#3068ba] - primary button background */
   --er-button-primary: #3068ba;
@@ -135,7 +161,7 @@
   /* Maps to: border-slate-600 */
   --er-border-tertiary: #475569;
   
-  /* Maps to: border-slate-700, border-[var(--er-border-medium)] */
+  /* Maps to: border-slate-700, border-gray-600 */
   --er-border-subtle: #334155;
   
   /* === OVERLAY/OPACITY COLORS === */
@@ -172,6 +198,18 @@
   --er-nav-gradient-end: #3d2e52;
   --er-ranked-bg-start: #0f0818;
   --er-ranked-bg-end: #251b35;
+  
+  /* === INTERACTIVE COLORS === */
+  --er-interactive-secondary: #7c3aed;
+  --er-interactive-primary: #8b5cf6;
+  --er-interactive-dark: #6d28d9;
+  --er-interactive-text-light: #f3e8ff;
+  
+  /* === SURFACE VARIANTS === */
+  --er-surface-dark: #1a1326;
+  --er-surface-medium: #6d28d9;
+  --er-surface-light: #8b5cf6;
+  --er-surface-muted-accent: #7c3aed;
   
   /* === INTERACTIVE/BUTTON COLORS === */
   --er-button-primary: #6d28d9;
@@ -285,6 +323,18 @@
   --er-ranked-bg-start: #042f2e;
   --er-ranked-bg-end: #0f766e;
   
+  /* === INTERACTIVE COLORS === */
+  --er-interactive-secondary: #0d9488;
+  --er-interactive-primary: #14b8a6;
+  --er-interactive-dark: #115e59;
+  --er-interactive-text-light: #ccfbf1;
+  
+  /* === SURFACE VARIANTS === */
+  --er-surface-dark: #134e4a;
+  --er-surface-medium: #115e59;
+  --er-surface-light: #14b8a6;
+  --er-surface-muted-accent: #0d9488;
+  
   /* === INTERACTIVE/BUTTON COLORS === */
   --er-button-primary: #0d9488;
   --er-button-primary-hover: #14b8a6;
@@ -397,6 +447,18 @@
   --er-ranked-bg-start: #1e0a14;
   --er-ranked-bg-end: #4c1d2e;
   
+  /* === INTERACTIVE COLORS === */
+  --er-interactive-secondary: #ea580c;
+  --er-interactive-primary: #f97316;
+  --er-interactive-dark: #881337;
+  --er-interactive-text-light: #fed7aa;
+  
+  /* === SURFACE VARIANTS === */
+  --er-surface-dark: #2d1420;
+  --er-surface-medium: #881337;
+  --er-surface-light: #fb923c;
+  --er-surface-muted-accent: #ea580c;
+  
   /* === INTERACTIVE/BUTTON COLORS === */
   --er-button-primary: #ea580c;
   --er-button-primary-hover: #f97316;
@@ -508,6 +570,18 @@
   --er-nav-gradient-end: #2d5440;
   --er-ranked-bg-start: #0a1810;
   --er-ranked-bg-end: #1e3a2a;
+  
+  /* === INTERACTIVE COLORS === */
+  --er-interactive-secondary: #16a34a;
+  --er-interactive-primary: #22c55e;
+  --er-interactive-dark: #14532d;
+  --er-interactive-text-light: #dcfce7;
+  
+  /* === SURFACE VARIANTS === */
+  --er-surface-dark: #14241c;
+  --er-surface-medium: #14532d;
+  --er-surface-light: #22c55e;
+  --er-surface-muted-accent: #16a34a;
   
   /* === INTERACTIVE/BUTTON COLORS === */
   --er-button-primary: #16a34a;

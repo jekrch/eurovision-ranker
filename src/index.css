@@ -71,6 +71,18 @@ code {
   background: rgba(0, 0, 0, 0);
 }
 
+.normal-bg {
+  padding-bottom: env(safe-area-inset-bottom);
+  height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+  overflow: hidden;
+  max-height: -webkit-fill-available;
+  /* background: radial-gradient(ellipse at bottom, #28355E 0%, #06070d 100%); */
+  background: radial-gradient(ellipse at bottom, var(--er-ranked-bg-end) 0%, var(--er-nav-gradient-start) 100%);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  animation: bg-pulse 10s infinite ease-in-out;
+}
+
 /* GRADIENT BACKGROUNDS - THEMED */
 .choice-background {
   background: linear-gradient(155deg, var(--er-choice-bg-1), var(--er-choice-bg-2), var(--er-choice-bg-3)), url(/noise.svg);

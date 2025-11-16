@@ -3,7 +3,7 @@ import { DragDropContext, DropResult } from '@hello-pangea/dnd';
 import classNames from 'classnames';
 import { CountryContestant } from './data/CountryContestant';
 import { AppDispatch, AppState } from './redux/store';
-import { setRankedItems, setUnrankedItems, setShowUnranked, setActiveCategory, setShowTotalRank, setCategories, setGlobalSearch } from './redux/rootSlice';
+import { setRankedItems, setUnrankedItems, setShowUnranked, setActiveCategory, setShowTotalRank, setCategories, setGlobalSearch, setTheme } from './redux/rootSlice';
 import { loadRankingsFromURL, encodeRankingsToURL, updateQueryParams, updateUrlFromRankedItems, urlHasRankings } from './utilities/UrlUtil';
 import WelcomeOverlay from './components/modals/WelcomeOverlay';
 import { Toaster } from 'react-hot-toast';
@@ -74,6 +74,8 @@ const App: React.FC = () => {
   useEffect(() => {
     if (theme.includes('ab')) {
       loadAuroralCSS();
+    } else {
+      setTheme(theme)
     }
   }, [theme]);
 

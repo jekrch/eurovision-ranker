@@ -74,6 +74,12 @@ const rootSlice = createSlice({
         },
         setTheme: (state, action: PayloadAction<string>) => {
             state.theme = action.payload;
+            // set the theme on the document root
+            if (action.payload && action.payload !== 'ab') {
+                document.documentElement.setAttribute('data-theme', action.payload);
+            } else {
+                document.documentElement.removeAttribute('data-theme');
+            }
         },
         setVote: (state, action: PayloadAction<string>) => {
             state.vote = action.payload;

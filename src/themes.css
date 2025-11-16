@@ -9,10 +9,12 @@
   
   /* Maps to: bg-[#1c214c] - various UI elements, badges, subcards */
   --er-surface-tertiary: #1c214c;
-  
+  --er-surface-tertiary-70: color-mix(in srgb, var(--er-surface-tertiary) 70%, transparent);
+
   /* Maps to: bg-[#334678] - rank number backgrounds */
   --er-surface-accent: #334678;
-  
+  --er-surface-accent-70: color-mix(in srgb, var(--er-surface-accent) 70%, transparent);
+
   /* Maps to: bg-blue-900 - ranked bar background */
   --er-surface-bar: #1e3a8a;
   
@@ -70,6 +72,8 @@
   
   /* Maps to: bg-slate-600, bg-slate-700 - gray theme buttons */
   --er-button-neutral: #475569;
+  --er-button-neutral-40: color-mix(in srgb, var(--er-button-neutral) 40%, transparent);
+
   --er-button-neutral-hover: #334155;
   
   /* === TEXT COLORS === */
@@ -80,7 +84,7 @@
   --er-text-secondary: #cbd5e1;
   
   /* Maps to: text-slate-400 */
-  --er-text-tertiary: #94a3b8;
+  --er-text-tertiary: #a7b9d2;
   
   /* Maps to: text-slate-500, text-gray-500 */
   --er-text-muted: #64748b;
@@ -185,12 +189,12 @@
 }
 
 /* Midnight Theme - Modern dark purple/blue variant */
-[data-theme="midnight"] {
+[data-theme="m"] {
   /* === BACKGROUND COLORS === */
   --er-surface-primary: #0f0818;
   --er-surface-secondary: #1a1326;
   --er-surface-tertiary: #251b35;
-  --er-surface-accent: #3d2e52;
+  --er-surface-accent: #1e0f31;
   --er-surface-bar: #2d1b4e;
   
   /* === GRADIENT SPECIFIC COLORS === */
@@ -198,13 +202,7 @@
   --er-nav-gradient-end: #3d2e52;
   --er-ranked-bg-start: #0f0818;
   --er-ranked-bg-end: #251b35;
-  
-  /* === INTERACTIVE COLORS === */
-  --er-interactive-secondary: #5b21b6;
-  --er-interactive-primary: #4c1d95;
-  --er-interactive-dark: #3b0764;
-  --er-interactive-text-light: #e9d5ff;
-  
+    
   /* === SURFACE VARIANTS === */
   --er-surface-dark: #1a1326;
   --er-surface-medium: #3b0764;
@@ -221,10 +219,10 @@
   
   /* === TEXT COLORS === */
   --er-text-primary: #e9d5ff;
-  --er-text-secondary: #d8b4fe;
-  --er-text-tertiary: #94a3b8;
-  --er-text-muted: #64748b;
-  --er-text-subtle: #9ca3af;
+  --er-text-secondary: #d4c2e8;
+  --er-text-tertiary: #bfcbde;
+  --er-text-muted: #9eaaba;
+  --er-text-subtle: #afb7c6;
   
   /* === BORDER COLORS === */
   --er-border-primary: #4c1d95;
@@ -264,7 +262,7 @@
   /* === GRADIENT TEXT COLORS === */
   --er-gradient-text-1: #d8b4fe;
   --er-gradient-text-2: #c4b5fd;
-  --er-gradient-text-3: #a78bfa;
+  --er-gradient-text-3: #4b22c5;
   
   /* === GLOW ANIMATION COLORS === */
   --er-glow-shadow-1: #2d1b4e;
@@ -295,9 +293,9 @@
   /* === BODY BACKGROUND === */
   --er-body-bg: #0a0512;
   
-  /* === INTERACTIVE COLORS === */
+  /* === INTERACTIVE COLORS d === */
   --er-interactive-secondary: #5b21b6;
-  --er-interactive-primary: #4c1d95;
+  --er-interactive-primary: #a878ef;
   --er-interactive-dark: #3b0764;
   --er-interactive-text-light: #e9d5ff;
   
@@ -309,12 +307,12 @@
 }
 
 /* Ocean Theme - Teal/cyan modern variant */
-[data-theme="ocean"] {
+[data-theme="o"] {
   /* === BACKGROUND COLORS d === */
-  --er-surface-primary: #0d4e4d;
-  --er-surface-secondary: #134e4a;
-  --er-surface-tertiary: #0f766e;
-  --er-surface-accent: #106e66;
+  --er-surface-primary: #0a3d3c;
+  --er-surface-secondary: #0d3b38;
+  --er-surface-tertiary: #0c6860;
+  --er-surface-accent: #0a3f3b;
   --er-surface-bar: #115e59;
   
   /* === GRADIENT SPECIFIC COLORS === */
@@ -348,7 +346,7 @@
   --er-text-secondary: #c0e7df;
   --er-text-tertiary: #d0deda;
   --er-text-muted: #aad0ce;
-  --er-text-subtle: #a7bdb8;
+  --er-text-subtle: #cbe5de;
   
   /* === BORDER COLORS === */
   --er-border-primary: #0f766e;
@@ -379,7 +377,7 @@
   --er-scrollbar-track: #074743;
   
   /* === ICON COLORS === */
-  --er-icon-muted: #94a3b8;
+  --er-icon-muted: #a7d4c9;
   
   /* === LINK COLORS === */
   --er-link-primary: #14b8a6;
@@ -433,12 +431,12 @@
 }
 
 /* Sunset Theme - Warm orange/purple gradient variant */
-[data-theme="sunset"] {
-  /* === BACKGROUND COLORS === */
+[data-theme="s"] { 
+  /* === BACKGROUND COLORS d=== */
   --er-surface-primary: #1e0a14;
   --er-surface-secondary: #2d1420;
   --er-surface-tertiary: #4c1d2e;
-  --er-surface-accent: #7c2d47;
+  --er-surface-accent: #ba5710;
   --er-surface-bar: #881337;
   
   /* === GRADIENT SPECIFIC COLORS === */
@@ -467,12 +465,12 @@
   --er-button-neutral: #4c1d2e;
   --er-button-neutral-hover: #7c2d47;
   
-  /* === TEXT COLORS === */
-  --er-text-primary: #fed7aa;
-  --er-text-secondary: #fdba74;
-  --er-text-tertiary: #94a3b8;
-  --er-text-muted: #64748b;
-  --er-text-subtle: #9ca3af;
+  /* === TEXT COLORS dd === */
+  --er-text-primary: #ecdecd;
+  --er-text-secondary: #f0dfcd;
+  --er-text-tertiary: #ded2bf;
+  --er-text-muted: #bea88e;
+  --er-text-subtle: #d8cfd6;
   
   /* === BORDER COLORS === */
   --er-border-primary: #9f1239;
@@ -503,7 +501,7 @@
   --er-scrollbar-track: #7c2d47;
   
   /* === ICON COLORS === */
-  --er-icon-muted: #94a3b8;
+  --er-icon-muted: #b3a79b;
   
   /* === LINK COLORS === */
   --er-link-primary: #ea580c;
@@ -512,7 +510,7 @@
   /* === GRADIENT TEXT COLORS === */
   --er-gradient-text-1: #fed7aa;
   --er-gradient-text-2: #fb923c;
-  --er-gradient-text-3: #f97316;
+  --er-gradient-text-3: #ba5710;
   
   /* === GLOW ANIMATION COLORS === */
   --er-glow-shadow-1: #881337;
@@ -543,9 +541,9 @@
   /* === BODY BACKGROUND === */
   --er-body-bg: #120509;
   
-  /* === INTERACTIVE COLORS === */
+  /* === INTERACTIVE COLORS t === */
   --er-interactive-secondary: #c2410c;
-  --er-interactive-primary: #9f1239;
+  --er-interactive-primary: #d9456f;
   --er-interactive-dark: #7c2d47;
   --er-interactive-text-light: #fdba74;
   
@@ -557,7 +555,7 @@
 }
 
 /* Forest Theme - Deep green nature-inspired variant */
-[data-theme="forest"] {
+[data-theme="f"] {
   /* === BACKGROUND COLORS === */
   --er-surface-primary: #0a1810;
   --er-surface-secondary: #14241c;
@@ -570,12 +568,6 @@
   --er-nav-gradient-end: #1e3a2a;
   --er-ranked-bg-start: #0a1810;
   --er-ranked-bg-end: #1e3a2a;
-  
-  /* === INTERACTIVE COLORS === */
-  --er-interactive-secondary: #15803d;
-  --er-interactive-primary: #14532d;
-  --er-interactive-dark: #0b331c;
-  --er-interactive-text-light: #bbf7d0;
   
   /* === SURFACE VARIANTS === */
   --er-surface-dark: #14241c;
@@ -591,11 +583,11 @@
   --er-button-neutral: #14241c;
   --er-button-neutral-hover: #1e3a2a;
   
-  /* === TEXT COLORS === */
+  /* === TEXT COLORS d === */
   --er-text-primary: #dcfce7;
-  --er-text-secondary: #bbf7d0;
-  --er-text-tertiary: #94a3b8;
-  --er-text-muted: #64748b;
+  --er-text-secondary: #c9e3d2;
+  --er-text-tertiary: #cad8eb;
+  --er-text-muted: #96a8c1;
   --er-text-subtle: #9ca3af;
   
   /* === BORDER COLORS === */
@@ -631,7 +623,7 @@
   /* === GRADIENT TEXT COLORS === */
   --er-gradient-text-1: #bbf7d0;
   --er-gradient-text-2: #4ade80;
-  --er-gradient-text-3: #22c55e;
+  --er-gradient-text-3: #1b6938;
   
   /* === GLOW ANIMATION COLORS === */
   --er-glow-shadow-1: #14532d;
@@ -664,9 +656,9 @@
   
   /* === INTERACTIVE COLORS === */
   --er-interactive-secondary: #15803d;
-  --er-interactive-primary: #14532d;
+  --er-interactive-primary: #369c5f;
   --er-interactive-dark: #0b331c;
-  --er-interactive-text-light: #bbf7d0;
+  --er-interactive-text-light: #abdcbd;
   
   /* === SURFACE VARIANTS === */
   --er-surface-dark: #14241c;

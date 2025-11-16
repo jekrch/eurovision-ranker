@@ -93,7 +93,7 @@ const CanvasDevModal: React.FC<{
   
   return (
     <div className="fixed inset-0 z-50 overflow-auto bg-black bg-opacity-75 flex items-center justify-center p-4">
-      <div className="bg-slate-900 border border-[var(--er-border-subtle)] rounded-lg w-full max-w-6xl max-h-screen overflow-hidden flex flex-col">
+      <div className="bg-[var(--er-surface-dark)] border border-[var(--er-border-subtle)] rounded-lg w-full max-w-6xl max-h-screen overflow-hidden flex flex-col">
         {/* Modal Header */}
         <div className="p-4 border-b border-[var(--er-border-subtle)] flex justify-between items-center">
           <h2 className="text-xl font-bold text-white">Canvas Development Tools</h2>

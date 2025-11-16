@@ -22,7 +22,7 @@ const TableBody: React.FC<TableBodyProps> = ({
         <tbody className="bg-transparent divide-y divide-gray-700">
             {paginatedContestants.map((contestant) => (
                 <tr key={contestant.id} className="hover:bg-[var(--er-surface-dark)] bg-opacity-50 text-[var(--er-text-secondary)]">
-                    <td className="py-0 whitespace-nowrap sticky left-0 z-30 bg-slate-900 hover:bg-[var(--er-button-primary)]">
+                    <td className="py-0 whitespace-nowrap sticky left-0 z-30 bg-[var(--er-surface-dark)] hover:bg-[var(--er-button-primary)]">
                         <div className="flex justify-center h-full">
                             <Ripples className="flex items-center justify-center w-full h-full" placeholder={<></>}>
                                 <button

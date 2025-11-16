@@ -84,8 +84,8 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
           "m-auto text-[var(--er-text-tertiary)] bg-[var(--er-surface-primary)]x bg-opacity-30 no-select",
           "relative mx-[.5rem] min-h-[2.5em] py-[0.4em] flex flex-row", // Main card padding is py-[0.4em]
           "items-stretch !cursor-grabber whitespace-normal text-sm overflow-hidden",
-          "shadow border border-0.5 border-solid border-[var(--er-border-primary)]/90 rounded-l-lg rounded-r-sm",
-          props.isDragging ? "shadow-slate-700 shadow-sm border-solid" : "",
+          "shadow border border-0.5 border-solid border-[var(--er-border-primary)] rounded-l-lg rounded-r-sm",
+          props.isDragging ? "shadow-[var(--er-button-primary-hover)] shadow-sm border-solid" : "",
           !props.isDragging && props.rank === 1 ? "first-card-glow" : ""
         )}
         style={{
@@ -123,7 +123,7 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
 
         <div className="relative z-10 flex flex-row items-stretch w-full">
 
-          <div className="-my-2 flex-shrink-0 pb-[1px] mr-0 font-bold w-8 pr-[0.01em] border-r-[0.05em] border-[var(--er-border-secondary)] bg-[var(--er-surface-accent)] bg-opacity-70 text-[var(--er-text-primary)] tracking-tighter items-center justify-center flex text-lg rounded-sm">
+          <div className="-my-2 flex-shrink-0 pb-[1px] mr-0 font-bold w-8 pr-[0.01em] border-r-[0.05em] border-[var(--er-border-secondary)] bg-[var(--er-surface-accent-70)] bg-opacity-70 text-[var(--er-text-primary)] tracking-tighter items-center justify-center flex text-lg rounded-sm">
             {props.rank}
           </div>
 
@@ -149,7 +149,7 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
               />
             )}
             {isGlobalMode && contestant && (
-              <div className="absolute bottom-0 left-0 right-0 bg-[var(--er-button-neutral)] bg-opacity-30 text-[var(--er-text-secondary)] text-sm font-bold text-center py-1 z-10">
+              <div className="absolute bottom-0 left-0 right-0 bg-[var(--er-button-neutral-40)] text-[var(--er-text-secondary)] text-sm font-bold text-center py-1 z-10">
                 {contestant.year}
               </div>
             )}
@@ -159,7 +159,7 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
           {/* Text content section. Starts immediately after the flag container */}
           <div className={classNames("flex-grow text-[var(--er-text-secondary)] font-bold pl-3")}> {/* Added pl-3 for spacing if flag edge is too abrupt */}
             <div className={`overflow-hidden overflow-ellipsis`}>
-              <span className={classNames("float-right flex flex-row items-center", contestant?.youtube ? 'bg-opacity-70 bg-[var(--er-surface-tertiary)] border-[0.1em] border-[var(--er-border-medium)] rounded-[0.2em] px-[0.5em] py-[0.1em] mr-[0.4em]': '')}>
+              <span className={classNames("float-right flex flex-row items-center", contestant?.youtube ? 'bg-opacity-70 bg-[var(--er-surface-tertiary-70)] border-[0.1em] border-[var(--er-border-tertiary)] rounded-[0.2em] px-[0.5em] py-[0.1em] mr-[0.4em]': '')}>
                 {contestant?.youtube &&
                   <div
                     onClick={() => { props.openSongModal() }}

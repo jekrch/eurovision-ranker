@@ -12,13 +12,13 @@ import { CountryContestant } from '../../../data/CountryContestant';
 import { Vote } from '../../../data/Vote';
 
 // Theme mapping for display names to codes
-const THEME_OPTIONS = [
+export const THEME_OPTIONS = [
     { display: 'Default', code: '' },
     { display: 'Auroral', code: 'ab' },
-    { display: 'Midnight', code: 'midnight' },
-    { display: 'Ocean', code: 'ocean' },
-    { display: 'Sunset', code: 'sunset' },
-    { display: 'Forest', code: 'forest' }
+    { display: 'Midnight', code: 'm' },
+    { display: 'Ocean', code: 'o' },
+    { display: 'Sunset', code: 's' },
+    { display: 'Forest', code: 'f' }
 ];
 
 const DisplayTab: React.FC = () => {
@@ -82,13 +82,6 @@ const DisplayTab: React.FC = () => {
         
         dispatch(setTheme(themeCode));
         updateQueryParams({ t: themeCode });
-        
-        // Apply theme to document root
-        if (themeCode && themeCode !== 'ab') {
-            document.documentElement.setAttribute('data-theme', themeCode);
-        } else {
-            document.documentElement.removeAttribute('data-theme');
-        }
     };
 
     // Handle vote type input change

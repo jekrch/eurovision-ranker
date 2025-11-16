@@ -27,14 +27,14 @@ const Pagination: React.FC<PaginationProps> = ({
                 <button
                     onClick={() => handlePageChange(1)}
                     disabled={currentPage === 1}
-                    className="text-sm px-2 py-1 rounded bg-gray-700 text-gray-300 hover:bg-[var(--er-button-secondary-hover)] disabled:opacity-50"
+                    className="text-sm px-2 py-1 rounded bg-[var(--er-button-primary)] text-gray-300 hover:bg-[var(--er-button-primary-hover)] disabled:opacity-50 disabled:pointer-events-none"
                 >
                     {'<<'}
                 </button>
                 <button
                     onClick={() => handlePageChange(currentPage - 1)}
                     disabled={currentPage === 1}
-                    className="text-sm px-2 py-1 rounded bg-gray-700 text-gray-300 hover:bg-[var(--er-button-secondary-hover)] disabled:opacity-50"
+                    className="text-sm px-2 py-1 rounded bg-[var(--er-button-primary)] text-gray-300 hover:bg-[var(--er-button-primary-hover)] disabled:opacity-50 disabled:pointer-events-none"
                 >
                     {'<'}
                 </button>
@@ -44,20 +44,20 @@ const Pagination: React.FC<PaginationProps> = ({
                 <button
                     onClick={() => handlePageChange(currentPage + 1)}
                     disabled={currentPage === totalPages}
-                    className="text-sm px-2 py-1 rounded bg-gray-700 text-gray-300 hover:bg-[var(--er-button-secondary-hover)] disabled:opacity-50"
+                    className="text-sm px-2 py-1 rounded bg-[var(--er-button-primary)] text-gray-300 hover:bg-[var(--er-button-primary-hover)] disabled:opacity-50 disabled:pointer-events-none"
                 >
                     {'>'}
                 </button>
                 <button
                     onClick={() => handlePageChange(totalPages)}
                     disabled={currentPage === totalPages}
-                    className="text-sm px-2 py-1 rounded bg-gray-700 text-gray-300 hover:bg-[var(--er-button-secondary-hover)] disabled:opacity-50"
+                    className="text-sm px-2 py-1 rounded bg-[var(--er-button-primary)] text-gray-300 hover:bg-[var(--er-button-primary-hover)] disabled:opacity-50 disabled:pointer-events-none"
                 >
                     {'>>'}
                 </button>
             </>
         );
-        
+
 
         // const pageButtons = [];
         // const totalButtons = 5;

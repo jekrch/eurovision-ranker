@@ -593,7 +593,7 @@ const SorterModal: React.FC<SorterModalProps> = ({
                         <h4 className="text-md font-semibold text-[var(--er-text-secondary)] mb-3">Your Top {topItems.length}:</h4>
                         <ol className="list-none p-0 m-0 space-y-2">
                             {topItems.map((item, index) => (
-                                <li key={item.uid || index} className="flex items-center justify-start bg-[var(--er-button-neutral-hover)]/50 p-2 rounded">
+                                <li key={item.uid || index} className="flex items-center justify-start bg-[var(--er-button-neutral-hover)] p-2 rounded">
                                     <span className="text-lg font-bold text-[var(--er-text-tertiary)] w-6 mr-3">{index + 1}.</span>
                                     {item.country?.key && <LazyLoadedFlag code={item.country.key} className="w-8 h-auto mr-3 rounded-sm" />}
                                     <span className="text-[var(--er-text-primary)] truncate flex-1 text-left">

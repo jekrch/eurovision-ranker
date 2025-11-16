@@ -48,7 +48,6 @@ This lets you create rankings that accurately reflect your preferences in a quic
 - Redux Toolkit
 - Tailwind CSS
 - Vite
-- Umami
 - GO/Python for ETL scripts
 
 ## Getting Started

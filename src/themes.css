@@ -200,42 +200,42 @@
   --er-ranked-bg-end: #251b35;
   
   /* === INTERACTIVE COLORS === */
-  --er-interactive-secondary: #7c3aed;
-  --er-interactive-primary: #6d28d9;
-  --er-interactive-dark: #6d28d9;
-  --er-interactive-text-light: #f3e8ff;
+  --er-interactive-secondary: #5b21b6;
+  --er-interactive-primary: #4c1d95;
+  --er-interactive-dark: #3b0764;
+  --er-interactive-text-light: #e9d5ff;
   
   /* === SURFACE VARIANTS === */
   --er-surface-dark: #1a1326;
-  --er-surface-medium: #6d28d9;
-  --er-surface-light: #8b5cf6;
-  --er-surface-muted-accent: #7c3aed;
+  --er-surface-medium: #3b0764;
+  --er-surface-light: #5b21b6;
+  --er-surface-muted-accent: #5b21b6;
   
   /* === INTERACTIVE/BUTTON COLORS === */
-  --er-button-primary: #6d28d9;
-  --er-button-primary-hover: #7c3aed;
-  --er-button-secondary: #4c1d95;
-  --er-button-secondary-hover: #5b21b6;
-  --er-button-neutral: #4a3866;
-  --er-button-neutral-hover: #5b4475;
+  --er-button-primary: #4c1d95;
+  --er-button-primary-hover: #5b21b6;
+  --er-button-secondary: #3b0764;
+  --er-button-secondary-hover: #4c1d95;
+  --er-button-neutral: #36294a;
+  --er-button-neutral-hover: #4a3866;
   
   /* === TEXT COLORS === */
-  --er-text-primary: #f3e8ff;
-  --er-text-secondary: #e9d5ff;
+  --er-text-primary: #e9d5ff;
+  --er-text-secondary: #d8b4fe;
   --er-text-tertiary: #94a3b8;
   --er-text-muted: #64748b;
   --er-text-subtle: #9ca3af;
   
   /* === BORDER COLORS === */
-  --er-border-primary: #6d28d9;
-  --er-border-secondary: #7c3aed;
-  --er-border-tertiary: #6d28d9;
-  --er-border-subtle: #5b21b6;
-  --er-border-lightest: #f3e8ff;
-  --er-border-lighter: #e9d5ff;
+  --er-border-primary: #4c1d95;
+  --er-border-secondary: #5b21b6;
+  --er-border-tertiary: #4c1d95;
+  --er-border-subtle: #3b0764;
+  --er-border-lightest: #e9d5ff;
+  --er-border-lighter: #d8b4fe;
   --er-border-default: #c4b5fd;
-  --er-border-medium: #7c3aed;
-  --er-border-darker: #6d28d9;
+  --er-border-medium: #5b21b6;
+  --er-border-darker: #4c1d95;
   
   /* === OVERLAY/OPACITY COLORS === */
   --er-overlay-light: rgba(15, 8, 24, 0.3);
@@ -243,69 +243,69 @@
   --er-overlay-heavy: rgba(15, 8, 24, 0.7);
   
   /* === ACCENT COLORS === */
-  --er-accent-blue: #a78bfa;
+  --er-accent-blue: #7c3aed;
   --er-accent-success: #34d399;
   --er-accent-error: #f87171;
-  --er-focus-ring: #a78bfa;
+  --er-focus-ring: #7c3aed;
   
   /* === SCROLLBAR COLORS === */
-  --er-scrollbar-thumb: #8b5cf6;
+  --er-scrollbar-thumb: #5b21b6;
   --er-scrollbar-thumb-opacity: 0.52;
-  --er-scrollbar-thumb-hover: #6d28d9;
-  --er-scrollbar-track: #4c1d95;
+  --er-scrollbar-thumb-hover: #4c1d95;
+  --er-scrollbar-track: #3b0764;
   
   /* === ICON COLORS === */
   --er-icon-muted: #94a3b8;
   
   /* === LINK COLORS === */
-  --er-link-primary: #a78bfa;
-  --er-link-hover: #c4b5fd;
+  --er-link-primary: #8b5cf6;
+  --er-link-hover: #a78bfa;
   
   /* === GRADIENT TEXT COLORS === */
-  --er-gradient-text-1: #e9d5ff;
+  --er-gradient-text-1: #d8b4fe;
   --er-gradient-text-2: #c4b5fd;
   --er-gradient-text-3: #a78bfa;
   
   /* === GLOW ANIMATION COLORS === */
   --er-glow-shadow-1: #2d1b4e;
-  --er-glow-shadow-2: #7c3aed;
-  --er-glow-shadow-3: #a78bfa;
+  --er-glow-shadow-2: #5b21b6;
+  --er-glow-shadow-3: #7c3aed;
   --er-glow-bg-center: #3d2e52;
-  --er-glow-bg-outer-1: rgba(139, 92, 246, 0.1);
-  --er-glow-bg-outer-2: rgba(124, 58, 237, 0.15);
-  --er-glow-bg-outer-3: rgba(167, 139, 250, 0.2);
+  --er-glow-bg-outer-1: rgba(91, 33, 182, 0.1);
+  --er-glow-bg-outer-2: rgba(76, 29, 149, 0.15);
+  --er-glow-bg-outer-3: rgba(124, 58, 237, 0.2);
   
   /* === SPECIAL GRADIENT BACKGROUNDS === */
   --er-choice-bg-1: #1a1326;
   --er-choice-bg-2: #251b35;
-  --er-choice-bg-3: #5b21b6;
+  --er-choice-bg-3: #4c1d95;
   
-  --er-gradient-bg-1: #7c3aed;
+  --er-gradient-bg-1: #5b21b6;
   --er-gradient-bg-2: #251b35;
   --er-gradient-bg-3: #c4b5fd;
   
-  --er-gradient-bg2-1: #8b5cf6;
+  --er-gradient-bg2-1: #7c3aed;
   --er-gradient-bg2-2: #251b35;
   --er-gradient-bg2-3: #a78bfa;
   
   /* === WELCOME OVERLAY GRADIENT === */
-  --er-welcome-gradient-1: #7c3aed;
-  --er-welcome-gradient-2: #a78bfa;
+  --er-welcome-gradient-1: #5b21b6;
+  --er-welcome-gradient-2: #7c3aed;
   
   /* === BODY BACKGROUND === */
   --er-body-bg: #0a0512;
   
   /* === INTERACTIVE COLORS === */
-  --er-interactive-secondary: #7c3aed;
-  --er-interactive-primary: #8b5cf6;
-  --er-interactive-dark: #6d28d9;
-  --er-interactive-text-light: #f3e8ff;
+  --er-interactive-secondary: #5b21b6;
+  --er-interactive-primary: #4c1d95;
+  --er-interactive-dark: #3b0764;
+  --er-interactive-text-light: #e9d5ff;
   
   /* === SURFACE VARIANTS === */
   --er-surface-dark: #1a1326;
-  --er-surface-medium: #6d28d9;
-  --er-surface-light: #8b5cf6;
-  --er-surface-muted-accent: #7c3aed;
+  --er-surface-medium: #3b0764;
+  --er-surface-light: #5b21b6;
+  --er-surface-muted-accent: #5b21b6;
 }
 
 /* Ocean Theme - Teal/cyan modern variant */
@@ -314,52 +314,52 @@
   --er-surface-primary: #042f2e;
   --er-surface-secondary: #134e4a;
   --er-surface-tertiary: #0f766e;
-  --er-surface-accent: #14b8a6;
+  --er-surface-accent: #0d9488;
   --er-surface-bar: #115e59;
   
   /* === GRADIENT SPECIFIC COLORS === */
   --er-nav-gradient-start: #042f2e;
-  --er-nav-gradient-end: #14b8a6;
+  --er-nav-gradient-end: #0d9488;
   --er-ranked-bg-start: #042f2e;
   --er-ranked-bg-end: #0f766e;
   
   /* === INTERACTIVE COLORS === */
   --er-interactive-secondary: #0d9488;
-  --er-interactive-primary: #0d9488;
-  --er-interactive-dark: #115e59;
-  --er-interactive-text-light: #ccfbf1;
+  --er-interactive-primary: #0f766e;
+  --er-interactive-dark: #074743;
+  --er-interactive-text-light: #99f6e4;
   
   /* === SURFACE VARIANTS === */
   --er-surface-dark: #134e4a;
-  --er-surface-medium: #115e59;
-  --er-surface-light: #14b8a6;
-  --er-surface-muted-accent: #0d9488;
+  --er-surface-medium: #074743;
+  --er-surface-light: #0d9488;
+  --er-surface-muted-accent: #0f766e;
   
   /* === INTERACTIVE/BUTTON COLORS === */
-  --er-button-primary: #0d9488;
-  --er-button-primary-hover: #14b8a6;
-  --er-button-secondary: #0f766e;
-  --er-button-secondary-hover: #115e59;
+  --er-button-primary: #0f766e;
+  --er-button-primary-hover: #0d9488;
+  --er-button-secondary: #074743;
+  --er-button-secondary-hover: #0f766e;
   --er-button-neutral: #134e4a;
   --er-button-neutral-hover: #0f766e;
   
   /* === TEXT COLORS === */
-  --er-text-primary: #f0fdfa;
-  --er-text-secondary: #ccfbf1;
+  --er-text-primary: #ccfbf1;
+  --er-text-secondary: #99f6e4;
   --er-text-tertiary: #94a3b8;
   --er-text-muted: #64748b;
   --er-text-subtle: #9ca3af;
   
   /* === BORDER COLORS === */
-  --er-border-primary: #0d9488;
+  --er-border-primary: #0f766e;
   --er-border-secondary: #0d9488;
   --er-border-tertiary: #0f766e;
-  --er-border-subtle: #115e59;
-  --er-border-lightest: #f0fdfa;
-  --er-border-lighter: #ccfbf1;
+  --er-border-subtle: #074743;
+  --er-border-lightest: #ccfbf1;
+  --er-border-lighter: #99f6e4;
   --er-border-default: #99f6e4;
-  --er-border-medium: #0f766e;
-  --er-border-darker: #115e59;
+  --er-border-medium: #0d9488;
+  --er-border-darker: #0f766e;
   
   /* === OVERLAY/OPACITY COLORS === */
   --er-overlay-light: rgba(4, 47, 46, 0.3);
@@ -367,53 +367,53 @@
   --er-overlay-heavy: rgba(4, 47, 46, 0.7);
   
   /* === ACCENT COLORS === */
-  --er-accent-blue: #5eead4;
+  --er-accent-blue: #2dd4bf;
   --er-accent-success: #34d399;
   --er-accent-error: #f87171;
   --er-focus-ring: #2dd4bf;
   
   /* === SCROLLBAR COLORS === */
-  --er-scrollbar-thumb: #14b8a6;
+  --er-scrollbar-thumb: #0d9488;
   --er-scrollbar-thumb-opacity: 0.52;
-  --er-scrollbar-thumb-hover: #0d9488;
-  --er-scrollbar-track: #0f766e;
+  --er-scrollbar-thumb-hover: #0f766e;
+  --er-scrollbar-track: #074743;
   
   /* === ICON COLORS === */
   --er-icon-muted: #94a3b8;
   
   /* === LINK COLORS === */
-  --er-link-primary: #2dd4bf;
-  --er-link-hover: #5eead4;
+  --er-link-primary: #14b8a6;
+  --er-link-hover: #2dd4bf;
   
   /* === GRADIENT TEXT COLORS === */
-  --er-gradient-text-1: #ccfbf1;
+  --er-gradient-text-1: #99f6e4;
   --er-gradient-text-2: #5eead4;
   --er-gradient-text-3: #2dd4bf;
   
   /* === GLOW ANIMATION COLORS === */
   --er-glow-shadow-1: #115e59;
-  --er-glow-shadow-2: #14b8a6;
-  --er-glow-shadow-3: #5eead4;
+  --er-glow-shadow-2: #0d9488;
+  --er-glow-shadow-3: #2dd4bf;
   --er-glow-bg-center: #0f766e;
-  --er-glow-bg-outer-1: rgba(20, 184, 166, 0.1);
-  --er-glow-bg-outer-2: rgba(13, 148, 136, 0.15);
+  --er-glow-bg-outer-1: rgba(13, 148, 136, 0.1);
+  --er-glow-bg-outer-2: rgba(15, 118, 110, 0.15);
   --er-glow-bg-outer-3: rgba(45, 212, 191, 0.2);
   
   /* === SPECIAL GRADIENT BACKGROUNDS === */
   --er-choice-bg-1: #134e4a;
   --er-choice-bg-2: #0f766e;
-  --er-choice-bg-3: #14532d;
+  --er-choice-bg-3: #074743;
   
-  --er-gradient-bg-1: #14b8a6;
+  --er-gradient-bg-1: #0d9488;
   --er-gradient-bg-2: #0f766e;
   --er-gradient-bg-3: #5eead4;
   
-  --er-gradient-bg2-1: #0d9488;
+  --er-gradient-bg2-1: #0f766e;
   --er-gradient-bg2-2: #0f766e;
   --er-gradient-bg2-3: #2dd4bf;
   
   /* === WELCOME OVERLAY GRADIENT === */
-  --er-welcome-gradient-1: #14b8a6;
+  --er-welcome-gradient-1: #0d9488;
   --er-welcome-gradient-2: #2dd4bf;
   
   /* === BODY BACKGROUND === */
@@ -421,15 +421,15 @@
   
   /* === INTERACTIVE COLORS === */
   --er-interactive-secondary: #0d9488;
-  --er-interactive-primary: #14b8a6;
-  --er-interactive-dark: #115e59;
-  --er-interactive-text-light: #ccfbf1;
+  --er-interactive-primary: #0f766e;
+  --er-interactive-dark: #074743;
+  --er-interactive-text-light: #99f6e4;
   
   /* === SURFACE VARIANTS === */
   --er-surface-dark: #134e4a;
-  --er-surface-medium: #115e59;
-  --er-surface-light: #14b8a6;
-  --er-surface-muted-accent: #0d9488;
+  --er-surface-medium: #074743;
+  --er-surface-light: #0d9488;
+  --er-surface-muted-accent: #0f766e;
 }
 
 /* Sunset Theme - Warm orange/purple gradient variant */
@@ -448,42 +448,42 @@
   --er-ranked-bg-end: #4c1d2e;
   
   /* === INTERACTIVE COLORS === */
-  --er-interactive-secondary: #ea580c;
-  --er-interactive-primary: #ea580c;
-  --er-interactive-dark: #881337;
-  --er-interactive-text-light: #fed7aa;
+  --er-interactive-secondary: #c2410c;
+  --er-interactive-primary: #9f1239;
+  --er-interactive-dark: #7c2d47;
+  --er-interactive-text-light: #fdba74;
   
   /* === SURFACE VARIANTS === */
   --er-surface-dark: #2d1420;
-  --er-surface-medium: #881337;
-  --er-surface-light: #fb923c;
-  --er-surface-muted-accent: #ea580c;
+  --er-surface-medium: #7c2d47;
+  --er-surface-light: #c2410c;
+  --er-surface-muted-accent: #9f1239;
   
   /* === INTERACTIVE/BUTTON COLORS === */
-  --er-button-primary: #ea580c;
-  --er-button-primary-hover: #f97316;
-  --er-button-secondary: #9f1239;
-  --er-button-secondary-hover: #be123c;
-  --er-button-neutral: #7c2d47;
-  --er-button-neutral-hover: #9f1239;
+  --er-button-primary: #9f1239;
+  --er-button-primary-hover: #c2410c;
+  --er-button-secondary: #7c2d47;
+  --er-button-secondary-hover: #9f1239;
+  --er-button-neutral: #4c1d2e;
+  --er-button-neutral-hover: #7c2d47;
   
   /* === TEXT COLORS === */
-  --er-text-primary: #fff7ed;
-  --er-text-secondary: #fed7aa;
+  --er-text-primary: #fed7aa;
+  --er-text-secondary: #fdba74;
   --er-text-tertiary: #94a3b8;
   --er-text-muted: #64748b;
   --er-text-subtle: #9ca3af;
   
   /* === BORDER COLORS === */
-  --er-border-primary: #ea580c;
-  --er-border-secondary: #f97316;
-  --er-border-tertiary: #ea580c;
-  --er-border-subtle: #c2410c;
-  --er-border-lightest: #fff7ed;
-  --er-border-lighter: #fed7aa;
+  --er-border-primary: #9f1239;
+  --er-border-secondary: #c2410c;
+  --er-border-tertiary: #9f1239;
+  --er-border-subtle: #7c2d47;
+  --er-border-lightest: #fed7aa;
+  --er-border-lighter: #fdba74;
   --er-border-default: #fdba74;
-  --er-border-medium: #ea580c;
-  --er-border-darker: #c2410c;
+  --er-border-medium: #c2410c;
+  --er-border-darker: #7c2d47;
   
   /* === OVERLAY/OPACITY COLORS === */
   --er-overlay-light: rgba(30, 10, 20, 0.3);
@@ -491,23 +491,23 @@
   --er-overlay-heavy: rgba(30, 10, 20, 0.7);
   
   /* === ACCENT COLORS === */
-  --er-accent-blue: #fb923c;
+  --er-accent-blue: #ea580c;
   --er-accent-success: #34d399;
   --er-accent-error: #f87171;
-  --er-focus-ring: #f97316;
+  --er-focus-ring: #c2410c;
   
   /* === SCROLLBAR COLORS === */
-  --er-scrollbar-thumb: #fb923c;
+  --er-scrollbar-thumb: #c2410c;
   --er-scrollbar-thumb-opacity: 0.52;
-  --er-scrollbar-thumb-hover: #ea580c;
-  --er-scrollbar-track: #9f1239;
+  --er-scrollbar-thumb-hover: #9f1239;
+  --er-scrollbar-track: #7c2d47;
   
   /* === ICON COLORS === */
   --er-icon-muted: #94a3b8;
   
   /* === LINK COLORS === */
-  --er-link-primary: #fb923c;
-  --er-link-hover: #fdba74;
+  --er-link-primary: #ea580c;
+  --er-link-hover: #fb923c;
   
   /* === GRADIENT TEXT COLORS === */
   --er-gradient-text-1: #fed7aa;
@@ -516,44 +516,44 @@
   
   /* === GLOW ANIMATION COLORS === */
   --er-glow-shadow-1: #881337;
-  --er-glow-shadow-2: #ea580c;
-  --er-glow-shadow-3: #fb923c;
+  --er-glow-shadow-2: #c2410c;
+  --er-glow-shadow-3: #ea580c;
   --er-glow-bg-center: #7c2d47;
-  --er-glow-bg-outer-1: rgba(234, 88, 12, 0.1);
-  --er-glow-bg-outer-2: rgba(249, 115, 22, 0.15);
-  --er-glow-bg-outer-3: rgba(251, 146, 60, 0.2);
+  --er-glow-bg-outer-1: rgba(159, 18, 57, 0.1);
+  --er-glow-bg-outer-2: rgba(194, 65, 12, 0.15);
+  --er-glow-bg-outer-3: rgba(234, 88, 12, 0.2);
   
   /* === SPECIAL GRADIENT BACKGROUNDS === */
   --er-choice-bg-1: #2d1420;
   --er-choice-bg-2: #4c1d2e;
   --er-choice-bg-3: #9f1239;
   
-  --er-gradient-bg-1: #ea580c;
+  --er-gradient-bg-1: #c2410c;
   --er-gradient-bg-2: #4c1d2e;
   --er-gradient-bg-3: #fdba74;
   
-  --er-gradient-bg2-1: #f97316;
+  --er-gradient-bg2-1: #ea580c;
   --er-gradient-bg2-2: #4c1d2e;
   --er-gradient-bg2-3: #fb923c;
   
   /* === WELCOME OVERLAY GRADIENT === */
-  --er-welcome-gradient-1: #ea580c;
-  --er-welcome-gradient-2: #f97316;
+  --er-welcome-gradient-1: #c2410c;
+  --er-welcome-gradient-2: #ea580c;
   
   /* === BODY BACKGROUND === */
   --er-body-bg: #120509;
   
   /* === INTERACTIVE COLORS === */
-  --er-interactive-secondary: #ea580c;
-  --er-interactive-primary: #f97316;
-  --er-interactive-dark: #881337;
-  --er-interactive-text-light: #fed7aa;
+  --er-interactive-secondary: #c2410c;
+  --er-interactive-primary: #9f1239;
+  --er-interactive-dark: #7c2d47;
+  --er-interactive-text-light: #fdba74;
   
   /* === SURFACE VARIANTS === */
   --er-surface-dark: #2d1420;
-  --er-surface-medium: #881337;
-  --er-surface-light: #fb923c;
-  --er-surface-muted-accent: #ea580c;
+  --er-surface-medium: #7c2d47;
+  --er-surface-light: #c2410c;
+  --er-surface-muted-accent: #9f1239;
 }
 
 /* Forest Theme - Deep green nature-inspired variant */
@@ -562,47 +562,47 @@
   --er-surface-primary: #0a1810;
   --er-surface-secondary: #14241c;
   --er-surface-tertiary: #1e3a2a;
-  --er-surface-accent: #2d5440;
+  --er-surface-accent: #1e3a2a;
   --er-surface-bar: #14532d;
   
   /* === GRADIENT SPECIFIC COLORS === */
   --er-nav-gradient-start: #0a1810;
-  --er-nav-gradient-end: #2d5440;
+  --er-nav-gradient-end: #1e3a2a;
   --er-ranked-bg-start: #0a1810;
   --er-ranked-bg-end: #1e3a2a;
   
   /* === INTERACTIVE COLORS === */
-  --er-interactive-secondary: #16a34a;
-  --er-interactive-primary: #16a34a;
-  --er-interactive-dark: #14532d;
-  --er-interactive-text-light: #dcfce7;
+  --er-interactive-secondary: #15803d;
+  --er-interactive-primary: #14532d;
+  --er-interactive-dark: #0b331c;
+  --er-interactive-text-light: #bbf7d0;
   
   /* === SURFACE VARIANTS === */
   --er-surface-dark: #14241c;
-  --er-surface-medium: #14532d;
-  --er-surface-light: #22c55e;
-  --er-surface-muted-accent: #16a34a;
+  --er-surface-medium: #0b331c;
+  --er-surface-light: #16a34a;
+  --er-surface-muted-accent: #15803d;
   
   /* === INTERACTIVE/BUTTON COLORS === */
-  --er-button-primary: #16a34a;
-  --er-button-primary-hover: #22c55e;
-  --er-button-secondary: #15803d;
-  --er-button-secondary-hover: #166534;
-  --er-button-neutral: #1e3a2a;
-  --er-button-neutral-hover: #2d5440;
+  --er-button-primary: #15803d;
+  --er-button-primary-hover: #16a34a;
+  --er-button-secondary: #14532d;
+  --er-button-secondary-hover: #15803d;
+  --er-button-neutral: #14241c;
+  --er-button-neutral-hover: #1e3a2a;
   
   /* === TEXT COLORS === */
-  --er-text-primary: #f0fdf4;
-  --er-text-secondary: #dcfce7;
+  --er-text-primary: #dcfce7;
+  --er-text-secondary: #bbf7d0;
   --er-text-tertiary: #94a3b8;
   --er-text-muted: #64748b;
   --er-text-subtle: #9ca3af;
   
   /* === BORDER COLORS === */
-  --er-border-primary: #16a34a;
-  --er-border-secondary: #16a34a;
-  --er-border-tertiary: #15803d;
-  --er-border-subtle: #166534;
+  --er-border-primary: #15803d;
+  --er-border-secondary: #15803d;
+  --er-border-tertiary: #14532d;
+  --er-border-subtle: #14532d;
   
   /* === OVERLAY/OPACITY COLORS === */
   --er-overlay-light: rgba(10, 24, 16, 0.3);
@@ -610,67 +610,67 @@
   --er-overlay-heavy: rgba(10, 24, 16, 0.7);
   
   /* === ACCENT COLORS === */
-  --er-accent-blue: #4ade80;
+  --er-accent-blue: #22c55e;
   --er-accent-success: #22c55e;
   --er-accent-error: #f87171;
-  --er-focus-ring: #4ade80;
+  --er-focus-ring: #22c55e;
   
   /* === SCROLLBAR COLORS === */
-  --er-scrollbar-thumb: #22c55e;
+  --er-scrollbar-thumb: #16a34a;
   --er-scrollbar-thumb-opacity: 0.52;
-  --er-scrollbar-thumb-hover: #16a34a;
-  --er-scrollbar-track: #15803d;
+  --er-scrollbar-thumb-hover: #15803d;
+  --er-scrollbar-track: #14532d;
   
   /* === ICON COLORS === */
   --er-icon-muted: #94a3b8;
   
   /* === LINK COLORS === */
-  --er-link-primary: #4ade80;
-  --er-link-hover: #86efac;
+  --er-link-primary: #22c55e;
+  --er-link-hover: #4ade80;
   
   /* === GRADIENT TEXT COLORS === */
-  --er-gradient-text-1: #dcfce7;
-  --er-gradient-text-2: #86efac;
-  --er-gradient-text-3: #4ade80;
+  --er-gradient-text-1: #bbf7d0;
+  --er-gradient-text-2: #4ade80;
+  --er-gradient-text-3: #22c55e;
   
   /* === GLOW ANIMATION COLORS === */
   --er-glow-shadow-1: #14532d;
-  --er-glow-shadow-2: #16a34a;
-  --er-glow-shadow-3: #4ade80;
+  --er-glow-shadow-2: #15803d;
+  --er-glow-shadow-3: #22c55e;
   --er-glow-bg-center: #1e3a2a;
-  --er-glow-bg-outer-1: rgba(22, 163, 74, 0.1);
-  --er-glow-bg-outer-2: rgba(34, 197, 94, 0.15);
-  --er-glow-bg-outer-3: rgba(74, 222, 128, 0.2);
+  --er-glow-bg-outer-1: rgba(21, 128, 61, 0.1);
+  --er-glow-bg-outer-2: rgba(22, 163, 74, 0.15);
+  --er-glow-bg-outer-3: rgba(34, 197, 94, 0.2);
   
   /* === SPECIAL GRADIENT BACKGROUNDS === */
   --er-choice-bg-1: #14241c;
   --er-choice-bg-2: #1e3a2a;
   --er-choice-bg-3: #15803d;
   
-  --er-gradient-bg-1: #16a34a;
+  --er-gradient-bg-1: #15803d;
   --er-gradient-bg-2: #1e3a2a;
-  --er-gradient-bg-3: #86efac;
+  --er-gradient-bg-3: #4ade80;
   
-  --er-gradient-bg2-1: #22c55e;
+  --er-gradient-bg2-1: #16a34a;
   --er-gradient-bg2-2: #1e3a2a;
-  --er-gradient-bg2-3: #4ade80;
+  --er-gradient-bg2-3: #22c55e;
   
   /* === WELCOME OVERLAY GRADIENT === */
-  --er-welcome-gradient-1: #16a34a;
-  --er-welcome-gradient-2: #22c55e;
+  --er-welcome-gradient-1: #15803d;
+  --er-welcome-gradient-2: #16a34a;
   
   /* === BODY BACKGROUND === */
   --er-body-bg: #050c08;
   
   /* === INTERACTIVE COLORS === */
-  --er-interactive-secondary: #16a34a;
-  --er-interactive-primary: #22c55e;
-  --er-interactive-dark: #14532d;
-  --er-interactive-text-light: #dcfce7;
+  --er-interactive-secondary: #15803d;
+  --er-interactive-primary: #14532d;
+  --er-interactive-dark: #0b331c;
+  --er-interactive-text-light: #bbf7d0;
   
   /* === SURFACE VARIANTS === */
   --er-surface-dark: #14241c;
-  --er-surface-medium: #14532d;
-  --er-surface-light: #22c55e;
-  --er-surface-muted-accent: #16a34a;
+  --er-surface-medium: #0b331c;
+  --er-surface-light: #16a34a;
+  --er-surface-muted-accent: #15803d;
 }

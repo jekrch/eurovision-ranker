@@ -310,11 +310,11 @@
 
 /* Ocean Theme - Teal/cyan modern variant */
 [data-theme="ocean"] {
-  /* === BACKGROUND COLORS === */
-  --er-surface-primary: #042f2e;
+  /* === BACKGROUND COLORS d === */
+  --er-surface-primary: #0d4e4d;
   --er-surface-secondary: #134e4a;
   --er-surface-tertiary: #0f766e;
-  --er-surface-accent: #0d9488;
+  --er-surface-accent: #106e66;
   --er-surface-bar: #115e59;
   
   /* === GRADIENT SPECIFIC COLORS === */
@@ -324,7 +324,7 @@
   --er-ranked-bg-end: #0f766e;
   
   /* === INTERACTIVE COLORS === */
-  --er-interactive-secondary: #0d9488;
+  --er-interactive-secondary: #249a90;
   --er-interactive-primary: #0f766e;
   --er-interactive-dark: #074743;
   --er-interactive-text-light: #99f6e4;
@@ -345,10 +345,10 @@
   
   /* === TEXT COLORS === */
   --er-text-primary: #ccfbf1;
-  --er-text-secondary: #99f6e4;
-  --er-text-tertiary: #94a3b8;
-  --er-text-muted: #64748b;
-  --er-text-subtle: #9ca3af;
+  --er-text-secondary: #c0e7df;
+  --er-text-tertiary: #d0deda;
+  --er-text-muted: #aad0ce;
+  --er-text-subtle: #a7bdb8;
   
   /* === BORDER COLORS === */
   --er-border-primary: #0f766e;
@@ -386,9 +386,9 @@
   --er-link-hover: #2dd4bf;
   
   /* === GRADIENT TEXT COLORS === */
-  --er-gradient-text-1: #99f6e4;
+  --er-gradient-text-1: #abede0;
   --er-gradient-text-2: #5eead4;
-  --er-gradient-text-3: #2dd4bf;
+  --er-gradient-text-3: #098a81;
   
   /* === GLOW ANIMATION COLORS === */
   --er-glow-shadow-1: #115e59;
@@ -421,13 +421,13 @@
   
   /* === INTERACTIVE COLORS === */
   --er-interactive-secondary: #0d9488;
-  --er-interactive-primary: #0f766e;
+  --er-interactive-primary: #38c9bd;
   --er-interactive-dark: #074743;
   --er-interactive-text-light: #99f6e4;
   
   /* === SURFACE VARIANTS === */
   --er-surface-dark: #134e4a;
-  --er-surface-medium: #074743;
+  --er-surface-medium: #5b7977;
   --er-surface-light: #0d9488;
   --er-surface-muted-accent: #0f766e;
 }

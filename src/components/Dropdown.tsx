@@ -60,14 +60,14 @@ const Dropdown: React.FC<DropdownProps> = ({ value, onChange, options, className
           }}
           className={classNames(
             "inline-flex w-full justify-between gap-x-1.5 rounded-md", 
-            "bg-slate-700 bg-opacity-10 px-3 py-[0.2em] h-6 text-sm font-bold",
-            "text-gray-400 shadow-sm ring-1 ring-inset ring-gray-400 hover:bg-opacity-30",
+            "bg-[var(--er-button-neutral-hover)] bg-opacity-10 px-3 py-[0.2em] h-6 text-sm font-bold",
+            "text-[var(--er-text-subtle)] shadow-sm ring-1 ring-inset ring-gray-400 hover:bg-opacity-30",
             "h-[2em] items-center", 
             buttonClassName
           )}>
           <span className="truncate min-h-[1.2em] inline-block">{value || '\u00A0'}</span> {/* truncate to handle overflow */}
           
-          {!mini && <FontAwesomeIcon className="flex-shrink-0 h-[0.8em] w-5 text-gray-400" icon={faChevronDown} /> }
+          {!mini && <FontAwesomeIcon className="flex-shrink-0 h-[0.8em] w-5 text-[var(--er-text-subtle)]" icon={faChevronDown} /> }
         </Menu.Button>
       </div>
 
@@ -99,11 +99,11 @@ const Dropdown: React.FC<DropdownProps> = ({ value, onChange, options, className
           style={{ maxHeight: `${menuPosition.maxHeight}px`, overflowY: 'auto' }}
           className="z-50 dropdown-menu absolute mt-2 w-[6em] rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none custom-scrollbar"
          >
-          <div className="py-1 bg-slate-600 bg-opacity-96">
+          <div className="py-1 bg-[var(--er-button-neutral)] bg-opacity-96">
             {showSearch &&
               <input
                 type="text"
-                className="w-full text-slate-300 px-4 py-2 text-sm font-normal bg-slate-800"
+                className="w-full text-[var(--er-text-secondary)] px-4 py-2 text-sm font-normal bg-[var(--er-surface-dark)]"
                 placeholder="Search..."
                 value={filter}
                 onChange={(e) => {
@@ -121,7 +121,7 @@ const Dropdown: React.FC<DropdownProps> = ({ value, onChange, options, className
                         setFilter('');
                       }}
                       className={classNames(
-                        active ? 'bg-slate-400 text-blue-100' : 'text-slate-300',
+                        active ? 'bg-[var(--er-surface-light)] text-[var(--er-interactive-text-light)]' : 'text-[var(--er-text-secondary)]',
                         'block w-full px-4 py-2 text-left text-sm '
                       )}
                     >

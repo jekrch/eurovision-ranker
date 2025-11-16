@@ -4,10 +4,6 @@
 
 html {
    padding: env(safe-area-inset); 
-  /* padding-left: env(safe-area-inset-left);
-  padding-right: env(safe-area-inset-right);
-  padding-top: env(safe-area-inset-top);
-  padding-bottom: env(safe-area-inset-bottom); */
 }
 
 html,
@@ -15,13 +11,12 @@ body {
   width: 100%;
   margin: 0;
   padding: 0;
-  background-color: #0d0f1d;
+  background-color: var(--er-body-bg);
 }
 
 .container {
   width: 100vw;
   max-width: 100%;
-  /* to prevent horizontal scroll */
 }
 
 .product-name {
@@ -31,9 +26,7 @@ body {
 }
 
 .site-content {
-  /* max-height: 100vh; */
   max-height: var(--app-height);
-  /* Fallback for browsers that do not support Custom Properties */
   max-height: calc(var(--vh, 1vh) * 100);
   min-height: calc(var(--vh, 1vh) * 100);
   display: flex;
@@ -55,97 +48,93 @@ code {
     monospace;
 }
 
-/* Styling the scrollbar track (the background) */
+/* Scrollbar styling - THEMED */
 ::-webkit-scrollbar {
   width: 10px;
   height: 10px;
 }
 
-/* Styling the scrollbar handle */
 ::-webkit-scrollbar-thumb {
-  background: #7d7aa585;
+  background: color-mix(in srgb, var(--er-scrollbar-thumb) calc(var(--er-scrollbar-thumb-opacity) * 100%), transparent);
   border-radius: 5px;  
 }
 
-/* Handle hover */
 ::-webkit-scrollbar-thumb:hover {
-  background: #484663;
+  background: var(--er-scrollbar-thumb-hover);
 }
 
 .custom-scrollbar::-webkit-scrollbar {
-  background-color: rgb(86, 103, 125);
+  background-color: var(--er-scrollbar-track);
 }
 
-/* styling the scrollbar corner */
 ::-webkit-scrollbar-corner {
-  background: rgb(86, 103, 125, 0.0);
+  background: rgba(0, 0, 0, 0);
 }
 
+.normal-bg {
+  padding-bottom: env(safe-area-inset-bottom);
+  height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+  overflow: hidden;
+  max-height: -webkit-fill-available;
+  /* background: radial-gradient(ellipse at bottom, #28355E 0%, #06070d 100%); */
+  background: radial-gradient(ellipse at bottom, var(--er-ranked-bg-end) 0%, var(--er-nav-gradient-start) 100%);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  animation: bg-pulse 10s infinite ease-in-out;
+}
+
+/* GRADIENT BACKGROUNDS - THEMED */
 .choice-background {
-  background: linear-gradient(155deg, #1d2344, #1d2344, #4b2764), url(/noise.svg);
+  background: linear-gradient(155deg, var(--er-choice-bg-1), var(--er-choice-bg-2), var(--er-choice-bg-3)), url(/noise.svg);
   filter: contrast(100%) brightness(100%);
 }
 
 .gradient-background2 {
-  background: linear-gradient(155deg, #3d76cb, #1a2a45, #9e33ea);
+  background: linear-gradient(155deg, var(--er-gradient-bg2-1), var(--er-gradient-bg2-2), var(--er-gradient-bg2-3));
 }
 
 .gradient-background-modal {
-  background: linear-gradient(155deg, #1d2344, #1d2344, #4b2764), url(/noise.svg);
+  background: linear-gradient(155deg, var(--er-choice-bg-1), var(--er-choice-bg-2), var(--er-choice-bg-3)), url(/noise.svg);
   filter: contrast(100%) brightness(100%);
 }
 
 .gradient-background {
-  /* Define the gradient and a CSS-generated grid in the same background */
-  background: 
-    /* Grid overlay */
-    linear-gradient(155deg, #517cbc, #1a2a45, #9e33ea);
-  
-  /* Preserve the aspect of the gradient under filter effects */
+  background: linear-gradient(155deg, var(--er-gradient-bg-1), var(--er-gradient-bg-2), var(--er-gradient-bg-3));
   filter: contrast(100%) brightness(100%);
-  
-  /* Ensure the background covers the entire element and is not repeated */
   background-size: auto, auto, cover;
   background-repeat: no-repeat;
 }
 
 .gradient-background-reverse {
-  /* Define the gradient and a CSS-generated grid in the same background */
-  background: 
-    /* Grid overlay */
-    /* linear-gradient(155deg, #9e33ea, #1a2a45, #517cbc); */
-    linear-gradient(330deg, #517cbc, #1a2a45, #9e33ea);
-  
-  /* Preserve the aspect of the gradient under filter effects */
+  background: linear-gradient(330deg, var(--er-gradient-bg-1), var(--er-gradient-bg-2), var(--er-gradient-bg-3));
   filter: contrast(100%) brightness(100%);
-  
-  /* Ensure the background covers the entire element and is not repeated */
   background-size: auto, auto, cover;
   background-repeat: no-repeat;
 }
 
+/* GRADIENT TEXT - THEMED */
 .gradient-text {
-  /* background: linear-gradient(45deg, #729fe8, #3b82f6, #9333ea); */
-  background: linear-gradient(155deg, #abcbff, #6a91d1, #9e33ea);
+  background: linear-gradient(155deg, var(--er-gradient-text-1), var(--er-gradient-text-2), var(--er-gradient-text-3));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
+/* GLOW ANIMATION - THEMED */
 @keyframes glow {
   0%, 100% {
-    box-shadow: 0 0 10px #132b28, 0 0 30px #694fd1, 0 0 25px #77378f;
-    background: radial-gradient(circle, #321f52cc 50%, rgba(104, 78, 209, 0.1) 100%);
+    box-shadow: 0 0 10px var(--er-glow-shadow-1), 0 0 30px var(--er-glow-shadow-2), 0 0 25px var(--er-glow-shadow-3);
+    background: radial-gradient(circle, var(--er-glow-bg-center) 50%, var(--er-glow-bg-outer-1) 100%);
   }
 
   25%, 75% {
-    box-shadow: 0 0 8.5px #2a2033, 0 0 45px #7144c9, 0 0 47.5px #77378f;
-    background: radial-gradient(circle, #321f52cc 50%, rgba(114, 66, 201, 0.15) 100%);
+    box-shadow: 0 0 8.5px var(--er-glow-shadow-1), 0 0 45px var(--er-glow-shadow-2), 0 0 47.5px var(--er-glow-shadow-3);
+    background: radial-gradient(circle, var(--er-glow-bg-center) 50%, var(--er-glow-bg-outer-2) 100%);
   }
 
   50% {
-    box-shadow: 0 0 10px #32193d, 0 0 60px #7c37c1, 0 0 25px #77378f;
-    background: radial-gradient(circle, #321f52cc 50%, rgba(124, 55, 193, 0.2) 100%);
+    box-shadow: 0 0 10px var(--er-glow-shadow-1), 0 0 60px var(--er-glow-shadow-2), 0 0 25px var(--er-glow-shadow-3);
+    background: radial-gradient(circle, var(--er-glow-bg-center) 50%, var(--er-glow-bg-outer-3) 100%);
   }
 }
 
@@ -155,10 +144,9 @@ code {
   transition: box-shadow 0.5s ease-in-out, background 0.5s ease-in-out;
 }
 
-/* #2c345f */
+/* NAVIGATION GRADIENT - THEMED */
 .nav-diagonal-split-bg {
-  /*background: linear-gradient(135deg, #13172b 60%, #283760  40%);*/
-  background: linear-gradient(135deg, #13172b, #334678);
+  background: linear-gradient(135deg, var(--er-nav-gradient-start), var(--er-nav-gradient-end));
 }
 
 .subtle-pulse {
@@ -176,7 +164,6 @@ code {
 
 @keyframes phantomArrow {
   0% { transform: translateY(-50%) translateX(0); opacity: 0; }
-  /* 10% { transform: translateY(-50%) translateX(0); opacity: 0.5; } */
   25% { transform: translateY(-50%) translateX(15px); opacity: 0.5; }
   47.5% { transform: translateY(-50%) translateX(0); opacity: 0.5; }
   70% { transform: translateY(-50%) translateX(20px); opacity: 0; }
@@ -187,10 +174,11 @@ code {
   animation: phantomArrow 3s ease-in-out forwards;
 }
 
+/* ICONS - THEMED */
 .houseUser {
   margin-top: 0.15em;
   height: 1em;
-  color: #808080;
+  color: var(--er-icon-muted);
 }
 
 .houseUser:hover {
@@ -201,16 +189,12 @@ code {
 .configCog {
   margin-top: 0.15em;
   height: 1em;
-  color: #808080;
+  color: var(--er-icon-muted);
 }
 
 .configCog:hover {
   opacity: 0.5 !important;
   cursor: pointer;
-}
-
-
-.configCog:hover {
   -webkit-animation: cog-spin 900ms none normal;
   animation: cog-spin 900ms none normal;
 }
@@ -220,7 +204,6 @@ code {
     -webkit-transform: rotate(0deg);
     transform: rotate(0deg);
   }
-
   100% {
     -webkit-transform: rotate(59deg);
     transform: rotate(59deg);
@@ -232,7 +215,6 @@ code {
     -webkit-transform: rotate(0deg);
     transform: rotate(0deg);
   }
-
   100% {
     -webkit-transform: rotate(59deg);
     transform: rotate(59deg);
@@ -244,14 +226,15 @@ code {
   transform-origin: top left;
 }
 
+/* TEXT LINKS - THEMED */
 .text-link {
   cursor: pointer;
   font-weight: 500;
-  color: #3c72e7;
+  color: var(--er-link-primary);
 }
 
 .text-link:hover {
-  color: #4a8df8;
+  color: var(--er-link-hover);
   text-decoration: underline;
 }
 
@@ -315,29 +298,18 @@ code {
 }
 
 @keyframes tada {
-
-  0%,
-  83.33% {
-    /* 10s out of 12s as static */
+  0%, 83.33% {
     transform: scale(1) rotate(0deg);
   }
-
-  85%,
-  90% {
+  85%, 90% {
     transform: scale(1) rotate(0deg);
   }
-
-  92.5%,
-  95%,
-  97.5% {
+  92.5%, 95%, 97.5% {
     transform: scale(1.1) rotate(3deg);
   }
-
-  93.75%,
-  96.25% {
+  93.75%, 96.25% {
     transform: scale(1.1) rotate(-3deg);
   }
-
   100% {
     transform: scale(1) rotate(0deg);
   }
@@ -349,20 +321,13 @@ code {
 }
 
 @keyframes bounceRight {
-
-  0%,
-  91.67% {
-    /* 11s out of 12s as static */
+  0%, 91.67% {
     transform: translateX(0);
   }
-
-  93.75%,
-  96.25% {
+  93.75%, 96.25% {
     transform: translateX(5px);
   }
-
-  97.5%,
-  100% {
+  97.5%, 100% {
     transform: translateX(0);
   }
 }
@@ -372,28 +337,18 @@ code {
 }
 
 @keyframes tada-6s {
-  0%,
-  71.43% {
-    /* 5s out of 7s as static */
+  0%, 71.43% {
     transform: scale(1) rotate(0deg);
   }
-
-  74.29%,
-  82.86% {
+  74.29%, 82.86% {
     transform: scale(1) rotate(0deg);
   }
-
-  87.14%,
-  91.43%,
-  95.71% {
+  87.14%, 91.43%, 95.71% {
     transform: scale(1.1) rotate(3deg);
   }
-
-  89.29%,
-  93.57% {
+  89.29%, 93.57% {
     transform: scale(1.1) rotate(-3deg);
   }
-
   100% {
     transform: scale(1) rotate(0deg);
   }
@@ -408,25 +363,7 @@ code {
   width: clamp(6em, 45vw, 10.5em);
 }
 
-
-/* .opaque {
-  opacity: 1 !important;
-}
-
-show {
-  opacity: 100 !important;
-  transition: 0;
-} */
-
-/* .react-tooltip {
-  opacity: 1 !important;
-  --rt-opacity: 1 !important;
-  background-color: red !important;
-} */
 .overlay {
-  /* position: fixed;
-  left: 0;
-  right: 0; */
   top: var(--nav-height);
   bottom: var(--edit-nav-height);
   background-color: rgba(0, 0, 0, 0.6);
@@ -449,7 +386,6 @@ show {
     transform: translateY(100%);
     opacity: 0%;
   }
-
   to {
     transform: translateY(0);
     opacity: 100%;
@@ -460,12 +396,10 @@ show {
   animation: slideUp 0.2s ease-in forwards;
 }
 
-/* Thanks Chris Smith for welcome overlay background animation
-https://codepen.io/chris22smith/pen/RZogMa */
-
+/* WELCOME OVERLAY - THEMED */
 .overlay-bg {
   animation: slide 3s ease-in-out infinite alternate;
-  background-image: linear-gradient(-60deg, #03B5AA 50%, #3B82F6 50%);
+  background-image: linear-gradient(-60deg, var(--er-welcome-gradient-1) 50%, var(--er-welcome-gradient-2) 50%);
   bottom: 0;
   left: -50%;
   opacity: .5;
@@ -488,20 +422,18 @@ https://codepen.io/chris22smith/pen/RZogMa */
   0% {
     transform: translateX(-25%);
   }
-
   100% {
     transform: translateX(25%);
   }
 }
 
+/* RANKED ITEMS BACKGROUND - THEMED */
 .ranked-items-background {
-  /* background: linear-gradient(to bottom, #2a286e, #0c0c38);  */
-  background: linear-gradient(to bottom, #13172b, #28315b); 
+  background: linear-gradient(to bottom, var(--er-ranked-bg-start), var(--er-ranked-bg-end)); 
 }
 
 .ranked-bar-background {
-  /* background: linear-gradient(to bottom, #434181, #2525a1);  */
-  /* background: linear-gradient(to bottom, #3d3c53, #191931);  */
+  /* Empty - can add themed gradient if needed */
 }
 
 .menu-enter {

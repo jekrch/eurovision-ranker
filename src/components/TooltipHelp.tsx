@@ -28,11 +28,11 @@ const TooltipHelp: React.FC<TooltipHelpProps> = ({
             >
                 <FontAwesomeIcon 
                     icon={icon} 
-                    className={classNames('ml-2 text-slate-400 cursor-pointer !text-base', className)} 
+                    className={classNames('ml-2 text-[var(--er-text-tertiary)] cursor-pointer !text-base', className)} 
                 />
             </a>
             <Tooltip
-                className="z-50 max-w-[15em] !bg-[#3068ba] !text-slate-300 !font-normal shadow-xl shadow-black"
+                className="z-50 max-w-[15em] !bg-[var(--er-button-primary)] !text-[var(--er-text-secondary)] !font-normal shadow-xl shadow-black"
                 id={tooltipId}
                 place={place as any}
                 variant="info"

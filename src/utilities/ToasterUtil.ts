@@ -2,7 +2,7 @@ export const toastOptions = {
     success: {
       style: {
         color: '#E8E7E6',
-        background: '#474575',
+        background: 'var(--er-surface-dark)',
       },
       iconTheme: {
         primary: 'green',

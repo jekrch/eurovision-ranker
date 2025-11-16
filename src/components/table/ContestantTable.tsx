@@ -92,7 +92,7 @@ const ContestantTable: React.FC = () => {
     };
 
     return (
-        <div className="flex flex-col h-full bg-transparent text-slate-300">
+        <div className="flex flex-col h-full bg-transparent text-[var(--er-text-secondary)]">
             <div className={classNames(
                 "flex flex-col mb-1 pr-1 sm:flex-row sm:items-center sm:space-x-4"
             )}>
@@ -111,7 +111,7 @@ const ContestantTable: React.FC = () => {
                     <Switch
                         label='selected'
                         className="text-base"
-                        labelClassName='text-slate-400'
+                        labelClassName='text-[var(--er-text-tertiary)]'
                         checked={showSelected}
                         setChecked={setShowSelected}
                     />
@@ -119,12 +119,12 @@ const ContestantTable: React.FC = () => {
                         <div className="flex items-center">
                             <TooltipHelp
                                 content="Uncheck this to use the simple year-based selection mode"
-                                className="text-slate-300 align-middle mb-0 -mr-1"
+                                className="text-[var(--er-text-secondary)] align-middle mb-0 -mr-1"
                             />
                             <Switch
                                 label="adv"
                                 className="items-center align-middle"
-                                labelClassName="text-base text-slate-400"
+                                labelClassName="text-base text-[var(--er-text-tertiary)]"
                                 checked={globalSearch}
                                 setChecked={switchAdvancedMode}
                             />

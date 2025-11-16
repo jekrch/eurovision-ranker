@@ -49,9 +49,9 @@ export const IconButton: React.FC<IconButtonProps> = ({ icon, onClick, className
         <button
             className={classNames(
                 "relative overflow-hidden text-white font-normal py-1 pl-2 pr-3 rounded-md text-xs",
-                disabled ? "bg-slate-500" : "bg-[#3068ba] hover:bg-blue-700",
+                disabled ? "bg-[var(--er-surface-medium)]" : "bg-[var(--er-button-primary)] hover:bg-[var(--er-button-primary-hover)]",
                 className,
-                { "text-white bg-slate-700 hover:bg-slate-800 dark:bg-slate-600 dark:hover:bg-slate-700 dark:focus:ring-blue-800": isGrayTheme}
+                { "text-white bg-[var(--er-button-neutral-hover)] hover:bg-[var(--er-surface-dark)] dark:bg-[var(--er-button-neutral)] dark:hover:bg-[var(--er-button-neutral-hover)] dark:focus:ring-[var(--er-interactive-dark)]": isGrayTheme}
             )}
             onClick={handleClick}
             disabled={disabled}

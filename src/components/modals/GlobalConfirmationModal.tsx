@@ -34,7 +34,7 @@ const GlobalConfirmationModal: React.FC<GlobalConfirmationModalProps> = ({
             className={classNames("max-w-[28em]", className)} 
             closeBtnClassName="hidden"
         >
-            <div className="mb-4 text-sm text-gray-900 dark:text-slate-300 whitespace-pre-line leading-[1.2em]">
+            <div className="mb-4 text-sm text-gray-900 dark:text-[var(--er-text-secondary)] whitespace-pre-line leading-[1.2em]">
                 {message}
             </div>
             <div className="float-right mt-1 -mb-1">

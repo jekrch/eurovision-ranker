@@ -18,7 +18,7 @@ export const Card: FC<CardProps> = (props) => {
     <div
       key={props.rank ? 'ranked-' : 'unranked-' + 'card-' + country.name}
       className={classNames(
-        props.className, "mx-[.5rem] min-h-[2.5em] py-[0.4em] flex flex-row items-stretch !cursor-grabber whitespace-normal text-sm overflow-hidden shadow rounded border border-0.5 border-gray-400",
+        props.className, "mx-[.5rem] min-h-[2.5em] py-[0.4em] flex flex-row items-stretch !cursor-grabber whitespace-normal text-sm overflow-hidden shadow rounded border border-0.5 border-[var(--er-border-default)]",
         props.isDragging ? "shadow-slate-400 shadow-sm border-solid" : "",
         !props.isDragging && props.rank === 1 ? "first-card-glow" : "",
         props.rank ? "border-solid border-gray" : "border-dashed",
@@ -26,14 +26,14 @@ export const Card: FC<CardProps> = (props) => {
       )}
     >
       { props.rank ? (
-          <div className="flex-shrink-0 ml-2 mr-2 tracking-tighter items-center justify-center flex text-md rounded">
+          <div className="flex-shrink-0 ml-2 mr-2 tracking-tighter items-center justify-center flex text-md rounded text-[var(--er-text-tertiary)]">
             {props.rank}.
           </div>
         ) : (<div className="w-3"></div>)
       }
 
       {/* <i className={`z-0 float-right text-3xl ml-2 flag-icon -mr-2 ${props.country?.icon}`} /> */}
-      <div className={classNames("flex-grow text-slate-400 font-normal my-auto")}>
+      <div className={classNames("flex-grow text-[var(--er-text-tertiary)] font-normal my-auto")}>
         <div className={`overflow-hidden overflow-ellipsis ${(props.rank && props.isDeleteMode) && 'max-w-[3.9em]'}`}>
           <span className="overflow-hidden overflow-ellipsis">{country?.name}</span>
         </div>

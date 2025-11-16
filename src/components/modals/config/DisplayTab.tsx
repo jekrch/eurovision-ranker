@@ -10,6 +10,18 @@ import TooltipHelp from '../../TooltipHelp';
 import { useAppDispatch, useAppSelector } from '../../../hooks/stateHooks';
 import { CountryContestant } from '../../../data/CountryContestant';
 import { Vote } from '../../../data/Vote';
+import { faMoon, faPalette, faStar, faSun, faTree, faWater } from '@fortawesome/free-solid-svg-icons';
+
+
+// Theme configuration with icons
+export const THEME_OPTIONS = [
+    { display: 'Default', code: '', icon: faPalette, label: 'Default' },
+    { display: 'Auroral', code: 'ab', icon: faStar, label: 'Aurora' },
+    { display: 'Midnight', code: 'm', icon: faMoon, label: 'Midnight' },
+    { display: 'Ocean', code: 'o', icon: faWater, label: 'Ocean' },
+    { display: 'Sunset', code: 's', icon: faSun, label: 'Sunset' },
+    { display: 'Forest', code: 'f', icon: faTree, label: 'Forest' }
+];
 
 const DisplayTab: React.FC = () => {
     const dispatch = useAppDispatch();
@@ -21,11 +33,9 @@ const DisplayTab: React.FC = () => {
     const rankedItems = useAppSelector((state: AppState) => state.rankedItems);
     const year = useAppSelector((state: AppState) => state.year);
     const globalSearch = useAppSelector((state: AppState) => state.globalSearch);
-    const [themeSelection, setThemeSelection] = useState('None');
 
     // Get vote source option based on vote code
     const getVoteSourceOption = (voteCode: string) => {
-
         if (!voteCode?.length || voteCode === 'loading') {
             return 'All';
         }
@@ -46,9 +56,17 @@ const DisplayTab: React.FC = () => {
         ...countries.sort((a, b) => a.name.localeCompare(b.name)).map((c) => c.name),
     ]);
 
+    // Get display name for current theme
+    const getThemeDisplayName = (themeCode: string): string => {
+        const themeOption = THEME_OPTIONS.find(opt => opt.code === themeCode);
+        return themeOption?.display || 'Default';
+    };
+
+    const [themeSelection, setThemeSelection] = useState(getThemeDisplayName(theme));
+
     // Update theme selection when theme changes
     useEffect(() => {
-        setThemeSelection(theme === 'ab' ? 'Auroral' : 'None');
+        setThemeSelection(getThemeDisplayName(theme));
     }, [theme]);
 
     // Update display vote source when vote changes
@@ -60,84 +78,57 @@ const DisplayTab: React.FC = () => {
     }, [vote]);
 
     // Handle theme input change
-    const onThemeInputChanged = (newTheme: string) => {
-        if (newTheme === 'Auroral') {
-            dispatch(setTheme('ab'));
-            updateQueryParams({ t: 'ab' });
-        } else {
-            dispatch(setTheme(''));
-            updateQueryParams({ t: '' });
-        }
+    const onThemeInputChanged = (displayName: string) => {
+        const themeOption = THEME_OPTIONS.find(opt => opt.display === displayName);
+        const themeCode = themeOption?.code || '';
+        
+        dispatch(setTheme(themeCode));
+        updateQueryParams({ t: themeCode });
     };
 
     // Handle vote type input change
     const onVoteTypeInputChanged = (voteType: string, checked: boolean) => {
         const newVote = updateVoteTypeCode(vote, voteType, checked);
         if (newVote !== vote) {
-            dispatch(
-                setVote(newVote)
-            );
+            dispatch(setVote(newVote));
             updateQueryParams({ v: newVote });
         }
     };
 
-    /**
-     * Handle check even on show category comparison checkbox
-     * @param checked 
-     */
     const onShowComparisonChange = (checked: boolean) => {
         updateQueryParams({ cm: checked === true ? 't' : 'f' })
-        dispatch(
-            setShowComparison(checked === true)
-        );
+        dispatch(setShowComparison(checked === true));
     };
 
     const onShowThumbnailsChange = (checked: boolean) => {
         updateQueryParams({ p: checked === true ? 't' : 'f' })
-        dispatch(
-            setShowThumbnail(checked === true)
-        );
+        dispatch(setShowThumbnail(checked === true));
     };
 
     const onShowPlaceChange = (checked: boolean) => {
         updateQueryParams({ pl: checked === true ? 't' : 'f' })
-        dispatch(
-            setShowPlace(checked === true)
-        );
+        dispatch(setShowPlace(checked === true));
     };
 
     // Get vote source code from option
     const getVoteSourceCodeFromOption = (optionName: string) => {
         if (!optionName?.length || optionName === 'All') return '';
-
         return countries.filter((c) => c.name === optionName)?.[0]?.key;
     };
 
-    /**
-   * On updating the displayed voting country, update the vote code
-   */
     useEffect(() => {
-
         const handleVoteCountryUpdate = async () => {
-            if (vote === 'loading')
-                return;
+            if (vote === 'loading') return;
 
             let voteTypeCode = vote?.split('-')?.[1] ?? '';
-
             let countryCode = getVoteSourceCodeFromOption(displayVoteSource);
-
             let newVoteCode = `f-${voteTypeCode}-${countryCode}`;
 
-            await resetRankedItemVotes(
-                rankedItems, newVoteCode
-            );
+            await resetRankedItemVotes(rankedItems, newVoteCode);
 
             if (newVoteCode !== vote) {
                 updateQueryParams({ v: newVoteCode });
-
-                dispatch(
-                    setVote(newVoteCode)
-                )
+                dispatch(setVote(newVoteCode))
             }
         }
         handleVoteCountryUpdate();
@@ -150,23 +141,18 @@ const DisplayTab: React.FC = () => {
             let newRankedItems = await assignVotesByContestants(
                 rankedItems, newVoteCode
             );
-            dispatch(
-                setRankedItems(newRankedItems)
-            );
+            dispatch(setRankedItems(newRankedItems));
         } else {
             let votes: Vote[] = await fetchVotesByCode(newVoteCode, year);
-    
-            dispatch(
-                assignVotesToContestants(votes)
-            );
+            dispatch(assignVotesToContestants(votes));
         }
     }
 
     return (
         <div className="mb-0">
             <div>
-                <div className="mb-[0.5em] border-slate-700 border-b-[1px] pb-2 -mt-2">
-                <span className="flex items-center ml-2">
+                <div className="mb-[0.5em] border-[var(--er-border-subtle)] border-b-[1px] pb-2 -mt-2">
+                    <span className="flex items-center ml-2">
                         <TooltipHelp
                             content="Display the contestant's place in the final contest if applicable"
                         />
@@ -185,9 +171,7 @@ const DisplayTab: React.FC = () => {
                             content="Select which types of votes to display with each ranked country"
                         />
                         <span className="ml-3 text-sm font-semibold">
-
                             Show Votes:
-
                         </span>
                         <Checkbox
                             id="total-checkbox"
@@ -195,7 +179,6 @@ const DisplayTab: React.FC = () => {
                             onChange={(c) => onVoteTypeInputChanged('t', c)}
                             label="Total"
                         />
-
                         <Checkbox
                             id="tele-checkbox"
                             checked={voteCodeHasType(vote, 'tv')}
@@ -203,7 +186,6 @@ const DisplayTab: React.FC = () => {
                             label="Tele"
                             className="ml-[0.5em]"
                         />
-
                         <Checkbox
                             id="jury-checkbox"
                             checked={voteCodeHasType(vote, 'j')}
@@ -235,7 +217,6 @@ const DisplayTab: React.FC = () => {
             </div>
 
             <div>
-
                 <div className="mt-4">
                     <div>
                         <div className="mb-0">
@@ -269,7 +250,7 @@ const DisplayTab: React.FC = () => {
                             menuClassName=""
                             value={themeSelection}
                             onChange={(v) => onThemeInputChanged(v)}
-                            options={['None', 'Auroral']}
+                            options={THEME_OPTIONS.map(opt => opt.display)}
                             showSearch={false}
                         />
                     </div>
@@ -280,4 +261,3 @@ const DisplayTab: React.FC = () => {
 };
 
 export default DisplayTab;
-

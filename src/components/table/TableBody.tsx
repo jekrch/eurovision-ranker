@@ -21,18 +21,18 @@ const TableBody: React.FC<TableBodyProps> = ({
     return (
         <tbody className="bg-transparent divide-y divide-gray-700">
             {paginatedContestants.map((contestant) => (
-                <tr key={contestant.id} className="hover:bg-slate-800 bg-opacity-50 text-slate-300">
-                    <td className="py-0 whitespace-nowrap sticky left-0 z-30 bg-slate-900 hover:bg-[#3068ba]">
+                <tr key={contestant.id} className="hover:bg-[var(--er-surface-dark)] bg-opacity-50 text-[var(--er-text-secondary)]">
+                    <td className="py-0 whitespace-nowrap sticky left-0 z-30 bg-[var(--er-surface-dark)] hover:bg-[var(--er-button-primary)]">
                         <div className="flex justify-center h-full">
                             <Ripples className="flex items-center justify-center w-full h-full" placeholder={<></>}>
                                 <button
                                     onClick={() => handleToggleSelected(contestant.id)}
-                                    className="text-slate-300 hover:text-slate-100 p-2 rounded-md h-full w-full"
+                                    className="text-[var(--er-text-secondary)] hover:text-slate-100 p-2 rounded-md h-full w-full"
                                 >
                                     {showSelected ? (
-                                        <FontAwesomeIcon icon={faMinus} className="text-red-500" />
+                                        <FontAwesomeIcon icon={faMinus} className="text-[var(--r-accent-error)]" />
                                     ) : selectedContestants.some(c => c.id === contestant.id) ? (
-                                        <FontAwesomeIcon icon={faCheck} className="text-green-500" />
+                                        <FontAwesomeIcon icon={faCheck} className="text-[var(--r-accent-success)]" />
                                     ) : (
                                         <FontAwesomeIcon icon={faPlus} />
                                     )}

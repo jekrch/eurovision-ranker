@@ -27,14 +27,14 @@ const Pagination: React.FC<PaginationProps> = ({
                 <button
                     onClick={() => handlePageChange(1)}
                     disabled={currentPage === 1}
-                    className="text-sm px-2 py-1 rounded bg-gray-700 text-gray-300 hover:bg-gray-600 disabled:opacity-50"
+                    className="text-sm px-2 py-1 rounded bg-[var(--er-button-primary)] text-gray-300 hover:bg-[var(--er-button-primary-hover)] disabled:opacity-50 disabled:pointer-events-none"
                 >
                     {'<<'}
                 </button>
                 <button
                     onClick={() => handlePageChange(currentPage - 1)}
                     disabled={currentPage === 1}
-                    className="text-sm px-2 py-1 rounded bg-gray-700 text-gray-300 hover:bg-gray-600 disabled:opacity-50"
+                    className="text-sm px-2 py-1 rounded bg-[var(--er-button-primary)] text-gray-300 hover:bg-[var(--er-button-primary-hover)] disabled:opacity-50 disabled:pointer-events-none"
                 >
                     {'<'}
                 </button>
@@ -44,20 +44,20 @@ const Pagination: React.FC<PaginationProps> = ({
                 <button
                     onClick={() => handlePageChange(currentPage + 1)}
                     disabled={currentPage === totalPages}
-                    className="text-sm px-2 py-1 rounded bg-gray-700 text-gray-300 hover:bg-gray-600 disabled:opacity-50"
+                    className="text-sm px-2 py-1 rounded bg-[var(--er-button-primary)] text-gray-300 hover:bg-[var(--er-button-primary-hover)] disabled:opacity-50 disabled:pointer-events-none"
                 >
                     {'>'}
                 </button>
                 <button
                     onClick={() => handlePageChange(totalPages)}
                     disabled={currentPage === totalPages}
-                    className="text-sm px-2 py-1 rounded bg-gray-700 text-gray-300 hover:bg-gray-600 disabled:opacity-50"
+                    className="text-sm px-2 py-1 rounded bg-[var(--er-button-primary)] text-gray-300 hover:bg-[var(--er-button-primary-hover)] disabled:opacity-50 disabled:pointer-events-none"
                 >
                     {'>>'}
                 </button>
             </>
         );
-        
+
 
         // const pageButtons = [];
         // const totalButtons = 5;
@@ -84,7 +84,7 @@ const Pagination: React.FC<PaginationProps> = ({
 
         // if (currentPage > 1) {
         //     pageButtons.push(
-        //         <button key="first" onClick={() => handlePageChange(1)} className="text-sm px-2 py-1 rounded bg-gray-700 text-gray-300 hover:bg-gray-600">
+        //         <button key="first" onClick={() => handlePageChange(1)} className="text-sm px-2 py-1 rounded bg-gray-700 text-gray-300 hover:bg-[var(--er-button-secondary-hover)]">
         //             {'<<'}
         //         </button>
         //     );
@@ -95,7 +95,7 @@ const Pagination: React.FC<PaginationProps> = ({
         //         <button
         //             key={page}
         //             onClick={() => handlePageChange(page)}
-        //             className={`px-2 py-1 rounded ${currentPage === page ? 'bg-[#3068ba] text-white' : 'bg-gray-700 text-gray-300 hover:bg-gray-600 text-sm'}`}
+        //             className={`px-2 py-1 rounded ${currentPage === page ? 'bg-[var(--er-button-primary)] text-white' : 'bg-gray-700 text-gray-300 hover:bg-[var(--er-button-secondary-hover)] text-sm'}`}
         //         >
         //             {page}
         //         </button>
@@ -104,7 +104,7 @@ const Pagination: React.FC<PaginationProps> = ({
 
         // if (currentPage < totalPages) {
         //     pageButtons.push(
-        //         <button key="last" onClick={() => handlePageChange(totalPages)} className="text-sm px-2 py-1 rounded bg-gray-700 text-gray-300 hover:bg-gray-600">
+        //         <button key="last" onClick={() => handlePageChange(totalPages)} className="text-sm px-2 py-1 rounded bg-gray-700 text-gray-300 hover:bg-[var(--er-button-secondary-hover)]">
         //             {'>>'}
         //         </button>
         //     );

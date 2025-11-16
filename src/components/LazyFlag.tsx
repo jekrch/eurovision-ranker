@@ -17,11 +17,11 @@ export const LazyLoadedFlag: React.FC<FlagProps> = ({ code, className, style }) 
 
   // Only render on client-side to avoid SSR issues
   if (!isClient) {
-    return <div className={`${className} bg-slate-700`}></div>; // Placeholder during SSR
+    return <div className={`${className} bg-[var(--er-button-neutral-hover)]`}></div>; // Placeholder during SSR
   }
 
   return (
-    <Suspense fallback={<div className={`${className} bg-slate-700`}></div>}>
+    <Suspense fallback={<div className={`${className} bg-[var(--er-button-neutral-hover)]`}></div>}>
       <LazyFlag code={code} className={className} style={style}/>
     </Suspense>
   );

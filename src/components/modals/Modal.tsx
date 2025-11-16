@@ -136,7 +136,7 @@ const Modal: React.FC<ModalContainerProps> = ({
                 <div
                     ref={modalRef}
                     className={classNames(
-                        "relative bg-[#22283e] m-4 max-h-[80vh] text-slate-400 p-6 rounded-lg shadow-lg max-w-lg w-full flex flex-col transform transition-all duration-300 ease-out",
+                        "relative bg-[var(--er-surface-secondary)] m-4 max-h-[80vh] text-[var(--er-text-tertiary)] p-6 rounded-lg shadow-lg max-w-lg w-full flex flex-col transform transition-all duration-300 ease-out",
                         isOpen && showModal ? `${transitionStyles.opacity} ${transitionStyles.transform}` : 'opacity-0 translate-y-20', // Control modal visibility/position smoothly
                         className
                     )}
@@ -144,7 +144,7 @@ const Modal: React.FC<ModalContainerProps> = ({
                     <button
                         type="button"
                         className={classNames(
-                            "absolute -top-1 right-0 mt-4 mr-4 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white",
+                            "absolute -top-1 right-0 mt-4 mr-4 text-[var(--er-text-subtle)] bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-[var(--er-button-secondary-hover)] dark:hover:text-white",
                             closeBtnClassName
                         )}
                         data-modal-hide="default-modal"

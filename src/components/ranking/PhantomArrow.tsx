@@ -31,7 +31,7 @@ const PhantomArrow: React.FC<PhantomArrowProps> = ({ show }) => {
         transform: 'translateY(-50%)',
       }}
     >
-      <FontAwesomeIcon icon={faArrowRight} size="4x" className="text-slate-400 font-extrabold" /> 
+      <FontAwesomeIcon icon={faArrowRight} size="4x" className="text-[var(--er-text-tertiary)] font-extrabold" /> 
     </div>
   );
 };

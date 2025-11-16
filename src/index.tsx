@@ -5,6 +5,7 @@ import store from './redux/store';
 
 // import global styles
 import './index.css';
+import './themes.css';
 import './auroral.css';
 
 // lazy load the App component

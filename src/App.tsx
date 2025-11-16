@@ -3,7 +3,7 @@ import { DragDropContext, DropResult } from '@hello-pangea/dnd';
 import classNames from 'classnames';
 import { CountryContestant } from './data/CountryContestant';
 import { AppDispatch, AppState } from './redux/store';
-import { setRankedItems, setUnrankedItems, setShowUnranked, setActiveCategory, setShowTotalRank, setCategories, setGlobalSearch } from './redux/rootSlice';
+import { setRankedItems, setUnrankedItems, setShowUnranked, setActiveCategory, setShowTotalRank, setCategories, setGlobalSearch, setTheme } from './redux/rootSlice';
 import { loadRankingsFromURL, encodeRankingsToURL, updateQueryParams, updateUrlFromRankedItems, urlHasRankings } from './utilities/UrlUtil';
 import WelcomeOverlay from './components/modals/WelcomeOverlay';
 import { Toaster } from 'react-hot-toast';
@@ -74,6 +74,8 @@ const App: React.FC = () => {
   useEffect(() => {
     if (theme.includes('ab')) {
       loadAuroralCSS();
+    } else {
+      setTheme(theme)
     }
   }, [theme]);
 
@@ -452,16 +454,16 @@ const App: React.FC = () => {
               {showUnranked && !globalSearch && (
 
                 <div className="relative flex flex-col">
-                  <div className="tour-step-15 sticky top-0 rounded-t-md round-b-sm text-center font-bold bg-blue-900 gradient-background-reverse text-slate-300 tracking-tighter shadow-md z-50">
+                  <div className="tour-step-15 sticky top-0 rounded-t-md round-b-sm text-center font-bold bg-[var(--er-surface-bar)] gradient-background-reverse text-[var(--er-text-secondary)] tracking-tighter shadow-md z-50">
                     <div className="flex items-center justify-center py-1 px-0">
                       <TooltipHelp
                         content="Select countries across all contest years"
-                        className="text-slate-300 align-middle mb-1 -mr-1"
+                        className="text-[var(--er-text-secondary)] align-middle mb-1 -mr-1"
                       />
                       <Switch
                         label="adv"
                         className="items-center align-middle font-normal"
-                        labelClassName="text-sm text-slate-400"
+                        labelClassName="text-sm text-[var(--er-text-tertiary)]"
                         checked={globalSearch}
                         setChecked={updateGlobalSearch}
                       />
@@ -506,13 +508,13 @@ const App: React.FC = () => {
                 );
               }}
               className={
-                "w-[4em] py-3 bg-blue-900 hover:bg-blue-800 z-50 relative" +
-                "overflow-hidden text-slate-200 font-normal py-1 px-3 " +
-                "rounded-full border-slate-600 border-[0.1em] text-base shadow-lg " +
+                "w-[4em] py-3 bg-[var(--er-surface-bar)] hover:bg-[var(--er-interactive-dark)] z-50 relative" +
+                "overflow-hidden text-[var(--er-text-primary)] font-normal py-1 px-3 " +
+                "rounded-full border-[var(--er-border-tertiary)] border-[0.1em] text-base shadow-lg " +
                 "bg-opacity-80"
               }
             >
-              <div className="text-slate-200">
+              <div className="text-[var(--er-text-primary)]">
                 {showUnranked ? 'VIEW' : 'EDIT'}
               </div>
             </button>

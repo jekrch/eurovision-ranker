@@ -28,8 +28,8 @@ const MainModal: React.FC<MainModalProps> = (props: MainModalProps) => {
 
     return (
         <Modal isOpen={props.isOpen} onClose={props.onClose} className="">
-            <div className="border-b border-gray-200 dark:border-gray-700 -mt-4">
-                <ul className="flex flex-wrap -mb-px text-sm font-medium text-center text-gray-500 dark:text-gray-400">
+            <div className="border-b border-[var(--er-border-lightest)] dark:border-[var(--er-border-darker)] -mt-4">
+                <ul className="flex flex-wrap -mb-px text-sm font-medium text-center text-[var(--er-text-muted)] dark:text-[var(--er-text-subtle)]">
                     <TabButton
                         isActive={activeTab === 'about'}
                         onClick={() => setActiveTab('about')}
@@ -67,7 +67,7 @@ const MainModal: React.FC<MainModalProps> = (props: MainModalProps) => {
                                     className="w-full shadow-lg rounded mb-5" />
                             </div>
                             <button
-                                className="w-full bg-[#3068ba] hover:bg-blue-700 text-white font-normal py-1 px-3 rounded-md text-md mb-1"
+                                className="w-full bg-[var(--er-button-primary)] hover:bg-[var(--er-button-primary-hover)] text-white font-normal py-1 px-3 rounded-md text-md mb-1"
                                 onClick={() => window.open('https://www.givemn.org/story/Jddsdf', '_blank')}
                             >
                                 {'Donate'}
@@ -82,13 +82,13 @@ const MainModal: React.FC<MainModalProps> = (props: MainModalProps) => {
                     </div>}
 
             </div>
-            <div className="flex text-xs w-full -mb-2 mt-2 text-slate-500">
+            <div className="flex text-xs w-full -mb-2 mt-2 text-[var(--er-text-muted)]">
                 <span className="flex-grow mr-2">
                     <a className="text-link"
                         target="_blank"
                         rel="noopener noreferrer"
                         href="https://github.com/jekrch/eurovision-ranker/releases"
-                    >v9.0</a>
+                    >v10.0</a>
                 </span>
                 <span className="text-right">
                     {`Copyright (c) 2023${new Date().getFullYear()?.toString() !== '2023' ? '-' + new Date().getFullYear() : ''} `}

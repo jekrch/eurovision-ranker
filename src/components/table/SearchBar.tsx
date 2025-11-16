@@ -28,9 +28,9 @@ const SearchBar: React.FC<SearchBarProps> = ({
                     value={searchTerm}
                     onChange={handleSearch}
                     placeholder="Search..."
-                    className="text-sm w-full pl-10 pr-4 py-[0.4em] border rounded-md focus:outline-none focus:ring-2 focus:ring-slate-400 bg-transparent text-slate-300 border-slate-400"
+                    className="text-sm w-full pl-10 pr-4 py-[0.4em] border rounded-md focus:outline-none focus:ring-2 focus:ring-slate-400 bg-transparent text-[var(--er-text-secondary)] border-[var(--er-border-primary)]"
                 />
-                <FontAwesomeIcon icon={faSearch} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400" />
+                <FontAwesomeIcon icon={faSearch} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[var(--er-text-tertiary)]" />
             </div>
         </div>
     );

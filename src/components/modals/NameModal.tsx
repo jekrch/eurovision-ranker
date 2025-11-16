@@ -46,7 +46,7 @@ const NameModal: React.FC<NameModalProps> = (props: NameModalProps) => {
                     <input 
                         id="name" 
                         ref={inputRef} 
-                        className="border text-sm rounded-md block w-full p-2.5 bg-gray-700 border-gray-600 placeholder-slate-400 text-slate-200 focus:outline-none focus:ring-1 focus:ring-slate-400 focus:border-transparent" 
+                        className="border text-sm rounded-md block w-full p-2.5 bg-[var(--er-border-subtle)] border-[var(--er-border-medium)] placeholder-[var(--er-text-subtle)] text-[var(--er-text-primary)] focus:outline-none focus:ring-1 focus:ring-slate-400 focus:border-transparent" 
                         placeholder="Ranking name"
                         value={inputValue}
                         onKeyDown={handleKeyDown} 

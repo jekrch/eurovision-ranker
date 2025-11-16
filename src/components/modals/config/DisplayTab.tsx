@@ -10,15 +10,17 @@ import TooltipHelp from '../../TooltipHelp';
 import { useAppDispatch, useAppSelector } from '../../../hooks/stateHooks';
 import { CountryContestant } from '../../../data/CountryContestant';
 import { Vote } from '../../../data/Vote';
+import { faMoon, faPalette, faStar, faSun, faTree, faWater } from '@fortawesome/free-solid-svg-icons';
 
-// Theme mapping for display names to codes
+
+// Theme configuration with icons
 export const THEME_OPTIONS = [
-    { display: 'Default', code: '' },
-    { display: 'Auroral', code: 'ab' },
-    { display: 'Midnight', code: 'm' },
-    { display: 'Ocean', code: 'o' },
-    { display: 'Sunset', code: 's' },
-    { display: 'Forest', code: 'f' }
+    { display: 'Default', code: '', icon: faPalette, label: 'Default' },
+    { display: 'Auroral', code: 'ab', icon: faStar, label: 'Aurora' },
+    { display: 'Midnight', code: 'm', icon: faMoon, label: 'Midnight' },
+    { display: 'Ocean', code: 'o', icon: faWater, label: 'Ocean' },
+    { display: 'Sunset', code: 's', icon: faSun, label: 'Sunset' },
+    { display: 'Forest', code: 'f', icon: faTree, label: 'Forest' }
 ];
 
 const DisplayTab: React.FC = () => {

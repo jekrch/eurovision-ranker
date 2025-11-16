@@ -2,6 +2,11 @@ import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHouseUser, faHeart, faList, faGlasses, faSort } from '@fortawesome/free-solid-svg-icons';
 import { IconDefinition } from '@fortawesome/free-solid-svg-icons';
+import { useAppDispatch, useAppSelector } from '../../hooks/stateHooks';
+import { AppState } from '../../redux/store';
+import { setTheme } from '../../redux/rootSlice';
+import { updateQueryParams } from '../../utilities/UrlUtil';
+import ThemeSwitcher from '../ThemeSwitcher';
 
 export type IntroColumnProps = {
     openModal: (tabName: string) => void;
@@ -45,6 +50,14 @@ const MenuItem: React.FC<MenuItemProps> = ({ icon, text, onClick, isCustomIcon =
 };
 
 const IntroColumn: React.FC<IntroColumnProps> = ({ openModal, openConfigModal, setRunTour, setRunSortTour }) => {
+    const dispatch = useAppDispatch();
+    const theme = useAppSelector((state: AppState) => state.theme);
+
+    const handleThemeChange = (themeCode: string) => {
+        dispatch(setTheme(themeCode));
+        updateQueryParams({ t: themeCode });
+    };
+
     return (
         <div className="flex justify-left items-center">
             <div className="text-[var(--er-text-subtle)] font-normal tracking-tight font-sans text-italic text-left ml-7 m-4 text-xs whitespace-normal max-w-[10em] mt-3">
@@ -84,7 +97,13 @@ const IntroColumn: React.FC<IntroColumnProps> = ({ openModal, openConfigModal, s
                         text="Sorter"
                         onClick={() => setRunSortTour(true)}
                         isCustomIcon={true}
-                        className="mb-2"
+                        className="mb-7"
+                    />
+
+                    {/* Theme Switcher */}
+                    <ThemeSwitcher 
+                        currentTheme={theme}
+                        onThemeChange={handleThemeChange}
                     />
                 </div>
             </div>

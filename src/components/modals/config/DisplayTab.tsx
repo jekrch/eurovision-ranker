@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { AppState } from '../../../redux/store';
-import { setTheme, setVote, setContestants, setShowComparison, setRankedItems, assignVotesToContestants, setShowThumbnail, setShowPlace } from '../../../redux/rootSlice';
-import { assignVotesByCode, assignVotesByContestants, fetchVotesByCode, updateVoteTypeCode, voteCodeHasType } from '../../../utilities/VoteProcessor';
+import { setTheme, setVote, setShowComparison, setRankedItems, assignVotesToContestants, setShowThumbnail, setShowPlace } from '../../../redux/rootSlice';
+import {  assignVotesByContestants, fetchVotesByCode, updateVoteTypeCode, voteCodeHasType } from '../../../utilities/VoteProcessor';
 import { countries } from '../../../data/Countries';
 import Dropdown from '../../Dropdown';
 import Checkbox from '../../Checkbox';
@@ -10,7 +10,7 @@ import TooltipHelp from '../../TooltipHelp';
 import { useAppDispatch, useAppSelector } from '../../../hooks/stateHooks';
 import { CountryContestant } from '../../../data/CountryContestant';
 import { Vote } from '../../../data/Vote';
-import { faMoon, faPalette, faStar, faSun, faTree, faWater } from '@fortawesome/free-solid-svg-icons';
+import { faIceCream, faMoon, faPalette, faStar, faSun, faTree, faWater, faWheatAwn } from '@fortawesome/free-solid-svg-icons';
 
 
 // Theme configuration with icons
@@ -20,7 +20,9 @@ export const THEME_OPTIONS = [
     { display: 'Midnight', code: 'm', icon: faMoon, label: 'Midnight' },
     { display: 'Ocean', code: 'o', icon: faWater, label: 'Ocean' },
     { display: 'Sunset', code: 's', icon: faSun, label: 'Sunset' },
-    { display: 'Forest', code: 'f', icon: faTree, label: 'Forest' }
+    { display: 'Forest', code: 'f', icon: faTree, label: 'Forest' },
+    { display: 'Pastel', code: 'p', icon: faIceCream, label: 'Pastel' },
+    { display: 'Prairie', code: 'pr', icon: faWheatAwn, label: 'Prairie' }
 ];
 
 const DisplayTab: React.FC = () => {

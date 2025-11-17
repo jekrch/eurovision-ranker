@@ -7,6 +7,7 @@ import { AppDispatch, AppState } from '../../redux/store';
 import { useAppDispatch, useAppSelector } from '../../hooks/stateHooks';
 import { setWelcomeOverlayIsOpen } from '../../redux/rootSlice';
 import '../../themes.css';
+import { HeartIcon } from '../HeartIcon';
 
 interface WelcomeOverlayProps {
     exiting: boolean;
@@ -28,7 +29,7 @@ const WelcomeOverlay: React.FC<WelcomeOverlayProps> = ({ handleGetStarted, handl
     const welcomeOverlayIsOpen = useAppSelector((state: AppState) => state.welcomeOverlayIsOpen);
     const overlayContentRef = useRef<HTMLDivElement>(null);
     const [closed, setClosed] = useState(false);
-    
+
     if (!welcomeOverlayIsOpen && !closed) {
         dispatch(
             setWelcomeOverlayIsOpen(true)
@@ -42,7 +43,7 @@ const WelcomeOverlay: React.FC<WelcomeOverlayProps> = ({ handleGetStarted, handl
         }
     };
 
-    function getStarted(){
+    function getStarted() {
         dispatch(
             setWelcomeOverlayIsOpen(false)
         );
@@ -74,10 +75,18 @@ const WelcomeOverlay: React.FC<WelcomeOverlayProps> = ({ handleGetStarted, handl
                     <div className="text-md text-center font-semibold tracking-tight text-[var(--er-text-tertiary)] mb-0 leading-tight">
                         Welcome to
                         <div className="mt-0">
-                            <span className="text-xl gradient-text font-bold">Eurovision Ranker <img
+                            <span className="text-xl gradient-text font-bold">Eurovision Ranker
+                                <HeartIcon
+                                    alt="Heart"
+                                    style={{ display: 'inline', verticalAlign: 'middle' }}
+                                    className="ml-[0.3em] mb-1 w-5 h-5 pulse-on-load my-heart-icon"
+                                />
+                                {/* <img
                                 src={`/eurovision-heart.svg`}
                                 alt="Heart"
-                                className="w-5 h-5 mb-1 ml-[0.2em] inline pulse-on-load" /></span>
+                                className="w-5 h-5 mb-1 ml-[0.2em] inline pulse-on-load" /> */}
+
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -89,21 +98,21 @@ const WelcomeOverlay: React.FC<WelcomeOverlayProps> = ({ handleGetStarted, handl
                         <li className="flex items-start"> <FaList className="mt-1 mr-2 text-indigo-500" /> <span>rank contests going back to 1956</span></li>
                         <li className="flex items-start"> <FaTv className="mt-1 mr-2 text-[var(--er-interactive-primary)]" /> <span>create YouTube playlists </span></li>
                         <li className="flex items-start"> <FaGlobe className='mt-1 mr-2 text-sky-500' /> <span>view a heat map of your ranking</span></li>
-                        
+
                         <li className="flex items-start"> <FaCog className='mt-1 mr-2 text-[var(--er-text-muted)]' /> <span>explore past voting records</span></li>
-                        <li className="flex items-start"> 
-                            <FaSort className='mt-1 mr-2 text-purple-500' /> 
+                        <li className="flex items-start">
+                            <FaSort className='mt-1 mr-2 text-purple-500' />
                             <span>use a sorter to generate rankings</span>
                             <span className={classNames(
-                                "absolute -left-[0.5em] subtle-pulse", 
-                                "inline-block bg-gradient-to-r from-[var(--er-surface-medium)] to-[var(--er-interactive-dark)] text-[var(--er-text-secondary)]", 
-                                "text-[0.6rem] font-bold pl-[1.2em] pr-[1.5em] py-0.2", 
-                                "transition-opacity duration-[2000] ease-in", 
+                                "absolute -left-[0.5em] subtle-pulse",
+                                "inline-block bg-gradient-to-r from-[var(--er-surface-medium)] to-[var(--er-interactive-dark)] text-[var(--er-text-secondary)]",
+                                "text-[0.6rem] font-bold pl-[1.2em] pr-[1.5em] py-0.2",
+                                "transition-opacity duration-[2000] ease-in",
                                 (welcomeOverlayIsOpen && !exiting) ? 'opacity-100' : 'opacity-0'
                             )}
-                            style={{
-                                clipPath: 'polygon(0% 0%, 80% 0%, 100% 50%, 80% 100%, 0% 100%)'
-                            }}
+                                style={{
+                                    clipPath: 'polygon(0% 0%, 80% 0%, 100% 50%, 80% 100%, 0% 100%)'
+                                }}
                             >NEW</span>
                         </li>
                         <li className="flex items-start"> <FaHeart className='mt-1 mr-2 opacity-0' /> <span>...and more!</span></li>

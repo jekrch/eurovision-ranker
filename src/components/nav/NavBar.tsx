@@ -6,6 +6,7 @@ import { setShowUnranked } from '../../redux/rootSlice';
 import IconButton from '../IconButton';
 import classNames from 'classnames';
 import { useAppDispatch, useAppSelector } from '../../hooks/stateHooks';
+import { HeartIcon } from '../HeartIcon';
 
 type NavbarProps = {
     openModal: (tabName: string) => void;
@@ -30,11 +31,11 @@ const Navbar: React.FC<NavbarProps> = ({ openModal, openConfigModal }) => {
                         <span className="inline gradient-text product-name">
                             Eurovision Ranker
                         </span>
-                        <img
-                            src={`/eurovision-heart.svg`}
+                        <HeartIcon
                             alt="Heart"
                             style={{ display: 'inline', verticalAlign: 'middle' }}
-                            className="ml-[0.5em] mb-1 w-5 h-5 pulse-on-load" />
+                            className="ml-[0.5em] mb-1 w-5 h-5 pulse-on-load"
+                        />
                     </div>
 
                 </div>
@@ -46,7 +47,7 @@ const Navbar: React.FC<NavbarProps> = ({ openModal, openConfigModal }) => {
                             <IconButton
                                 className={
                                     classNames(
-                                        "tour-step-11 py-1 pl-[0.7em] pr-[0.9em] rounded-full text-xs mr-0 w-[5em]",                                        
+                                        "tour-step-11 py-1 pl-[0.7em] pr-[0.9em] rounded-full text-xs mr-0 w-[5em]",
                                     )
                                 }
                                 onClick={() => dispatch(setShowUnranked(!showUnranked))}

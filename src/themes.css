@@ -666,3 +666,239 @@
   --er-surface-light: #4d6a5a;
   --er-surface-muted-accent: #3d5a4a;
 }
+
+/* Pastel Theme - Vintage whimsical aesthetic with soft warm tones */
+[data-theme="p"] {
+  /* === BACKGROUND COLORS === */
+  --er-surface-primary: #1f1420;
+  --er-surface-secondary: #2a1e28;
+  --er-surface-tertiary: #3a2a35;
+  --er-surface-accent: #4a3542;
+  --er-surface-bar: #52394a;
+  
+  /* === GRADIENT SPECIFIC COLORS === */
+  --er-nav-gradient-start: #1f1420;
+  --er-nav-gradient-end: #4a3542;
+  --er-ranked-bg-start: #1f1420;
+  --er-ranked-bg-end: #3a2a35;
+  
+  /* === SURFACE VARIANTS === */
+  --er-surface-dark: #2a1e28;
+  --er-surface-medium: #52394a;
+  --er-surface-light: #6d4d60;
+  --er-surface-muted-accent: #5a4252;
+  
+  /* === INTERACTIVE/BUTTON COLORS === */
+  --er-button-primary: #c17b8e;
+  --er-button-primary-hover: #d18fa0;
+  --er-button-secondary: #7d6173;
+  --er-button-secondary-hover: #8d7183;
+  --er-button-neutral: #4a3542;
+  --er-button-neutral-hover: #5a4252;
+  
+  /* === TEXT COLORS === */
+  --er-text-primary: #f5e9ed;
+  --er-text-secondary: #ead8de;
+  --er-text-tertiary: #dfc7cf;
+  --er-text-muted: #b5a0a9;
+  --er-text-subtle: #c9b4bd;
+  
+  /* === BORDER COLORS === */
+  --er-border-primary: #8d7183;
+  --er-border-secondary: #c17b8e;
+  --er-border-tertiary: #6d4d60;
+  --er-border-subtle: #5a4252;
+  --er-border-lightest: #f5e9ed;
+  --er-border-lighter: #ead8de;
+  --er-border-default: #dfc7cf;
+  --er-border-medium: #8d7183;
+  --er-border-darker: #7d6173;
+  
+  /* === OVERLAY/OPACITY COLORS === */
+  --er-overlay-light: rgba(31, 20, 32, 0.3);
+  --er-overlay-medium: rgba(31, 20, 32, 0.6);
+  --er-overlay-heavy: rgba(31, 20, 32, 0.7);
+  
+  /* === ACCENT COLORS === */
+  --er-accent-blue: #a18ba0;
+  --er-accent-success: #8dbaa4;
+  --er-accent-error: #e89090;
+  --er-focus-ring: #c17b8e;
+  
+  /* === SCROLLBAR COLORS === */
+  --er-scrollbar-thumb: #8d7183;
+  --er-scrollbar-thumb-opacity: 0.52;
+  --er-scrollbar-thumb-hover: #7d6173;
+  --er-scrollbar-track: #4a3542;
+  
+  /* === ICON COLORS === */
+  --er-icon-muted: #b5a0a9;
+  
+  /* === LINK COLORS === */
+  --er-link-primary: #d18fa0;
+  --er-link-hover: #e1a0b0;
+  
+  /* === GRADIENT TEXT COLORS === */
+  --er-gradient-text-1: #ead8de;
+  --er-gradient-text-2: #d18fa0;
+  --er-gradient-text-3: #c17b8e;
+  
+  /* === GLOW ANIMATION COLORS === */
+  --er-glow-shadow-1: #52394a;
+  --er-glow-shadow-2: #8d7183;
+  --er-glow-shadow-3: #c17b8e;
+  --er-glow-bg-center: #5a4252;
+  --er-glow-bg-outer-1: rgba(141, 113, 131, 0.1);
+  --er-glow-bg-outer-2: rgba(90, 66, 82, 0.15);
+  --er-glow-bg-outer-3: rgba(193, 123, 142, 0.2);
+  
+  /* === SPECIAL GRADIENT BACKGROUNDS === */
+  --er-choice-bg-1: #2a1e28;
+  --er-choice-bg-2: #3a2a35;
+  --er-choice-bg-3: #c17b8e;
+  
+  --er-gradient-bg-1: #d18fa0;
+  --er-gradient-bg-2: #3a2a35;
+  --er-gradient-bg-3: #ead8de;
+  
+  --er-gradient-bg2-1: #c17b8e;
+  --er-gradient-bg2-2: #3a2a35;
+  --er-gradient-bg2-3: #dfc7cf;
+  
+  /* === WELCOME OVERLAY GRADIENT === */
+  --er-welcome-gradient-1: #c17b8e;
+  --er-welcome-gradient-2: #8dbaa4;
+  
+  /* === BODY BACKGROUND === */
+  --er-body-bg: #120c14;
+  
+  /* === INTERACTIVE COLORS === */
+  --er-interactive-secondary: #8d7183;
+  --er-interactive-primary: #d18fa0;
+  --er-interactive-dark: #4a3542;
+  --er-interactive-text-light: #f5e9ed;
+  
+  /* === SURFACE VARIANTS === */
+  --er-surface-dark: #2a1e28;
+  --er-surface-medium: #5a4252;
+  --er-surface-light: #8d7183;
+  --er-surface-muted-accent: #7d6173;
+}
+
+/* Prairie Theme - Stark cinematic desert aesthetic */
+[data-theme="pr"] {
+  /* === BACKGROUND COLORS === */
+  --er-surface-primary: #15120e;
+  --er-surface-secondary: #1e1a14;
+  --er-surface-tertiary: #2a2419;
+  --er-surface-accent: #3a2820;
+  --er-surface-bar: #433824;
+  
+  /* === GRADIENT SPECIFIC COLORS === */
+  --er-nav-gradient-start: #15120e;
+  --er-nav-gradient-end: #3a2820;
+  --er-ranked-bg-start: #15120e;
+  --er-ranked-bg-end: #2a2419;
+  
+  /* === SURFACE VARIANTS === */
+  --er-surface-dark: #1e1a14;
+  --er-surface-medium: #3a311f;
+  --er-surface-light: #5a4d32;
+  --er-surface-muted-accent: #4a352a;
+  
+  /* === INTERACTIVE/BUTTON COLORS === */
+  --er-button-primary: #8d5a47;
+  --er-button-primary-hover: #a36a57;
+  --er-button-secondary: #4a3f28;
+  --er-button-secondary-hover: #5a4d32;
+  --er-button-neutral: #2a2419;
+  --er-button-neutral-hover: #3a311f;
+  
+  /* === TEXT COLORS === */
+  --er-text-primary: #e8e1d3;
+  --er-text-secondary: #d5cabb;
+  --er-text-tertiary: #c2b8a5;
+  --er-text-muted: #9a8e7a;
+  --er-text-subtle: #b0a593;
+  
+  /* === BORDER COLORS === */
+  --er-border-primary: #7a5545;
+  --er-border-secondary: #8d5a47;
+  --er-border-tertiary: #4a3f28;
+  --er-border-subtle: #3a311f;
+  --er-border-lightest: #e8e1d3;
+  --er-border-lighter: #d5cabb;
+  --er-border-default: #c2b8a5;
+  --er-border-medium: #8d5a47;
+  --er-border-darker: #5a4d32;
+  
+  /* === OVERLAY/OPACITY COLORS === */
+  --er-overlay-light: rgba(21, 18, 14, 0.3);
+  --er-overlay-medium: rgba(21, 18, 14, 0.6);
+  --er-overlay-heavy: rgba(21, 18, 14, 0.7);
+  
+  /* === ACCENT COLORS === */
+  --er-accent-blue: #9a8e7a;
+  --er-accent-success: #7a9064;
+  --er-accent-error: #c47456;
+  --er-focus-ring: #a36a57;
+  
+  /* === SCROLLBAR COLORS === */
+  --er-scrollbar-thumb: #8d5a47;
+  --er-scrollbar-thumb-opacity: 0.52;
+  --er-scrollbar-thumb-hover: #7a5545;
+  --er-scrollbar-track: #3a311f;
+  
+  /* === ICON COLORS === */
+  --er-icon-muted: #9a8e7a;
+  
+  /* === LINK COLORS === */
+  --er-link-primary: #a36a57;
+  --er-link-hover: #b37a67;
+  
+  /* === GRADIENT TEXT COLORS === */
+  --er-gradient-text-1: #d5cabb;
+  --er-gradient-text-2: #a36a57;
+  --er-gradient-text-3: #8d5a47;
+  
+  /* === GLOW ANIMATION COLORS === */
+  --er-glow-shadow-1: #433824;
+  --er-glow-shadow-2: #7a5545;
+  --er-glow-shadow-3: #8d5a47;
+  --er-glow-bg-center: #3a2820;
+  --er-glow-bg-outer-1: rgba(122, 85, 69, 0.1);
+  --er-glow-bg-outer-2: rgba(58, 40, 32, 0.15);
+  --er-glow-bg-outer-3: rgba(141, 90, 71, 0.2);
+  
+  /* === SPECIAL GRADIENT BACKGROUNDS === */
+  --er-choice-bg-1: #1e1a14;
+  --er-choice-bg-2: #2a2419;
+  --er-choice-bg-3: #8d5a47;
+  
+  --er-gradient-bg-1: #8d5a47;
+  --er-gradient-bg-2: #2a2419;
+  --er-gradient-bg-3: #c2b8a5;
+  
+  --er-gradient-bg2-1: #a36a57;
+  --er-gradient-bg2-2: #2a2419;
+  --er-gradient-bg2-3: #b0a593;
+  
+  /* === WELCOME OVERLAY GRADIENT === */
+  --er-welcome-gradient-1: #8d5a47;
+  --er-welcome-gradient-2: #7a6841;
+  
+  /* === BODY BACKGROUND === */
+  --er-body-bg: #0c0a08;
+  
+  /* === INTERACTIVE COLORS === */
+  --er-interactive-secondary: #7a5545;
+  --er-interactive-primary: #a36a57;
+  --er-interactive-dark: #3a2820;
+  --er-interactive-text-light: #e8e1d3;
+  
+  /* === SURFACE VARIANTS === */
+  --er-surface-dark: #1e1a14;
+  --er-surface-medium: #4a3f28;
+  --er-surface-light: #8d5a47;
+  --er-surface-muted-accent: #7a5545;
+}

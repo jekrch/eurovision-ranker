@@ -16,6 +16,7 @@ import { IntroColumnWrapper } from './IntroColumnWrapper';
 import { deleteRankedCountry } from '../../redux/rankingActions';
 import { Draggable } from '@hello-pangea/dnd';
 import { useAppDispatch, useAppSelector } from '../../hooks/stateHooks';
+import { HeartIcon } from '../HeartIcon';
 
 interface RankedCountriesListProps {
     openSongModal: (countryContestant: CountryContestant) => void;
@@ -55,9 +56,9 @@ const RankedCountriesList: React.FC<RankedCountriesListProps> = ({
     const categories = useAppSelector((state: AppState) => state.categories);
     const activeCategory = useAppSelector((state: AppState) => state.activeCategory);
 
-   /**
-   * used to synchronize the horizontal scrollbar on detail cards across all ranked items
-   */
+    /**
+    * used to synchronize the horizontal scrollbar on detail cards across all ranked items
+    */
     const [categoryScrollPosition, setCategoryScrollPosition] = useState(0);
 
     const handleCategoryScroll = (event: React.UIEvent<HTMLDivElement>) => {
@@ -71,13 +72,13 @@ const RankedCountriesList: React.FC<RankedCountriesListProps> = ({
         );
     }, [refreshUrl]);
 
-   /**
-   * Identify country with the provided Id in the rankedItems array, and 
-   * move them back into the unrankedItems array, alphabetically 
-   * 
-   * @param countryId 
-   */
-   const handleDeleteRankedCountry = useCallback((id: string) => {
+    /**
+    * Identify country with the provided Id in the rankedItems array, and 
+    * move them back into the unrankedItems array, alphabetically 
+    * 
+    * @param countryId 
+    */
+    const handleDeleteRankedCountry = useCallback((id: string) => {
         dispatch(deleteRankedCountry(id));
         setRefreshUrl(Math.random());
     }, [dispatch]);
@@ -133,11 +134,11 @@ const RankedCountriesList: React.FC<RankedCountriesListProps> = ({
                                         <span className="text-center mb-40 min-mt-5 text-[var(--er-text-muted)] mx-10 text-sm">
                                             <div>Click 'Select' to choose</div> countries to rank
                                             <div>
-                                                <img
-                                                    src={`/eurovision-heart.svg`}
+
+                                                <HeartIcon
                                                     alt="Heart"
                                                     style={{ display: 'inline', verticalAlign: 'middle' }}
-                                                    className="ml-[0.5em] mt-3 w-5 h-5 opacity-70 grayscale"
+                                                    className="ml-[0.5em] mt-3 mb-1 w-6 h-6 pulse-on-load my-heart-icon"
                                                 />
                                             </div>
                                         </span>

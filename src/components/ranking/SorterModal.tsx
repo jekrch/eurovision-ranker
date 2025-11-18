@@ -695,7 +695,7 @@ const SorterModal: React.FC<SorterModalProps> = ({
                     {/* show progress bar only when sorting is active */}
                     {!currentSortState?.isComplete && isSessionLoaded && (
                          <div className="mb-3">
-                            <div className="w-full bg-gray-700 rounded-full h-2">
+                            <div className="w-full bg-[var(--er-button-secondary-hover)] rounded-full h-2">
                                  <div
                                     className="h-2 rounded-full bg-[var(--er-interactive-secondary)] transition-all duration-300"
                                     style={{ width: `${progress}%` }}

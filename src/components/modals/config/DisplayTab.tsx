@@ -10,7 +10,7 @@ import TooltipHelp from '../../TooltipHelp';
 import { useAppDispatch, useAppSelector } from '../../../hooks/stateHooks';
 import { CountryContestant } from '../../../data/CountryContestant';
 import { Vote } from '../../../data/Vote';
-import { faIceCream, faMoon, faPalette, faStar, faSun, faTree, faWater, faWheatAwn } from '@fortawesome/free-solid-svg-icons';
+import { faIceCream, faMoon, faPalette, faRainbow, faStar, faSun, faTree, faWater, faWheatAwn } from '@fortawesome/free-solid-svg-icons';
 
 
 // Theme configuration with icons
@@ -22,7 +22,8 @@ export const THEME_OPTIONS = [
     { display: 'Sunset', code: 's', icon: faSun, label: 'Sunset' },
     { display: 'Forest', code: 'f', icon: faTree, label: 'Forest' },
     { display: 'Pastel', code: 'p', icon: faIceCream, label: 'Pastel' },
-    { display: 'Prairie', code: 'pr', icon: faWheatAwn, label: 'Prairie' }
+    { display: 'Prairie', code: 'pr', icon: faWheatAwn, label: 'Prairie' },
+    { display: 'Rainbow', code: 'r', icon: faRainbow, label: 'Rainbow' }
 ];
 
 const DisplayTab: React.FC = () => {

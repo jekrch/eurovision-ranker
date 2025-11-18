@@ -183,7 +183,7 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
                     <span className="font-xs text-sm text-[var(--er-text-tertiary)]">
                       {contestant?.artist}
                     </span>
-                    <span className={classNames("ml-2 font-xs text-xs text-[var(--er-text-tertiary)] rounded-sm bg-[var(--er-surface-tertiary)] bg-opacity-60")}>
+                    <span className={classNames("ml-2 font-xs text-xs text-[var(--er-text-tertiary)] rounded-sm bg-[var(--er-surface-tertiary-70)] bg-opacity-60")}>
                       {contestant.song?.length && !contestant.song?.includes("TBD") ? `"${contestant.song}"` : `${contestant.song}`}
                     </span>
 

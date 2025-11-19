@@ -1,4 +1,4 @@
-import { CountryContestant } from '../data/CountryContestant'; // Assuming this path is correct
+import { CountryContestant } from '../data/CountryContestant';
 import { toast } from 'react-hot-toast';
 
 /*
@@ -7,26 +7,25 @@ import { toast } from 'react-hot-toast';
 
 export type RankingCanvasConfig = {
   baseItemHeight: number;
-  itemMargin: number; // Margin between items in a column
+  itemMargin: number;
   canvasWidth: number;
-  padding: number; // General padding for canvas
-  columnPadding: number; // Padding between the two columns
+  padding: number;
+  columnPadding: number;
   headerHeight: number;
   footerMargin: number;
 
-  // Item internal layout
-  itemPadding: number; // Padding inside each item card
+  itemPadding: number;
   rankBoxWidth: number;
-  rankBoxColor: string; // Background for the rank box
+  rankBoxColor: string;
   flagBoxWidth: number;
   flagBoxHeight: number;
-  flagBoxColor: string; // Background for the flag box
-  textBoxColor: string; // Background for the text box
-  boxGap: number; // Gap between rank box and (flag + text box area)
-  textPaddingLeft: number; // Padding between flag box and text box
+  flagBoxColor: string;
+  textBoxColor: string;
+  boxGap: number;
+  textPaddingLeft: number;
 
-  cardCornerRadius: number; // For the main item card
-  boxCornerRadius: number; // For the internal rank/flag/text boxes
+  cardCornerRadius: number;
+  boxCornerRadius: number;
   fontFamily: string;
   pixelRatio: number;
   fontSizes: {
@@ -38,34 +37,62 @@ export type RankingCanvasConfig = {
 };
 
 export type RankingColors = {
-  background: string; // Overall canvas background
+  background: string;
   headerGradient: string[];
-  cardBackground: string; // Background for each main ranked item card
-  // cardBorder: string; // Border for main item card (can be transparent)
+  cardBackground: string;
   titleText: string;
-  rankText: string; // Color of the rank number itself
+  rankText: string;
   artistText: string;
   songText: string;
   footerText: string;
   shadow: string;
 };
 
+// Helper function to get CSS variable value
+const getCSSVariable = (variableName: string, fallback: string): string => {
+  if (typeof window === 'undefined' || !document.documentElement) {
+    return fallback;
+  }
+  const value = getComputedStyle(document.documentElement)
+    .getPropertyValue(variableName)
+    .trim();
+  return value || fallback;
+};
+
+// Function to get theme colors from CSS variables
+const getThemeColors = (): RankingColors => {
+  return {
+    background: getCSSVariable('--er-body-bg', '#0d0f1d'),
+    headerGradient: [
+      getCSSVariable('--er-nav-gradient-start', '#13172b'),
+      getCSSVariable('--er-nav-gradient-end', '#334678')
+    ],
+    cardBackground: getCSSVariable('--er-surface-tertiary', '#03022d'),
+    titleText: getCSSVariable('--er-text-primary', '#e2e8f0'),
+    rankText: '#FFFFFF',
+    artistText: getCSSVariable('--er-text-primary', '#e2e8f0'),
+    songText: getCSSVariable('--er-text-secondary', '#cbd5e1'),
+    footerText: getCSSVariable('--er-text-tertiary', '#a7b9d2'),
+    shadow: 'rgba(0, 0, 0, 0.3)',
+  };
+};
+
 const DEFAULT_CONFIG: RankingCanvasConfig = {
-  baseItemHeight: 70, // Min height for an item, adjust as needed
+  baseItemHeight: 70,
   itemMargin: 12,
   canvasWidth: 800,
   padding: 20,
   columnPadding: 20,
-  headerHeight: 60, // This will be used if a title is present
+  headerHeight: 60,
   footerMargin: 10,
 
   itemPadding: 8,
   rankBoxWidth: 55,
-  rankBoxColor: '#48488a', // Default for ranks 4+
+  rankBoxColor: getCSSVariable('--er-surface-accent', '#334678'),
   flagBoxWidth: 60,
-  flagBoxHeight: 45, // Standard 4:3 aspect ratio for flag box
-  flagBoxColor: '#3A3A6A',
-  textBoxColor: 'transparent', // Text box can be transparent against card background
+  flagBoxHeight: 45,
+  flagBoxColor: getCSSVariable('--er-surface-tertiary', '#1c214c'),
+  textBoxColor: 'transparent',
   boxGap: 15,
   textPaddingLeft: 20,
 
@@ -81,22 +108,11 @@ const DEFAULT_CONFIG: RankingCanvasConfig = {
   },
 };
 
-const DEFAULT_COLORS: RankingColors = {
-  background: '#1E1E3F',
-  headerGradient: ['#3B3B7A', '#2A2A5F'],
-  cardBackground: '#2C2C54', // Main item card background
-  titleText: '#E0E0FF',
-  rankText: '#FFFFFF',
-  artistText: '#D0D0F0',
-  songText: '#B0B0D0',
-  footerText: '#A0A0C0',
-  shadow: 'rgba(0, 0, 0, 0.2)', // Subtle shadow for main cards
-};
+const DEFAULT_COLORS: RankingColors = getThemeColors();
 
 /*
   Helper Functions
 */
-// Loads an SVG from a URL and returns it as an HTMLImageElement
 const loadSvgAsImage = (url: string, width: number, height: number): Promise<HTMLImageElement> => {
   return new Promise((resolve, reject) => {
     fetch(url, {
@@ -306,7 +322,7 @@ const drawHeader = (
   ctx: CanvasRenderingContext2D,
   text: string,
   width: number,
-  height: number, // This is the config.headerHeight
+  height: number,
   colors: RankingColors,
   config: RankingCanvasConfig
 ): void => {
@@ -322,19 +338,19 @@ const drawHeader = (
   ctx.font = `bold ${config.fontSizes.title}px ${config.fontFamily}`;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText(text, width / 2, height / 1.8); // Use provided height for centering
+  ctx.fillText(text, width / 2, height / 1.8);
 };
 
 const drawFooter = (
   ctx: CanvasRenderingContext2D,
   text: string,
   width: number,
-  height: number, // Actual height of the footer (e.g., 30px)
-  y: number, // Y position to start drawing the footer
+  height: number,
+  y: number,
   colors: RankingColors,
   config: RankingCanvasConfig
 ): void => {
-  ctx.fillStyle = colors.background; // Fill background for footer area if needed, or ensure it's drawn on main canvas bg
+  ctx.fillStyle = colors.background;
   ctx.fillRect(0, y, width, height);
 
   ctx.fillStyle = colors.footerText;
@@ -444,10 +460,10 @@ const drawRankedItem = (
 ): void => {
   const { country, contestant } = item;
 
-  // Define Medal Colors
-  const GOLD_COLOR = '#a807de';
-  const SILVER_COLOR = '#7c07a3';
-  const BRONZE_COLOR = '#591a8a';
+  // Medal Colors - using theme variables
+  const GOLD_COLOR = getCSSVariable('--er-interactive-primary', '#9e33ea');
+  const SILVER_COLOR = getCSSVariable('--er-gradient-text-2', '#6a91d1');
+  const BRONZE_COLOR = getCSSVariable('--er-gradient-text-3', '#3b82f6');
 
   ctx.save();
   ctx.shadowColor = colors.shadow;
@@ -462,7 +478,6 @@ const drawRankedItem = (
   const rankBoxActualY = itemCardY + config.itemPadding;
   const rankBoxActualHeight = itemCardHeight - 2 * config.itemPadding;
 
-  // Determine Rank Box Color
   let currentRankBoxColor = config.rankBoxColor;
   if (rank === 1) {
     currentRankBoxColor = GOLD_COLOR;
@@ -545,13 +560,23 @@ const drawRankedItem = (
 */
 export const createRankingCanvas = async (
   rankedItems: CountryContestant[],
-  rankingName: string = 'My Eurovision Ranking', // Default will be used if not overridden
+  rankingName: string = 'My Eurovision Ranking',
   customConfig: Partial<RankingCanvasConfig> = {},
   customColors: Partial<RankingColors> = {}
 ): Promise<HTMLCanvasElement> => {
-  const config: RankingCanvasConfig = { ...DEFAULT_CONFIG, ...customConfig };
+  const currentThemeColors = getThemeColors();
+  
+  // Create default config with current theme values
+  const defaultConfigWithTheme: RankingCanvasConfig = {
+    ...DEFAULT_CONFIG,
+    rankBoxColor: getCSSVariable('--er-surface-accent', '#334678'),
+    flagBoxColor: getCSSVariable('--er-surface-tertiary', '#1c214c'),
+  };
+
+
+  const config: RankingCanvasConfig = { ...defaultConfigWithTheme, ...customConfig };
   config.fontSizes = { ...DEFAULT_CONFIG.fontSizes, ...customConfig.fontSizes };
-  const colors: RankingColors = { ...DEFAULT_COLORS, ...customColors };
+  const colors: RankingColors = { ...currentThemeColors, ...customColors };
 
   const canvas = document.createElement('canvas');
   const ctx = canvas.getContext('2d');
@@ -584,15 +609,14 @@ export const createRankingCanvas = async (
   columnActualContentHeights = columnActualContentHeights.map(h => h > 0 ? h - config.itemMargin : 0);
   const maxColumnContentHeight = Math.max(0, ...columnActualContentHeights);
 
-  // Determine if header should be shown and its effective height
   const showHeader = rankingName && rankingName.trim() !== '';
   const effectiveHeaderHeight = showHeader ? config.headerHeight : 0;
-  const actualFooterHeight = 30; // As used in drawFooter call
+  const actualFooterHeight = 30;
 
   const totalHeight = effectiveHeaderHeight +
-                    config.padding + // Top padding for content area
+                    config.padding +
                     maxColumnContentHeight +
-                    config.padding + // Bottom padding for content area
+                    config.padding +
                     config.footerMargin +
                     actualFooterHeight;
 
@@ -609,7 +633,6 @@ export const createRankingCanvas = async (
   ctx.fillStyle = colors.background;
   ctx.fillRect(0, 0, config.canvasWidth, totalHeight);
 
-  // Draw header only if rankingName is provided
   if (showHeader) {
     drawHeader(ctx, rankingName, config.canvasWidth, config.headerHeight, colors, config);
   }
@@ -628,7 +651,6 @@ export const createRankingCanvas = async (
     })
   );
 
-  // Adjust starting Y position for items based on whether header is present
   const itemsStartY = effectiveHeaderHeight + config.padding;
   let currentYPerColumn = Array(numColumns).fill(itemsStartY);
   const columnXStartPositions = Array(numColumns).fill(0).map((_, colIndex) =>
@@ -661,7 +683,7 @@ export const createRankingCanvas = async (
 
 export const downloadRankingImage = async (
   rankedItems: CountryContestant[],
-  rankingName: string = '', // Default to empty string to trigger no-header if not provided
+  rankingName: string = '',
   customConfig: Partial<RankingCanvasConfig> = {},
   customColors: Partial<RankingColors> = {}
 ): Promise<void> => {
@@ -678,12 +700,11 @@ export const downloadRankingImage = async (
   const toastId = toast.loading('Creating your ranking image...');
 
   try {
-    // Pass the rankingName (which might be empty) to createRankingCanvas
     const canvas = await createRankingCanvas(rankedItems, rankingName, effectiveConfig, customColors);
 
     const sanitizedName = rankingName && rankingName.trim() !== ''
       ? rankingName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')
-      : 'eurovision-ranking'; // Fallback filename if no rankingName
+      : 'eurovision-ranking';
 
     const filename = `${sanitizedName || 'ranking'}.png`;
 

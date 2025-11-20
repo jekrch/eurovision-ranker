@@ -161,34 +161,34 @@ const SorterModal: React.FC<SorterModalProps> = ({
         if (needsInitialization && initialItems.length > 1) {
             setIsComputing(true); // indicate computation start
             setTimeout(() => { // yield thread for ui update
-              const fullInitialState = initSortState(initialItems); // gets state ready for the first comparison
+                const fullInitialState = initSortState(initialItems); // gets state ready for the first comparison
 
-              if (!fullInitialState) {
-                  console.error("initSortState returned null or undefined");
-                  // reset state fully on init failure
-                  setIsSessionLoaded(false);
-                  setChoiceLog([]);
-                  stateCacheRef.current = {};
-                  setCacheVersion(0);
-                  setCurrentHistoryIndex(0);
-                  setLastNavigationAction(null);
-                  initialSortStateRef.current = null;
-                  activeInitialItemsRef.current = null;
-                  setIsComputing(false);
-                  return;
-              }
+                if (!fullInitialState) {
+                    console.error("initSortState returned null or undefined");
+                    // reset state fully on init failure
+                    setIsSessionLoaded(false);
+                    setChoiceLog([]);
+                    stateCacheRef.current = {};
+                    setCacheVersion(0);
+                    setCurrentHistoryIndex(0);
+                    setLastNavigationAction(null);
+                    initialSortStateRef.current = null;
+                    activeInitialItemsRef.current = null;
+                    setIsComputing(false);
+                    return;
+                }
 
-              initialSortStateRef.current = fullInitialState; // store state after 0 choices
-              activeInitialItemsRef.current = initialItems;
-              const compressedInitial = compressFullState(fullInitialState);
+                initialSortStateRef.current = fullInitialState; // store state after 0 choices
+                activeInitialItemsRef.current = initialItems;
+                const compressedInitial = compressFullState(fullInitialState);
 
-              setChoiceLog([]); // reset history
-              stateCacheRef.current = compressedInitial ? { 0: compressedInitial } : {}; // cache state at index 0
-              setCacheVersion(v => v + 1); // update version
-              setCurrentHistoryIndex(0); // start at 0 choices made
-              setLastNavigationAction('init');
-              setIsComputing(false); // computation finished
-              setIsSessionLoaded(true); // mark session as ready
+                setChoiceLog([]); // reset history
+                stateCacheRef.current = compressedInitial ? { 0: compressedInitial } : {}; // cache state at index 0
+                setCacheVersion(v => v + 1); // update version
+                setCurrentHistoryIndex(0); // start at 0 choices made
+                setLastNavigationAction('init');
+                setIsComputing(false); // computation finished
+                setIsSessionLoaded(true); // mark session as ready
             }, 0);
         } else if (isOpen && initialItems.length <= 1) {
             // handle case where modal opens with insufficient items
@@ -218,10 +218,10 @@ const SorterModal: React.FC<SorterModalProps> = ({
     const computeStateAtIndex = useCallback((targetIndex: number): SortState | null => {
         const stateAtIndexZero = initialSortStateRef.current; // state after 0 choices
         if (!isSessionLoaded || !stateAtIndexZero) {
-           return null; // not initialized
+            return null; // not initialized
         }
         if (targetIndex === 0) {
-          return stateAtIndexZero; // base case
+            return stateAtIndexZero; // base case
         }
 
         let closestCachedIndex = -1;
@@ -260,7 +260,7 @@ const SorterModal: React.FC<SorterModalProps> = ({
 
         // if we loaded the exact state needed, return it
         if (closestCachedIndex === targetIndex && startState) {
-             return startState;
+            return startState;
         }
 
         // replay choices from the start state up to the target index
@@ -272,8 +272,8 @@ const SorterModal: React.FC<SorterModalProps> = ({
                 return currentState; // return last valid state computed
             }
             if (currentState.isComplete) {
-                 console.warn(`compute warning: state was complete at step ${i}, stopping replay for target ${targetIndex}.`);
-                 break; // stop if state became complete earlier than expected
+                console.warn(`compute warning: state was complete at step ${i}, stopping replay for target ${targetIndex}.`);
+                break; // stop if state became complete earlier than expected
             }
 
             // get the state *after* choice `i` was made
@@ -285,14 +285,14 @@ const SorterModal: React.FC<SorterModalProps> = ({
             currentState = nextState;
 
             // safety check: ensure totalComparisons matches index after processing
-             if (currentState.totalComparisons !== i + 1) {
-                 console.error(`compute error: state comparison count mismatch after step ${i}. expected ${i + 1}, got ${currentState.totalComparisons}.`);
-                 return currentState; // return state before mismatch
-             }
+            if (currentState.totalComparisons !== i + 1) {
+                console.error(`compute error: state comparison count mismatch after step ${i}. expected ${i + 1}, got ${currentState.totalComparisons}.`);
+                return currentState; // return state before mismatch
+            }
 
             // optimization: if state becomes complete, stop replay
             if (currentState.isComplete && i < targetIndex - 1) {
-                 break;
+                break;
             }
         }
         return currentState;
@@ -309,13 +309,13 @@ const SorterModal: React.FC<SorterModalProps> = ({
         if (compressedData) {
             //setIsComputing(false); // ensure computing flag is off if cache hit
             const decompressed = decompressFullState(compressedData);
-             // validate decompressed state consistency
+            // validate decompressed state consistency
             if (decompressed && decompressed.totalComparisons === currentHistoryIndex) {
                 if (isComputing) setIsComputing(false); // turn off if it was on
                 return decompressed; // return valid cached state
             } else {
-                 console.error(`memo: decompression failed or state inconsistent for cached index ${currentHistoryIndex}. expected ${currentHistoryIndex}, got ${decompressed?.totalComparisons}. falling back to compute...`);
-                 // proceed to compute below
+                console.error(`memo: decompression failed or state inconsistent for cached index ${currentHistoryIndex}. expected ${currentHistoryIndex}, got ${decompressed?.totalComparisons}. falling back to compute...`);
+                // proceed to compute below
             }
         }
 
@@ -325,11 +325,11 @@ const SorterModal: React.FC<SorterModalProps> = ({
         if (isComputing) setIsComputing(false); // indicate computation end
 
         // validate computed state consistency (allow mismatch only if complete)
-         if (computedState && computedState.totalComparisons !== currentHistoryIndex && !computedState.isComplete) {
-             console.error(`memo: computed state inconsistent for index ${currentHistoryIndex}. expected ${currentHistoryIndex}, got ${computedState.totalComparisons}. state complete: ${computedState.isComplete}`);
-         } else if (computedState && computedState.isComplete && computedState.totalComparisons < currentHistoryIndex) {
-             console.warn(`memo: sorting completed at ${computedState.totalComparisons} comparisons, but history index is ${currentHistoryIndex}.`);
-         }
+        if (computedState && computedState.totalComparisons !== currentHistoryIndex && !computedState.isComplete) {
+            console.error(`memo: computed state inconsistent for index ${currentHistoryIndex}. expected ${currentHistoryIndex}, got ${computedState.totalComparisons}. state complete: ${computedState.isComplete}`);
+        } else if (computedState && computedState.isComplete && computedState.totalComparisons < currentHistoryIndex) {
+            console.warn(`memo: sorting completed at ${computedState.totalComparisons} comparisons, but history index is ${currentHistoryIndex}.`);
+        }
 
         return computedState;
     }, [isSessionLoaded, currentHistoryIndex, cacheVersion, computeStateAtIndex, isComputing]); // dependencies
@@ -379,8 +379,8 @@ const SorterModal: React.FC<SorterModalProps> = ({
         // log based on the state *before* the choice
         const comparisonIndexForLog = stateBeforeChoice.comparisons.length - 1;
         if (comparisonIndexForLog < 0) {
-             console.error(`choice error: no comparisons found in state before choice.`);
-             return;
+            console.error(`choice error: no comparisons found in state before choice.`);
+            return;
         }
         const currentComparisonForLog = stateBeforeChoice.comparisons[comparisonIndexForLog];
         if (!currentComparisonForLog || currentComparisonForLog.choice) {
@@ -395,11 +395,11 @@ const SorterModal: React.FC<SorterModalProps> = ({
             console.error("choice error: processChoice returned null/undefined.");
             return;
         }
-         // verify comparison count incremented correctly
-         if (nextFullState.totalComparisons !== stateBeforeChoice.totalComparisons + 1) {
+        // verify comparison count incremented correctly
+        if (nextFullState.totalComparisons !== stateBeforeChoice.totalComparisons + 1) {
             console.error(`choice error: comparison count mismatch. before: ${stateBeforeChoice.totalComparisons}, after: ${nextFullState.totalComparisons}`);
             // proceed but log error, state might be recoverable
-         }
+        }
 
         // history index moves to the new total comparison count
         const nextHistoryIndex = nextFullState.totalComparisons;
@@ -491,7 +491,7 @@ const SorterModal: React.FC<SorterModalProps> = ({
     const handleApplyRanking = useCallback(() => {
         const stateForCheck = currentSortState;
         if (!canInteract || !stateForCheck || !stateForCheck.isComplete) {
-           return; // only apply if complete and interactable
+            return; // only apply if complete and interactable
         }
 
         const sortedItems = getSortedItems(stateForCheck);
@@ -500,7 +500,7 @@ const SorterModal: React.FC<SorterModalProps> = ({
             // basic validation against original item count
             const expectedCount = activeInitialItemsRef.current?.filter(item => !!item?.uid).length ?? 0;
             if (sortedItems.length !== expectedCount) {
-                 console.warn(`count mismatch: getSortedItems returned ${sortedItems.length}, expected ${expectedCount}. state:`, stateForCheck);
+                console.warn(`count mismatch: getSortedItems returned ${sortedItems.length}, expected ${expectedCount}. state:`, stateForCheck);
             }
             // ensure items have uids (fallback if necessary)
             const validItems = sortedItems.map((item, index) => ({
@@ -549,9 +549,9 @@ const SorterModal: React.FC<SorterModalProps> = ({
     // determines which choice was made at the current history step (used when navigating back/forward)
     const previousChoiceForThisStep = useMemo(() => (
         isSessionLoaded &&
-        (lastNavigationAction === 'back' || lastNavigationAction === 'forward') && // only show when reviewing history
-        currentHistoryIndex >= 0 &&
-        currentHistoryIndex < choiceLog.length
+            (lastNavigationAction === 'back' || lastNavigationAction === 'forward') && // only show when reviewing history
+            currentHistoryIndex >= 0 &&
+            currentHistoryIndex < choiceLog.length
             ? choiceLog[currentHistoryIndex]?.choice // show choice made *at* this step index
             : undefined
     ), [isSessionLoaded, lastNavigationAction, currentHistoryIndex, choiceLog]);
@@ -584,7 +584,7 @@ const SorterModal: React.FC<SorterModalProps> = ({
 
         content = (
             <div className="flex flex-col items-center justify-center px-4 pb-6 min-h-[20em] text-center">
-                <FontAwesomeIcon icon={faCheckCircle} className="text-5xl text-[#119822] mb-4" />
+                <FontAwesomeIcon icon={faCheckCircle} className="text-5xl text-[#119822]x text-[var(--er-accent-success)] mb-4" />
                 <p className="mb-6 text-[var(--er-text-secondary)]">
                     Your ranking is ready based on {currentSortState.totalComparisons} choices!
                 </p>
@@ -615,14 +615,14 @@ const SorterModal: React.FC<SorterModalProps> = ({
     } else if (isSessionLoaded && currentComparison) {
         // render active comparison screen
         content = (
-            <div className="flex flex-col justify-start items-center gap-2 mb-2 min-h-[20em] px-[0.1em] pt-1">
+            <div className="flex flex-col justify-start items-center gap-2 mb-2 min-h-[20em] px-[0.1em] pt-1 w-full overflow-hidden">
                 {/* left choice card */}
                 <div
                     onClick={() => handleChoice('left')}
                     className={classNames(
-                        "w-full cursor-pointer transition-colors duration-200 rounded-lg",
+                        "w-full max-w-full cursor-pointer transition-colors duration-200 rounded-lg overflow-hidden",
                         { "md:hover:ring-2 md:hover:ring-[var(--r-accent-ring)] active:ring-2 active:ring-[var(--r-accent-ring)]": canInteract },
-                        { "pointer-events-none opacity-75": !canInteract } // disable interaction when computing
+                        { "pointer-events-none opacity-75": !canInteract }
                     )}
                 >
                     <SorterContestantCard
@@ -636,8 +636,8 @@ const SorterModal: React.FC<SorterModalProps> = ({
                 {/* right choice card */}
                 <div
                     onClick={() => handleChoice('right')}
-                     className={classNames(
-                        "w-full cursor-pointer transition-colors duration-200 rounded-lg",
+                    className={classNames(
+                        "w-full max-w-full cursor-pointer transition-colors duration-200 rounded-lg overflow-hidden",
                         { "md:hover:ring-2 md:hover:ring-[var(--r-accent-ring)] active:ring-2 active:ring-[var(--r-accent-ring)]": canInteract },
                         { "pointer-events-none opacity-75": !canInteract }
                     )}
@@ -664,18 +664,18 @@ const SorterModal: React.FC<SorterModalProps> = ({
             isOpen={isOpen}
             onClose={onClose}
             closeWarning={'You have unsaved progress. Are you sure you want to close?'}
-            shouldCloseWarn={isOpen && isSessionLoaded && !currentSortState?.isComplete && choiceLog.length > 0} // warn only if progress made
-            className="!max-h-[95vh] sort-tour-step-modal px-0 py-1"
+            shouldCloseWarn={isOpen && isSessionLoaded && !currentSortState?.isComplete && choiceLog.length > 0}
+            className="!max-h-[95vh] w-[calc(100vw-2rem)] max-w-2xl sort-tour-step-modal px-0 py-1"
         >
-            <div className="flex flex-col max-h-[calc(95vh-2rem)] h-full bg-[var(--er-surface-dark)] text-[var(--er-text-primary)]">
+            <div className="flex flex-col max-h-[calc(95vh-2rem)] h-full bg-[var(--er-surface-dark)] text-[var(--er-text-primary)] overflow-hidden">
                 {/* header */}
                 <div className="flex-shrink-0 px-4 pt-3">
                     {/* title and category */}
-                     <div className="mb-4">
-                         <div className="flex items-center justify-between">
-                             <h2 className={classNames("text-xl font-bold text-center w-full text-[var(--er-text-secondary)]")}>
+                    <div className="mb-4">
+                        <div className="flex items-center justify-between">
+                            <h2 className={classNames("text-xl font-bold text-center w-full text-[var(--er-text-secondary)]")}>
                                 {isSessionLoaded && !currentSortState?.isComplete &&
-                                     <TooltipHelp
+                                    <TooltipHelp
                                         content="Answer with your preferences and a ranking will be generated"
                                         className="text-[var(--er-text-secondary)] align-middle mb-1 mr-2"
                                         place='bottom-start'
@@ -685,7 +685,7 @@ const SorterModal: React.FC<SorterModalProps> = ({
                             </h2>
                         </div>
                         {activeCategory !== undefined && categories[activeCategory]?.name &&
-                             <div className="items-center w-full mb-0 text-center text-[var(--er-text-tertiary)] text-sm">
+                            <div className="items-center w-full mb-0 text-center text-[var(--er-text-tertiary)] text-sm">
                                 {categories[activeCategory]?.name}
                             </div>
                         }
@@ -694,21 +694,21 @@ const SorterModal: React.FC<SorterModalProps> = ({
                     {/* progress bar area */}
                     {/* show progress bar only when sorting is active */}
                     {!currentSortState?.isComplete && isSessionLoaded && (
-                         <div className="mb-3">
+                        <div className="mb-3">
                             <div className="w-full bg-[var(--er-button-secondary-hover)] rounded-full h-2">
-                                 <div
+                                <div
                                     className="h-2 rounded-full bg-[var(--er-interactive-secondary)] transition-all duration-300"
                                     style={{ width: `${progress}%` }}
                                 />
                             </div>
-                             <div className="text-xs text-[var(--er-text-tertiary)] text-right mt-1 min-h-[1em]">
+                            <div className="text-xs text-[var(--er-text-tertiary)] text-right mt-1 min-h-[1em]">
                                 {currentSortState ? (
-                                     <span>
+                                    <span>
                                         Comparisons: {currentSortState.totalComparisons} / ~{comparisonDenominator}
-                                         {isComputing && <span className="ml-2 text-orange-400">(Computing...)</span>}
+                                        {isComputing && <span className="ml-2 text-orange-400">(Computing...)</span>}
                                     </span>
                                 ) : (
-                                     <span> </span> // non-breaking space for placeholder
+                                    <span> </span> // non-breaking space for placeholder
                                 )}
                             </div>
                         </div>
@@ -725,10 +725,10 @@ const SorterModal: React.FC<SorterModalProps> = ({
                 </div>
 
                 {/* footer buttons */}
-                 <div className="flex-shrink-0 mt-auto px-4 pb-3 pt-3 border-t border-[var(--er-border-subtle)]">
+                <div className="flex-shrink-0 mt-auto px-4 pb-3 pt-3 border-t border-[var(--er-border-subtle)]">
                     {isSessionLoaded && currentSortState?.isComplete ? (
-                         // footer buttons for completed state
-                         <div className="flex justify-center items-center space-x-4">
+                        // footer buttons for completed state
+                        <div className="flex justify-center items-center space-x-4">
                             {/* back button (completed) */}
                             <IconButton
                                 onClick={handleBack}
@@ -752,7 +752,7 @@ const SorterModal: React.FC<SorterModalProps> = ({
                                 icon={faCancel}
                             />
 
-                             {/* apply button (completed) */}
+                            {/* apply button (completed) */}
                             <IconButton
                                 onClick={handleApplyRanking}
                                 disabled={!canInteract || !currentSortState?.isComplete}
@@ -761,9 +761,9 @@ const SorterModal: React.FC<SorterModalProps> = ({
                                 icon={faCheck}
                             />
 
-                             {/* forward button (completed, conditional) */}
-                             {/* wrapper to maintain layout width when forward button is hidden */}
-                             <div className="w-[58px]x flex justify-center">
+                            {/* forward button (completed, conditional) */}
+                            {/* wrapper to maintain layout width when forward button is hidden */}
+                            <div className="w-[58px]x flex justify-center">
                                 {canGoForward &&
                                     <IconButton
                                         onClick={handleForward}
@@ -778,15 +778,15 @@ const SorterModal: React.FC<SorterModalProps> = ({
                                         icon={faChevronRight}
                                     />
                                 }
-                             </div>
+                            </div>
                         </div>
                     ) : (
-                         // footer buttons for active comparison state
-                         isSessionLoaded && currentComparison && (
-                             <div className="flex justify-between items-center mt-1">
-                                 {/* back button area */}
+                        // footer buttons for active comparison state
+                        isSessionLoaded && currentComparison && (
+                            <div className="flex justify-between items-center mt-1">
+                                {/* back button area */}
                                 <div className="w-1/3 flex justify-start">
-                                     <IconButton
+                                    <IconButton
                                         onClick={handleBack}
                                         disabled={!canGoBack || !canInteract}
                                         className={classNames(
@@ -801,7 +801,7 @@ const SorterModal: React.FC<SorterModalProps> = ({
                                     />
                                 </div>
 
-                                 {/* cancel button area */}
+                                {/* cancel button area */}
                                 <div className="w-1/3 flex justify-center">
                                     <IconButton
                                         onClick={onClose}
@@ -812,7 +812,7 @@ const SorterModal: React.FC<SorterModalProps> = ({
                                     />
                                 </div>
 
-                                 {/* forward button area */}
+                                {/* forward button area */}
                                 <div className="w-1/3 flex justify-end">
                                     <IconButton
                                         onClick={handleForward}
@@ -822,14 +822,14 @@ const SorterModal: React.FC<SorterModalProps> = ({
                                             (!canGoForward || !canInteract)
                                                 ? "bg-gray-600 text-[var(--er-text-subtle)] cursor-not-allowed"
                                                 : "bg-[var(--er-interactive-secondary)] hover:bg-[var(--er-button-primary-hover)]",
-                                             !canGoForward && "invisible" // hide but maintain space
+                                            !canGoForward && "invisible" // hide but maintain space
                                         )}
                                         title="Forward"
                                         icon={faChevronRight}
                                     />
                                 </div>
                             </div>
-                         )
+                        )
                     )}
                 </div>
 

@@ -46,6 +46,8 @@ export type RankingColors = {
   songText: string;
   footerText: string;
   shadow: string;
+  rankBoxColor: string;
+  flagBoxColor: string;
 };
 
 // Helper function to get CSS variable value
@@ -74,6 +76,8 @@ const getThemeColors = (): RankingColors => {
     songText: getCSSVariable('--er-text-secondary', '#cbd5e1'),
     footerText: getCSSVariable('--er-text-tertiary', '#a7b9d2'),
     shadow: 'rgba(0, 0, 0, 0.3)',
+    rankBoxColor: getCSSVariable('--er-nav-gradient-end', '#334678'),
+    flagBoxColor: getCSSVariable('--er-surface-accent', '#1c214c'),
   };
 };
 
@@ -107,8 +111,6 @@ const DEFAULT_CONFIG: RankingCanvasConfig = {
     song: 13,
   },
 };
-
-const DEFAULT_COLORS: RankingColors = getThemeColors();
 
 /*
   Helper Functions
@@ -272,9 +274,10 @@ const drawFallbackFlag = (
   y: number,
   width: number,
   height: number,
-  config: RankingCanvasConfig
+  config: RankingCanvasConfig,
+  fillColor: string // Added parameter
 ): void => {
-  ctx.fillStyle = config.flagBoxColor;
+  ctx.fillStyle = fillColor; 
   roundRect(ctx, x, y, width, height, config.boxCornerRadius);
 
   ctx.fillStyle = getColorForCountryCode(countryCode);
@@ -368,11 +371,12 @@ const drawFlagWithCover = (
     y: number,
     boxWidth: number,
     boxHeight: number,
-    config: RankingCanvasConfig
+    config: RankingCanvasConfig,
+    fillColor: string // Added parameter
 ) => {
     ctx.save();
 
-    ctx.fillStyle = config.flagBoxColor;
+    ctx.fillStyle = fillColor; 
     roundRect(ctx, x, y, boxWidth, boxHeight, config.boxCornerRadius, true, false);
 
     ctx.beginPath();
@@ -390,7 +394,7 @@ const drawFlagWithCover = (
     if (!imgWidth || !imgHeight) {
         console.warn("Flag image has no dimensions, drawing fallback", countryCode);
         ctx.restore();
-        drawFallbackFlag(ctx, countryCode, x, y, boxWidth, boxHeight, config);
+        drawFallbackFlag(ctx, countryCode, x, y, boxWidth, boxHeight, config, fillColor);
         return;
     }
 
@@ -478,7 +482,8 @@ const drawRankedItem = (
   const rankBoxActualY = itemCardY + config.itemPadding;
   const rankBoxActualHeight = itemCardHeight - 2 * config.itemPadding;
 
-  let currentRankBoxColor = config.rankBoxColor;
+  let currentRankBoxColor = colors.rankBoxColor; 
+  
   if (rank === 1) {
     currentRankBoxColor = GOLD_COLOR;
   } else if (rank === 2) {
@@ -499,9 +504,9 @@ const drawRankedItem = (
   const flagBoxActualY = itemCardY + (itemCardHeight - config.flagBoxHeight) / 2;
 
   if (flagImage) {
-    drawFlagWithCover(ctx, flagImage, country.key, flagBoxActualX, flagBoxActualY, config.flagBoxWidth, config.flagBoxHeight, config);
+    drawFlagWithCover(ctx, flagImage, country.key, flagBoxActualX, flagBoxActualY, config.flagBoxWidth, config.flagBoxHeight, config, colors.flagBoxColor);
   } else {
-    drawFallbackFlag(ctx, country.key, flagBoxActualX, flagBoxActualY, config.flagBoxWidth, config.flagBoxHeight, config);
+    drawFallbackFlag(ctx, country.key, flagBoxActualX, flagBoxActualY, config.flagBoxWidth, config.flagBoxHeight, config, colors.flagBoxColor);
   }
 
   const textBoxActualX = flagBoxActualX + config.flagBoxWidth + config.textPaddingLeft;

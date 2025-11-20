@@ -585,7 +585,7 @@ const SorterModal: React.FC<SorterModalProps> = ({
                 {/* Fixed header content */}
                 <div className="flex-shrink-0 w-full flex flex-col items-center px-4">
                     <FontAwesomeIcon icon={faCheckCircle} className="text-4xl text-[#119822]x text-[var(--er-accent-success)] mb-3" />
-                    <p className="mb-4 text-[var(--er-text-secondary)]">
+                    <p className="mb-2 text-[var(--er-text-secondary)]">
                         Your ranking is ready based on {currentSortState.totalComparisons} choices!
                     </p>
                     <h4 className="text-md font-semibold text-[var(--er-text-secondary)] mb-3">Your Complete Ranking:</h4>
@@ -594,19 +594,52 @@ const SorterModal: React.FC<SorterModalProps> = ({
                 {/* Scrollable list */}
                 {finalRanking.length > 0 && (
                     <div className="w-full max-w-md mx-auto flex-1 min-h-0 overflow-y-auto px-6 pr-2 mb-4">
-                        <ol className="list-none p-0 m-0 space-y-2">
-                            {finalRanking.map((item, index) => (
-                                <li key={item.uid || index} className="flex items-center justify-start bg-[var(--er-button-neutral-hover)] p-2 rounded">
-                                    <span className="text-lg font-bold text-[var(--er-text-tertiary)] w-8 mr-3">{index + 1}.</span>
-                                    {item.country?.key && <LazyLoadedFlag code={item.country.key} className="w-8 h-auto mr-3 rounded-sm" />}
-                                    <span className="text-[var(--er-text-primary)] truncate flex-1 text-left">
-                                        {item.contestant?.artist}
-                                        <span className="text-xs text-[var(--er-text-tertiary)] block truncate">
-                                            {item.contestant?.song}
-                                        </span>
-                                    </span>
-                                </li>
-                            ))}
+                        <ol className="list-none p-0 m-0 space-y-3">
+                            {finalRanking.map((item, index) => {
+                                const rank = index + 1;
+                                // Medal colors for top 3
+                                let rankBoxColor = 'bg-[var(--er-surface-accent)]'; // default
+                                if (rank === 1) rankBoxColor = 'bg-[var(--er-interactive-primary)]'; // gold
+                                else if (rank === 2) rankBoxColor = 'bg-[var(--er-gradient-text-2)]'; // silver
+                                else if (rank === 3) rankBoxColor = 'bg-[var(--er-gradient-text-3)]'; // bronze
+
+                                return (
+                                    <li 
+                                        key={item.uid || index} 
+                                        className="flex items-stretch bg-[var(--er-surface-tertiary)] rounded-lg shadow-md overflow-hidden"
+                                    >
+                                        {/* Rank box */}
+                                        <div className={classNames(
+                                            "flex items-center justify-center min-w-[3.5rem] px-2",
+                                            rankBoxColor
+                                        )}>
+                                            <span className="text-xl font-bold text-white">{rank}</span>
+                                        </div>
+                                        
+                                        {/* Flag box */}
+                                        <div className="flex items-center justify-center px-3 py-2">
+                                            {item.country?.key && (
+                                                <LazyLoadedFlag 
+                                                    code={item.country.key} 
+                                                    className="w-12 h-auto rounded-sm" 
+                                                />
+                                            )}
+                                        </div>
+                                        
+                                        {/* Text content */}
+                                        <div className="flex flex-col justify-center flex-1 px-4 py-2 min-w-0">
+                                            <span className="text-[var(--er-text-primary)] font-semibold truncate">
+                                                {item.contestant?.artist || 'Unknown Artist'}
+                                            </span>
+                                            {item.contestant?.song && (
+                                                <span className="text-sm text-[var(--er-text-secondary)] truncate">
+                                                    "{item.contestant.song}"
+                                                </span>
+                                            )}
+                                        </div>
+                                    </li>
+                                );
+                            })}
                         </ol>
                     </div>
                 )}

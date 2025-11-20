@@ -23,7 +23,6 @@ import SorterContestantCard from './SorterContestantCard';
 
 // modal constants
 const MAX_CACHED_STATES = 25;
-const TOP_N_PREVIEW = 3; // number of top items to show in the final preview
 
 // component types
 interface ChoiceLogEntry {
@@ -580,21 +579,25 @@ const SorterModal: React.FC<SorterModalProps> = ({
     } else if (isSessionLoaded && currentSortState?.isComplete) {
         // render completion screen
         const finalRanking = currentSortState ? getSortedItems(currentSortState) : [];
-        const topItems = finalRanking.slice(0, TOP_N_PREVIEW);
 
         content = (
-            <div className="flex flex-col items-center justify-center px-4 pb-6 min-h-[20em] text-center">
-                <FontAwesomeIcon icon={faCheckCircle} className="text-5xl text-[#119822]x text-[var(--er-accent-success)] mb-4" />
-                <p className="mb-6 text-[var(--er-text-secondary)]">
-                    Your ranking is ready based on {currentSortState.totalComparisons} choices!
-                </p>
-                {topItems.length > 0 && (
-                    <div className="mb-6 w-full max-w-xs">
-                        <h4 className="text-md font-semibold text-[var(--er-text-secondary)] mb-3">Your Top {topItems.length}:</h4>
+            <>
+                {/* Fixed header content */}
+                <div className="flex-shrink-0 w-full flex flex-col items-center px-4">
+                    <FontAwesomeIcon icon={faCheckCircle} className="text-4xl text-[#119822]x text-[var(--er-accent-success)] mb-3" />
+                    <p className="mb-4 text-[var(--er-text-secondary)]">
+                        Your ranking is ready based on {currentSortState.totalComparisons} choices!
+                    </p>
+                    <h4 className="text-md font-semibold text-[var(--er-text-secondary)] mb-3">Your Complete Ranking:</h4>
+                </div>
+                
+                {/* Scrollable list */}
+                {finalRanking.length > 0 && (
+                    <div className="w-full max-w-md mx-auto flex-1 min-h-0 overflow-y-auto px-6 pr-2 mb-4">
                         <ol className="list-none p-0 m-0 space-y-2">
-                            {topItems.map((item, index) => (
+                            {finalRanking.map((item, index) => (
                                 <li key={item.uid || index} className="flex items-center justify-start bg-[var(--er-button-neutral-hover)] p-2 rounded">
-                                    <span className="text-lg font-bold text-[var(--er-text-tertiary)] w-6 mr-3">{index + 1}.</span>
+                                    <span className="text-lg font-bold text-[var(--er-text-tertiary)] w-8 mr-3">{index + 1}.</span>
                                     {item.country?.key && <LazyLoadedFlag code={item.country.key} className="w-8 h-auto mr-3 rounded-sm" />}
                                     <span className="text-[var(--er-text-primary)] truncate flex-1 text-left">
                                         {item.contestant?.artist}
@@ -607,10 +610,12 @@ const SorterModal: React.FC<SorterModalProps> = ({
                         </ol>
                     </div>
                 )}
-                <p className="text-sm text-[var(--er-text-tertiary)]">
+                
+                {/* Fixed footer text */}
+                <p className="text-sm text-[var(--er-text-tertiary)] flex-shrink-0 px-4 pb-4 text-center">
                     You can go back to review choices, cancel, or apply this ranking.
                 </p>
-            </div>
+            </>
         );
     } else if (isSessionLoaded && currentComparison) {
         // render active comparison screen
@@ -669,9 +674,9 @@ const SorterModal: React.FC<SorterModalProps> = ({
         >
             <div className="flex flex-col max-h-[calc(95vh-2rem)] h-full bg-[var(--er-surface-dark)] text-[var(--er-text-primary)] overflow-hidden">
                 {/* header */}
-                <div className="flex-shrink-0 px-4 pt-3">
+                <div className={classNames("flex-shrink-0 px-4", currentSortState?.isComplete ? "pt-1" : "pt-3")}>
                     {/* title and category */}
-                    <div className="mb-4">
+                    <div className={classNames(currentSortState?.isComplete ? "mb-1" : "mb-4")}>
                         <div className="flex items-center justify-between">
                             <h2 className={classNames("text-xl font-bold text-center w-full text-[var(--er-text-secondary)]")}>
                                 {isSessionLoaded && !currentSortState?.isComplete &&
@@ -708,7 +713,7 @@ const SorterModal: React.FC<SorterModalProps> = ({
                                         {isComputing && <span className="ml-2 text-orange-400">(Computing...)</span>}
                                     </span>
                                 ) : (
-                                    <span> </span> // non-breaking space for placeholder
+                                    <span> </span> // non-breaking space for placeholder
                                 )}
                             </div>
                         </div>
@@ -720,7 +725,10 @@ const SorterModal: React.FC<SorterModalProps> = ({
                 </div>
 
                 {/* main content (scrollable) */}
-                <div className="flex-grow overflow-y-auto px-0 py-0 pt-0">
+                <div className={classNames(
+                    "flex-grow px-0 py-0 pt-0",
+                    currentSortState?.isComplete ? "flex flex-col overflow-hidden" : "overflow-y-auto"
+                )}>
                     {content}
                 </div>
 

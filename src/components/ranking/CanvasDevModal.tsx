@@ -122,7 +122,7 @@ const CanvasDevModal: React.FC<{
           </div>
           
           {/* Canvas Preview */}
-          <div className="border border-[var(--er-border-subtle)] rounded-lg p-4 bg-[#0a0a3a] mb-4">
+          <div className="border border-[var(--er-border-subtle)] rounded-lg p-4 mb-4">
             <h3 className="text-lg text-white font-semibold mb-4">Canvas Preview</h3>
             
             {error && (

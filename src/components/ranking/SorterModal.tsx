@@ -585,7 +585,7 @@ const SorterModal: React.FC<SorterModalProps> = ({
                 {/* Fixed header content */}
                 <div className="flex-shrink-0 w-full flex flex-col items-center px-4">
                     <FontAwesomeIcon icon={faCheckCircle} className="text-4xl text-[#119822]x text-[var(--er-accent-success)] mb-3" />
-                    <p className="mb-2 text-[var(--er-text-secondary)]">
+                    <p className="mb-2 text-[var(--er-text-secondary)] text-sm">
                         Your ranking is ready based on {currentSortState.totalComparisons} choices!
                     </p>
                     <h4 className="text-md font-semibold text-[var(--er-text-secondary)] mb-3">Your Complete Ranking:</h4>
@@ -606,7 +606,7 @@ const SorterModal: React.FC<SorterModalProps> = ({
                                 return (
                                     <li 
                                         key={item.uid || index} 
-                                        className="flex items-stretch bg-[var(--er-surface-tertiary)] rounded-lg shadow-md overflow-hidden"
+                                        className="flex items-stretch bg-[var(--er-surface-accent-70)] rounded-lg shadow-md overflow-hidden"
                                     >
                                         {/* Rank box */}
                                         <div className={classNames(
@@ -703,7 +703,7 @@ const SorterModal: React.FC<SorterModalProps> = ({
             onClose={onClose}
             closeWarning={'You have unsaved progress. Are you sure you want to close?'}
             shouldCloseWarn={isOpen && isSessionLoaded && !currentSortState?.isComplete && choiceLog.length > 0}
-            className="!max-h-[95vh] w-[calc(100vw-2rem)] max-w-2xl sort-tour-step-modal px-0 py-1"
+            className="!max-h-[95vh] w-[calc(100%-2rem)] max-w-2xl sort-tour-step-modal px-0 py-1"
         >
             <div className="flex flex-col max-h-[calc(95vh-2rem)] h-full bg-[var(--er-surface-dark)] text-[var(--er-text-primary)] overflow-hidden">
                 {/* header */}

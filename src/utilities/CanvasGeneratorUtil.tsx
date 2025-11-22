@@ -38,6 +38,7 @@ export type RankingCanvasConfig = {
 
 export type RankingColors = {
   background: string;
+  backgroundGradient: string[];
   headerGradient: string[];
   cardBackground: string;
   titleText: string;
@@ -65,6 +66,11 @@ const getCSSVariable = (variableName: string, fallback: string): string => {
 const getThemeColors = (): RankingColors => {
   return {
     background: getCSSVariable('--er-body-bg', '#0d0f1d'),
+    backgroundGradient: [
+      getCSSVariable('--er-body-bg', '#0d0f1d'),
+      getCSSVariable('--er-ranked-bg-end', '#28315b'),
+      getCSSVariable('--er-body-bg', '#0d0f1d')
+    ],
     headerGradient: [
       getCSSVariable('--er-nav-gradient-start', '#13172b'),
       getCSSVariable('--er-nav-gradient-end', '#334678')
@@ -275,7 +281,7 @@ const drawFallbackFlag = (
   width: number,
   height: number,
   config: RankingCanvasConfig,
-  fillColor: string // Added parameter
+  fillColor: string
 ): void => {
   ctx.fillStyle = fillColor; 
   roundRect(ctx, x, y, width, height, config.boxCornerRadius);
@@ -353,7 +359,28 @@ const drawFooter = (
   colors: RankingColors,
   config: RankingCanvasConfig
 ): void => {
-  ctx.fillStyle = colors.background;
+  // Create horizontal gradient that fades out at edges
+  const footerGradient = ctx.createLinearGradient(0, y, width, y);
+  const bgColor = colors.background;
+  
+  // Parse the color to add alpha
+  const addAlpha = (color: string, alpha: number) => {
+    if (color.startsWith('#')) {
+      const r = parseInt(color.slice(1, 3), 16);
+      const g = parseInt(color.slice(3, 5), 16);
+      const b = parseInt(color.slice(5, 7), 16);
+      return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+    }
+    return color;
+  };
+  
+  footerGradient.addColorStop(0, addAlpha(bgColor, 0));      // transparent at left edge
+  footerGradient.addColorStop(0.2, addAlpha(bgColor, 0.6));  // fade in
+  footerGradient.addColorStop(0.5, addAlpha(bgColor, 0.8));  // solid in center
+  footerGradient.addColorStop(0.8, addAlpha(bgColor, 0.6));  // fade out
+  footerGradient.addColorStop(1, addAlpha(bgColor, 0));      // transparent at right edge
+  
+  ctx.fillStyle = footerGradient;
   ctx.fillRect(0, y, width, height);
 
   ctx.fillStyle = colors.footerText;
@@ -372,7 +399,7 @@ const drawFlagWithCover = (
     boxWidth: number,
     boxHeight: number,
     config: RankingCanvasConfig,
-    fillColor: string // Added parameter
+    fillColor: string
 ) => {
     ctx.save();
 
@@ -635,7 +662,20 @@ export const createRankingCanvas = async (
 
   ctx.scale(config.pixelRatio, config.pixelRatio);
 
-  ctx.fillStyle = colors.background;
+  // Draw gradient background with subtle glow in bottom right
+  const bgGradient = ctx.createRadialGradient(
+    config.canvasWidth * 0.85,  // x0 - start x position (bottom right area)
+    totalHeight * 0.85,          // y0 - start y position (bottom right area)
+    0,                           // r0 - inner radius
+    config.canvasWidth * 0.85,   // x1 - end x position (same as start for concentric circles)
+    totalHeight * 0.85,          // y1 - end y position (same as start for concentric circles)
+    config.canvasWidth * 1.2     // r1 - outer radius (extends beyond canvas)
+  );
+  bgGradient.addColorStop(0, colors.backgroundGradient[1]); // lighter color at center
+  bgGradient.addColorStop(0.4, colors.backgroundGradient[0]); // fade to dark
+  bgGradient.addColorStop(1, colors.backgroundGradient[0]); // dark at edges
+  
+  ctx.fillStyle = bgGradient;
   ctx.fillRect(0, 0, config.canvasWidth, totalHeight);
 
   if (showHeader) {
@@ -681,7 +721,7 @@ export const createRankingCanvas = async (
   }
 
   const footerYPosition = totalHeight - actualFooterHeight - config.footerMargin;
-  drawFooter(ctx, 'Generated with eurovision-ranker.com', config.canvasWidth, actualFooterHeight, footerYPosition, colors, config);
+  drawFooter(ctx, 'created with eurovision-ranker.com', config.canvasWidth, actualFooterHeight, footerYPosition, colors, config);
 
   return canvas;
 };

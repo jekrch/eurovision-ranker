@@ -590,7 +590,7 @@ const SorterModal: React.FC<SorterModalProps> = ({
                     </p>
                     <h4 className="text-md font-semibold text-[var(--er-text-secondary)] mb-3">Your Complete Ranking:</h4>
                 </div>
-                
+
                 {/* Scrollable list */}
                 {finalRanking.length > 0 && (
                     <div className="w-full max-w-md mx-auto flex-1 min-h-0 overflow-y-auto px-6 pr-2 mb-4">
@@ -604,8 +604,8 @@ const SorterModal: React.FC<SorterModalProps> = ({
                                 else if (rank === 3) rankBoxColor = 'bg-[var(--er-gradient-text-3)]'; // bronze
 
                                 return (
-                                    <li 
-                                        key={item.uid || index} 
+                                    <li
+                                        key={item.uid || index}
                                         className="flex items-stretch bg-[var(--er-surface-accent-70)] rounded-lg shadow-md overflow-hidden"
                                     >
                                         {/* Rank box */}
@@ -615,17 +615,17 @@ const SorterModal: React.FC<SorterModalProps> = ({
                                         )}>
                                             <span className="text-xl font-bold text-white">{rank}</span>
                                         </div>
-                                        
+
                                         {/* Flag box */}
                                         <div className="flex items-center justify-center px-3 py-2">
                                             {item.country?.key && (
-                                                <LazyLoadedFlag 
-                                                    code={item.country.key} 
-                                                    className="w-12 h-auto rounded-sm" 
+                                                <LazyLoadedFlag
+                                                    code={item.country.key}
+                                                    className="w-12 h-auto rounded-sm"
                                                 />
                                             )}
                                         </div>
-                                        
+
                                         {/* Text content */}
                                         <div className="flex flex-col justify-center flex-1 px-4 py-2 min-w-0">
                                             <span className="text-[var(--er-text-primary)] font-semibold truncate">
@@ -643,7 +643,7 @@ const SorterModal: React.FC<SorterModalProps> = ({
                         </ol>
                     </div>
                 )}
-                
+
                 {/* Fixed footer text */}
                 <p className="text-sm text-[var(--er-text-tertiary)] flex-shrink-0 px-4 pb-4 text-center">
                     You can go back to review choices, cancel, or apply this ranking.
@@ -653,12 +653,12 @@ const SorterModal: React.FC<SorterModalProps> = ({
     } else if (isSessionLoaded && currentComparison) {
         // render active comparison screen
         content = (
-            <div className="flex flex-col justify-start items-center gap-2 mb-2 min-h-[20em] px-[0.1em] pt-1 w-full overflow-hidden">
+            <div className="flex flex-col justify-start items-center gap-2 mb-2 min-h-[20em] px-[0.1em] pt-1 w-full overflow-hidden min-w-0">
                 {/* left choice card */}
                 <div
                     onClick={() => handleChoice('left')}
                     className={classNames(
-                        "w-full max-w-full cursor-pointer transition-colors duration-200 rounded-lg overflow-hidden",
+                        "w-full max-w-full cursor-pointer transition-colors duration-200 rounded-lg overflow-hidden min-w-0",
                         { "md:hover:ring-2 md:hover:ring-[var(--r-accent-ring)] active:ring-2 active:ring-[var(--r-accent-ring)]": canInteract },
                         { "pointer-events-none opacity-75": !canInteract }
                     )}
@@ -705,7 +705,7 @@ const SorterModal: React.FC<SorterModalProps> = ({
             shouldCloseWarn={isOpen && isSessionLoaded && !currentSortState?.isComplete && choiceLog.length > 0}
             className="!max-h-[95vh] w-[calc(100%-2rem)] max-w-2xl sort-tour-step-modal px-0 py-1"
         >
-            <div className="flex flex-col max-h-[calc(95vh-2rem)] h-full bg-[var(--er-surface-dark)] text-[var(--er-text-primary)] overflow-hidden">
+            <div className="flex flex-col max-h-[calc(95vh-2rem)] h-full bg-[var(--er-surface-dark)] text-[var(--er-text-primary)] overflow-hidden min-w-0">
                 {/* header */}
                 <div className={classNames("flex-shrink-0 px-4", currentSortState?.isComplete ? "pt-1" : "pt-3")}>
                     {/* title and category */}

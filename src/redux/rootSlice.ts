@@ -6,6 +6,7 @@ import { assignVotes } from '../utilities/VoteUtil';
 import { clone } from '../utilities/ContestantUtil';
 import { ContestantRow, TableState } from '../components/table/tableTypes';
 import { changePageSize, filterTable, sortTable } from './tableSlice';
+import { THEME_SURFACE_COLORS } from '../components/modals/config/DisplayTab';
 
 interface AppState {
     name: string;
@@ -80,6 +81,14 @@ const rootSlice = createSlice({
             } else {
                 document.documentElement.removeAttribute('data-theme');
             }
+
+            // Update iOS safe area colors
+            const color = THEME_SURFACE_COLORS[action.payload] ?? '#22283e';
+            document.body.style.backgroundColor = color;
+            const meta = document.querySelector('meta[name="theme-color"]');
+            if (meta) {
+                meta.setAttribute('content', color);
+            }
         },
         setVote: (state, action: PayloadAction<string>) => {
             state.vote = action.payload;
@@ -136,7 +145,7 @@ const rootSlice = createSlice({
             state.rankedItems = assignVotes(
                 clone(state.rankedItems), votes
             );
-            
+
             state.unrankedItems = assignVotes(
                 clone(state.unrankedItems), votes
             );
@@ -157,12 +166,12 @@ const rootSlice = createSlice({
             const contestantId = action.payload;
             const index = state.tableState.selectedContestants.findIndex(c => c.id === contestantId);
             if (index !== -1) {
-              state.tableState.selectedContestants.splice(index, 1);
+                state.tableState.selectedContestants.splice(index, 1);
             } else {
-              const contestant = state.tableState.entries.find(c => c.id === contestantId);
-              if (contestant) {
-                state.tableState.selectedContestants.push(contestant);
-              }
+                const contestant = state.tableState.entries.find(c => c.id === contestantId);
+                if (contestant) {
+                    state.tableState.selectedContestants.push(contestant);
+                }
             }
         },
         /**
@@ -175,7 +184,7 @@ const rootSlice = createSlice({
                     selectedContestant => selectedContestant.id === paginatedContestant.id
                 )
             );
-            
+
             state.tableState.selectedContestants = [
                 ...state.tableState.selectedContestants,
                 ...newSelectedContestants
@@ -184,19 +193,19 @@ const rootSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
-          .addCase(sortTable.fulfilled, (state, action) => {
-            state.tableState.sortColumn = action.payload.column;
-            state.tableState.sortDirection = action.payload.direction;
-          })
-          .addCase(filterTable.fulfilled, (state, action) => {
-            state.tableState.filters = action.payload;
-            state.tableState.currentPage = 1; // Reset to first page when filters change
-          })
-          .addCase(changePageSize.fulfilled, (state, action) => {
-            state.tableState.pageSize = action.payload;
-            state.tableState.currentPage = 1; // Reset to first page when page size changes
-          });
-      },
+            .addCase(sortTable.fulfilled, (state, action) => {
+                state.tableState.sortColumn = action.payload.column;
+                state.tableState.sortDirection = action.payload.direction;
+            })
+            .addCase(filterTable.fulfilled, (state, action) => {
+                state.tableState.filters = action.payload;
+                state.tableState.currentPage = 1; // Reset to first page when filters change
+            })
+            .addCase(changePageSize.fulfilled, (state, action) => {
+                state.tableState.pageSize = action.payload;
+                state.tableState.currentPage = 1; // Reset to first page when page size changes
+            });
+    },
 });
 
 export const {

@@ -26,6 +26,18 @@ export const THEME_OPTIONS = [
     { display: 'Rainbow', code: 'r', icon: faRainbow, label: 'Rainbow' }
 ];
 
+export const THEME_SURFACE_COLORS: Record<string, string> = {
+  '': '#22283e',    // Default
+  'ab': '#22283e',  // Auroral (uses default)
+  'm': '#18141f',   // Midnight
+  'o': '#133330',   // Ocean
+  's': '#241a20',   // Sunset
+  'f': '#16211b',   // Forest
+  'p': '#2a1e28',   // Pastel
+  'pr': '#1e1a14',  // Prairie
+  'r': '#251631',   // Rainbow
+};
+
 const DisplayTab: React.FC = () => {
     const dispatch = useAppDispatch();
     const vote = useAppSelector((state: AppState) => state.vote);

@@ -419,8 +419,12 @@ const App: React.FC = () => {
 
       <div
         className={classNames(
-          "site-content flex flex-col h-screen tour-step-16 tour-step-17 tour-step-18 normal-bg",
-          { 'star-sky': theme.includes('ab') }
+          "site-content flex flex-col tour-step-16 tour-step-17 tour-step-18 normal-bg",
+          {
+            'star-sky': theme.includes('ab'),
+            'view-mode': !showUnranked,
+            'h-screen': showUnranked,
+          }
         )}>
 
         {theme.includes("ab") &&
@@ -597,7 +601,7 @@ const App: React.FC = () => {
         </Suspense>
       )}
 
-    {(modalState.sortTour.isOpen || modalState.sortTour.hasRendered) && (
+      {(modalState.sortTour.isOpen || modalState.sortTour.hasRendered) && (
         <Suspense fallback={<div />}>
           <LazyJoyrideTourSort
             openSortModal={openSorterModal}
@@ -617,8 +621,8 @@ const App: React.FC = () => {
         onClose={closeSorterModal}
         initialItems={getItemsToSort()}
       />
-      
-        {/* <CanvasDevModal
+
+      {/* <CanvasDevModal
           isOpen={isDevModalOpen}
           onClose={() => setIsDevModalOpen(false)}
         /> */}

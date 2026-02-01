@@ -3,7 +3,8 @@
 @import 'tailwindcss/utilities';
 
 html {
-   padding: env(safe-area-inset); 
+   padding-left: env(safe-area-inset-left); 
+   padding-right: env(safe-area-inset-right); 
 }
 
 html,
@@ -76,11 +77,28 @@ code {
   height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
   overflow: hidden;
   max-height: -webkit-fill-available;
-  /* background: radial-gradient(ellipse at bottom, #28355E 0%, #06070d 100%); */
   background: radial-gradient(ellipse at bottom, var(--er-ranked-bg-end) 0%, var(--er-nav-gradient-start) 100%);
   background-size: 100% 100%;
   background-repeat: no-repeat;
   animation: bg-pulse 10s infinite ease-in-out;
+}
+
+/* Ranked list / view mode: extend the container through the full
+*/
+.normal-bg.view-mode {
+  padding-bottom: 0;
+  height: 100lvh;
+  max-height: none;
+  min-height: 100lvh;
+  overflow: hidden;
+}
+
+/* Override the --vh-based height cap in view mode so the container
+   can extend behind the iOS Safari toolbar */
+.site-content.view-mode {
+  max-height: none;
+  min-height: 100lvh;
+  height: 100lvh;
 }
 
 /* GRADIENT BACKGROUNDS - THEMED */
@@ -430,6 +448,12 @@ code {
 /* RANKED ITEMS BACKGROUND - THEMED */
 .ranked-items-background {
   background: linear-gradient(to bottom, var(--er-ranked-bg-start), var(--er-ranked-bg-end)); 
+}
+
+/* In view mode, add bottom padding inside the scrollable list so 
+   the last card isn't stuck behind the iOS Safari toolbar */
+.view-mode .ranked-items-background {
+  padding-bottom: calc(env(safe-area-inset-bottom) + 1rem);
 }
 
 .ranked-bar-background {

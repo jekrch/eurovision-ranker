@@ -1,7 +1,7 @@
 import { Contestant } from "./Contestant";
 
 export const supportedYears = Array.from(
-  { length: 2025 - 1956 + 1 }, 
+  { length: 2026 - 1956 + 1 }, 
   (v, i) => ((1956 + i).toString())
 ).reverse();
 
@@ -24,4 +24,4 @@ export function sanitizeYear(contestYear: string | null): string {
   return defaultYear;
 }
 
-export const defaultYear = '2025';
+export const defaultYear = '2026';

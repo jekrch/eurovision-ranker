@@ -67,7 +67,7 @@ const Dropdown: React.FC<DropdownProps> = ({ value, onChange, options, className
           )}>
           <span className="truncate min-h-[1.2em] inline-block">{value || '\u00A0'}</span> {/* truncate to handle overflow */}
           
-          {!mini && <FontAwesomeIcon className="flex-shrink-0 h-[0.8em] w-5 text-[var(--er-text-subtle)]" icon={faChevronDown} /> }
+          {!mini && <FontAwesomeIcon className="flex-shrink-0 h-[0.8em] w-4 text-[var(--er-text-subtle)]" icon={faChevronDown} /> }
         </Menu.Button>
       </div>
 

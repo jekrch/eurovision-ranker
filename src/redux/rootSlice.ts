@@ -83,7 +83,7 @@ const rootSlice = createSlice({
             }
 
             // Update iOS safe area colors
-            const color = THEME_SURFACE_COLORS[action.payload] ?? THEME_SURFACE_COLORS[THEME_OPTIONS.find(t => t.default)?.code || ''];
+            const color = action.payload?.length ? THEME_SURFACE_COLORS[action.payload] : THEME_SURFACE_COLORS[THEME_OPTIONS.find(t => t.default)?.code || ''];
             document.body.style.backgroundColor = color;
             const meta = document.querySelector('meta[name="theme-color"]');
             if (meta) {

@@ -12,7 +12,8 @@ body {
   width: 100%;
   margin: 0;
   padding: 0;
-  background-color: var(--er-surface-secondary);
+  background-color: #241a20; 
+  /* var(--er-surface-secondary); */
 }
 
 .container {

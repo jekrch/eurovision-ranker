@@ -15,11 +15,11 @@ import { faIceCream, faMoon, faPalette, faRainbow, faStar, faSun, faTree, faWate
 
 // Theme configuration with icons
 export const THEME_OPTIONS = [
-    { display: 'Default', code: '', icon: faPalette, label: 'Default' },
+    { display: 'Palette', code: 'd', icon: faPalette, label: 'Palette' },
     { display: 'Auroral', code: 'ab', icon: faStar, label: 'Aurora' },
     { display: 'Midnight', code: 'm', icon: faMoon, label: 'Midnight' },
     { display: 'Ocean', code: 'o', icon: faWater, label: 'Ocean' },
-    { display: 'Sunset', code: 's', icon: faSun, label: 'Sunset' },
+    { display: 'Sunset', code: 's', icon: faSun, label: 'Sunset', default: true },
     { display: 'Forest', code: 'f', icon: faTree, label: 'Forest' },
     { display: 'Pastel', code: 'p', icon: faIceCream, label: 'Pastel' },
     { display: 'Prairie', code: 'pr', icon: faWheatAwn, label: 'Prairie' },
@@ -74,7 +74,7 @@ const DisplayTab: React.FC = () => {
     // Get display name for current theme
     const getThemeDisplayName = (themeCode: string): string => {
         const themeOption = THEME_OPTIONS.find(opt => opt.code === themeCode);
-        return themeOption?.display || 'Default';
+        return themeOption?.display || THEME_OPTIONS.find(opt => opt.default)?.display || '';
     };
 
     const [themeSelection, setThemeSelection] = useState(getThemeDisplayName(theme));

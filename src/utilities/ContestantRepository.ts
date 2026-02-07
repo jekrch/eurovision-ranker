@@ -366,55 +366,74 @@ export function getContestantsByCountry(country: string): Promise<Contestant[]> 
 }
 
 export function getSongDetails(
-  uid: string
+  uid: string,
+  year: string = ''
 ): Promise<SongDetails | undefined> {
-  return new Promise((resolve, reject) => {
-    // first fetch composers and lyricists from main.csv
-    fetchContestantCsv('')
-      .then(response => response)
-      .then(mainCsvString => {
-        Papa.parse(mainCsvString, {
-          header: true,
-          complete: (mainResults: any) => {
-            const mainRow = mainResults.data.find(
-              (row: any) => row.id === uid
-            );
 
+  return new Promise((resolve, reject) => {
+    const fetchMain = (csvYear: string): Promise<any> =>
+      fetchContestantCsv(csvYear)
+        .then(csvString => new Promise((res, rej) =>
+          Papa.parse(csvString, {
+            header: true,
+            complete: (results: any) => res(results),
+            error: (error: any) => rej(error)
+          })
+        ));
+
+    const findRow = (results: any) =>
+      results.data.find((row: any) => row.id === uid);
+
+    const fetchLyricsAndResolve = (mainRow: any) => {
+      fetchLyricsCsv()
+        .then(lyricsCsvString => {
+          Papa.parse(lyricsCsvString, {
+            header: true,
+            complete: (lyricsResults: any) => {
+              const lyricsRow = lyricsResults.data.find(
+                (row: any) => row.id === uid
+              );
+              
+              // Return main details with or without lyrics
+              resolve({
+                lyrics: lyricsRow?.lyrics || '',
+                engLyrics: lyricsRow?.eng_lyrics || '',
+                composers: mainRow.composers,
+                lyricists: mainRow.lyricists
+              } as SongDetails);
+            },
+            error: (error: any) => reject(error)
+          });
+        })
+        .catch(error => {
+          // If lyrics CSV fails to load, still return main details
+          resolve({
+            lyrics: '',
+            engLyrics: '',
+            composers: mainRow.composers,
+            lyricists: mainRow.lyricists
+          } as SongDetails);
+        });
+    };
+
+    fetchMain(year)
+      .then(results => {
+        const mainRow = findRow(results);
+        if (mainRow) {
+          fetchLyricsAndResolve(mainRow);
+        } else if (year !== '') {
+          // Fall back to full CSV if year-specific didn't have it
+          fetchMain('').then(results => {
+            const mainRow = findRow(results);
             if (!mainRow) {
               resolve(undefined);
               return;
             }
-
-            // Then fetch lyrics from lyrics.csv
-            fetchLyricsCsv()
-              .then(response => response)
-              .then(lyricsCsvString => {
-                Papa.parse(lyricsCsvString, {
-                  header: true,
-                  complete: (lyricsResults: any) => {
-                    const lyricsRow = lyricsResults.data.find(
-                      (row: any) => row.id === uid
-                    );
-
-                    if (!lyricsRow) {
-                      resolve(undefined);
-                      return;
-                    }
-
-                    resolve({
-                      lyrics: lyricsRow.lyrics,
-                      engLyrics: lyricsRow.eng_lyrics,
-                      composers: mainRow.composers,
-                      lyricists: mainRow.lyricists
-                    } as SongDetails);
-                  },
-                  error: (error: any) => reject(error)
-                });
-              })
-              .catch(error => reject(error));
-          },
-          error: (error: any) => reject(error)
-        });
+            fetchLyricsAndResolve(mainRow);
+          }).catch(error => reject(error));
+        } else {
+          resolve(undefined);
+        }
       })
       .catch(error => reject(error));
   });

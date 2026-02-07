@@ -6,7 +6,7 @@ import { assignVotes } from '../utilities/VoteUtil';
 import { clone } from '../utilities/ContestantUtil';
 import { ContestantRow, TableState } from '../components/table/tableTypes';
 import { changePageSize, filterTable, sortTable } from './tableSlice';
-import { THEME_SURFACE_COLORS } from '../components/modals/config/DisplayTab';
+import { THEME_OPTIONS, THEME_SURFACE_COLORS } from '../components/modals/config/DisplayTab';
 
 interface AppState {
     name: string;
@@ -79,7 +79,7 @@ const rootSlice = createSlice({
             if (action.payload && action.payload !== 'ab') {
                 document.documentElement.setAttribute('data-theme', action.payload);
             } else {
-                document.documentElement.removeAttribute('data-theme');
+                document.documentElement.setAttribute('data-theme', THEME_OPTIONS.find(t => t.default)?.code || '');
             }
 
             // Update iOS safe area colors

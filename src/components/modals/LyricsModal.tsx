@@ -7,7 +7,6 @@ import { useAppSelector } from '../../hooks/stateHooks';
 //import Flag from 'react-world-flags';
 
 import { FaYoutube } from 'react-icons/fa';
-import { getYoutubeThumbnail } from '../../utilities/YoutubeUtil';
 import { LazyLoadedFlag } from '../LazyFlag';
 
 type SongModalProps = {
@@ -40,7 +39,7 @@ const SongModal: React.FC<SongModalProps> = (props: SongModalProps) => {
             setLyrics(undefined);
             setEngLyrics(undefined);
             
-            getSongDetails(contestant.id)
+            getSongDetails(contestant.id, contestant?.year)
                 .then(fetchedSongDetails => {
                     assignLyrics(
                         fetchedSongDetails?.lyrics,

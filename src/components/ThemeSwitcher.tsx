@@ -16,7 +16,7 @@ const ThemeSwitcher: React.FC<ThemeSwitcherProps> = ({ currentTheme, onThemeChan
             </div>
             <div className="flex flex-wrap gap-2">
                 {THEME_OPTIONS.map((theme) => {
-                    const isActive = currentTheme === theme.code;
+                    const isActive = (currentTheme === theme.code) || (theme.default && !currentTheme);
                     return (
                         <button
                             key={theme.code}

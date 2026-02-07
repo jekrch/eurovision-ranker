@@ -1,4 +1,4 @@
-# Eurovision Ranker :light_blue_heart:
+# Eurovision Ranker :yellow_heart:
 
 ![Version](https://img.shields.io/badge/version-10.3-blue)
 ![Run Tests](https://github.com/jekrch/eurovision-ranker/actions/workflows/test_on_push.yml/badge.svg)

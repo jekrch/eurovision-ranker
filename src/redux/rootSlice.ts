@@ -76,19 +76,19 @@ const rootSlice = createSlice({
         setTheme: (state, action: PayloadAction<string>) => {
             state.theme = action.payload;
             // set the theme on the document root
-            if (action.payload && action.payload !== 'ab') {
-                document.documentElement.setAttribute('data-theme', action.payload);
-            } else {
-                document.documentElement.setAttribute('data-theme', THEME_OPTIONS.find(t => t.default)?.code || '');
-            }
+            // if (action.payload && action.payload !== 'ab') {
+            //     document.documentElement.setAttribute('data-theme', action.payload);
+            // } else {
+            //     document.documentElement.setAttribute('data-theme', THEME_OPTIONS.find(t => t.default)?.code || '');
+            // }
 
-            // Update iOS safe area colors
-            const color = action.payload?.length ? THEME_SURFACE_COLORS[action.payload] : THEME_SURFACE_COLORS[THEME_OPTIONS.find(t => t.default)?.code || ''];
-            document.body.style.backgroundColor = color;
-            const meta = document.querySelector('meta[name="theme-color"]');
-            if (meta) {
-                meta.setAttribute('content', color);
-            }
+            // // Update iOS safe area colors
+            // const color = action.payload?.length ? THEME_SURFACE_COLORS[action.payload] : THEME_SURFACE_COLORS[THEME_OPTIONS.find(t => t.default)?.code || ''];
+            // document.body.style.backgroundColor = color;
+            // const meta = document.querySelector('meta[name="theme-color"]');
+            // if (meta) {                
+            //     meta.setAttribute('content', color);
+            // }
         },
         setVote: (state, action: PayloadAction<string>) => {
             state.vote = action.payload;

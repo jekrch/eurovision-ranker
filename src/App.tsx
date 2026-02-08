@@ -21,6 +21,7 @@ import { useModal, ModalType } from './hooks/useModal';
 import CanvasDevModal from './components/ranking/CanvasDevModal';
 import SorterModal from './components/ranking/SorterModal';
 import useSorterModal from './hooks/useSortModal';
+import { useThemeEffect } from './hooks/useThemeEffect';
 
 // lazy load components to reduce initial bundle size
 const LazyRankedCountriesList = React.lazy(() => import('./components/ranking/RankedCountriesList'));
@@ -55,10 +56,10 @@ const App: React.FC = () => {
   const [selectedCountryContestant, setSelectedCountryContestant] = useState<CountryContestant | undefined>(undefined);
   const [showOverlay, setShowOverlay] = useState(!areRankingsSet());
   const [isOverlayExit, setIsOverlayExit] = useState(false);
-  const [isDevModalOpen, setIsDevModalOpen] = useState(true);
-
+  //const [isDevModalOpen, setIsDevModalOpen] = useState(true);
   const memoizedRankedItems = useMemo(() => rankedItems, [rankedItems]);
   const memoizedUnrankedItems = useMemo(() => unrankedItems, [unrankedItems]);
+  useThemeEffect(); 
 
   const {
     isSorterModalOpen,

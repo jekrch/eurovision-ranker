@@ -27,8 +27,8 @@ export const THEME_OPTIONS = [
 ];
 
 export const THEME_SURFACE_COLORS: Record<string, string> = {
-  '': '#22283e',    // Default
-  'ab': '#22283e',  // Auroral (uses default)
+  'd': '#22283e',    // Default
+  'ab': '#241a20',  // Auroral (uses default)
   'm': '#18141f',   // Midnight
   'o': '#133330',   // Ocean
   's': '#241a20',   // Sunset

@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 import { THEME_OPTIONS, THEME_SURFACE_COLORS } from '../components/modals/config/DisplayTab';
 import { useAppDispatch, useAppSelector } from './stateHooks';
@@ -9,6 +9,15 @@ export function useThemeEffect() {
     const theme = useAppSelector(state => state.theme);
     const dispatch: AppDispatch = useAppDispatch();
     const showUnranked = useAppSelector((state: AppState) => state.showUnranked);
+    const isInitialMount = useRef(true);
+    const isToggling = useRef(false);
+    const savedShowUnranked = useRef(showUnranked);
+
+    useEffect(() => {
+        if (!isToggling.current) {
+            savedShowUnranked.current = showUnranked;
+        }
+    }, [showUnranked]);
 
     useEffect(() => {
         const effectiveTheme = (theme && theme !== 'ab')
@@ -27,10 +36,23 @@ export function useThemeEffect() {
             meta.setAttribute('content', color);
         }
 
-        // Force a React re-render cycle similar to the view switch
-        dispatch(setShowUnranked(!showUnranked));
-        requestAnimationFrame(() => {
-            dispatch(setShowUnranked(showUnranked));
-        });
+        const doToggle = () => {
+            const restoreValue = savedShowUnranked.current;
+            isToggling.current = true;
+            dispatch(setShowUnranked(!restoreValue));
+            requestAnimationFrame(() => {
+                dispatch(setShowUnranked(restoreValue));
+                isToggling.current = false;
+            });
+        };
+
+        if (isInitialMount.current) {
+            isInitialMount.current = false;
+            queueMicrotask(() => {
+                doToggle();
+            });
+        } else {
+            doToggle();
+        }
     }, [theme]);
 }

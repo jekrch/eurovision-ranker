@@ -6,11 +6,16 @@ import { AppState } from '../../redux/store';
 import { useAppSelector } from '../../hooks/stateHooks';
 import { Draggable } from '@hello-pangea/dnd';
 import PhantomArrow from './PhantomArrow';
+import { CountryContestant } from '../../data/CountryContestant';
+
+interface UnrankedCountriesListProps {
+  onAddToRanked?: (item: CountryContestant) => void;
+}
 
 /**
  * displays all ranked countries in the left column list on the select view
  */
-const UnrankedCountriesList: React.FC = () => {
+const UnrankedCountriesList: React.FC<UnrankedCountriesListProps> = ({ onAddToRanked }) => {
   const unrankedItems = useAppSelector((state: AppState) => state.unrankedItems);
   const rankedItems = useAppSelector((state: AppState) => state.rankedItems);
   const welcomeOverlayIsOpen = useAppSelector((state: AppState) => state.welcomeOverlayIsOpen);
@@ -44,6 +49,7 @@ const UnrankedCountriesList: React.FC = () => {
                       className="m-auto text-[var(--er-text-tertiary)] bg-'blue' no-select"
                       countryContestant={item}
                       isDragging={snapshot.isDragging}
+                      addCallBack={onAddToRanked ? () => onAddToRanked(item) : undefined}
                     />
                     {index === 0 && !welcomeOverlayIsOpen && <PhantomArrow show={rankedItems.length === 0 && !welcomeOverlayIsOpen} />}
                   </li>

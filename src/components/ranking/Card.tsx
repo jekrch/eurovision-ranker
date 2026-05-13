@@ -9,6 +9,7 @@ export interface CardProps {
   isDragging: boolean;
   isDeleteMode?: boolean;
   deleteCallBack?: (id: string) => void;
+  addCallBack?: () => void;
 }
 
 export const Card: FC<CardProps> = (props) => {
@@ -22,7 +23,7 @@ export const Card: FC<CardProps> = (props) => {
         props.isDragging ? "shadow-slate-400 shadow-sm border-solid" : "",
         !props.isDragging && props.rank === 1 ? "first-card-glow" : "",
         props.rank ? "border-solid border-gray" : "border-dashed",
-        !props.isDeleteMode ? "pr-[1em]" : ""
+        !props.isDeleteMode && !props.addCallBack ? "pr-[1em]" : ""
       )}
     >
       { props.rank ? (
@@ -35,7 +36,9 @@ export const Card: FC<CardProps> = (props) => {
       {/* <i className={`z-0 float-right text-3xl ml-2 flag-icon -mr-2 ${props.country?.icon}`} /> */}
       <div className={classNames("flex-grow text-[var(--er-text-tertiary)] font-normal my-auto")}>
         <div className={`overflow-hidden overflow-ellipsis ${(props.rank && props.isDeleteMode) && 'max-w-[3.9em]'}`}>
-          <span className="overflow-hidden overflow-ellipsis">{country?.name}</span>
+          <span className="overflow-hidden overflow-ellipsis" title={country?.name}>
+            {props.addCallBack && country?.name?.length > 11 ? country.name.slice(0, 11) + '…' : country?.name}
+          </span>
         </div>
 
       </div>
@@ -48,6 +51,19 @@ export const Card: FC<CardProps> = (props) => {
           )}
           onClick={() => { props?.deleteCallBack?.(props.countryContestant.id); }}
         >&#x2715;</button>
+      }
+
+      {props.addCallBack &&
+        <button
+          className={classNames(
+            "rounded-sm ml-1 -mt-[3px] -mb-[2px] mr-[4px] font-normal py-0 px-2 text-2xl",
+            "text-[var(--er-text-tertiary)] opacity-30 hover:opacity-80 active:opacity-100 transition-opacity duration-150"
+          )}
+          onClick={(e) => {
+            e.stopPropagation();
+            props.addCallBack?.();
+          }}
+        >+</button>
       }
     </div>
   );

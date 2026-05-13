@@ -12,25 +12,24 @@ interface SubmenuContainerProps {
 
 const SubmenuItem: React.FC<SubmenuContainerProps> = ({ buttonIcon, text, children }) => {
   const [isSubmenuOpen, setIsSubmenuOpen] = useState(false);
-  const [submenuStyle, setSubmenuStyle] = useState({
+  const [submenuStyle, setSubmenuStyle] = useState<React.CSSProperties>({
     opacity: 0,
     visibility: 'hidden',
-    transition: 'opacity 200ms ease, visibility 200ms ease'
+    transition: 'opacity 150ms ease-out, visibility 150ms ease-out'
   });
   const buttonRef = useRef<HTMLLIElement>(null);
 
   useEffect(() => {
     if (buttonRef.current) {
       const rect = buttonRef.current.getBoundingClientRect();
-      const newStyle = {
-        top: `${rect.top + window.scrollY}px`,
-        left: `${rect.left + window.scrollX - 180}px`,
+      setSubmenuStyle({
+        position: 'fixed',
+        top: `${rect.bottom + 4}px`,
+        right: `${window.innerWidth - rect.right}px`,
         opacity: isSubmenuOpen ? 1 : 0,
         visibility: isSubmenuOpen ? 'visible' : 'hidden',
-        transition: 'opacity 200ms ease, visibility 200ms ease',
-      };
-
-      setSubmenuStyle(newStyle);
+        transition: 'opacity 150ms ease-out, visibility 150ms ease-out',
+      });
     }
   }, [isSubmenuOpen]);
 
@@ -42,8 +41,8 @@ const SubmenuItem: React.FC<SubmenuContainerProps> = ({ buttonIcon, text, childr
     <li
       ref={buttonRef}
       className={
-        classNames("relative bg-[var(--er-button-neutral)] hover:bg-[var(--er-button-neutral-hover)] flex w-full cursor-pointer select-none items-center justify-between gap-2 px-3 pt-[9px] pb-2 text-start transition-all bg-opacity-95 hover:bg-opacity-100",
-        {"!bg-[var(--er-button-neutral-hover)]": isSubmenuOpen}
+        classNames("relative text-[var(--er-text-secondary)] hover:bg-[var(--er-surface-tertiary)] hover:text-[var(--er-text-primary)] flex w-full cursor-pointer select-none items-center justify-between gap-2 px-3 py-2.5 text-start transition-colors duration-100",
+        {"bg-[var(--er-surface-tertiary)] text-[var(--er-text-primary)]": isSubmenuOpen}
       )}
       onClick={toggleSubmenu}
     >
@@ -60,7 +59,8 @@ const SubmenuItem: React.FC<SubmenuContainerProps> = ({ buttonIcon, text, childr
       {createPortal(
         <ul
           style={submenuStyle as unknown as any}
-          className="absolute shadow-lg shadow-blue-gray-500/10 rounded-sm border border-[var(--er-border-secondary)] overflow-auto flex flex-col min-w-[180px] z-20 "
+          className="rounded-xl border border-[var(--er-border-subtle)] bg-[var(--er-surface-secondary)] shadow-2xl shadow-black/50 overflow-hidden flex flex-col min-w-[120px] z-50 py-1"
+          onMouseDown={e => e.stopPropagation()}
         >
           {children}
         </ul>,

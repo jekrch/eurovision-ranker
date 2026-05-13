@@ -457,19 +457,16 @@ code {
   padding-bottom: calc(env(safe-area-inset-bottom) + 1rem);
 }
 
-.ranked-bar-background {
-  /* Empty - can add themed gradient if needed */
-}
 
 .menu-enter {
   opacity: 0;
-  transform: translateY(-20px);
+  transform: translateY(-8px) scale(0.97);
 }
 
 .menu-enter-active {
   opacity: 1;
-  transform: translateY(0);
-  transition: opacity 200ms, transform 200ms;
+  transform: translateY(0) scale(1);
+  transition: opacity 150ms ease-out, transform 150ms ease-out;
 }
 
 .menu-exit {

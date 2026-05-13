@@ -101,7 +101,7 @@ const RankedHeaderMenu: React.FC<RankedHeaderMenuProps> = (props: RankedHeaderMe
     <div className="relative inline-block" ref={menuRef}>
 
       <button
-        className={classNames("tour-step-6 w-6 h-6 bg-[var(--er-surface-muted-accent)] hover:bg-[var(--er-surface-light)] rounded-full flex justify-center items-center cursor-pointer", { "!bg-[var(--er-surface-light)]": isMenuOpen })}
+        className={classNames("tour-step-6 w-6 h-6 bg-[var(--er-surface-muted-accent)] hover:bg-[var(--er-surface-light)] rounded-full flex justify-center items-center cursor-pointer transition-all duration-150 active:scale-90", { "!bg-[var(--er-surface-light)]": isMenuOpen })}
         onClick={toggleMenu}
       >
         <FontAwesomeIcon
@@ -118,7 +118,7 @@ const RankedHeaderMenu: React.FC<RankedHeaderMenuProps> = (props: RankedHeaderMe
       >
         <ul
           role="menu"
-          className="absolute z-20 min-w-[180px] right-0 mt-1 shadow-lg shadow-blue-gray-500/10 rounded-sm border border-[var(--er-border-secondary)] overflow-auto flex flex-col"
+          className="absolute z-20 min-w-[190px] right-0 mt-2 rounded-xl border border-[var(--er-border-subtle)] bg-[var(--er-surface-secondary)] shadow-2xl shadow-black/50 overflow-hidden flex flex-col py-1"
         >
           <MenuItem
             icon={faGlobe}

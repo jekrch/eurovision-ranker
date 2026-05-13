@@ -34,7 +34,7 @@ const TableBody: React.FC<TableBodyProps> = ({
                                     ) : selectedContestants.some(c => c.id === contestant.id) ? (
                                         <FontAwesomeIcon icon={faCheck} className="text-[var(--r-accent-success)]" />
                                     ) : (
-                                        <FontAwesomeIcon icon={faPlus} />
+                                        <FontAwesomeIcon icon={faPlus}/>
                                     )}
                                 </button>
                             </Ripples>

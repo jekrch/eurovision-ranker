@@ -379,6 +379,25 @@ const App: React.FC = () => {
     setRefreshUrl(Math.random());
   }, [memoizedUnrankedItems, memoizedRankedItems, categories, dispatch]);
 
+  const handleAddToRanked = useCallback((item: CountryContestant) => {
+    const sourceIndex = memoizedUnrankedItems.findIndex(i => i.id === item.id);
+    if (sourceIndex === -1) return;
+
+    const newUnranked = Array.from(memoizedUnrankedItems);
+    newUnranked.splice(sourceIndex, 1);
+
+    const newRanked = [...memoizedRankedItems, item];
+
+    const id = globalSearch ? item.uid : item.country.id;
+    if (id) {
+      addNewItemToAllCategoryRankings(id);
+    }
+
+    dispatch(setRankedItems(newRanked));
+    dispatch(setUnrankedItems(newUnranked));
+    setRefreshUrl(Math.random());
+  }, [memoizedUnrankedItems, memoizedRankedItems, globalSearch, categories, dispatch]);
+
   function addNewItemToAllCategoryRankings(newContestantId: String) {
     categories.forEach((_, index) => {
       const categoryParam = `r${index + 1}`;
@@ -475,7 +494,7 @@ const App: React.FC = () => {
                     </div>
                   </div>
                   <Suspense fallback={<ContentPlaceholder />}>
-                    <LazyUnrankedCountriesList />
+                    <LazyUnrankedCountriesList onAddToRanked={handleAddToRanked} />
                   </Suspense>
                 </div>
               )}

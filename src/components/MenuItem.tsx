@@ -27,7 +27,7 @@ const MenuItem: React.FC<MenuItemProps> = ({ icon, text, className, url, onClick
             role="menuitem"
             className={
                 classNames(
-                    "text-[var(--er-text-secondary)] bg-[var(--er-button-neutral)] hover:bg-[var(--er-button-neutral-hover)] flex w-full cursor-pointer select-none items-center gap-2 px-3 pt-[9px] pb-2 text-start transition-all hover:bg-blue-gray-50 hover:text-blue-gray-900 focus:bg-blue-gray-50 focus:bg-opacity-80 focus:text-blue-gray-900 active:bg-blue-gray-50 active:bg-opacity-80 active:text-blue-gray-900 bg-opacity-95 hover:bg-opacity-100",
+                    "text-[var(--er-text-secondary)] hover:bg-[var(--er-surface-tertiary)] hover:text-[var(--er-text-primary)] flex w-full cursor-pointer select-none items-center gap-2 px-3 py-2.5 text-start transition-colors duration-100",
                     className
             )}
             onClick={

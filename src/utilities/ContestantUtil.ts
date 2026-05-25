@@ -74,7 +74,7 @@ export function convertRankingUrlParamsByMode(
     updateQueryParams(params);
 }
 
-function convertRankingToGlobal(categoryRanking: string, rankedItems: import("c:/projects/eurovision-ranker/src/data/CountryContestant").CountryContestant[]) {
+function convertRankingToGlobal(categoryRanking: string, rankedItems: CountryContestant[]) {
     let newRankIds = [];
     const nonGlobalIds = convertRankingsStrToArray(categoryRanking);
 
@@ -91,7 +91,7 @@ function convertRankingToGlobal(categoryRanking: string, rankedItems: import("c:
     return categoryRanking;
 }
 
-function convertRankingFromGlobal(categoryRanking: string, rankedItems: import("c:/projects/eurovision-ranker/src/data/CountryContestant").CountryContestant[]) {
+function convertRankingFromGlobal(categoryRanking: string, rankedItems: CountryContestant[]) {
     let newRankIds = [];
     const globalUids = convertRankingsStrToArray(categoryRanking);
 

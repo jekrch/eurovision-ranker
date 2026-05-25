@@ -14,10 +14,10 @@ type NavbarProps = {
 };
 
 /**
- * This is the main navbar that is displayed at the top of the screen in all views. 
- * 
- * @param 
- * @returns 
+ * This is the main navbar that is displayed at the top of the screen in all views.
+ *
+ * @param
+ * @returns
  */
 const Navbar: React.FC<NavbarProps> = ({ openModal, openConfigModal }) => {
     const dispatch: AppDispatch = useAppDispatch();

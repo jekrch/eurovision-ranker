@@ -22,6 +22,8 @@ import CanvasDevModal from './components/ranking/CanvasDevModal';
 import SorterModal from './components/ranking/SorterModal';
 import useSorterModal from './hooks/useSortModal';
 import { useThemeEffect } from './hooks/useThemeEffect';
+import AuthModal, { AuthView } from './components/modals/auth/AuthModal';
+import { ping } from './utilities/api/health';
 
 // lazy load components to reduce initial bundle size
 const LazyRankedCountriesList = React.lazy(() => import('./components/ranking/RankedCountriesList'));
@@ -54,8 +56,11 @@ const App: React.FC = () => {
   const activeCategory = useAppSelector((state: AppState) => state.activeCategory);
 
   const [selectedCountryContestant, setSelectedCountryContestant] = useState<CountryContestant | undefined>(undefined);
-  const [showOverlay, setShowOverlay] = useState(!areRankingsSet());
+  const [showOverlay, setShowOverlay] = useState(!areRankingsSet() && !isAuthDeepLink());
   const [isOverlayExit, setIsOverlayExit] = useState(false);
+  const [authModalOpen, setAuthModalOpen] = useState(false);
+  const [authModalView, setAuthModalView] = useState<AuthView | undefined>(undefined);
+  const [authModalAllowRegister, setAuthModalAllowRegister] = useState(false);
   //const [isDevModalOpen, setIsDevModalOpen] = useState(true);
   const memoizedRankedItems = useMemo(() => rankedItems, [rankedItems]);
   const memoizedUnrankedItems = useMemo(() => unrankedItems, [unrankedItems]);
@@ -115,6 +120,19 @@ const App: React.FC = () => {
     return categoryRankingsExist(urlParams)
   };
 
+  // Auth deep-links (?signup=beta, /complete-registration, /reset-password) should
+  // skip the welcome overlay — otherwise it covers the AuthModal and a click on the
+  // overlay outside the auth modal can close the auth modal too.
+  function isAuthDeepLink() {
+    const path = window.location.pathname;
+    const params = new URLSearchParams(window.location.search);
+    return (
+      path.endsWith('/complete-registration') ||
+      path.endsWith('/reset-password') ||
+      params.get('signup') === 'beta'
+    );
+  }
+
   const handleGetStarted = useCallback(() => {
     setIsOverlayExit(true);
     const overlayDiv = document.querySelector('.overlay')!;
@@ -133,6 +151,45 @@ const App: React.FC = () => {
       activeCategory, categories, memoizedRankedItems
     );
   }, [refreshUrl]);
+
+  // boot: handle email-link deep paths, ?signup=beta gate, API reachability probe
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const path = window.location.pathname;
+
+    const stripParamsAndPath = (paramKeys: string[]) => {
+      const sp = new URLSearchParams(window.location.search);
+      paramKeys.forEach((k) => sp.delete(k));
+      // Reset path to the SPA root for gh-pages-friendly deep links.
+      const newPath = window.location.origin + '/';
+      const newSearch = sp.toString();
+      window.history.replaceState(null, '', newPath + (newSearch ? `?${newSearch}` : ''));
+    };
+
+    if (path.endsWith('/complete-registration')) {
+      const token = params.get('token') || '';
+      setAuthModalView({ tab: 'register', step: 2, token });
+      setAuthModalAllowRegister(true);
+      setAuthModalOpen(true);
+      stripParamsAndPath(['token']);
+    } else if (path.endsWith('/reset-password')) {
+      const token = params.get('token') || '';
+      setAuthModalView({ tab: 'reset', step: 2, token });
+      setAuthModalAllowRegister(false);
+      setAuthModalOpen(true);
+      stripParamsAndPath(['token']);
+    } else if (params.get('signup') === 'beta') {
+      setAuthModalView({ tab: 'register', step: 1 });
+      setAuthModalAllowRegister(true);
+      setAuthModalOpen(true);
+      stripParamsAndPath(['signup']);
+    }
+
+    // Fire-and-forget reachability check; surface only on dev console.
+    ping().catch((e) => {
+      if (import.meta.env.DEV) console.warn('API healthz failed', e);
+    });
+  }, []);
 
   /**
     * First determines whether to display the list view on first page load. If there 
@@ -423,6 +480,12 @@ const App: React.FC = () => {
     openModal('song');
   }
 
+  const openLoginModal = useCallback(() => {
+    setAuthModalView({ tab: 'login' });
+    setAuthModalAllowRegister(false);
+    setAuthModalOpen(true);
+  }, []);
+
   return (
     <div className="overflow-hidden">
 
@@ -516,6 +579,7 @@ const App: React.FC = () => {
                     openNameModal={() => openModal('name')}
                     openMapModal={() => openModal('map')}
                     openSorterModal={openSorterModal}
+                    openAuthModal={openLoginModal}
                   />
                 </Suspense>
               }
@@ -595,6 +659,7 @@ const App: React.FC = () => {
                 dispatch(setShowUnranked(true));
                 openModal('tour');
               }}
+              openAuthModal={openLoginModal}
             />
           </Suspense>
         )}
@@ -640,6 +705,13 @@ const App: React.FC = () => {
         isOpen={isSorterModalOpen}
         onClose={closeSorterModal}
         initialItems={getItemsToSort()}
+      />
+
+      <AuthModal
+        isOpen={authModalOpen}
+        onClose={() => setAuthModalOpen(false)}
+        initialView={authModalView}
+        allowRegister={authModalAllowRegister}
       />
 
       {/* <CanvasDevModal

@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { faChartLine, faEdit, faFileExport, faList, faSlidersH } from '@fortawesome/free-solid-svg-icons';
+import { faChartLine, faEdit, faFileExport, faList, faSlidersH, faUserCircle } from '@fortawesome/free-solid-svg-icons';
 import Modal from '../Modal';
 import ExportTab from './ExportTab';
 import CategoriesTab from './CategoriesTab';
 import RankingsTab from './RankingsTab';
 import DisplayTab from './DisplayTab';
 import AnalyzeTab from './AnalyzeTab';
+import SavedRankingsTab from './SavedRankingsTab';
 import TabButton from '../../TabButton';
 import { AppState } from '../../../redux/store';
 import { useAppSelector } from '../../../hooks/stateHooks';
@@ -15,6 +16,7 @@ type ConfigModalProps = {
     tab: string;
     onClose: () => void;
     startTour: () => void;
+    openAuthModal: () => void;
 };
 
 /**
@@ -81,6 +83,13 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
                             label="Analyze"
                         />
                     }
+
+                    <TabButton
+                        isActive={activeTab === 'account'}
+                        onClick={() => setActiveTab('account')}
+                        icon={faUserCircle}
+                        label="Account"
+                    />
                 </ul>
             </div>
 
@@ -104,6 +113,10 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
 
                 {activeTab === 'analyze' &&
                     <AnalyzeTab/>
+                }
+
+                {activeTab === 'account' &&
+                    <SavedRankingsTab openAuthModal={props.openAuthModal} />
                 }
             </div>
 

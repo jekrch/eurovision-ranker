@@ -7,12 +7,14 @@ import { AppState } from '../../redux/store';
 import { setTheme } from '../../redux/rootSlice';
 import { updateQueryParams } from '../../utilities/UrlUtil';
 import ThemeSwitcher from '../ThemeSwitcher';
+import { faRightToBracket } from '@fortawesome/free-solid-svg-icons';
 
 export type IntroColumnProps = {
     openModal: (tabName: string) => void;
     openConfigModal: (tabName: string) => void;
     setRunTour: (runTour: boolean) => void;
     setRunSortTour: (runSortTour: boolean) => void;
+    openAuthModal: () => void;
 };
 
 type MenuItemProps = {
@@ -49,9 +51,10 @@ const MenuItem: React.FC<MenuItemProps> = ({ icon, text, onClick, isCustomIcon =
     );
 };
 
-const IntroColumn: React.FC<IntroColumnProps> = ({ openModal, openConfigModal, setRunTour, setRunSortTour }) => {
+const IntroColumn: React.FC<IntroColumnProps> = ({ openModal, openConfigModal, setRunTour, setRunSortTour, openAuthModal }) => {
     const dispatch = useAppDispatch();
     const theme = useAppSelector((state: AppState) => state.theme);
+    const user = useAppSelector((state: AppState) => state.user);
 
     const handleThemeChange = (themeCode: string) => {
         dispatch(setTheme(themeCode));
@@ -92,13 +95,22 @@ const IntroColumn: React.FC<IntroColumnProps> = ({ openModal, openConfigModal, s
                         onClick={() => setRunTour(true)}
                     />
                     
-                    <MenuItem 
+                    <MenuItem
                         icon={faSort}
                         text="Sorter"
                         onClick={() => setRunSortTour(true)}
                         isCustomIcon={true}
                         className="mb-7"
                     />
+
+                    {!user && (
+                        <MenuItem
+                            icon={faRightToBracket}
+                            text="Sign In"
+                            onClick={openAuthModal}
+                            className="mb-7"
+                        />
+                    )}
 
                     {/* Theme Switcher */}
                     <ThemeSwitcher 

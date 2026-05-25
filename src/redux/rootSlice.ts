@@ -7,8 +7,11 @@ import { clone } from '../utilities/ContestantUtil';
 import { ContestantRow, TableState } from '../components/table/tableTypes';
 import { changePageSize, filterTable, sortTable } from './tableSlice';
 import { THEME_OPTIONS, THEME_SURFACE_COLORS } from '../components/modals/config/DisplayTab';
+import { AuthSliceFields, AuthStatus, loadInitialAuth } from './authSlice';
+import { AuthUser } from '../utilities/api/types';
+import { setToken } from '../utilities/api/client';
 
-interface AppState {
+interface AppState extends AuthSliceFields {
     name: string;
     year: string;
     theme: string;
@@ -30,7 +33,15 @@ interface AppState {
     welcomeOverlayIsOpen: boolean;
 }
 
+const initialAuth = loadInitialAuth();
+
 const initialState: AppState = {
+    user: initialAuth.user,
+    token: initialAuth.token,
+    authStatus: 'idle' as AuthStatus,
+    authError: null,
+    currentRankingId: null,
+    lastSavedSignature: null,
     name: '',
     year: '',
     theme: '',
@@ -178,6 +189,40 @@ const rootSlice = createSlice({
          * Add all paginatedContestants that are not already selected
          * @param state 
          */
+        setAuthStatus: (state, action: PayloadAction<AuthStatus>) => {
+            state.authStatus = action.payload;
+            if (action.payload !== 'error') state.authError = null;
+        },
+        setAuthError: (state, action: PayloadAction<string | null>) => {
+            state.authError = action.payload;
+            state.authStatus = action.payload ? 'error' : 'idle';
+        },
+        loginSuccess: (state, action: PayloadAction<{ token: string; user: AuthUser }>) => {
+            state.token = action.payload.token;
+            state.user = action.payload.user;
+            state.authStatus = 'idle';
+            state.authError = null;
+            setToken(action.payload.token);
+        },
+        logout: (state) => {
+            state.token = null;
+            state.user = null;
+            state.authStatus = 'idle';
+            state.authError = null;
+            state.currentRankingId = null;
+            state.lastSavedSignature = null;
+            setToken(null);
+        },
+        setCurrentRankingId: (state, action: PayloadAction<string | null>) => {
+            state.currentRankingId = action.payload;
+        },
+        setLastSavedSignature: (state, action: PayloadAction<string | null>) => {
+            state.lastSavedSignature = action.payload;
+        },
+        clearCurrentRanking: (state) => {
+            state.currentRankingId = null;
+            state.lastSavedSignature = null;
+        },
         addAllPaginatedContestants: (state) => {
             const newSelectedContestants = state.tableState.paginatedContestants.filter(
                 paginatedContestant => !state.tableState.selectedContestants.some(
@@ -233,7 +278,14 @@ export const {
     setPaginatedContestants,
     addAllPaginatedContestants,
     setGlobalSearch,
-    setWelcomeOverlayIsOpen
+    setWelcomeOverlayIsOpen,
+    setAuthStatus,
+    setAuthError,
+    loginSuccess,
+    logout,
+    setCurrentRankingId,
+    setLastSavedSignature,
+    clearCurrentRanking,
 } = rootSlice.actions;
 
 export default rootSlice.reducer;

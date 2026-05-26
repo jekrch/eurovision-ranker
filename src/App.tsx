@@ -3,10 +3,10 @@ import { DragDropContext, DropResult } from '@hello-pangea/dnd';
 import classNames from 'classnames';
 import { CountryContestant } from './data/CountryContestant';
 import { AppDispatch, AppState } from './redux/store';
-import { setRankedItems, setUnrankedItems, setShowUnranked, setActiveCategory, setShowTotalRank, setCategories, setGlobalSearch, setTheme } from './redux/rootSlice';
+import { setRankedItems, setUnrankedItems, setShowUnranked, setActiveCategory, setShowTotalRank, setCategories, setGlobalSearch, setTheme, setName, setYear } from './redux/rootSlice';
 import { loadRankingsFromURL, encodeRankingsToURL, updateQueryParams, updateUrlFromRankedItems, urlHasRankings } from './utilities/UrlUtil';
 import WelcomeOverlay from './components/modals/WelcomeOverlay';
-import { Toaster } from 'react-hot-toast';
+import toast, { Toaster } from 'react-hot-toast';
 import { toastOptions } from './utilities/ToasterUtil';
 import { areCategoriesSet, categoryRankingsExist, parseCategoriesUrlParam, reorderByAllWeightedRankings } from './utilities/CategoryUtil';
 import { isArrayEqual } from './utilities/RankAnalyzer';
@@ -24,6 +24,8 @@ import useSorterModal from './hooks/useSortModal';
 import { useThemeEffect } from './hooks/useThemeEffect';
 import AuthModal, { AuthView } from './components/modals/auth/AuthModal';
 import { ping } from './utilities/api/health';
+import { getPublicRanking } from './utilities/api/rankings';
+import { ApiError } from './utilities/api/types';
 
 // lazy load components to reduce initial bundle size
 const LazyRankedCountriesList = React.lazy(() => import('./components/ranking/RankedCountriesList'));
@@ -56,7 +58,7 @@ const App: React.FC = () => {
   const activeCategory = useAppSelector((state: AppState) => state.activeCategory);
 
   const [selectedCountryContestant, setSelectedCountryContestant] = useState<CountryContestant | undefined>(undefined);
-  const [showOverlay, setShowOverlay] = useState(!areRankingsSet() && !isAuthDeepLink());
+  const [showOverlay, setShowOverlay] = useState(!areRankingsSet() && !isAuthDeepLink() && !hasIdParam());
   const [isOverlayExit, setIsOverlayExit] = useState(false);
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authModalView, setAuthModalView] = useState<AuthView | undefined>(undefined);
@@ -133,6 +135,10 @@ const App: React.FC = () => {
     );
   }
 
+  function hasIdParam() {
+    return !!new URLSearchParams(window.location.search).get('id');
+  }
+
   const handleGetStarted = useCallback(() => {
     setIsOverlayExit(true);
     const overlayDiv = document.querySelector('.overlay')!;
@@ -185,11 +191,43 @@ const App: React.FC = () => {
       stripParamsAndPath(['signup']);
     }
 
+    // ?id=<ranking_id> — fetch a public ranking and load it into the URL.
+    const idParam = params.get('id');
+    if (idParam) {
+      loadPublicRankingById(idParam);
+    }
+
     // Fire-and-forget reachability check; surface only on dev console.
     ping().catch((e) => {
       if (import.meta.env.DEV) console.warn('API healthz failed', e);
     });
   }, []);
+
+  async function loadPublicRankingById(id: string) {
+    try {
+      const full = await getPublicRanking(id);
+      const yearStr = full.year != null ? String(full.year).slice(-2) : undefined;
+      updateQueryParams({
+        id: undefined,
+        r: full.ranking,
+        n: full.name,
+        y: yearStr,
+      });
+      dispatch(setName(full.name || ''));
+      if (full.year) dispatch(setYear(String(full.year)));
+      await loadRankingsFromURL(activeCategory, dispatch);
+      dispatch(setShowUnranked(false));
+    } catch (e) {
+      if (e instanceof ApiError && e.status === 404) {
+        toast.error('That ranking is not available.');
+      } else if (e instanceof ApiError) {
+        toast.error(e.body?.trim() || 'Failed to load ranking.');
+      } else {
+        toast.error('Failed to load ranking.');
+      }
+      updateQueryParams({ id: undefined });
+    }
+  }
 
   /**
     * First determines whether to display the list view on first page load. If there 

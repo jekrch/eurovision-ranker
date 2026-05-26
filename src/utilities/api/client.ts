@@ -1,13 +1,12 @@
 import toast from 'react-hot-toast';
 import { ApiError, ApiErrorKind } from './types';
 
-const DEFAULT_DEV_URL = 'http://localhost:8080';
 const DEFAULT_PROD_URL = 'https://api.eurovision-ranker.com';
 
 export function getApiBaseUrl(): string {
     const envUrl = import.meta.env.VITE_EUROVISION_API_URL;
     if (envUrl && envUrl.length) return envUrl.replace(/\/+$/, '');
-    return import.meta.env.DEV ? DEFAULT_DEV_URL : DEFAULT_PROD_URL;
+    return import.meta.env.DEV ? '/api' : DEFAULT_PROD_URL;
 }
 
 export const TOKEN_STORAGE_KEY = 'eurovision_ranker_token';

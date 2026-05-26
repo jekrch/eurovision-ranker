@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash, faUpload, faPen, faPlus, faSave, faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
+import { faTrash, faUpload, faPen, faPlus, faSave, faRightFromBracket, faGlobe, faLock, faLink } from '@fortawesome/free-solid-svg-icons';
 import { AppState } from '../../../redux/store';
 import { useAppDispatch, useAppSelector } from '../../../hooks/stateHooks';
 import IconButton from '../../IconButton';
@@ -39,6 +39,11 @@ function currentEncodedRanking(rankedItems: any[]): string {
 
 function currentVoteCode(): string {
     return getUrlParam('v') ?? '';
+}
+
+function yearToNumber(year: string | undefined): number | undefined {
+    if (!year) return undefined;
+    return /^\d+$/.test(year) ? Number(year) : undefined;
 }
 
 const SavedRankingsTab: React.FC<SavedRankingsTabProps> = ({ openAuthModal }) => {
@@ -110,9 +115,10 @@ const SavedRankingsTab: React.FC<SavedRankingsTabProps> = ({ openAuthModal }) =>
             const created = await createRanking({
                 name: name || 'Untitled',
                 description: '',
-                year: year || '',
+                year: yearToNumber(year),
                 ranking: encodedRanking,
                 public: false,
+                group_ids: [],
             });
             dispatch(setCurrentRankingId(created.ranking_id));
             dispatch(setLastSavedSignature(signatureFromRanking(created, voteCode)));
@@ -127,9 +133,10 @@ const SavedRankingsTab: React.FC<SavedRankingsTabProps> = ({ openAuthModal }) =>
                         : "You've reached your saved-ranking limit."
                 );
             } else if (e instanceof ApiError) {
-                toast.error(e.body?.trim() || 'Failed to save.');
+                toast.error(e.body?.trim() || `Failed to save (status ${e.status} ${e.kind}).`);
             } else {
-                toast.error('Failed to save.');
+                console.error('handleSaveNew: unexpected error', e);
+                toast.error(`Failed to save: ${(e as any)?.message ?? String(e)}`);
             }
         } finally {
             setSaving(false);
@@ -140,11 +147,16 @@ const SavedRankingsTab: React.FC<SavedRankingsTabProps> = ({ openAuthModal }) =>
         if (!currentRankingId) return;
         setSaving(true);
         try {
+            // The API overwrites all fields on PATCH; carry forward description
+            // and public from the saved copy so they aren't wiped.
+            const existing = rankings?.find((x) => x.ranking_id === currentRankingId);
             const updated = await updateRanking({
                 ranking_id: currentRankingId,
                 name: name || 'Untitled',
-                year: year || '',
+                description: existing?.description ?? '',
+                year: yearToNumber(year),
                 ranking: encodedRanking,
+                public: existing?.public ?? false,
             });
             dispatch(setLastSavedSignature(signatureFromRanking(updated, voteCode)));
             toast.success('Changes saved.');
@@ -164,7 +176,7 @@ const SavedRankingsTab: React.FC<SavedRankingsTabProps> = ({ openAuthModal }) =>
             const params: Record<string, string | undefined> = {
                 r: full.ranking,
                 n: full.name,
-                y: full.year ? full.year.slice(-2) : undefined,
+                y: full.year != null ? String(full.year).slice(-2) : undefined,
             };
             updateQueryParams(params);
             dispatch(setName(full.name || ''));
@@ -208,6 +220,40 @@ const SavedRankingsTab: React.FC<SavedRankingsTabProps> = ({ openAuthModal }) =>
         }
     };
 
+    const handleTogglePublic = async (r: UserRanking) => {
+        try {
+            // Send full ranking — the API overwrites all fields on PATCH, not
+            // a partial update, so anything we omit would be wiped.
+            const updated = await updateRanking({
+                ranking_id: r.ranking_id,
+                name: r.name,
+                description: r.description,
+                year: r.year,
+                ranking: r.ranking,
+                public: !r.public,
+            });
+            if (currentRankingId === r.ranking_id) {
+                dispatch(setLastSavedSignature(signatureFromRanking(updated, voteCode)));
+            }
+            toast.success(updated.public ? 'Now public — share the link.' : 'Made private.');
+            await refresh();
+        } catch (e) {
+            if (e instanceof ApiError) toast.error(e.body?.trim() || 'Failed to update.');
+            else toast.error('Failed to update.');
+        }
+    };
+
+    const handleCopyShareLink = async (r: UserRanking) => {
+        const url = `${window.location.origin}${window.location.pathname}?id=${encodeURIComponent(r.ranking_id)}`;
+        try {
+            await navigator.clipboard.writeText(url);
+            toast.success('Link copied.');
+        } catch {
+            // Fallback for browsers without clipboard permission.
+            window.prompt('Copy this link:', url);
+        }
+    };
+
     const handleRenameSubmit = async (r: UserRanking) => {
         const next = renameValue.trim();
         if (!next || next === r.name) {
@@ -218,6 +264,10 @@ const SavedRankingsTab: React.FC<SavedRankingsTabProps> = ({ openAuthModal }) =>
             const updated = await updateRanking({
                 ranking_id: r.ranking_id,
                 name: next,
+                description: r.description,
+                year: r.year,
+                ranking: r.ranking,
+                public: r.public,
             });
             if (currentRankingId === r.ranking_id) {
                 dispatch(setName(updated.name));
@@ -352,6 +402,24 @@ const SavedRankingsTab: React.FC<SavedRankingsTabProps> = ({ openAuthModal }) =>
                                 >
                                     <FontAwesomeIcon icon={faUpload} />
                                 </button>
+                                <button
+                                    type="button"
+                                    className={`px-2 ${r.public ? 'text-[var(--er-text-primary)]' : 'text-[var(--er-text-tertiary)]'} hover:text-[var(--er-text-primary)]`}
+                                    title={r.public ? 'Public — click to make private' : 'Private — click to make public'}
+                                    onClick={() => handleTogglePublic(r)}
+                                >
+                                    <FontAwesomeIcon icon={r.public ? faGlobe : faLock} />
+                                </button>
+                                {r.public && (
+                                    <button
+                                        type="button"
+                                        className="text-[var(--er-text-tertiary)] hover:text-[var(--er-text-primary)] px-2"
+                                        title="Copy share link"
+                                        onClick={() => handleCopyShareLink(r)}
+                                    >
+                                        <FontAwesomeIcon icon={faLink} />
+                                    </button>
+                                )}
                                 <button
                                     type="button"
                                     className="text-[var(--er-text-tertiary)] hover:text-[var(--er-text-primary)] px-2"

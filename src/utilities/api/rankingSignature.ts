@@ -24,7 +24,7 @@ export function signatureFromRanking(r: UserRanking, voteCode: string = ''): str
     return buildSignature({
         name: r.name ?? '',
         description: r.description ?? '',
-        year: r.year ?? '',
+        year: r.year != null ? String(r.year) : '',
         ranking: r.ranking ?? '',
         voteCode,
         isPublic: !!r.public,

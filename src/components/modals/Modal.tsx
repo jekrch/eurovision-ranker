@@ -32,7 +32,7 @@ const Modal: React.FC<ModalContainerProps> = ({
     const [showModal, setShowModal] = useState(false);
     const [transitionStyles, setTransitionStyles] = useState({
         opacity: 'opacity-0',
-        transform: 'translate-y-20'
+        transform: 'translate-y-4 scale-95'
     });
     // --- State for the confirmation modal ---
     const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
@@ -69,13 +69,13 @@ const Modal: React.FC<ModalContainerProps> = ({
             setShowModal(false)
             setTransitionStyles({
                 opacity: 'opacity-0',
-                transform: 'translate-y-20'
+                transform: 'translate-y-4 scale-95'
             });
             setShowModal(true);
             timeoutId = setTimeout(() => {
                 setTransitionStyles({
                     opacity: 'opacity-100',
-                    transform: 'translate-y-0'
+                    transform: 'translate-y-0 scale-100'
                 });
             }, 50);
         } else {
@@ -83,7 +83,7 @@ const Modal: React.FC<ModalContainerProps> = ({
             setIsConfirmationOpen(false);
             setTransitionStyles({
                 opacity: 'opacity-0',
-                transform: 'translate-y-20'
+                transform: 'translate-y-4 scale-95'
             });
             timeoutId = setTimeout(() => setShowModal(false), 300);
         }
@@ -126,7 +126,7 @@ const Modal: React.FC<ModalContainerProps> = ({
         <> 
             <div
                 className={classNames(
-                    "fixed inset-0 z-50 flex justify-center items-center bg-black bg-opacity-50 transition-opacity duration-300",
+                    "fixed inset-0 z-50 flex justify-center items-center bg-black/60 backdrop-blur-sm transition-opacity duration-300",
                     isOpen && showModal ? transitionStyles.opacity : 'opacity-0', // Control overlay visibility smoothly
                     !isOpen && !showModal ? 'pointer-events-none' : '' // Prevent interaction when fully closed
                 )}
@@ -136,15 +136,16 @@ const Modal: React.FC<ModalContainerProps> = ({
                 <div
                     ref={modalRef}
                     className={classNames(
-                        "relative bg-[var(--er-surface-secondary)] m-4 max-h-[80vh] text-[var(--er-text-tertiary)] p-6 rounded-lg shadow-lg max-w-lg w-full flex flex-col transform transition-all duration-300 ease-out",
-                        isOpen && showModal ? `${transitionStyles.opacity} ${transitionStyles.transform}` : 'opacity-0 translate-y-20', // Control modal visibility/position smoothly
+                        "relative bg-[var(--er-surface-secondary)] m-4 max-h-[85vh] text-[var(--er-text-tertiary)] p-6 rounded-xl ring-1 ring-white/10 shadow-2xl shadow-black/40 max-w-lg w-full flex flex-col transform transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]",
+                        isOpen && showModal ? `${transitionStyles.opacity} ${transitionStyles.transform}` : 'opacity-0 translate-y-4 scale-95', // Control modal visibility/position smoothly
                         className
                     )}
                 >
                     <button
                         type="button"
+                        aria-label="Close modal"
                         className={classNames(
-                            "absolute -top-1 right-0 mt-4 mr-4 text-[var(--er-text-subtle)] bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-[var(--er-button-secondary-hover)] dark:hover:text-white",
+                            "absolute top-3 right-3 text-[var(--er-text-subtle)] bg-transparent hover:bg-white/10 hover:text-white rounded-full text-sm w-8 h-8 inline-flex justify-center items-center transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/30",
                             closeBtnClassName
                         )}
                         data-modal-hide="default-modal"

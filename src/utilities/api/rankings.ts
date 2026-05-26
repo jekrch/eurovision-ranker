@@ -9,6 +9,14 @@ export function getRanking(id: string): Promise<UserRanking> {
     return request<UserRanking>({ method: 'GET', path: `/api/rankings/${encodeURIComponent(id)}` });
 }
 
+export function getPublicRanking(id: string): Promise<UserRanking> {
+    return request<UserRanking>({
+        method: 'GET',
+        path: `/api/rankings/public/${encodeURIComponent(id)}`,
+        auth: false,
+    });
+}
+
 export function createRanking(payload: CreateRankingPayload): Promise<UserRanking> {
     return request<UserRanking>({
         method: 'POST',

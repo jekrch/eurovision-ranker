@@ -41,6 +41,14 @@ export default defineConfig({
     server: {
         open: true,
         port: 3000,
+        proxy: {
+            '/api': {
+                target: 'https://api.eurovision-ranker.com',
+                changeOrigin: true,
+                secure: true,
+                rewrite: (path) => path.replace(/^\/api/, ''),
+            },
+        },
     },
     test: {
         globals: true,

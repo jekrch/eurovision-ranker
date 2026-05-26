@@ -14,7 +14,7 @@ export interface UserRanking {
     user_id?: string;
     name: string;
     description?: string;
-    year?: string;
+    year?: number;
     ranking: string;
     public?: boolean;
     group_ids?: string[];
@@ -25,16 +25,17 @@ export interface UserRanking {
 export interface CreateRankingPayload {
     name: string;
     description?: string;
-    year?: string;
+    year?: number;
     ranking: string;
     public?: boolean;
+    group_ids?: string[];
 }
 
 export interface UpdateRankingPayload {
     ranking_id: string;
     name?: string;
     description?: string;
-    year?: string;
+    year?: number;
     ranking?: string;
     public?: boolean;
 }

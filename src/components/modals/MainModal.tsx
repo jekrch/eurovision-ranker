@@ -27,7 +27,7 @@ const MainModal: React.FC<MainModalProps> = (props: MainModalProps) => {
     //if (!props.isOpen) return null;
 
     return (
-        <Modal isOpen={props.isOpen} onClose={props.onClose} className="">
+        <Modal isOpen={props.isOpen} onClose={props.onClose} className="h-[85vh] !max-h-[500px]">
             <div className="border-b border-[var(--er-border-lightest)] dark:border-[var(--er-border-darker)] -mt-4">
                 <ul className="flex flex-wrap -mb-px text-sm font-medium text-center text-[var(--er-text-muted)] dark:text-[var(--er-text-subtle)]">
                     <TabButton

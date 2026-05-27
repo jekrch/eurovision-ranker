@@ -1,4 +1,4 @@
-import React, { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { DragDropContext, DropResult } from '@hello-pangea/dnd';
 import classNames from 'classnames';
 import { CountryContestant } from './data/CountryContestant';
@@ -25,6 +25,7 @@ import { useThemeEffect } from './hooks/useThemeEffect';
 import AuthModal, { AuthView } from './components/modals/auth/AuthModal';
 import { ping } from './utilities/api/health';
 import { getPublicRanking } from './utilities/api/rankings';
+import { parseStoredRanking } from './utilities/api/rankingParams';
 import { ApiError } from './utilities/api/types';
 
 // lazy load components to reduce initial bundle size
@@ -45,6 +46,15 @@ const App: React.FC = () => {
   const [configModalTab, setConfigModalTab] = useState('display');
   const [refreshUrl, setRefreshUrl] = useState(0);
   const dispatch: AppDispatch = useAppDispatch();
+
+  // Public-view-by-id mode: when active, the URL is just `?id=<ranking_id>`
+  // and we suppress the n/y/r URL-writing effects so the share URL stays
+  // tidy. The first user-initiated change (drag/drop, year change, rename)
+  // exits the mode and re-syncs the URL.
+  const publicViewActiveRef = useRef(false);
+  const publicViewLoadedRef = useRef(false);
+  const loadedNameRef = useRef<string>('');
+  const loadedYearRef = useRef<string>('');
 
   const showUnranked = useAppSelector((state: AppState) => state.showUnranked);
   const theme = useAppSelector((state: AppState) => state.theme);
@@ -153,6 +163,10 @@ const App: React.FC = () => {
 
   useEffect(() => {
     if (refreshUrl === 0) return;
+    if (publicViewActiveRef.current) {
+      // First user edit — exit public view and let URL track state normally.
+      exitPublicView();
+    }
     updateUrlFromRankedItems(
       activeCategory, categories, memoizedRankedItems
     );
@@ -191,9 +205,12 @@ const App: React.FC = () => {
       stripParamsAndPath(['signup']);
     }
 
-    // ?id=<ranking_id> — fetch a public ranking and load it into the URL.
+    // ?id=<ranking_id> — fetch a public ranking and load it. Set the flag
+    // synchronously so the other on-mount effects don't write n/y/load
+    // anything stale before the fetch resolves.
     const idParam = params.get('id');
     if (idParam) {
+      publicViewActiveRef.current = true;
       loadPublicRankingById(idParam);
     }
 
@@ -206,18 +223,40 @@ const App: React.FC = () => {
   async function loadPublicRankingById(id: string) {
     try {
       const full = await getPublicRanking(id);
-      const yearStr = full.year != null ? String(full.year).slice(-2) : undefined;
-      updateQueryParams({
-        id: undefined,
-        r: full.ranking,
-        n: full.name,
-        y: yearStr,
-      });
-      dispatch(setName(full.name || ''));
-      if (full.year) dispatch(setYear(String(full.year)));
+      const loadedName = full.name || '';
+      const loadedYear = full.year != null ? String(full.year) : '';
+      const yearShort = full.year != null ? String(full.year).slice(-2) : undefined;
+
+      loadedNameRef.current = loadedName;
+      loadedYearRef.current = loadedYear;
+      // Mark loaded *before* dispatching so the n/y useEffects, which fire
+      // after the dispatches, can compare against the loaded values rather
+      // than treating themselves as user actions.
+      publicViewLoadedRef.current = true;
+
+      // Temporarily replace the URL search with the saved params + n/y so
+      // loadRankingsFromURL can read them, then strip back to ?id=<id> below.
+      // `full.ranking` may be the new query-string format (e.g. r=…&r1=…&v=…)
+      // or the legacy raw r-value — parseStoredRanking handles both.
+      const sp = parseStoredRanking(full.ranking ?? '');
+      if (loadedName) sp.set('n', loadedName);
+      if (yearShort) sp.set('y', yearShort);
+      sp.set('id', id);
+      window.history.pushState(null, '', '?' + sp.toString());
+
+      dispatch(setName(loadedName));
+      if (loadedYear) dispatch(setYear(loadedYear));
+
       await loadRankingsFromURL(activeCategory, dispatch);
+
+      // Keep the URL tidy: just ?id=<id>. The n/y/refreshUrl effects below
+      // check publicViewActiveRef and won't write back.
+      window.history.pushState(null, '', '?id=' + encodeURIComponent(id));
+
       dispatch(setShowUnranked(false));
     } catch (e) {
+      publicViewActiveRef.current = false;
+      publicViewLoadedRef.current = false;
       if (e instanceof ApiError && e.status === 404) {
         toast.error('That ranking is not available.');
       } else if (e instanceof ApiError) {
@@ -227,6 +266,16 @@ const App: React.FC = () => {
       }
       updateQueryParams({ id: undefined });
     }
+  }
+
+  function exitPublicView() {
+    publicViewActiveRef.current = false;
+    // Restore n/y in URL since we suppressed those writes while in public view.
+    updateQueryParams({
+      id: undefined,
+      n: name || undefined,
+      y: year ? year.slice(-2) : undefined,
+    });
   }
 
   /**
@@ -284,14 +333,17 @@ const App: React.FC = () => {
    */
   useEffect(() => {
     const updateRankedItems = async () => {
+      // Public-view-by-id loads rankings directly; the URL has no r= so
+      // loadRankingsFromURL would just clear them.
+      if (publicViewActiveRef.current) return;
       if (!showTotalRank) {
         const rankingsExist = await loadRankingsFromURL(
           activeCategory,
           dispatch
         );
       } else if (activeCategory === undefined && categories?.length) {
-        // if this is the first page load and we have categories we 
-        // should load the first so that Total tab has contestants 
+        // if this is the first page load and we have categories we
+        // should load the first so that Total tab has contestants
         // available to populated the total ranking
         const rankingsExist = await loadRankingsFromURL(
           0,
@@ -344,6 +396,16 @@ const App: React.FC = () => {
       if (!year?.length) {
         return;
       }
+      // In public-view mode, the dispatched year matches the loaded value —
+      // skip URL write and the redundant reload. If the user later picks a
+      // different year, exit public view and behave normally.
+      if (publicViewActiveRef.current) {
+        // Fetch in flight: refs aren't populated yet, so any compare would
+        // be bogus. Suppress until loadPublicRankingById finishes.
+        if (!publicViewLoadedRef.current) return;
+        if (year === loadedYearRef.current) return;
+        exitPublicView();
+      }
       updateQueryParams({ y: year.slice(-2) });
 
       await loadRankingsFromURL(
@@ -355,6 +417,11 @@ const App: React.FC = () => {
   }, [year]);
 
   useEffect(() => {
+    if (publicViewActiveRef.current) {
+      if (!publicViewLoadedRef.current) return;
+      if (name === loadedNameRef.current) return;
+      exitPublicView();
+    }
     updateQueryParams({ n: name });
   }, [name]);
 

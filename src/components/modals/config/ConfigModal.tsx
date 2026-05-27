@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { faChartLine, faEdit, faFileExport, faList, faSlidersH, faUserCircle } from '@fortawesome/free-solid-svg-icons';
 import Modal from '../Modal';
 import ExportTab from './ExportTab';
@@ -27,8 +27,16 @@ type ConfigModalProps = {
  * @param props 
  * @returns 
  */
+const ACTIVE_TAB_STORAGE_KEY = 'configModalActiveTab';
+
 const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
-    const [activeTab, setActiveTab] = useState(props.tab);
+    const [activeTab, setActiveTab] = useState(() => {
+        try {
+            return localStorage.getItem(ACTIVE_TAB_STORAGE_KEY) || props.tab;
+        } catch {
+            return props.tab;
+        }
+    });
     const globalSearch = useAppSelector((state: AppState) => state.globalSearch);
     const rankedItems = useAppSelector((state: AppState) => state.rankedItems);
     const uniqueRankedYears = new Set(
@@ -36,11 +44,24 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
     );
     const hasMultipleYears = uniqueRankedYears.size > 1;
 
+    // Reset to props.tab only when the requested tab actually changes (explicit deep-link),
+    // not on mount and not every time the modal reopens — that keeps the selection sticky.
+    const didMountRef = useRef(false);
     useEffect(() => {
-        if (props.isOpen)
-            setActiveTab(props.tab);
-        //setActiveTab('analyze');
-    }, [props.tab, props.isOpen]);
+        if (!didMountRef.current) {
+            didMountRef.current = true;
+            return;
+        }
+        setActiveTab(props.tab);
+    }, [props.tab]);
+
+    useEffect(() => {
+        try {
+            localStorage.setItem(ACTIVE_TAB_STORAGE_KEY, activeTab);
+        } catch {
+            // ignore storage failures
+        }
+    }, [activeTab]);
 
     return (
         <Modal isOpen={props.isOpen} onClose={props.onClose} className="h-[85vh] !max-h-[500px]">
@@ -93,7 +114,7 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
                 </ul>
             </div>
 
-            <div className="overflow-y-auto pt-4 select-text pb-3 flex-grow">
+            <div className="overflow-y-auto pt-4 pr-2 select-text pb-3 flex-grow">
 
                 {activeTab === 'display' &&
                     <DisplayTab/>

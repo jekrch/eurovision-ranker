@@ -1,10 +1,9 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash, faUpload, faPen, faPlus, faSave, faRightFromBracket, faGlobe, faLock, faLink } from '@fortawesome/free-solid-svg-icons';
+import { faTrash, faUpload, faPen, faPlus, faSave, faRightFromBracket, faGlobe, faLock, faLink, faCheck, faRotate, faCircleInfo } from '@fortawesome/free-solid-svg-icons';
 import { AppState } from '../../../redux/store';
 import { useAppDispatch, useAppSelector } from '../../../hooks/stateHooks';
-import IconButton from '../../IconButton';
 import GlobalConfirmationModal from '../GlobalConfirmationModal';
 import {
     listRankings,
@@ -20,30 +19,48 @@ import {
     setName,
     clearCurrentRanking,
     logout,
+    setSavedRankings,
+    upsertSavedRanking,
+    removeSavedRanking,
+    setCategories,
+    setActiveCategory,
+    setShowTotalRank,
 } from '../../../redux/rootSlice';
+import { parseCategoriesUrlParam } from '../../../utilities/CategoryUtil';
 import { buildSignature, signatureFromRanking } from '../../../utilities/api/rankingSignature';
-import { encodeRankingsToURL, getUrlParam, updateQueryParams, urlParamHasValue } from '../../../utilities/UrlUtil';
+import {
+    buildRankingParamsFromUrl,
+    MAX_RANKING_LENGTH,
+    parseStoredRanking,
+} from '../../../utilities/api/rankingParams';
 
 interface SavedRankingsTabProps {
     openAuthModal: () => void;
 }
 
-const sectionTitle = 'font-bold ml-0 whitespace-nowrap text-sm';
+const sectionLabel =
+    'text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--er-text-subtle)]';
 const inputClass =
-    'border text-sm rounded-md block w-full p-2 bg-[var(--er-border-subtle)] border-[var(--er-border-medium)] placeholder-[var(--er-text-subtle)] text-[var(--er-text-primary)] focus:outline-none focus:ring-1 focus:ring-slate-400 focus:border-transparent';
+    'border text-sm rounded-md block w-full p-2 bg-[color:var(--er-surface-primary)] border-white/5 placeholder-[var(--er-text-subtle)] text-[var(--er-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--er-button-primary)]/40 focus:border-[var(--er-button-primary)]/40';
 
-function currentEncodedRanking(rankedItems: any[]): string {
-    const isGlobal = urlParamHasValue('g', 't');
-    return encodeRankingsToURL(rankedItems, isGlobal);
-}
-
-function currentVoteCode(): string {
-    return getUrlParam('v') ?? '';
-}
+const rowIconBtn =
+    'w-7 h-7 inline-flex items-center justify-center rounded-md text-[var(--er-text-tertiary)] hover:text-[var(--er-text-primary)] hover:bg-[var(--er-button-neutral)]/40 transition-colors';
 
 function yearToNumber(year: string | undefined): number | undefined {
     if (!year) return undefined;
     return /^\d+$/.test(year) ? Number(year) : undefined;
+}
+
+// Wipe everything the app keeps in the URL and re-seed from the saved record.
+// Keeps any unrelated params untouched (e.g. dev/debug flags).
+function applyLoadedRankingToUrl(r: UserRanking) {
+    const sp = parseStoredRanking(r.ranking ?? '');
+    if (r.name) sp.set('n', r.name); else sp.delete('n');
+    if (r.year != null) sp.set('y', String(r.year).slice(-2)); else sp.delete('y');
+    sp.delete('id');
+    sp.delete('signup');
+    const query = sp.toString();
+    window.history.pushState(null, '', query ? `?${query}` : window.location.pathname);
 }
 
 const SavedRankingsTab: React.FC<SavedRankingsTabProps> = ({ openAuthModal }) => {
@@ -55,7 +72,7 @@ const SavedRankingsTab: React.FC<SavedRankingsTabProps> = ({ openAuthModal }) =>
     const currentRankingId = useAppSelector((s: AppState) => s.currentRankingId);
     const lastSavedSignature = useAppSelector((s: AppState) => s.lastSavedSignature);
 
-    const [rankings, setRankings] = useState<UserRanking[] | null>(null);
+    const rankings = useAppSelector((s: AppState) => s.savedRankings);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [renameId, setRenameId] = useState<string | null>(null);
@@ -64,25 +81,26 @@ const SavedRankingsTab: React.FC<SavedRankingsTabProps> = ({ openAuthModal }) =>
     const [confirmLoad, setConfirmLoad] = useState<UserRanking | null>(null);
     const [saving, setSaving] = useState(false);
 
-    const encodedRanking = useMemo(() => currentEncodedRanking(rankedItems), [rankedItems]);
-    const voteCode = currentVoteCode();
+    // `rankingParams` reflects everything in the URL except n/y/id/signup.
+    // It's recomputed whenever `rankedItems` changes (a proxy for "the URL
+    // has been re-synced") so dirty-detection stays live.
+    const rankingParams = useMemo(() => buildRankingParamsFromUrl(), [rankedItems]);
     const currentSignature = useMemo(
         () =>
             buildSignature({
                 name: name || '',
                 description: '',
                 year: year || '',
-                ranking: encodedRanking,
-                voteCode,
+                ranking: rankingParams,
                 isPublic: false,
             }),
-        [name, year, encodedRanking, voteCode]
+        [name, year, rankingParams]
     );
 
     const isDirty = currentRankingId
         ? lastSavedSignature !== currentSignature
         : true;
-    const isEmpty = !encodedRanking || encodedRanking === '>' || encodedRanking.length === 0;
+    const isEmpty = rankedItems.length === 0;
 
     const refresh = useCallback(async () => {
         if (!user) return;
@@ -90,14 +108,14 @@ const SavedRankingsTab: React.FC<SavedRankingsTabProps> = ({ openAuthModal }) =>
         setError(null);
         try {
             const list = await listRankings();
-            setRankings(list ?? []);
+            dispatch(setSavedRankings(list ?? []));
         } catch (e) {
             if (e instanceof ApiError) setError(e.body?.trim() || e.message);
             else setError('Failed to load rankings.');
         } finally {
             setLoading(false);
         }
-    }, [user]);
+    }, [user, dispatch]);
 
     useEffect(() => {
         if (user && rankings === null) {
@@ -110,20 +128,24 @@ const SavedRankingsTab: React.FC<SavedRankingsTabProps> = ({ openAuthModal }) =>
             toast.error('Add some countries before saving.');
             return;
         }
+        if (rankingParams.length > MAX_RANKING_LENGTH) {
+            toast.error(`Ranking too large (${rankingParams.length}/${MAX_RANKING_LENGTH} chars). Try removing a category.`);
+            return;
+        }
         setSaving(true);
         try {
             const created = await createRanking({
                 name: name || 'Untitled',
                 description: '',
                 year: yearToNumber(year),
-                ranking: encodedRanking,
+                ranking: rankingParams,
                 public: false,
                 group_ids: [],
             });
             dispatch(setCurrentRankingId(created.ranking_id));
-            dispatch(setLastSavedSignature(signatureFromRanking(created, voteCode)));
+            dispatch(setLastSavedSignature(signatureFromRanking(created)));
+            dispatch(upsertSavedRanking(created));
             toast.success('Saved.');
-            await refresh();
         } catch (e) {
             if (e instanceof ApiError && e.kind === 'max_rankings') {
                 const match = e.body.match(/(\d+)/);
@@ -145,6 +167,10 @@ const SavedRankingsTab: React.FC<SavedRankingsTabProps> = ({ openAuthModal }) =>
 
     const handleSaveUpdate = async () => {
         if (!currentRankingId) return;
+        if (rankingParams.length > MAX_RANKING_LENGTH) {
+            toast.error(`Ranking too large (${rankingParams.length}/${MAX_RANKING_LENGTH} chars). Try removing a category.`);
+            return;
+        }
         setSaving(true);
         try {
             // The API overwrites all fields on PATCH; carry forward description
@@ -155,12 +181,12 @@ const SavedRankingsTab: React.FC<SavedRankingsTabProps> = ({ openAuthModal }) =>
                 name: name || 'Untitled',
                 description: existing?.description ?? '',
                 year: yearToNumber(year),
-                ranking: encodedRanking,
+                ranking: rankingParams,
                 public: existing?.public ?? false,
             });
-            dispatch(setLastSavedSignature(signatureFromRanking(updated, voteCode)));
+            dispatch(setLastSavedSignature(signatureFromRanking(updated)));
+            dispatch(upsertSavedRanking(updated));
             toast.success('Changes saved.');
-            await refresh();
         } catch (e) {
             if (e instanceof ApiError) toast.error(e.body?.trim() || 'Failed to save changes.');
             else toast.error('Failed to save changes.');
@@ -173,24 +199,26 @@ const SavedRankingsTab: React.FC<SavedRankingsTabProps> = ({ openAuthModal }) =>
         try {
             // Fetch fresh copy in case list was stale.
             const full = await getRanking(r.ranking_id);
-            const params: Record<string, string | undefined> = {
-                r: full.ranking,
-                n: full.name,
-                y: full.year != null ? String(full.year).slice(-2) : undefined,
-            };
-            updateQueryParams(params);
+            dispatch(upsertSavedRanking(full));
+            applyLoadedRankingToUrl(full);
+
+            // Categories and activeCategory live in Redux and are only seeded
+            // from the URL on mount, so we need to dispatch them explicitly
+            // when loading a saved ranking that has different ones.
+            const sp = new URLSearchParams(window.location.search);
+            const categoriesParam = sp.get('c');
+            const parsedCategories = categoriesParam
+                ? parseCategoriesUrlParam(categoriesParam)
+                : [];
+            dispatch(setCategories(parsedCategories));
+            dispatch(setActiveCategory(parsedCategories.length ? 0 : undefined));
+            dispatch(setShowTotalRank(false));
+
             dispatch(setName(full.name || ''));
             dispatch(setCurrentRankingId(full.ranking_id));
-            dispatch(setLastSavedSignature(signatureFromRanking(full, voteCode)));
-            // Trigger a reload via popstate-ish nudge. The existing App.tsx watches
-            // `year` changes and reloads rankings from URL — set year to fire it.
-            if (full.year) {
-                // setting name above already triggers update; year change will
-                // call loadRankingsFromURL via the existing year-effect.
-                window.dispatchEvent(new PopStateEvent('popstate'));
-            } else {
-                window.dispatchEvent(new PopStateEvent('popstate'));
-            }
+            dispatch(setLastSavedSignature(signatureFromRanking(full)));
+            // App.tsx watches popstate to reload rankings from URL.
+            window.dispatchEvent(new PopStateEvent('popstate'));
             toast.success('Loaded.');
         } catch (e) {
             if (e instanceof ApiError) toast.error(e.body?.trim() || 'Failed to load.');
@@ -212,8 +240,8 @@ const SavedRankingsTab: React.FC<SavedRankingsTabProps> = ({ openAuthModal }) =>
             if (currentRankingId === r.ranking_id) {
                 dispatch(clearCurrentRanking());
             }
+            dispatch(removeSavedRanking(r.ranking_id));
             toast.success('Deleted.');
-            await refresh();
         } catch (e) {
             if (e instanceof ApiError) toast.error(e.body?.trim() || 'Failed to delete.');
             else toast.error('Failed to delete.');
@@ -233,10 +261,10 @@ const SavedRankingsTab: React.FC<SavedRankingsTabProps> = ({ openAuthModal }) =>
                 public: !r.public,
             });
             if (currentRankingId === r.ranking_id) {
-                dispatch(setLastSavedSignature(signatureFromRanking(updated, voteCode)));
+                dispatch(setLastSavedSignature(signatureFromRanking(updated)));
             }
+            dispatch(upsertSavedRanking(updated));
             toast.success(updated.public ? 'Now public — share the link.' : 'Made private.');
-            await refresh();
         } catch (e) {
             if (e instanceof ApiError) toast.error(e.body?.trim() || 'Failed to update.');
             else toast.error('Failed to update.');
@@ -271,11 +299,11 @@ const SavedRankingsTab: React.FC<SavedRankingsTabProps> = ({ openAuthModal }) =>
             });
             if (currentRankingId === r.ranking_id) {
                 dispatch(setName(updated.name));
-                dispatch(setLastSavedSignature(signatureFromRanking(updated, voteCode)));
+                dispatch(setLastSavedSignature(signatureFromRanking(updated)));
             }
+            dispatch(upsertSavedRanking(updated));
             setRenameId(null);
             toast.success('Renamed.');
-            await refresh();
         } catch (e) {
             if (e instanceof ApiError) toast.error(e.body?.trim() || 'Failed to rename.');
             else toast.error('Failed to rename.');
@@ -284,163 +312,257 @@ const SavedRankingsTab: React.FC<SavedRankingsTabProps> = ({ openAuthModal }) =>
 
     if (!user) {
         return (
-            <div className="text-sm text-[var(--er-text-tertiary)]">
-                <p className="mb-3">Sign in to save and sync your rankings across devices.</p>
-                {/* <p className="text-xs text-[var(--er-text-subtle)] mb-4">
-                    Saved rankings are tied to your account. They're saved manually; nothing is
-                    auto-uploaded.
-                </p> */}
+            <div className="flex flex-col items-center text-center py-6 px-2">
+                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-[var(--er-button-primary)]/30 to-[var(--er-button-primary-hover)]/20 flex items-center justify-center mb-4 ring-1 ring-[var(--er-button-primary)]/20">
+                    <FontAwesomeIcon
+                        icon={faUpload}
+                        className="text-[var(--er-button-primary)] text-lg"
+                    />
+                </div>
+                <h3 className="text-base font-semibold text-[var(--er-text-primary)] mb-1">
+                    Save your rankings
+                </h3>
+                <p className="text-sm text-[var(--er-text-subtle)] max-w-xs mb-5">
+                    Sign in to save and sync your rankings across devices.
+                </p>
                 <button
                     type="button"
                     onClick={openAuthModal}
-                    className="px-4 py-2 text-sm font-medium text-white bg-[var(--er-button-primary)] hover:bg-[var(--er-button-primary-hover)] rounded-md"
+                    className="px-5 py-2 text-sm font-medium text-white bg-[var(--er-button-primary)] hover:bg-[var(--er-button-primary-hover)] rounded-md transition-colors shadow-sm mb-5"
                 >
                     Sign In
                 </button>
+                <div className="w-full max-w-sm rounded-lg border-[0.7px] border-[var(--er-button-primary)]/30 bg-[var(--er-button-primary)]/10 p-3 flex gap-2.5 text-left">
+                    <FontAwesomeIcon
+                        icon={faCircleInfo}
+                        className="text-[var(--er-button-primary)] mt-0.5 shrink-0"
+                    />
+                    <div className="text-xs leading-relaxed text-[var(--er-text-tertiary)]">
+                        <span className="font-semibold text-[var(--er-text-primary)]">Private preview.</span>{' '}
+                        Accounts are invite-only while this feature is being tested with a small group.
+                        Public sign-ups will open in a future release. Thanks for your patience!
+                    </div>
+                </div>
             </div>
         );
     }
 
+    const userInitial = (user.email || '?').trim().charAt(0).toUpperCase();
+
     return (
-        <div className="text-sm">
-            <div className="mb-4 flex items-center justify-between gap-2">
-                <div className="min-w-0">
-                    <div className="text-xs text-[var(--er-text-subtle)]">Signed in as</div>
-                    <div className="truncate text-[var(--er-text-primary)]">{user.email}</div>
+        <div className="text-sm space-y-5">
+            {/* Account header */}
+            <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[var(--er-button-primary)] to-[var(--er-button-primary-hover)] flex items-center justify-center text-white text-sm font-semibold shadow-sm shrink-0">
+                    {userInitial}
+                </div>
+                <div className="min-w-0 flex-1">
+                    <div className={sectionLabel}>Signed in</div>
+                    <div className="truncate text-[var(--er-text-primary)] text-sm">
+                        {user.email}
+                    </div>
                 </div>
                 <button
                     type="button"
                     onClick={() => dispatch(logout())}
-                    className="px-3 py-1.5 text-xs font-medium text-[var(--er-text-primary)] bg-[var(--er-button-neutral)] hover:bg-[var(--er-button-neutral-hover)] flex items-center gap-2 rounded-md"
-                    title="Sign Out"
+                    className="w-8 h-8 inline-flex items-center justify-center rounded-md text-[var(--er-text-tertiary)] hover:text-[var(--er-text-primary)] hover:bg-[var(--er-button-neutral)]/40 transition-colors shrink-0"
+                    title="Sign out"
                 >
                     <FontAwesomeIcon icon={faRightFromBracket} />
-                    Sign Out
                 </button>
             </div>
 
-            <div className="mb-4">
-                <div className={sectionTitle}>Current ranking</div>
-                <div className="mt-2 flex flex-wrap items-center gap-2">
-                    <div className="text-[var(--er-text-tertiary)] flex-1 min-w-[10em]">
-                        <div className="truncate">{name || <i>Untitled</i>}</div>
-                        <div className="text-xs text-[var(--er-text-subtle)]">
-                            {year ? `${year} · ` : ''}
-                            {rankedItems.length} countries
+            {/* Current ranking card */}
+            <div>
+                <div className={`${sectionLabel} mb-2`}>Current ranking</div>
+                <div className="rounded-lg border border-[var(--er-border-lightest)] dark:border-[var(--er-border-darker)] bg-[var(--er-button-neutral)]/15 p-3 flex items-center gap-3">
+                    <div className="flex-1 min-w-0">
+                        <div className="truncate font-medium text-[var(--er-text-primary)]">
+                            {name || <span className="italic text-[var(--er-text-subtle)]">Untitled</span>}
+                        </div>
+                        <div className="text-xs text-[var(--er-text-subtle)] mt-0.5 flex items-center gap-1.5">
+                            {year && <span>{year}</span>}
+                            {year && <span className="opacity-40">·</span>}
+                            <span>{rankedItems.length} {rankedItems.length === 1 ? 'country' : 'countries'}</span>
+                            {currentRankingId && !isDirty && (
+                                <>
+                                    <span className="opacity-40">·</span>
+                                    <span className="inline-flex items-center gap-1 text-[var(--er-text-tertiary)]">
+                                        <FontAwesomeIcon icon={faCheck} className="text-[10px]" />
+                                        Saved
+                                    </span>
+                                </>
+                            )}
                         </div>
                     </div>
-                    {currentRankingId ? (
-                        <IconButton
-                            onClick={handleSaveUpdate}
-                            disabled={saving || !isDirty || isEmpty}
-                            className="!px-3 py-1"
-                            icon={faSave}
-                            title={isDirty ? 'Save changes' : 'No unsaved changes'}
-                        />
-                    ) : (
-                        <IconButton
-                            onClick={handleSaveNew}
-                            disabled={saving || isEmpty}
-                            className="!px-3 py-1"
-                            icon={faPlus}
-                            title="Save"
-                        />
-                    )}
+                    <div className="flex items-center gap-1.5 shrink-0">
+                        {currentRankingId ? (
+                            <>
+                                <button
+                                    type="button"
+                                    onClick={handleSaveUpdate}
+                                    disabled={saving || !isDirty || isEmpty}
+                                    title={isDirty ? 'Save changes' : 'No unsaved changes'}
+                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md text-white bg-[var(--er-button-primary)] hover:bg-[var(--er-button-primary-hover)] disabled:bg-[var(--er-button-neutral)]/40 disabled:text-[var(--er-text-subtle)] disabled:cursor-not-allowed transition-colors"
+                                >
+                                    <FontAwesomeIcon icon={faSave} />
+                                    Save
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={handleSaveNew}
+                                    disabled={saving || isEmpty}
+                                    title="Save as new"
+                                    className="w-8 h-8 inline-flex items-center justify-center rounded-md text-[var(--er-text-tertiary)] hover:text-[var(--er-text-primary)] hover:bg-[var(--er-button-neutral)]/40 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                                >
+                                    <FontAwesomeIcon icon={faPlus} />
+                                </button>
+                            </>
+                        ) : (
+                            <button
+                                type="button"
+                                onClick={handleSaveNew}
+                                disabled={saving || isEmpty}
+                                title="Save"
+                                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md text-white bg-[var(--er-button-primary)] hover:bg-[var(--er-button-primary-hover)] disabled:bg-[var(--er-button-neutral)]/40 disabled:text-[var(--er-text-subtle)] disabled:cursor-not-allowed transition-colors"
+                            >
+                                <FontAwesomeIcon icon={faPlus} />
+                                Save
+                            </button>
+                        )}
+                    </div>
                 </div>
             </div>
 
-            <div className="border-t border-[var(--er-border-lightest)] pt-3">
-                <div className={sectionTitle}>Saved rankings</div>
+            {/* Saved rankings list */}
+            <div>
+                <div className={`${sectionLabel} mb-2 flex items-center justify-between`}>
+                    <div className="flex items-center gap-2">
+                        <span>Saved rankings</span>
+                        {rankings && rankings.length > 0 && (
+                            <span className="normal-case tracking-normal text-[var(--er-text-subtle)] font-normal">
+                                {rankings.length}
+                            </span>
+                        )}
+                    </div>
+                    <button
+                        type="button"
+                        onClick={refresh}
+                        disabled={loading}
+                        className="w-6 h-6 inline-flex items-center justify-center rounded text-[var(--er-text-tertiary)] hover:text-[var(--er-text-primary)] hover:bg-[var(--er-button-neutral)]/40 disabled:opacity-40 transition-colors"
+                        title="Refresh"
+                    >
+                        <FontAwesomeIcon icon={faRotate} className={`text-xs ${loading ? 'animate-spin' : ''}`} />
+                    </button>
+                </div>
                 {loading && (
-                    <div className="mt-2 text-xs text-[var(--er-text-subtle)]">Loading…</div>
+                    <div className="text-xs text-[var(--er-text-subtle)] py-2">Loading…</div>
                 )}
                 {error && (
-                    <div className="mt-2 text-xs text-red-400">{error}</div>
+                    <div className="text-xs text-red-400 py-2">{error}</div>
                 )}
                 {!loading && !error && rankings && rankings.length === 0 && (
-                    <div className="mt-2 text-xs text-[var(--er-text-subtle)]">
+                    <div className="rounded-lg border border-dashed border-[var(--er-border-lightest)] dark:border-[var(--er-border-darker)] py-6 text-center text-xs text-[var(--er-text-subtle)]">
                         Nothing saved yet.
                     </div>
                 )}
                 {!loading && !error && rankings && rankings.length > 0 && (
-                    <ul className="mt-2 divide-y divide-[var(--er-border-lightest)]">
-                        {rankings.map((r) => (
-                            <li
-                                key={r.ranking_id}
-                                className={`py-2 flex items-center gap-2 ${currentRankingId === r.ranking_id ? 'bg-[var(--er-button-secondary-hover)] bg-opacity-30' : ''}`}
-                            >
-                                <div className="flex-1 min-w-0">
-                                    {renameId === r.ranking_id ? (
-                                        <input
-                                            className={inputClass}
-                                            value={renameValue}
-                                            autoFocus
-                                            onChange={(e) => setRenameValue(e.target.value)}
-                                            onKeyDown={(e) => {
-                                                if (e.key === 'Enter') handleRenameSubmit(r);
-                                                if (e.key === 'Escape') setRenameId(null);
+                    <ul className="space-y-1">
+                        {rankings.map((r) => {
+                            const isCurrent = currentRankingId === r.ranking_id;
+                            return (
+                                <li
+                                    key={r.ranking_id}
+                                    className={`group relative rounded-md px-3 py-2 flex items-center gap-2 transition-colors ${
+                                        isCurrent
+                                            ? 'bg-[var(--er-button-primary)]/10 ring-1 ring-inset ring-[var(--er-button-primary)]/30'
+                                            : 'hover:bg-[var(--er-button-neutral)]/20'
+                                    }`}
+                                >
+                                    <div className="flex-1 min-w-0">
+                                        {renameId === r.ranking_id ? (
+                                            <input
+                                                className={inputClass}
+                                                value={renameValue}
+                                                autoFocus
+                                                onChange={(e) => setRenameValue(e.target.value)}
+                                                onKeyDown={(e) => {
+                                                    if (e.key === 'Enter') handleRenameSubmit(r);
+                                                    if (e.key === 'Escape') setRenameId(null);
+                                                }}
+                                                onBlur={() => handleRenameSubmit(r)}
+                                            />
+                                        ) : (
+                                            <>
+                                                <div className="truncate font-medium text-[var(--er-text-primary)] flex items-center gap-2">
+                                                    <span className="truncate">{r.name || <i className="text-[var(--er-text-subtle)]">Untitled</i>}</span>
+                                                    {r.public && (
+                                                        <span
+                                                            className="inline-flex items-center gap-1 text-[10px] uppercase tracking-wide font-semibold text-[var(--er-text-tertiary)] bg-[var(--er-button-neutral)]/40 px-1.5 py-0.5 rounded"
+                                                            title="Public"
+                                                        >
+                                                            <FontAwesomeIcon icon={faGlobe} className="text-[9px]" />
+                                                            Public
+                                                        </span>
+                                                    )}
+                                                </div>
+                                                <div className="text-xs text-[var(--er-text-subtle)] mt-0.5">
+                                                    {r.year ? `${r.year} · ` : ''}
+                                                    {r.created_at ? new Date(r.created_at).toLocaleDateString() : ''}
+                                                </div>
+                                            </>
+                                        )}
+                                    </div>
+                                    <div className="flex items-center gap-0.5 shrink-0">
+                                        <button
+                                            type="button"
+                                            className={rowIconBtn}
+                                            title="Load"
+                                            onClick={() => handleLoad(r)}
+                                        >
+                                            <FontAwesomeIcon icon={faUpload} className="text-xs" />
+                                        </button>
+                                        <button
+                                            type="button"
+                                            className={`${rowIconBtn} ${r.public ? '!text-[var(--er-text-primary)]' : ''}`}
+                                            title={r.public ? 'Public — click to make private' : 'Private — click to make public'}
+                                            onClick={() => handleTogglePublic(r)}
+                                        >
+                                            <FontAwesomeIcon icon={r.public ? faGlobe : faLock} className="text-xs" />
+                                        </button>
+                                        {r.public && (
+                                            <button
+                                                type="button"
+                                                className={rowIconBtn}
+                                                title="Copy share link"
+                                                onClick={() => handleCopyShareLink(r)}
+                                            >
+                                                <FontAwesomeIcon icon={faLink} className="text-xs" />
+                                            </button>
+                                        )}
+                                        <button
+                                            type="button"
+                                            className={rowIconBtn}
+                                            title="Rename"
+                                            onClick={() => {
+                                                setRenameId(r.ranking_id);
+                                                setRenameValue(r.name || '');
                                             }}
-                                            onBlur={() => handleRenameSubmit(r)}
-                                        />
-                                    ) : (
-                                        <>
-                                            <div className="truncate font-medium text-[var(--er-text-primary)]">
-                                                {r.name || <i>Untitled</i>}
-                                            </div>
-                                            <div className="text-xs text-[var(--er-text-subtle)]">
-                                                {r.year ? `${r.year} · ` : ''}
-                                                {r.created_at ? new Date(r.created_at).toLocaleDateString() : ''}
-                                            </div>
-                                        </>
-                                    )}
-                                </div>
-                                <button
-                                    type="button"
-                                    className="text-[var(--er-text-tertiary)] hover:text-[var(--er-text-primary)] px-2"
-                                    title="Load"
-                                    onClick={() => handleLoad(r)}
-                                >
-                                    <FontAwesomeIcon icon={faUpload} />
-                                </button>
-                                <button
-                                    type="button"
-                                    className={`px-2 ${r.public ? 'text-[var(--er-text-primary)]' : 'text-[var(--er-text-tertiary)]'} hover:text-[var(--er-text-primary)]`}
-                                    title={r.public ? 'Public — click to make private' : 'Private — click to make public'}
-                                    onClick={() => handleTogglePublic(r)}
-                                >
-                                    <FontAwesomeIcon icon={r.public ? faGlobe : faLock} />
-                                </button>
-                                {r.public && (
-                                    <button
-                                        type="button"
-                                        className="text-[var(--er-text-tertiary)] hover:text-[var(--er-text-primary)] px-2"
-                                        title="Copy share link"
-                                        onClick={() => handleCopyShareLink(r)}
-                                    >
-                                        <FontAwesomeIcon icon={faLink} />
-                                    </button>
-                                )}
-                                <button
-                                    type="button"
-                                    className="text-[var(--er-text-tertiary)] hover:text-[var(--er-text-primary)] px-2"
-                                    title="Rename"
-                                    onClick={() => {
-                                        setRenameId(r.ranking_id);
-                                        setRenameValue(r.name || '');
-                                    }}
-                                >
-                                    <FontAwesomeIcon icon={faPen} />
-                                </button>
-                                <button
-                                    type="button"
-                                    className="text-red-400 hover:text-red-300 px-2"
-                                    title="Delete"
-                                    onClick={() => setConfirmDelete(r)}
-                                >
-                                    <FontAwesomeIcon icon={faTrash} />
-                                </button>
-                            </li>
-                        ))}
+                                        >
+                                            <FontAwesomeIcon icon={faPen} className="text-xs" />
+                                        </button>
+                                        <button
+                                            type="button"
+                                            className="w-7 h-7 inline-flex items-center justify-center rounded-md text-[var(--er-text-tertiary)] hover:text-red-400 hover:bg-red-500/10 transition-colors"
+                                            title="Delete"
+                                            onClick={() => setConfirmDelete(r)}
+                                        >
+                                            <FontAwesomeIcon icon={faTrash} className="text-xs" />
+                                        </button>
+                                    </div>
+                                </li>
+                            );
+                        })}
                     </ul>
                 )}
             </div>

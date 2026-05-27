@@ -8,7 +8,7 @@ import { ContestantRow, TableState } from '../components/table/tableTypes';
 import { changePageSize, filterTable, sortTable } from './tableSlice';
 import { THEME_OPTIONS, THEME_SURFACE_COLORS } from '../components/modals/config/DisplayTab';
 import { AuthSliceFields, AuthStatus, loadInitialAuth } from './authSlice';
-import { AuthUser } from '../utilities/api/types';
+import { AuthUser, UserRanking } from '../utilities/api/types';
 import { setToken } from '../utilities/api/client';
 
 interface AppState extends AuthSliceFields {
@@ -31,6 +31,7 @@ interface AppState extends AuthSliceFields {
     showThumbnail: boolean;
     tableState: TableState,
     welcomeOverlayIsOpen: boolean;
+    savedRankings: UserRanking[] | null;
 }
 
 const initialAuth = loadInitialAuth();
@@ -60,6 +61,7 @@ const initialState: AppState = {
     showThumbnail: true,
     showPlace: false,
     welcomeOverlayIsOpen: false,
+    savedRankings: null,
     tableState: {
         sortColumn: 'year',
         sortDirection: 'desc',
@@ -211,6 +213,7 @@ const rootSlice = createSlice({
             state.authError = null;
             state.currentRankingId = null;
             state.lastSavedSignature = null;
+            state.savedRankings = null;
             setToken(null);
         },
         setCurrentRankingId: (state, action: PayloadAction<string | null>) => {
@@ -222,6 +225,25 @@ const rootSlice = createSlice({
         clearCurrentRanking: (state) => {
             state.currentRankingId = null;
             state.lastSavedSignature = null;
+        },
+        setSavedRankings: (state, action: PayloadAction<UserRanking[] | null>) => {
+            state.savedRankings = action.payload;
+        },
+        upsertSavedRanking: (state, action: PayloadAction<UserRanking>) => {
+            const r = action.payload;
+            if (!state.savedRankings) {
+                state.savedRankings = [r];
+                return;
+            }
+            const idx = state.savedRankings.findIndex(x => x.ranking_id === r.ranking_id);
+            if (idx >= 0) state.savedRankings[idx] = r;
+            else state.savedRankings.unshift(r);
+        },
+        removeSavedRanking: (state, action: PayloadAction<string>) => {
+            if (!state.savedRankings) return;
+            state.savedRankings = state.savedRankings.filter(
+                x => x.ranking_id !== action.payload
+            );
         },
         addAllPaginatedContestants: (state) => {
             const newSelectedContestants = state.tableState.paginatedContestants.filter(
@@ -286,6 +308,9 @@ export const {
     setCurrentRankingId,
     setLastSavedSignature,
     clearCurrentRanking,
+    setSavedRankings,
+    upsertSavedRanking,
+    removeSavedRanking,
 } = rootSlice.actions;
 
 export default rootSlice.reducer;

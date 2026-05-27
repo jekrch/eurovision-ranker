@@ -558,3 +558,17 @@ code {
   vertical-align: middle;
   margin-right: 8px;
 }
+
+/* Prevent Chrome/Safari autofill from painting inputs white/yellow. */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active,
+textarea:-webkit-autofill,
+select:-webkit-autofill {
+  -webkit-text-fill-color: var(--er-text-primary);
+  -webkit-box-shadow: 0 0 0 1000px var(--er-surface-primary) inset;
+  box-shadow: 0 0 0 1000px var(--er-surface-primary) inset;
+  caret-color: var(--er-text-primary);
+  transition: background-color 9999s ease-in-out 0s;
+}

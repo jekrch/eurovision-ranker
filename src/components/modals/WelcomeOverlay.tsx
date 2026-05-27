@@ -103,7 +103,7 @@ const WelcomeOverlay: React.FC<WelcomeOverlayProps> = ({ handleGetStarted, handl
                         <li className="flex items-start">
                             <FaSort className='mt-1 mr-2 text-purple-500' />
                             <span>use a sorter to generate rankings</span>
-                            <span className={classNames(
+                            {/* <span className={classNames(
                                 "absolute -left-[0.5em] subtle-pulse",
                                 "inline-block bg-gradient-to-r from-[var(--er-surface-medium)] to-[var(--er-interactive-dark)] text-[var(--er-text-secondary)]",
                                 "text-[0.6rem] font-bold pl-[1.2em] pr-[1.5em] py-0.2",
@@ -113,7 +113,7 @@ const WelcomeOverlay: React.FC<WelcomeOverlayProps> = ({ handleGetStarted, handl
                                 style={{
                                     clipPath: 'polygon(0% 0%, 80% 0%, 100% 50%, 80% 100%, 0% 100%)'
                                 }}
-                            >NEW</span>
+                            >NEW</span> */}
                         </li>
                         <li className="flex items-start"> <FaHeart className='mt-1 mr-2 opacity-0' /> <span>...and more!</span></li>
                     </ol>

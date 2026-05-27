@@ -1,22 +1,40 @@
 export const toastOptions = {
+    style: {
+      color: 'var(--er-text-primary)',
+      background: 'var(--er-surface-secondary)',
+      border: '1px solid var(--er-border-tertiary)',
+    },
     success: {
       style: {
-        color: '#E8E7E6',
-        background: 'var(--er-surface-dark)',
+        color: 'var(--er-text-primary)',
+        background: 'var(--er-surface-secondary)',
+        border: '1px solid var(--er-border-tertiary)',
       },
       iconTheme: {
-        primary: 'green',
-        secondary: 'white',
+        primary: 'var(--er-accent-success)',
+        secondary: 'var(--er-text-primary)',
       },
     },
     error: {
       style: {
-        color: '#E8E7E6',
-        background: '#474575',
+        color: 'var(--er-text-primary)',
+        background: 'var(--er-surface-secondary)',
+        border: '1px solid var(--er-border-tertiary)',
       },
       iconTheme: {
-        primary: 'red',
-        secondary: 'white',
+        primary: 'var(--er-accent-error)',
+        secondary: 'var(--er-text-primary)',
+      },
+    },
+    loading: {
+      style: {
+        color: 'var(--er-text-primary)',
+        background: 'var(--er-surface-secondary)',
+        border: '1px solid var(--er-border-tertiary)',
+      },
+      iconTheme: {
+        primary: 'var(--er-interactive-primary)',
+        secondary: 'var(--er-text-primary)',
       },
     },
   };

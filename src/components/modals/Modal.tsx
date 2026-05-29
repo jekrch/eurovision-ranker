@@ -136,7 +136,7 @@ const Modal: React.FC<ModalContainerProps> = ({
                 <div
                     ref={modalRef}
                     className={classNames(
-                        "relative bg-[var(--er-surface-secondary)] m-4 max-h-[85vh] text-[var(--er-text-tertiary)] p-6 rounded-xl ring-1 ring-white/10 shadow-2xl shadow-black/40 max-w-lg w-full flex flex-col transform transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]",
+                        "relative bg-[var(--er-surface-secondary)] m-4 max-h-[85vh] text-[var(--er-text-tertiary)] p-6 rounded-xl ring-1 ring-white/10 shadow-2xl shadow-black/40 max-w-lg w-full min-w-0 flex flex-col transform transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]",
                         isOpen && showModal ? `${transitionStyles.opacity} ${transitionStyles.transform}` : 'opacity-0 translate-y-4 scale-95', // Control modal visibility/position smoothly
                         className
                     )}

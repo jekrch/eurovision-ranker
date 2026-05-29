@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash, faUpload, faPen, faPlus, faSave, faRightFromBracket, faGlobe, faLock, faLink, faCheck, faRotate, faCircleInfo } from '@fortawesome/free-solid-svg-icons';
+import { faTrash, faUpload, faPen, faPlus, faSave, faRightFromBracket, faGlobe, faLock, faLink, faCheck, faRotate, faCircleInfo, faShareNodes, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { AppState } from '../../../redux/store';
 import { useAppDispatch, useAppSelector } from '../../../hooks/stateHooks';
 import GlobalConfirmationModal from '../GlobalConfirmationModal';
@@ -12,6 +12,11 @@ import {
     deleteRanking,
     getRanking,
 } from '../../../utilities/api/rankings';
+import {
+    listGroups,
+    shareRankingWithGroup,
+    unshareRankingFromGroup,
+} from '../../../utilities/api/groups';
 import { ApiError, UserRanking } from '../../../utilities/api/types';
 import {
     setCurrentRankingId,
@@ -25,6 +30,9 @@ import {
     setCategories,
     setActiveCategory,
     setShowTotalRank,
+    setGroups,
+    addGroupIdToRanking,
+    removeGroupIdFromRanking,
 } from '../../../redux/rootSlice';
 import { parseCategoriesUrlParam } from '../../../utilities/CategoryUtil';
 import { buildSignature, signatureFromRanking } from '../../../utilities/api/rankingSignature';
@@ -73,6 +81,7 @@ const SavedRankingsTab: React.FC<SavedRankingsTabProps> = ({ openAuthModal }) =>
     const lastSavedSignature = useAppSelector((s: AppState) => s.lastSavedSignature);
 
     const rankings = useAppSelector((s: AppState) => s.savedRankings);
+    const groups = useAppSelector((s: AppState) => s.groups);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [renameId, setRenameId] = useState<string | null>(null);
@@ -80,6 +89,9 @@ const SavedRankingsTab: React.FC<SavedRankingsTabProps> = ({ openAuthModal }) =>
     const [confirmDelete, setConfirmDelete] = useState<UserRanking | null>(null);
     const [confirmLoad, setConfirmLoad] = useState<UserRanking | null>(null);
     const [saving, setSaving] = useState(false);
+    const [shareTarget, setShareTarget] = useState<UserRanking | null>(null);
+    const [shareLoading, setShareLoading] = useState(false);
+    const [pendingShareToggle, setPendingShareToggle] = useState<string | null>(null);
 
     // `rankingParams` reflects everything in the URL except n/y/id/signup.
     // It's recomputed whenever `rankedItems` changes (a proxy for "the URL
@@ -279,6 +291,41 @@ const SavedRankingsTab: React.FC<SavedRankingsTabProps> = ({ openAuthModal }) =>
         } catch {
             // Fallback for browsers without clipboard permission.
             window.prompt('Copy this link:', url);
+        }
+    };
+
+    const openShare = async (r: UserRanking) => {
+        setShareTarget(r);
+        // Lazy-load groups list if we haven't fetched it yet.
+        if (groups === null) {
+            setShareLoading(true);
+            try {
+                const list = await listGroups();
+                dispatch(setGroups(list ?? []));
+            } catch (e) {
+                if (e instanceof ApiError) toast.error(e.body?.trim() || 'Failed to load groups.');
+                else toast.error('Failed to load groups.');
+            } finally {
+                setShareLoading(false);
+            }
+        }
+    };
+
+    const toggleShare = async (r: UserRanking, groupId: string, currentlyShared: boolean) => {
+        setPendingShareToggle(groupId);
+        try {
+            if (currentlyShared) {
+                await unshareRankingFromGroup(groupId, r.ranking_id);
+                dispatch(removeGroupIdFromRanking({ rankingId: r.ranking_id, groupId }));
+            } else {
+                await shareRankingWithGroup(groupId, r.ranking_id);
+                dispatch(addGroupIdToRanking({ rankingId: r.ranking_id, groupId }));
+            }
+        } catch (e) {
+            if (e instanceof ApiError) toast.error(e.body?.trim() || 'Failed to update sharing.');
+            else toast.error('Failed to update sharing.');
+        } finally {
+            setPendingShareToggle(null);
         }
     };
 
@@ -542,6 +589,14 @@ const SavedRankingsTab: React.FC<SavedRankingsTabProps> = ({ openAuthModal }) =>
                                         )}
                                         <button
                                             type="button"
+                                            className={`${rowIconBtn} ${r.group_ids && r.group_ids.length > 0 ? '!text-[var(--er-text-primary)]' : ''}`}
+                                            title={r.group_ids && r.group_ids.length > 0 ? `Shared with ${r.group_ids.length} group${r.group_ids.length === 1 ? '' : 's'}` : 'Share with a group'}
+                                            onClick={() => openShare(r)}
+                                        >
+                                            <FontAwesomeIcon icon={faShareNodes} className="text-xs" />
+                                        </button>
+                                        <button
+                                            type="button"
                                             className={rowIconBtn}
                                             title="Rename"
                                             onClick={() => {
@@ -584,6 +639,82 @@ const SavedRankingsTab: React.FC<SavedRankingsTabProps> = ({ openAuthModal }) =>
                 }}
                 message={`You have unsaved changes. Discard them and load "${confirmLoad?.name || 'Untitled'}"?`}
             />
+
+            {shareTarget && (
+                <div
+                    className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-sm"
+                    onClick={() => setShareTarget(null)}
+                >
+                    <div
+                        className="w-full sm:max-w-md bg-[var(--er-surface-secondary)] rounded-t-xl sm:rounded-xl ring-1 ring-white/10 shadow-2xl shadow-black/40 p-5 sm:m-4 max-h-[85vh] overflow-y-auto"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <div className="flex items-center justify-between mb-3">
+                            <div className="min-w-0">
+                                <h3 className="text-sm font-semibold text-[var(--er-text-primary)] truncate">
+                                    Share with groups
+                                </h3>
+                                <p className="text-xs text-[var(--er-text-subtle)] truncate">
+                                    {shareTarget.name || 'Untitled'}
+                                </p>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={() => setShareTarget(null)}
+                                className="w-8 h-8 inline-flex items-center justify-center rounded-md text-[var(--er-text-subtle)] hover:text-[var(--er-text-primary)] hover:bg-white/5 shrink-0"
+                                aria-label="Close"
+                            >
+                                <FontAwesomeIcon icon={faXmark} />
+                            </button>
+                        </div>
+
+                        {shareLoading && (
+                            <div className="text-xs text-[var(--er-text-subtle)] py-3">Loading groups…</div>
+                        )}
+
+                        {!shareLoading && groups && groups.length === 0 && (
+                            <div className="rounded-lg border border-dashed border-[var(--er-border-lightest)] dark:border-[var(--er-border-darker)] py-6 text-center text-xs text-[var(--er-text-subtle)]">
+                                You're not in any groups yet. Create one from the Groups tab.
+                            </div>
+                        )}
+
+                        {!shareLoading && groups && groups.length > 0 && (
+                            <ul className="space-y-1">
+                                {groups.map((g) => {
+                                    // Use the latest copy from the cache for live group_ids updates.
+                                    const current = rankings?.find(x => x.ranking_id === shareTarget.ranking_id) ?? shareTarget;
+                                    const shared = !!current.group_ids?.includes(g.id);
+                                    const pending = pendingShareToggle === g.id;
+                                    return (
+                                        <li key={g.id}>
+                                            <button
+                                                type="button"
+                                                disabled={pending}
+                                                onClick={() => toggleShare(current, g.id, shared)}
+                                                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-md transition-colors ${shared ? 'bg-[var(--er-button-primary)]/10 ring-1 ring-inset ring-[var(--er-button-primary)]/30' : 'bg-[var(--er-button-neutral)]/15 hover:bg-[var(--er-button-neutral)]/30'} disabled:opacity-60 disabled:cursor-not-allowed`}
+                                            >
+                                                <div className={`w-5 h-5 rounded border ${shared ? 'bg-[var(--er-button-primary)] border-[var(--er-button-primary)]' : 'border-white/20'} flex items-center justify-center shrink-0`}>
+                                                    {shared && <FontAwesomeIcon icon={faCheck} className="text-white text-[10px]" />}
+                                                </div>
+                                                <div className="flex-1 min-w-0 text-left">
+                                                    <div className="truncate text-sm text-[var(--er-text-primary)]">{g.name}</div>
+                                                    <div className="text-[11px] text-[var(--er-text-subtle)]">
+                                                        {g.member_count} {g.member_count === 1 ? 'member' : 'members'}
+                                                    </div>
+                                                </div>
+                                            </button>
+                                        </li>
+                                    );
+                                })}
+                            </ul>
+                        )}
+
+                        <div className="mt-3 text-[11px] text-[var(--er-text-subtle)] leading-relaxed">
+                            Group members can view this ranking. They can't edit it.
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

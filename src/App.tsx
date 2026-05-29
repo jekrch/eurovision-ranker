@@ -23,6 +23,7 @@ import SorterModal from './components/ranking/SorterModal';
 import useSorterModal from './hooks/useSortModal';
 import { useThemeEffect } from './hooks/useThemeEffect';
 import AuthModal, { AuthView } from './components/modals/auth/AuthModal';
+import JoinGroupModal from './components/modals/groups/JoinGroupModal';
 import { ping } from './utilities/api/health';
 import { getPublicRanking } from './utilities/api/rankings';
 import { parseStoredRanking } from './utilities/api/rankingParams';
@@ -68,11 +69,12 @@ const App: React.FC = () => {
   const activeCategory = useAppSelector((state: AppState) => state.activeCategory);
 
   const [selectedCountryContestant, setSelectedCountryContestant] = useState<CountryContestant | undefined>(undefined);
-  const [showOverlay, setShowOverlay] = useState(!areRankingsSet() && !isAuthDeepLink() && !hasIdParam());
+  const [showOverlay, setShowOverlay] = useState(!areRankingsSet() && !isAuthDeepLink() && !hasIdParam() && !hasJoinToken());
   const [isOverlayExit, setIsOverlayExit] = useState(false);
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authModalView, setAuthModalView] = useState<AuthView | undefined>(undefined);
   const [authModalAllowRegister, setAuthModalAllowRegister] = useState(false);
+  const [joinGroupToken, setJoinGroupToken] = useState<string | null>(null);
   //const [isDevModalOpen, setIsDevModalOpen] = useState(true);
   const memoizedRankedItems = useMemo(() => rankedItems, [rankedItems]);
   const memoizedUnrankedItems = useMemo(() => unrankedItems, [unrankedItems]);
@@ -141,12 +143,23 @@ const App: React.FC = () => {
     return (
       path.endsWith('/complete-registration') ||
       path.endsWith('/reset-password') ||
+      path.endsWith('/join-group') ||
       params.get('signup') === 'beta'
     );
   }
 
   function hasIdParam() {
     return !!new URLSearchParams(window.location.search).get('id');
+  }
+
+  // Invite deep-links come in two shapes:
+  //   /join-group?token=…  (the canonical link the API builds)
+  //   ?join=…              (query-only fallback for gh-pages-style hosts
+  //                          that don't rewrite unknown paths to index.html)
+  function hasJoinToken(): boolean {
+    const params = new URLSearchParams(window.location.search);
+    const path = window.location.pathname;
+    return (path.endsWith('/join-group') && !!params.get('token')) || !!params.get('join');
   }
 
   const handleGetStarted = useCallback(() => {
@@ -203,6 +216,14 @@ const App: React.FC = () => {
       setAuthModalAllowRegister(true);
       setAuthModalOpen(true);
       stripParamsAndPath(['signup']);
+    } else if (path.endsWith('/join-group') && params.get('token')) {
+      // Canonical invite link: /join-group?token=…
+      setJoinGroupToken(params.get('token'));
+      stripParamsAndPath(['token']);
+    } else if (params.get('join')) {
+      // Query-only fallback for static hosts that can't route /join-group.
+      setJoinGroupToken(params.get('join'));
+      stripParamsAndPath(['join']);
     }
 
     // ?id=<ranking_id> — fetch a public ranking and load it. Set the flag
@@ -817,6 +838,25 @@ const App: React.FC = () => {
         onClose={() => setAuthModalOpen(false)}
         initialView={authModalView}
         allowRegister={authModalAllowRegister}
+        onAuthSuccess={() => {
+          // Pre-seed the ConfigModal's sticky-tab storage so a first-mount
+          // (modal never opened this session) still lands on Account.
+          try { localStorage.setItem('configModalActiveTab', 'account'); } catch { /* ignore */ }
+          openConfigModalWithTab('account');
+        }}
+      />
+
+      <JoinGroupModal
+        isOpen={!!joinGroupToken}
+        token={joinGroupToken}
+        onClose={() => setJoinGroupToken(null)}
+        onSignInRequired={openLoginModal}
+        onJoined={() => {
+          // Sticky-tab so the Groups tab is what they see when the
+          // config modal opens.
+          try { localStorage.setItem('configModalActiveTab', 'groups'); } catch { /* ignore */ }
+          openConfigModalWithTab('groups');
+        }}
       />
 
       {/* <CanvasDevModal

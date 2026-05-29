@@ -1,12 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { faChartLine, faEdit, faFileExport, faList, faSlidersH, faUserCircle } from '@fortawesome/free-solid-svg-icons';
+import { faChartLine, faEdit, faList, faSlidersH, faUserCircle, faUserGroup } from '@fortawesome/free-solid-svg-icons';
 import Modal from '../Modal';
-import ExportTab from './ExportTab';
 import CategoriesTab from './CategoriesTab';
 import RankingsTab from './RankingsTab';
 import DisplayTab from './DisplayTab';
 import AnalyzeTab from './AnalyzeTab';
 import SavedRankingsTab from './SavedRankingsTab';
+import GroupsTab from './GroupsTab';
 import TabButton from '../../TabButton';
 import { AppState } from '../../../redux/store';
 import { useAppSelector } from '../../../hooks/stateHooks';
@@ -32,7 +32,9 @@ const ACTIVE_TAB_STORAGE_KEY = 'configModalActiveTab';
 const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
     const [activeTab, setActiveTab] = useState(() => {
         try {
-            return localStorage.getItem(ACTIVE_TAB_STORAGE_KEY) || props.tab;
+            const stored = localStorage.getItem(ACTIVE_TAB_STORAGE_KEY);
+            if (stored === 'export') return 'display';
+            return stored || props.tab;
         } catch {
             return props.tab;
         }
@@ -64,7 +66,7 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
     }, [activeTab]);
 
     return (
-        <Modal isOpen={props.isOpen} onClose={props.onClose} className="h-[85vh] !max-h-[500px]">
+        <Modal isOpen={props.isOpen} onClose={props.onClose} className="h-[85vh] !max-h-[550px]">
             <div className="border-b border-[var(--er-border-lightest)] dark:border-[var(--er-border-darker)] -mt-4">
                 <ul className="flex flex-wrap -mb-px text-sm font-medium text-center text-[var(--er-text-muted)] dark:text-[var(--er-text-subtle)]">
 
@@ -80,13 +82,6 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
                         onClick={() => setActiveTab('display')}
                         icon={faEdit}
                         label="Display"
-                    />
-
-                    <TabButton
-                        isActive={activeTab === 'export'}
-                        onClick={() => setActiveTab('export')}
-                        icon={faFileExport}
-                        label="Export"
                     />
 
                     <TabButton
@@ -111,6 +106,13 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
                         icon={faUserCircle}
                         label="Account"
                     />
+
+                    <TabButton
+                        isActive={activeTab === 'groups'}
+                        onClick={() => setActiveTab('groups')}
+                        icon={faUserGroup}
+                        label="Groups"
+                    />
                 </ul>
             </div>
 
@@ -124,10 +126,6 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
                     <RankingsTab/>
                 }
 
-                {activeTab === 'export' &&
-                    <ExportTab/>
-                }
-
                 {activeTab === 'categories' &&
                    <CategoriesTab/>
                 }
@@ -138,6 +136,10 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
 
                 {activeTab === 'account' &&
                     <SavedRankingsTab openAuthModal={props.openAuthModal} />
+                }
+
+                {activeTab === 'groups' &&
+                    <GroupsTab openAuthModal={props.openAuthModal} />
                 }
             </div>
 

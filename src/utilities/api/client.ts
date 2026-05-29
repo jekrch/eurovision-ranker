@@ -48,6 +48,7 @@ function classify(status: number, body: string): ApiErrorKind {
     if (status === 401) return 'unauthorized';
     if (status === 403) return 'forbidden';
     if (status === 404) return 'not_found';
+    if (status === 410) return 'gone';
     if (status === 429) return 'rate_limited';
     if (status === 400 && body.toLowerCase().startsWith('maximum number of rankings'))
         return 'max_rankings';

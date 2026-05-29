@@ -5,12 +5,15 @@ import {  assignVotesByContestants, fetchVotesByCode, updateVoteTypeCode, voteCo
 import { countries } from '../../../data/Countries';
 import Dropdown from '../../Dropdown';
 import Checkbox from '../../Checkbox';
+import IconButton from '../../IconButton';
 import { updateQueryParams } from '../../../utilities/UrlUtil';
 import TooltipHelp from '../../TooltipHelp';
 import { useAppDispatch, useAppSelector } from '../../../hooks/stateHooks';
 import { CountryContestant } from '../../../data/CountryContestant';
 import { Vote } from '../../../data/Vote';
-import { faIceCream, faMoon, faPalette, faRainbow, faStar, faSun, faTree, faWater, faWheatAwn } from '@fortawesome/free-solid-svg-icons';
+import { faCopy, faDownload, faIceCream, faLink, faMoon, faPalette, faRainbow, faStar, faSun, faTree, faWater, faWheatAwn } from '@fortawesome/free-solid-svg-icons';
+import { EXPORT_TYPE, getExportType } from '../../../utilities/export/ExportType';
+import { copyToClipboard, copyUrlToClipboard, downloadFile, getExportDataString } from '../../../utilities/export/ExportUtil';
 
 
 // Theme configuration with icons
@@ -70,6 +73,15 @@ const DisplayTab: React.FC = () => {
         'All',
         ...countries.sort((a, b) => a.name.localeCompare(b.name)).map((c) => c.name),
     ]);
+
+    const [exportTypeSelection, setExportTypeSelection] = useState('Text');
+    const exportTypeOptions = Object.values(EXPORT_TYPE).map((exportType) => exportType);
+
+    async function downloadExport() {
+        const data = await getExportDataString(exportTypeSelection as EXPORT_TYPE, rankedItems);
+        const exportType = getExportType(exportTypeSelection);
+        downloadFile(data, exportType?.fileExtension);
+    }
 
     // Get display name for current theme
     const getThemeDisplayName = (themeCode: string): string => {
@@ -269,6 +281,49 @@ const DisplayTab: React.FC = () => {
                             showSearch={false}
                         />
                     </div>
+                </div>
+            </div>
+
+            <div className="mt-5 pt-4 border-t border-[var(--er-border-subtle)]">
+                <div className="ml-2 mb-3 text-sm font-semibold uppercase tracking-wide text-[var(--er-text-muted)]">
+                    Export
+                </div>
+
+                <div className="ml-2 mb-4 flex items-center gap-3 flex-wrap">
+                    <span className="text-sm font-semibold w-20">Share:</span>
+                    <IconButton
+                        className="pl-[0.7em] py-[0.5em] px-[1em]"
+                        onClick={copyUrlToClipboard}
+                        icon={faLink}
+                        title="Copy URL"
+                    />
+                    <TooltipHelp content="Copy a shareable URL of your current ranking" place="top" />
+                </div>
+
+                <div className="ml-2 flex items-center gap-3 flex-wrap">
+                    <span className="text-sm font-semibold w-20">Ranking:</span>
+                    <Dropdown
+                        key="type-selector"
+                        className="w-24"
+                        menuClassName=""
+                        value={exportTypeSelection}
+                        onChange={(t) => setExportTypeSelection(t)}
+                        options={exportTypeOptions}
+                        showSearch={false}
+                    />
+                    <IconButton
+                        className="pl-[0.7em] py-[0.5em] pr-[1em]"
+                        onClick={downloadExport}
+                        icon={faDownload}
+                        title="Download"
+                    />
+                    <IconButton
+                        className="pl-[0.7em] py-[0.5em] pr-[1em]"
+                        onClick={() => copyToClipboard(rankedItems, exportTypeSelection as EXPORT_TYPE)}
+                        icon={faCopy}
+                        title="Copy"
+                    />
+                    <TooltipHelp content="Download or copy your ranking in the selected format" place="top" />
                 </div>
             </div>
         </div>

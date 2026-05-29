@@ -37,6 +37,7 @@ interface AuthModalProps {
     onClose: () => void;
     initialView?: AuthView;
     allowRegister?: boolean;
+    onAuthSuccess?: () => void;
 }
 
 const inputBase =
@@ -75,7 +76,7 @@ const FieldIcon: React.FC<{ icon: typeof faEnvelope }> = ({ icon }) => (
     />
 );
 
-const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialView, allowRegister = false }) => {
+const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialView, allowRegister = false, onAuthSuccess }) => {
     const dispatch = useAppDispatch();
     const authStatus = useAppSelector((s: AppState) => s.authStatus);
     const authError = useAppSelector((s: AppState) => s.authError);
@@ -155,6 +156,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialView, all
             const user = res.user ?? userFromToken(res.token) ?? { id: '', email };
             dispatch(loginSuccess({ token: res.token, user }));
             toast.success('Signed in.');
+            onAuthSuccess?.();
             onClose();
         } catch (err) {
             handleApiError(err);
@@ -187,6 +189,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialView, all
             const user = res.user ?? userFromToken(res.token) ?? { id: '', email: '' };
             dispatch(loginSuccess({ token: res.token, user }));
             toast.success('Password reset. Signed in.');
+            onAuthSuccess?.();
             onClose();
         } catch (err) {
             handleApiError(err);
@@ -219,6 +222,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialView, all
             const user = res.user ?? userFromToken(res.token) ?? { id: '', email: '' };
             dispatch(loginSuccess({ token: res.token, user }));
             toast.success('Account created. Signed in.');
+            onAuthSuccess?.();
             onClose();
         } catch (err) {
             handleApiError(err);

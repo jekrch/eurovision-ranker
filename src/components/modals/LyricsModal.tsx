@@ -143,7 +143,7 @@ const SongModal: React.FC<SongModalProps> = (props: SongModalProps) => {
 
             <hr className="mb-[1em] border-[var(--er-border-secondary)]" />
 
-            <div className="overflow-auto">
+            <div className="overflow-auto [scrollbar-gutter:stable]">
                 <LabeledValue
                     label="Composer(s)"
                     value={composers?.replaceAll(';', ', ')}

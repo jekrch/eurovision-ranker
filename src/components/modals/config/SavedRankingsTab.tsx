@@ -655,7 +655,7 @@ const SavedRankingsTab: React.FC<SavedRankingsTabProps> = ({ openAuthModal }) =>
                     onClick={() => setShareTarget(null)}
                 >
                     <div
-                        className="w-full sm:max-w-md bg-[var(--er-surface-secondary)] rounded-t-xl sm:rounded-xl ring-1 ring-white/10 shadow-2xl shadow-black/40 p-5 sm:m-4 max-h-[85vh] overflow-y-auto"
+                        className="w-full sm:max-w-md bg-[var(--er-surface-secondary)] rounded-t-xl sm:rounded-xl ring-1 ring-white/10 shadow-2xl shadow-black/40 p-5 sm:m-4 max-h-[85vh] overflow-y-auto [scrollbar-gutter:stable]"
                         onClick={(e) => e.stopPropagation()}
                     >
                         <div className="flex items-center justify-between mb-3">

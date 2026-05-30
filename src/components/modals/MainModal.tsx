@@ -45,7 +45,7 @@ const MainModal: React.FC<MainModalProps> = (props: MainModalProps) => {
                 </ul>
             </div>
 
-            <div className="overflow-y-auto pt-4 select-text pb-3 flex-grow">
+            <div className="overflow-y-auto pt-4 select-text pb-3 flex-grow [scrollbar-gutter:stable]">
                 {activeTab === 'about' &&
                     <div className="">
                         <p>Thanks for using my app! Confused? Try taking the <span onClick={startTour} className="text-link">tour</span>. </p>

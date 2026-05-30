@@ -92,7 +92,7 @@ const WelcomeOverlay: React.FC<WelcomeOverlayProps> = ({ handleGetStarted, handl
                 </div>
 
 
-                <div className="text-sm mx-8 my-4 mt-1 overflow-auto">
+                <div className="text-sm mx-8 my-4 mt-1 overflow-auto [scrollbar-gutter:stable]">
                     <div className="mb-2 italic text-sm">where you can...</div>
                     <ol className="list-none text-md space-y-[2px]">
                         <li className="flex items-start"> <FaList className="mt-1 mr-2 text-indigo-500" /> <span>rank contests going back to 1956</span></li>

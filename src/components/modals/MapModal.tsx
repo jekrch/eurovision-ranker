@@ -43,7 +43,7 @@ const MapModal: React.FC<MapModalProps> = ({ isOpen, onClose }) => {
 
     return (
         <Modal
-            className="fixed inset-0 z-10 overflow-y-auto pb-2 pt-5 px-2 min-w-[80vw] max-h-[80vh]"
+            className="fixed inset-0 z-10 overflow-y-auto pb-2 pt-5 px-2 min-w-[80vw] max-h-[80vh] [scrollbar-gutter:stable]"
             closeBtnClassName='!top-1 !right-2'
             isOpen={isOpen}
             onClose={onClose}

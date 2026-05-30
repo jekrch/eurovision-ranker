@@ -379,7 +379,7 @@ const NestedSheet: React.FC<{
 }> = ({ onClose, title, children }) => (
     <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-sm" onClick={onClose}>
         <div
-            className="w-full sm:max-w-md bg-[var(--er-surface-secondary)] rounded-t-xl sm:rounded-xl ring-1 ring-white/10 shadow-2xl shadow-black/40 p-5 m-0 sm:m-4 max-h-[85vh] overflow-y-auto"
+            className="w-full sm:max-w-md bg-[var(--er-surface-secondary)] rounded-t-xl sm:rounded-xl ring-1 ring-white/10 shadow-2xl shadow-black/40 p-5 m-0 sm:m-4 max-h-[85vh] overflow-y-auto [scrollbar-gutter:stable]"
             onClick={(e) => e.stopPropagation()}
         >
             <div className="flex items-center justify-between mb-3">

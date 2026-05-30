@@ -1,4 +1,14 @@
 import React, { useEffect, useState } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+    faTrophy,
+    faGlobe,
+    faMobileScreenButton,
+    faGavel,
+    faFlag,
+    faList,
+    faStar,
+} from '@fortawesome/free-solid-svg-icons';
 import { AppState } from '../../../redux/store';
 import { sortByVotes } from '../../../utilities/VoteProcessor';
 import { getVoteCode, hasAnyJuryVotes, hasAnyTeleVotes } from '../../../utilities/VoteUtil';
@@ -6,11 +16,21 @@ import { fetchCountryContestantsByYear, getContestantsByCountry } from '../../..
 import { sanitizeYear, supportedYears } from '../../../data/Contestants';
 import { countries } from '../../../data/Countries';
 import Dropdown from '../../Dropdown';
-import IconButton from '../../IconButton';
 import { goToUrl } from '../../../utilities/UrlUtil';
 import TooltipHelp from '../../TooltipHelp';
 import { useAppSelector } from '../../../hooks/stateHooks';
 import { Contestant } from '../../../data/Contestant';
+
+// Shared styling tokens — kept in sync with the modern GroupsTab look.
+const sectionLabel =
+    'text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--er-text-subtle)]';
+const fieldLabel = 'text-xs text-[var(--er-text-subtle)]';
+const primaryBtn =
+    'inline-flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-medium rounded-md text-white bg-[var(--er-button-primary)] hover:bg-[var(--er-button-primary-hover)] disabled:bg-[var(--er-button-neutral)]/40 disabled:text-[var(--er-text-subtle)] disabled:cursor-not-allowed transition-colors';
+const sectionCard =
+    'rounded-lg bg-[var(--er-button-neutral)]/15 ring-1 ring-white/5 overflow-hidden';
+const headerBar =
+    'flex items-center gap-2 px-4 py-2.5 border-b border-white/5 bg-[var(--er-button-neutral)]/15';
 
 const RankingsTab: React.FC = () => {
     const year = useAppSelector((state: AppState) => state.year);
@@ -192,115 +212,132 @@ const RankingsTab: React.FC = () => {
     };
 
     return (
-        <div className="mb-0">
-            <p className="relative mb-[1em] mt-2 text-sm">
-                Generate rankings based on selected year, or see all contestants for a selected country.
+        <div className="text-sm space-y-4">
+            <p className="text-xs leading-relaxed text-[var(--er-text-tertiary)]">
+                Generate official rankings for a contest year, or browse every contestant a country has sent.
             </p>
-            <div className="mt-5">
-                <span className="font-bold ml-0 whitespace-nowrap">ESC final rankings</span>               
-                <TooltipHelp
-                    content="Select a year and voting country, then click one of the buttons to see official final rankings"
-                    className="ml-0 z-50"
-                />
-                <div className=" mt-[0.7em]">
-                    <div>
-                        <Dropdown
-                            className="w-22 mx-auto mb-2"
-                            menuClassName=""
-                            value={rankingYear ?? year}
-                            onChange={(y) => setRankingYear(y)}
-                            options={supportedYears.filter((i) => i !== '2020' && i !== '2026')}
-                            showSearch={true}
-                        />
-                        <span className="ml-2 text-sm">from</span>
-                        <TooltipHelp
-                            content="Choose which country to display voting counts from. 'All' will show the total vote count"
-                            className="ml-4 z-50"
-                        />
-                        <Dropdown
-                            key="country-selector"
-                            className="ml-3 mx-auto mb-2"
-                            menuClassName="w-auto"
-                            value={voteSource}
-                            onChange={(s) => setVoteSource(s)}
-                            options={voteSourceOptions}
-                            showSearch={true}
-                        />
-                    </div>
 
-                    <div className="mt-2 ml-0">
-                        <span className="">
-                            {rankingYear !== '2026' ? (
-                                <IconButton
-                                    onClick={openTotalRanking}
-                                    className="pl-[1em] pr-[1em] rounded-md"
-                                    title="total"
-                                />
-                            ) : ( <>No voting data available yet for 2026</> )}
-                            {hasTeleVotes && (
-                                <IconButton
-                                    onClick={openTotalTelevoteRanking}
-                                    className="ml-3 pl-[1em] pr-[1em] rounded-md"
-                                    title="televote"
-                                />
-                            )}
-                            {hasJuryVotes && (
-                                <IconButton
-                                    onClick={openTotalJuryRanking}
-                                    className="ml-3 pl-[1em] pr-[1em] rounded-md"
-                                    title="jury"
-                                />
-                            )}
-                        </span>
-                    </div>
+            {/* ESC final rankings */}
+            <section className={sectionCard}>
+                <div className={headerBar}>
+                    <FontAwesomeIcon icon={faTrophy} className="text-[var(--er-button-primary)] text-xs shrink-0" />
+                    <h3 className={sectionLabel}>ESC final rankings</h3>
+                    <TooltipHelp
+                        content="Select a year and voting country, then choose a vote source to see the official final ranking"
+                        className="z-50"
+                    />
                 </div>
-            </div>
-            <div className="mt-5">
-                <span className="font-bold ml-0 whitespace-nowrap">Contestants by country </span>                        
+
+                <div className="p-4">
+                <div className="flex flex-wrap items-center gap-x-2.5 gap-y-2 mb-3.5">
+                    <span className={fieldLabel}>Year</span>
+                    <Dropdown
+                        className="w-20"
+                        menuClassName=""
+                        value={rankingYear ?? year}
+                        onChange={(y) => setRankingYear(y)}
+                        options={supportedYears.filter((i) => i !== '2020' && i !== '2026')}
+                        showSearch={true}
+                    />
+                    <span className={fieldLabel}>from</span>
+                    <Dropdown
+                        key="country-selector"
+                        className="min-w-[7rem]"
+                        menuClassName="w-auto"
+                        value={voteSource}
+                        onChange={(s) => setVoteSource(s)}
+                        options={voteSourceOptions}
+                        showSearch={true}
+                    />
+                    <TooltipHelp
+                        content="Choose which country to display voting counts from. 'All' shows the total vote count"
+                        className="z-50"
+                    />
+                </div>
+
+                {rankingYear === '2026' ? (
+                    <p className="text-xs italic text-[var(--er-text-subtle)]">
+                        No voting data available yet for 2026.
+                    </p>
+                ) : (
+                    <div className="flex flex-wrap gap-2">
+                        <button type="button" onClick={openTotalRanking} className={primaryBtn}>
+                            <FontAwesomeIcon icon={faGlobe} className="text-xs" />
+                            Total
+                        </button>
+                        {hasTeleVotes && (
+                            <button type="button" onClick={openTotalTelevoteRanking} className={primaryBtn}>
+                                <FontAwesomeIcon icon={faMobileScreenButton} className="text-xs" />
+                                Televote
+                            </button>
+                        )}
+                        {hasJuryVotes && (
+                            <button type="button" onClick={openTotalJuryRanking} className={primaryBtn}>
+                                <FontAwesomeIcon icon={faGavel} className="text-xs" />
+                                Jury
+                            </button>
+                        )}
+                    </div>
+                )}
+                </div>
+            </section>
+
+            {/* Contestants by country */}
+            <section className={sectionCard}>
+                <div className={headerBar}>
+                    <FontAwesomeIcon icon={faFlag} className="text-[var(--er-button-primary)] text-xs shrink-0" />
+                    <h3 className={sectionLabel}>Contestants by country</h3>
                     <TooltipHelp
                         content="Display all past and current contestants for a specific country"
-                        className="ml-0 z-50"
+                        className="z-50"
                     />
-                <div className=" mt-[0.7em]">
-                    <div>
-                       <div>
-                        <Dropdown
-                            key="country-selector"
-                            className="mx-auto mb-2 min-w-[5em]"
-                            menuClassName="w-auto"
-                            value={contestantCountry}
-                            onChange={(s) => setContestantCountry(s)}
-                            options={contestantCountries}
-                            showSearch={true}
-                        /> 
-                        <span className="mx-2">order by</span> 
-                        <Dropdown
-                            key="country-order-selector"
-                            className="mx-auto mb-2 min-w-[5em]"
-                            menuClassName="w-auto"
-                            value={contestantCountryOrder}
-                            onChange={(s) => setContestantCountryOrder(s)}
-                            options={['Year', 'Rank']}
-                            showSearch={false}
-                        />
-                        </div>
-                        <div className="mt-2 -ml-4">
-                            <IconButton
-                                onClick={openAllContestantsByCountry}
-                                className="ml-4 pl-[1em] pr-[1em] rounded-md"
-                                title="all"
-                                disabled={!contestantCountry}
-                            />
-                            <IconButton
-                                onClick={() => openAllContestantsByCountry(true)}
-                                className="ml-4 pl-[1em] pr-[1em] rounded-md"
-                                title="finalists"
-                                disabled={!contestantCountry}
-                            />
-                        </div>
-                    </div>
                 </div>
-            </div>
+
+                <div className="p-4">
+                <div className="flex flex-wrap items-center gap-x-2.5 gap-y-2 mb-3.5">
+                    <Dropdown
+                        key="country-selector"
+                        className="min-w-[7rem]"
+                        menuClassName="w-auto"
+                        value={contestantCountry}
+                        onChange={(s) => setContestantCountry(s)}
+                        options={contestantCountries}
+                        showSearch={true}
+                    />
+                    <span className={fieldLabel}>order by</span>
+                    <Dropdown
+                        key="country-order-selector"
+                        className="min-w-[5rem]"
+                        menuClassName="w-auto"
+                        value={contestantCountryOrder}
+                        onChange={(s) => setContestantCountryOrder(s)}
+                        options={['Year', 'Rank']}
+                        showSearch={false}
+                    />
+                </div>
+
+                <div className="flex flex-wrap gap-2">
+                    <button
+                        type="button"
+                        onClick={() => openAllContestantsByCountry()}
+                        className={primaryBtn}
+                        disabled={!contestantCountry}
+                    >
+                        <FontAwesomeIcon icon={faList} className="text-xs" />
+                        All
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => openAllContestantsByCountry(true)}
+                        className={primaryBtn}
+                        disabled={!contestantCountry}
+                    >
+                        <FontAwesomeIcon icon={faStar} className="text-xs" />
+                        Finalists
+                    </button>
+                </div>
+                </div>
+            </section>
         </div>
     );
 };

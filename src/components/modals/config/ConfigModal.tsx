@@ -116,7 +116,7 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
                 </ul>
             </div>
 
-            <div className="overflow-y-auto pt-4 pr-2 select-text pb-3 flex-grow">
+            <div className="overflow-y-auto pt-4 pr-4 -mr-4 select-text pb-3 flex-grow">
 
                 {activeTab === 'display' &&
                     <DisplayTab/>

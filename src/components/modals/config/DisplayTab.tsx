@@ -108,7 +108,7 @@ const DisplayTab: React.FC = () => {
     const onThemeInputChanged = (displayName: string) => {
         const themeOption = THEME_OPTIONS.find(opt => opt.display === displayName);
         const themeCode = themeOption?.code || '';
-        
+
         dispatch(setTheme(themeCode));
         updateQueryParams({ t: themeCode });
     };
@@ -175,31 +175,52 @@ const DisplayTab: React.FC = () => {
         }
     }
 
+    // shared classes so every row lines up on the same grid
+    const rowClass = "flex items-center min-h-[2.25rem]";
+    const labelClass = "ml-1 w-16 shrink-0 text-sm font-semibold";
+
     return (
-        <div className="mb-0">
-            <div>
-                <div className="mb-[0.5em] border-[var(--er-border-subtle)] border-b-[1px] pb-2 -mt-2">
-                    <span className="flex items-center ml-2">
-                        <TooltipHelp
-                            content="Display the contestant's place in the final contest if applicable"
-                        />
-                        <span className="ml-3 text-sm font-semibold">
-                            Show Place:
-                        </span>
-                        <Checkbox
-                            id="place-checkbox"
-                            checked={showPlace}
-                            label=""
-                            onChange={(c) => onShowPlaceChange(c)}
-                        />
-                    </span>
-                    <span className="flex items-center ml-2">
-                        <TooltipHelp
-                            content="Select which types of votes to display with each ranked country"
-                        />
-                        <span className="ml-3 text-sm font-semibold">
-                            Show Votes:
-                        </span>
+        <div className="-mt-2">
+
+            {/* Display toggles */}
+            <section className="py-3 border-b border-[var(--er-border-subtle)] space-y-1">
+                <div className={rowClass}>
+                    <TooltipHelp content="Display the contestant's place in the final contest if applicable" />
+                    <Checkbox
+                        id="place-checkbox"
+                        checked={showPlace}
+                        label="Show Place"
+                        onChange={(c) => onShowPlaceChange(c)}
+                    />
+                </div>
+                <div className={rowClass}>
+                    <TooltipHelp content="Determine whether to show a thumbnail of the song video" />
+                    <Checkbox
+                        id="thumbnail-checkbox"
+                        checked={showThumbnail}
+                        label="Show Video Thumbnails"
+                        onChange={(c) => onShowThumbnailsChange(c)}
+                    />
+                </div>
+                <div className={rowClass}>
+                    <TooltipHelp content="When viewing a category ranking, also display the contestant's rank in each other category" />
+                    <Checkbox
+                        id="comparison-checkbox"
+                        checked={showComparison}
+                        label="Show Category Comparisons"
+                        onChange={(c) => onShowComparisonChange(c)}
+                    />
+                </div>
+            </section>
+
+            {/* Votes */}
+            <section className="py-3 border-b border-[var(--er-border-subtle)] space-y-2">
+                <div>
+                    <div className="flex items-center">
+                        <TooltipHelp content="Select which types of votes to display with each ranked country" />
+                        <span className="ml-1 text-sm font-semibold">Show Votes:</span>
+                    </div>
+                    <div className="ml-4 mt-1 flex flex-wrap gap-y-1">
                         <Checkbox
                             id="total-checkbox"
                             checked={voteCodeHasType(vote, 't')}
@@ -220,77 +241,48 @@ const DisplayTab: React.FC = () => {
                             label="Jury"
                             className="ml-[0.5em]"
                         />
-                    </span>
-
-                    <div className="mt-[0.5em]">
-                        <TooltipHelp
-                            content="Choose which country to display voting counts from. 'All' will show the total vote count"
-                            className="ml-4"
-                        />
-                        <span className="ml-3 text-sm font-semibold">
-                            From:
-                        </span>
-                        <Dropdown
-                            key="country-selector-2"
-                            className="ml-5 min-w[6em] mx-auto mb-2"
-                            menuClassName="w-auto"
-                            value={displayVoteSource}
-                            onChange={(s) => setDisplayVoteSource(s)}
-                            options={voteDisplaySourceOptions}
-                            showSearch={true}
-                        />
                     </div>
                 </div>
-            </div>
-
-            <div>
-                <div className="mt-4">
-                    <div>
-                        <div className="mb-0">
-                            <TooltipHelp
-                                content="Determine whether to show a thumbnail of the song video"
-                                className="ml-4 pb-1"
-                            />
-                            <Checkbox
-                                id="thumbnail-checkbox"
-                                checked={showThumbnail}
-                                onChange={(c) => onShowThumbnailsChange(c)}
-                                label="Show Video Thumbnails"
-                            />
-                        </div>
-                        <div className="mb-2">
-                            <TooltipHelp
-                                content="When viewing a category ranking, also display the contestant's rank in each other category"
-                                className="ml-4 pb-1"
-                            />
-                            <Checkbox
-                                id="total-checkbox"
-                                checked={showComparison}
-                                onChange={(c) => onShowComparisonChange(c)}
-                                label="Show Category Comparisons"
-                            />
-                        </div>
-                        <span className="ml-5 font-semibold text-sm mb-[0.7em]">Theme:</span>
-                        <Dropdown
-                            key="theme-selector"
-                            className="ml-5 w-30 mx-auto mb-3"
-                            menuClassName=""
-                            value={themeSelection}
-                            onChange={(v) => onThemeInputChanged(v)}
-                            options={THEME_OPTIONS.map(opt => opt.display)}
-                            showSearch={false}
-                        />
-                    </div>
+                <div className={rowClass}>
+                    <TooltipHelp content="Choose which country to display voting counts from. 'All' will show the total vote count" />
+                    <span className={labelClass}>From:</span>
+                    <Dropdown
+                        key="country-selector-2"
+                        className="min-w-[8em] max-w-full"
+                        menuClassName="w-auto max-w-[70vw]"
+                        value={displayVoteSource}
+                        onChange={(s) => setDisplayVoteSource(s)}
+                        options={voteDisplaySourceOptions}
+                        showSearch={true}
+                    />
                 </div>
-            </div>
+            </section>
 
-            <div className="mt-5 pt-4 border-t border-[var(--er-border-subtle)]">
-                <div className="ml-2 mb-3 text-sm font-semibold uppercase tracking-wide text-[var(--er-text-muted)]">
+            {/* Theme */}
+            <section className="py-3">
+                <div className={rowClass}>
+                    <TooltipHelp content="Choose the color theme used throughout the app" />
+                    <span className={labelClass}>Theme:</span>
+                    <Dropdown
+                        key="theme-selector"
+                        className="min-w-[8em]"
+                        menuClassName=""
+                        value={themeSelection}
+                        onChange={(v) => onThemeInputChanged(v)}
+                        options={THEME_OPTIONS.map(opt => opt.display)}
+                        showSearch={false}
+                    />
+                </div>
+            </section>
+
+            {/* Export */}
+            <section className="mt-1 pt-4 border-t border-[var(--er-border-subtle)]">
+                <div className="ml-1 mb-3 text-sm font-semibold uppercase tracking-wide text-[var(--er-text-muted)]">
                     Export
                 </div>
 
-                <div className="ml-2 mb-4 flex items-center gap-3 flex-wrap">
-                    <span className="text-sm font-semibold w-20">Share:</span>
+                <div className="ml-1 mb-3 flex items-center gap-3 flex-wrap">
+                    <span className="w-20 shrink-0 text-sm font-semibold">Share:</span>
                     <IconButton
                         className="pl-[0.7em] py-[0.5em] px-[1em]"
                         onClick={copyUrlToClipboard}
@@ -300,8 +292,8 @@ const DisplayTab: React.FC = () => {
                     <TooltipHelp content="Copy a shareable URL of your current ranking" place="top" />
                 </div>
 
-                <div className="ml-2 flex items-center gap-3 flex-wrap">
-                    <span className="text-sm font-semibold w-20">Ranking:</span>
+                <div className="ml-1 flex items-center gap-3 flex-wrap">
+                    <span className="w-20 shrink-0 text-sm font-semibold">Ranking:</span>
                     <Dropdown
                         key="type-selector"
                         className="w-24"
@@ -325,7 +317,7 @@ const DisplayTab: React.FC = () => {
                     />
                     <TooltipHelp content="Download or copy your ranking in the selected format" place="top" />
                 </div>
-            </div>
+            </section>
         </div>
     );
 };

@@ -51,8 +51,12 @@ const sectionLabel =
 const inputClass =
     'border text-sm rounded-md block w-full p-2 bg-[color:var(--er-surface-primary)] border-white/5 placeholder-[var(--er-text-subtle)] text-[var(--er-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--er-button-primary)]/40 focus:border-[var(--er-button-primary)]/40';
 
-const rowIconBtn =
-    'w-7 h-7 inline-flex items-center justify-center rounded-md text-[var(--er-text-tertiary)] hover:text-[var(--er-text-primary)] hover:bg-[var(--er-button-neutral)]/40 transition-colors';
+// Labeled action chip. Icon + text so the action is clear without a tooltip
+// (mobile has none). min-h keeps it a comfortable tap target.
+const actionBtn =
+    'inline-flex items-center gap-1.5 px-2.5 min-h-[34px] text-[11px] font-medium rounded-md text-[var(--er-text-tertiary)] hover:text-[var(--er-text-primary)] hover:bg-[var(--er-button-neutral)]/40 transition-colors';
+const dangerActionBtn =
+    'inline-flex items-center gap-1.5 px-2.5 min-h-[34px] text-[11px] font-medium rounded-md text-[var(--er-text-tertiary)] hover:text-red-400 hover:bg-red-500/10 transition-colors';
 
 function yearToNumber(year: string | undefined): number | undefined {
     if (!year) return undefined;
@@ -459,10 +463,11 @@ const SavedRankingsTab: React.FC<SavedRankingsTabProps> = ({ openAuthModal }) =>
                                     type="button"
                                     onClick={handleSaveNew}
                                     disabled={saving || isEmpty}
-                                    title="Save as new"
-                                    className="w-8 h-8 inline-flex items-center justify-center rounded-md text-[var(--er-text-tertiary)] hover:text-[var(--er-text-primary)] hover:bg-[var(--er-button-neutral)]/40 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                                    title="Save as a new copy"
+                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md text-[var(--er-text-tertiary)] hover:text-[var(--er-text-primary)] hover:bg-[var(--er-button-neutral)]/40 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                                 >
                                     <FontAwesomeIcon icon={faPlus} />
+                                    New copy
                                 </button>
                             </>
                         ) : (
@@ -520,33 +525,34 @@ const SavedRankingsTab: React.FC<SavedRankingsTabProps> = ({ openAuthModal }) =>
                             return (
                                 <li
                                     key={r.ranking_id}
-                                    className={`group relative rounded-md px-3 py-2 flex items-center gap-2 transition-colors ${
+                                    className={`group relative rounded-md px-3 py-2.5 flex flex-col gap-2 transition-colors ${
                                         isCurrent
                                             ? 'bg-[var(--er-button-primary)]/10 ring-1 ring-inset ring-[var(--er-button-primary)]/30'
                                             : 'hover:bg-[var(--er-button-neutral)]/20'
                                     }`}
                                 >
-                                    <div className="flex-1 min-w-0">
-                                        {renameId === r.ranking_id ? (
-                                            <input
-                                                className={inputClass}
-                                                value={renameValue}
-                                                autoFocus
-                                                onChange={(e) => setRenameValue(e.target.value)}
-                                                onKeyDown={(e) => {
-                                                    if (e.key === 'Enter') handleRenameSubmit(r);
-                                                    if (e.key === 'Escape') setRenameId(null);
-                                                }}
-                                                onBlur={() => handleRenameSubmit(r)}
-                                            />
-                                        ) : (
-                                            <>
-                                                <div className="truncate font-medium text-[var(--er-text-primary)] flex items-center gap-2">
+                                    {renameId === r.ranking_id ? (
+                                        <input
+                                            className={inputClass}
+                                            value={renameValue}
+                                            autoFocus
+                                            onChange={(e) => setRenameValue(e.target.value)}
+                                            onKeyDown={(e) => {
+                                                if (e.key === 'Enter') handleRenameSubmit(r);
+                                                if (e.key === 'Escape') setRenameId(null);
+                                            }}
+                                            onBlur={() => handleRenameSubmit(r)}
+                                        />
+                                    ) : (
+                                        <>
+                                            {/* Title gets the full row width so it isn't squeezed
+                                                by the action buttons (which now live below). */}
+                                            <div className="min-w-0">
+                                                <div className="font-medium text-[var(--er-text-primary)] flex items-center gap-2">
                                                     <span className="truncate">{r.name || <i className="text-[var(--er-text-subtle)]">Untitled</i>}</span>
                                                     {r.public && (
                                                         <span
-                                                            className="inline-flex items-center gap-1 text-[10px] uppercase tracking-wide font-semibold text-[var(--er-text-tertiary)] bg-[var(--er-button-neutral)]/40 px-1.5 py-0.5 rounded"
-                                                            title="Public"
+                                                            className="inline-flex items-center gap-1 text-[10px] uppercase tracking-wide font-semibold text-[var(--er-text-tertiary)] bg-[var(--er-button-neutral)]/40 px-1.5 py-0.5 rounded shrink-0"
                                                         >
                                                             <FontAwesomeIcon icon={faGlobe} className="text-[9px]" />
                                                             Public
@@ -557,64 +563,67 @@ const SavedRankingsTab: React.FC<SavedRankingsTabProps> = ({ openAuthModal }) =>
                                                     {r.year ? `${r.year} · ` : ''}
                                                     {r.created_at ? new Date(r.created_at).toLocaleDateString() : ''}
                                                 </div>
-                                            </>
-                                        )}
-                                    </div>
-                                    <div className="flex items-center gap-0.5 shrink-0">
-                                        <button
-                                            type="button"
-                                            className={rowIconBtn}
-                                            title="Load"
-                                            onClick={() => handleLoad(r)}
-                                        >
-                                            <FontAwesomeIcon icon={faUpload} className="text-xs" />
-                                        </button>
-                                        <button
-                                            type="button"
-                                            className={`${rowIconBtn} ${r.public ? '!text-[var(--er-text-primary)]' : ''}`}
-                                            title={r.public ? 'Public — click to make private' : 'Private — click to make public'}
-                                            onClick={() => handleTogglePublic(r)}
-                                        >
-                                            <FontAwesomeIcon icon={r.public ? faGlobe : faLock} className="text-xs" />
-                                        </button>
-                                        {r.public && (
-                                            <button
-                                                type="button"
-                                                className={rowIconBtn}
-                                                title="Copy share link"
-                                                onClick={() => handleCopyShareLink(r)}
-                                            >
-                                                <FontAwesomeIcon icon={faLink} className="text-xs" />
-                                            </button>
-                                        )}
-                                        <button
-                                            type="button"
-                                            className={`${rowIconBtn} ${r.group_ids && r.group_ids.length > 0 ? '!text-[var(--er-text-primary)]' : ''}`}
-                                            title={r.group_ids && r.group_ids.length > 0 ? `Shared with ${r.group_ids.length} group${r.group_ids.length === 1 ? '' : 's'}` : 'Share with a group'}
-                                            onClick={() => openShare(r)}
-                                        >
-                                            <FontAwesomeIcon icon={faShareNodes} className="text-xs" />
-                                        </button>
-                                        <button
-                                            type="button"
-                                            className={rowIconBtn}
-                                            title="Rename"
-                                            onClick={() => {
-                                                setRenameId(r.ranking_id);
-                                                setRenameValue(r.name || '');
-                                            }}
-                                        >
-                                            <FontAwesomeIcon icon={faPen} className="text-xs" />
-                                        </button>
-                                        <button
-                                            type="button"
-                                            className="w-7 h-7 inline-flex items-center justify-center rounded-md text-[var(--er-text-tertiary)] hover:text-red-400 hover:bg-red-500/10 transition-colors"
-                                            title="Delete"
-                                            onClick={() => setConfirmDelete(r)}
-                                        >
-                                            <FontAwesomeIcon icon={faTrash} className="text-xs" />
-                                        </button>
-                                    </div>
+                                            </div>
+                                            {/* Labeled actions wrap onto as many lines as needed. */}
+                                            <div className="flex flex-wrap items-center gap-1 -ml-1.5">
+                                                <button
+                                                    type="button"
+                                                    className={actionBtn}
+                                                    onClick={() => handleLoad(r)}
+                                                >
+                                                    <FontAwesomeIcon icon={faUpload} className="text-xs" />
+                                                    Load
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    className={`${actionBtn} ${r.public ? '!text-[var(--er-text-primary)]' : ''}`}
+                                                    onClick={() => handleTogglePublic(r)}
+                                                >
+                                                    <FontAwesomeIcon icon={r.public ? faLock : faGlobe} className="text-xs" />
+                                                    {r.public ? 'Make private' : 'Make public'}
+                                                </button>
+                                                {r.public && (
+                                                    <button
+                                                        type="button"
+                                                        className={actionBtn}
+                                                        onClick={() => handleCopyShareLink(r)}
+                                                    >
+                                                        <FontAwesomeIcon icon={faLink} className="text-xs" />
+                                                        Copy link
+                                                    </button>
+                                                )}
+                                                <button
+                                                    type="button"
+                                                    className={`${actionBtn} ${r.group_ids && r.group_ids.length > 0 ? '!text-[var(--er-text-primary)]' : ''}`}
+                                                    onClick={() => openShare(r)}
+                                                >
+                                                    <FontAwesomeIcon icon={faShareNodes} className="text-xs" />
+                                                    {r.group_ids && r.group_ids.length > 0
+                                                        ? `Shared · ${r.group_ids.length}`
+                                                        : 'Share'}
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    className={actionBtn}
+                                                    onClick={() => {
+                                                        setRenameId(r.ranking_id);
+                                                        setRenameValue(r.name || '');
+                                                    }}
+                                                >
+                                                    <FontAwesomeIcon icon={faPen} className="text-xs" />
+                                                    Rename
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    className={dangerActionBtn}
+                                                    onClick={() => setConfirmDelete(r)}
+                                                >
+                                                    <FontAwesomeIcon icon={faTrash} className="text-xs" />
+                                                    Delete
+                                                </button>
+                                            </div>
+                                        </>
+                                    )}
                                 </li>
                             );
                         })}

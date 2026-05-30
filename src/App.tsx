@@ -25,7 +25,8 @@ import { useThemeEffect } from './hooks/useThemeEffect';
 import AuthModal, { AuthView } from './components/modals/auth/AuthModal';
 import JoinGroupModal from './components/modals/groups/JoinGroupModal';
 import { ping } from './utilities/api/health';
-import { getPublicRanking } from './utilities/api/rankings';
+import { getPublicRanking, getRanking } from './utilities/api/rankings';
+import { getToken } from './utilities/api/client';
 import { parseStoredRanking } from './utilities/api/rankingParams';
 import { ApiError } from './utilities/api/types';
 
@@ -243,7 +244,10 @@ const App: React.FC = () => {
 
   async function loadPublicRankingById(id: string) {
     try {
-      const full = await getPublicRanking(id);
+      // When signed in, use the authenticated endpoint: it returns the
+      // caller's own rankings, public rankings, and non-public rankings shared
+      // with a group they belong to. Anonymous visitors get public-only.
+      const full = getToken() ? await getRanking(id) : await getPublicRanking(id);
       const loadedName = full.name || '';
       const loadedYear = full.year != null ? String(full.year) : '';
       const yearShort = full.year != null ? String(full.year).slice(-2) : undefined;

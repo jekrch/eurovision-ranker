@@ -1,6 +1,7 @@
 import classNames from 'classnames';
 import React, { ReactNode, useEffect, useRef, useState, useCallback } from 'react';
-import GlobalConfirmationModal from './GlobalConfirmationModal'; 
+import GlobalConfirmationModal from './GlobalConfirmationModal';
+import { useScrollLock } from '../../hooks/useScrollLock';
 
 type ModalContainerProps = {
     isOpen: boolean;
@@ -36,6 +37,9 @@ const Modal: React.FC<ModalContainerProps> = ({
     });
     // --- State for the confirmation modal ---
     const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
+
+    // prevent the page behind the modal from scrolling while it's open
+    useScrollLock(isOpen);
 
     // --- Handle Close Attempt Logic ---
     const handleAttemptClose = useCallback(() => {
@@ -135,6 +139,7 @@ const Modal: React.FC<ModalContainerProps> = ({
             >
                 <div
                     ref={modalRef}
+                    data-modal-content
                     className={classNames(
                         "relative bg-[var(--er-surface-secondary)] m-4 max-h-[85vh] text-[var(--er-text-tertiary)] p-6 rounded-xl ring-1 ring-white/10 shadow-2xl shadow-black/40 max-w-lg w-full min-w-0 flex flex-col transform transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]",
                         isOpen && showModal ? `${transitionStyles.opacity} ${transitionStyles.transform}` : 'opacity-0 translate-y-4 scale-95', // Control modal visibility/position smoothly

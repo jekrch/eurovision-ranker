@@ -67,8 +67,12 @@ const ghostBtn =
 // Min 36px tap target; mobile-friendly hit zone.
 const iconBtn =
     'min-w-9 h-9 inline-flex items-center justify-center rounded-md text-[var(--er-text-tertiary)] hover:text-[var(--er-text-primary)] hover:bg-[var(--er-button-neutral)]/40 disabled:opacity-40 transition-colors';
-const dangerIconBtn =
-    'min-w-9 h-9 inline-flex items-center justify-center rounded-md text-[var(--er-text-tertiary)] hover:text-red-400 hover:bg-red-500/10 transition-colors';
+// Labeled action chip. Icon + text so the action reads clearly without a
+// tooltip (mobile has none). min-h keeps a comfortable tap target.
+const actionBtn =
+    'inline-flex items-center gap-1.5 px-2.5 min-h-[34px] text-[11px] font-medium rounded-md text-[var(--er-text-tertiary)] hover:text-[var(--er-text-primary)] hover:bg-[var(--er-button-neutral)]/40 transition-colors';
+const dangerActionBtn =
+    'inline-flex items-center gap-1.5 px-2.5 min-h-[34px] text-[11px] font-medium rounded-md text-[var(--er-text-tertiary)] hover:text-red-400 hover:bg-red-500/10 transition-colors';
 
 function apiErrToast(e: unknown, fallback: string) {
     if (e instanceof ApiError) toast.error(e.body?.trim() || fallback);
@@ -661,22 +665,28 @@ const GroupDetail: React.FC<{
                     {invites && invites.length > 0 && (
                         <ul className="space-y-1">
                             {invites.map((inv) => (
-                                <li key={inv.token} className="flex items-center gap-2 px-2 py-1.5 rounded-md bg-[var(--er-button-neutral)]/15">
-                                    <FontAwesomeIcon icon={faLink} className="text-[10px] text-[var(--er-text-subtle)] shrink-0" />
-                                    <div className="flex-1 min-w-0">
-                                        <div className="truncate text-xs text-[var(--er-text-tertiary)]">
-                                            …{inv.token.slice(-12)}
-                                        </div>
-                                        <div className="text-[10px] text-[var(--er-text-subtle)]">
-                                            expires in {timeUntil(inv.expires_at)}
+                                <li key={inv.token} className="flex flex-col gap-2 px-2.5 py-2 rounded-md bg-[var(--er-button-neutral)]/15">
+                                    <div className="flex items-center gap-2 min-w-0">
+                                        <FontAwesomeIcon icon={faLink} className="text-[10px] text-[var(--er-text-subtle)] shrink-0" />
+                                        <div className="min-w-0">
+                                            <div className="truncate text-xs text-[var(--er-text-tertiary)]">
+                                                …{inv.token.slice(-12)}
+                                            </div>
+                                            <div className="text-[10px] text-[var(--er-text-subtle)]">
+                                                expires in {timeUntil(inv.expires_at)}
+                                            </div>
                                         </div>
                                     </div>
-                                    <button type="button" onClick={() => handleCopyInvite(inv)} className={iconBtn} title="Copy link">
-                                        <FontAwesomeIcon icon={faCopy} className="text-xs" />
-                                    </button>
-                                    <button type="button" onClick={() => handleRevokeInvite(inv)} className={dangerIconBtn} title="Revoke">
-                                        <FontAwesomeIcon icon={faTrash} className="text-xs" />
-                                    </button>
+                                    <div className="flex flex-wrap items-center gap-1 -ml-1.5">
+                                        <button type="button" onClick={() => handleCopyInvite(inv)} className={actionBtn}>
+                                            <FontAwesomeIcon icon={faCopy} className="text-xs" />
+                                            Copy link
+                                        </button>
+                                        <button type="button" onClick={() => handleRevokeInvite(inv)} className={dangerActionBtn}>
+                                            <FontAwesomeIcon icon={faTrash} className="text-xs" />
+                                            Revoke
+                                        </button>
+                                    </div>
                                 </li>
                             ))}
                         </ul>
@@ -703,7 +713,7 @@ const GroupDetail: React.FC<{
                 )}
                 {!loadingShares && sharedRankings && sharedRankings.length === 0 && (
                     <div className="text-xs text-[var(--er-text-subtle)] py-1">
-                        Nothing shared yet. From the Account tab, tap the share icon on a ranking.
+                        Nothing shared yet. From the Account tab, tap Share on a ranking.
                     </div>
                 )}
                 {sharedRankings && sharedRankings.length > 0 && (
@@ -711,37 +721,41 @@ const GroupDetail: React.FC<{
                         {sharedRankings.map((r) => {
                             const mine = r.user_id === user?.id;
                             return (
-                                <li key={`${r.ranking_id}-${r.user_id}`} className="flex items-center gap-2 px-2 py-1.5 rounded-md bg-[var(--er-button-neutral)]/15">
-                                    <FontAwesomeIcon icon={faShareNodes} className="text-[10px] text-[var(--er-text-subtle)] shrink-0" />
-                                    <div className="flex-1 min-w-0">
-                                        <div className="truncate text-[var(--er-text-primary)]">
-                                            {r.name || <span className="italic text-[var(--er-text-subtle)]">Untitled</span>}
-                                        </div>
-                                        <div className="text-[10px] text-[var(--er-text-subtle)]">
-                                            {r.owner_email}
-                                            {r.year ? ` · ${r.year}` : ''}
-                                            {r.shared_at ? ` · ${shortDate(r.shared_at)}` : ''}
+                                <li key={`${r.ranking_id}-${r.user_id}`} className="flex flex-col gap-2 px-2.5 py-2 rounded-md bg-[var(--er-button-neutral)]/15">
+                                    <div className="flex items-start gap-2 min-w-0">
+                                        <FontAwesomeIcon icon={faShareNodes} className="text-[10px] text-[var(--er-text-subtle)] shrink-0 mt-1" />
+                                        <div className="min-w-0">
+                                            <div className="truncate text-[var(--er-text-primary)]">
+                                                {r.name || <span className="italic text-[var(--er-text-subtle)]">Untitled</span>}
+                                            </div>
+                                            <div className="text-[10px] text-[var(--er-text-subtle)]">
+                                                {r.owner_email}
+                                                {r.year ? ` · ${r.year}` : ''}
+                                                {r.shared_at ? ` · ${shortDate(r.shared_at)}` : ''}
+                                            </div>
                                         </div>
                                     </div>
-                                    <a
-                                        href={`${window.location.pathname}?id=${encodeURIComponent(r.ranking_id)}`}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className={iconBtn}
-                                        title="Open"
-                                    >
-                                        <FontAwesomeIcon icon={faLink} className="text-xs" />
-                                    </a>
-                                    {mine && (
-                                        <button
-                                            type="button"
-                                            onClick={() => setConfirmUnshare(r)}
-                                            className={dangerIconBtn}
-                                            title="Unshare"
+                                    <div className="flex flex-wrap items-center gap-1 -ml-1.5">
+                                        <a
+                                            href={`${window.location.pathname}?id=${encodeURIComponent(r.ranking_id)}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className={actionBtn}
                                         >
-                                            <FontAwesomeIcon icon={faXmark} className="text-xs" />
-                                        </button>
-                                    )}
+                                            <FontAwesomeIcon icon={faLink} className="text-xs" />
+                                            Open
+                                        </a>
+                                        {mine && (
+                                            <button
+                                                type="button"
+                                                onClick={() => setConfirmUnshare(r)}
+                                                className={dangerActionBtn}
+                                            >
+                                                <FontAwesomeIcon icon={faXmark} className="text-xs" />
+                                                Unshare
+                                            </button>
+                                        )}
+                                    </div>
                                 </li>
                             );
                         })}

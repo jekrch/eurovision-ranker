@@ -78,10 +78,43 @@ code {
   height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
   overflow: hidden;
   max-height: -webkit-fill-available;
+  position: relative;
+  /* establish a stacking context so the z-index:-1 gradient pseudo paints at
+     the back of THIS element rather than sinking behind an ancestor bg */
+  isolation: isolate;
+}
+
+/* Pulsing background lives on a pseudo-element so we can animate transform
+   (compositor-only) instead of background-size, which forces a fullscreen
+   repaint every frame. overflow:hidden on .normal-bg clips the scaled layer. */
+.normal-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
   background: radial-gradient(ellipse at bottom, var(--er-ranked-bg-end) 0%, var(--er-nav-gradient-start) 100%);
   background-size: 100% 100%;
   background-repeat: no-repeat;
-  animation: bg-pulse 10s infinite ease-in-out;
+  animation: bg-pulse-scale 10s infinite ease-in-out;
+  /* anchor the scale to the bottom so the lighter "ellipse at bottom" band
+     stays pinned to the viewport edge instead of being clipped away */
+  transform-origin: center bottom;
+  will-change: transform;
+}
+
+@keyframes bg-pulse-scale {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .normal-bg::before {
+    animation: none;
+  }
 }
 
 /* Ranked list / view mode: extend the container through the full

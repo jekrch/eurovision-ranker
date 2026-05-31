@@ -1,4 +1,5 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import toast from 'react-hot-toast';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -57,6 +58,11 @@ interface GroupsTabProps {
     openAuthModal: () => void;
 }
 
+// Remember the group the user last opened so re-opening the config modal
+// (which remounts this tab) restores the detail view instead of the list.
+// Mirrors the active-tab persistence in ConfigModal.
+const SELECTED_GROUP_STORAGE_KEY = 'groupsTabSelectedGroup';
+
 const sectionLabel =
     'text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--er-text-subtle)]';
 const inputClass =
@@ -105,7 +111,14 @@ const GroupsTab: React.FC<GroupsTabProps> = ({ openAuthModal }) => {
     const groups = useAppSelector((s: AppState) => s.groups);
     const groupDetails = useAppSelector((s: AppState) => s.groupDetails);
 
-    const [view, setView] = useState<{ kind: 'list' } | { kind: 'detail'; id: string }>({ kind: 'list' });
+    const [view, setView] = useState<{ kind: 'list' } | { kind: 'detail'; id: string }>(() => {
+        try {
+            const stored = localStorage.getItem(SELECTED_GROUP_STORAGE_KEY);
+            return stored ? { kind: 'detail', id: stored } : { kind: 'list' };
+        } catch {
+            return { kind: 'list' };
+        }
+    });
 
     // List-view state
     const [loading, setLoading] = useState(false);
@@ -133,6 +146,20 @@ const GroupsTab: React.FC<GroupsTabProps> = ({ openAuthModal }) => {
     useEffect(() => {
         if (user && groups === null) refresh();
     }, [user, groups, refresh]);
+
+    // Persist the open group so the selection survives a modal close/reopen
+    // (and page reload). Cleared when the user backs out to the list.
+    useEffect(() => {
+        try {
+            if (view.kind === 'detail') {
+                localStorage.setItem(SELECTED_GROUP_STORAGE_KEY, view.id);
+            } else {
+                localStorage.removeItem(SELECTED_GROUP_STORAGE_KEY);
+            }
+        } catch {
+            // ignore storage failures
+        }
+    }, [view]);
 
     if (!user) {
         return (
@@ -260,19 +287,23 @@ const GroupsTab: React.FC<GroupsTabProps> = ({ openAuthModal }) => {
     );
 };
 
-const GroupAvatar: React.FC<{ group: Group }> = ({ group }) => {
+const GroupAvatar: React.FC<{ group: Group; size?: 'sm' | 'lg' }> = ({ group, size = 'sm' }) => {
     const initial = (group.name || '?').trim().charAt(0).toUpperCase();
+    // Detail view gets a larger avatar, scaling up where the modal has room.
+    const sizeClass = size === 'lg'
+        ? 'w-14 h-14 sm:w-20 sm:h-20 rounded-lg'
+        : 'w-10 h-10 rounded-md';
     if (group.image_url) {
         return (
             <img
                 src={group.image_url}
                 alt=""
-                className="w-10 h-10 rounded-md object-cover shrink-0 ring-1 ring-white/10"
+                className={`${sizeClass} object-cover shrink-0 ring-1 ring-white/10`}
             />
         );
     }
     return (
-        <div className="w-10 h-10 rounded-md bg-gradient-to-br from-[var(--er-button-primary)] to-[var(--er-button-primary-hover)] flex items-center justify-center text-white text-sm font-semibold shrink-0 shadow-sm">
+        <div className={`${sizeClass} bg-gradient-to-br from-[var(--er-button-primary)] to-[var(--er-button-primary-hover)] flex items-center justify-center text-white ${size === 'lg' ? 'text-2xl sm:text-3xl' : 'text-sm'} font-semibold shrink-0 shadow-sm`}>
             {initial}
         </div>
     );
@@ -421,6 +452,20 @@ const GroupDetail: React.FC<{
     const [confirmLeave, setConfirmLeave] = useState(false);
     const [confirmUnshare, setConfirmUnshare] = useState<SharedRanking | null>(null);
     const [confirmLoad, setConfirmLoad] = useState<SharedRanking | null>(null);
+
+    // Render the faded group-image backdrop into the modal shell (outside the
+    // scrolling tab area) so it can bleed to the modal edges. `top` is the
+    // scroll container's offset, which lines the backdrop up just under the nav.
+    const rootRef = useRef<HTMLDivElement>(null);
+    const [bg, setBg] = useState<{ host: HTMLElement; top: number } | null>(null);
+    useLayoutEffect(() => {
+        const root = rootRef.current;
+        if (!root || !detail?.image_url) { setBg(null); return; }
+        const host = root.closest('[data-modal-content]') as HTMLElement | null;
+        const scroller = root.closest('.overflow-y-auto') as HTMLElement | null;
+        if (!host || !scroller) { setBg(null); return; }
+        setBg({ host, top: scroller.offsetTop });
+    }, [detail?.image_url]);
 
     const currentRankingId = useAppSelector((s: AppState) => s.currentRankingId);
     const { isDirty, isEmpty } = useRankingDirty();
@@ -590,7 +635,25 @@ const GroupDetail: React.FC<{
     }
 
     return (
-        <div className="text-sm space-y-5">
+        <div ref={rootRef} className="text-sm space-y-5">
+            {/* Faded group image bled into the modal background for flavour.
+                Portaled into the modal shell so it reaches the modal edges while
+                stopping at the nav line; sits behind content via -z-10. */}
+            {detail.image_url && bg && createPortal(
+                <div
+                    aria-hidden="true"
+                    className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 overflow-hidden rounded-b-xl"
+                    style={{ top: bg.top }}
+                >
+                    <img
+                        src={detail.image_url}
+                        alt=""
+                        className="w-full h-full object-cover opacity-[0.06] [mask-image:linear-gradient(to_bottom,black,transparent_75%)]"
+                    />
+                </div>,
+                bg.host
+            )}
+
             {/* Header */}
             <div className="flex items-center gap-2">
                 <button type="button" onClick={onBack} className={ghostBtn}>
@@ -609,7 +672,7 @@ const GroupDetail: React.FC<{
             </div>
 
             <div className="flex items-start gap-3">
-                <GroupAvatar group={detail} />
+                <GroupAvatar group={detail} size="lg" />
                 <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
                         <h3 className="text-base font-semibold text-[var(--er-text-primary)] truncate">

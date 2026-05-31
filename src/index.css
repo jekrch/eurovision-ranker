@@ -220,13 +220,23 @@ code {
    so the sampled color stays dark, while keeping the diagonal gradient for the
    visible bar above. --er-surface-dark == the body bg / theme-color, so it
    tracks the theme. Tune the 35%/70% stops if the iOS bar still catches light. */
+/* EditNav is the bottom bar. iOS Safari's bottom toolbar samples the page
+   behind it, and the EditNav buttons (light --er-button-primary) sit right in
+   that zone, so the iOS bar picks up the light button color. Lift the buttons
+   up out of the toolbar's sampling zone with extra bottom padding, and fill the
+   freed region with the dark themed surface color so iOS samples dark instead.
+   The lift scales with the safe-area inset (0 on desktop, ~75px on an iPhone).
+   --edit-nav-lift is the single tuning knob: raise the 2.2 multiplier if the
+   iOS bar still catches the button color, lower it if the gap looks too big. */
 .edit-nav-bg {
+  --edit-nav-lift: calc(env(safe-area-inset-bottom) * 2.2);
+  padding-bottom: var(--edit-nav-lift);
   background:
     linear-gradient(
       to top,
-      var(--er-surface-dark) 0%,
-      var(--er-surface-dark) 35%,
-      transparent 70%
+      var(--er-surface-dark) 0,
+      var(--er-surface-dark) var(--edit-nav-lift),
+      transparent calc(var(--edit-nav-lift) + 1.5rem)
     ),
     linear-gradient(135deg, var(--er-nav-gradient-start), var(--er-nav-gradient-end));
 }

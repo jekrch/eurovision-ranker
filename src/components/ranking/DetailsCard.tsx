@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import { type FC, useRef, useEffect } from 'react';
-import { FaFileAlt, FaTv } from 'react-icons/fa';
+import { FaInfoCircle } from 'react-icons/fa';
 import { LazyLoadedFlag } from '../LazyFlag';
 import { CountryContestant } from '../../data/CountryContestant';
 import { AppState } from '../../redux/store';
@@ -159,18 +159,13 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
           {/* Text content section. Starts immediately after the flag container */}
           <div className={classNames("flex-grow text-[var(--er-text-secondary)] font-bold pl-3")}> {/* Added pl-3 for spacing if flag edge is too abrupt */}
             <div className={`overflow-hidden overflow-ellipsis`}>
-              <span className={classNames("float-right flex flex-row items-center", contestant?.youtube ? 'bg-opacity-70 bg-[var(--er-surface-tertiary-70)] border-[0.1em] border-[var(--er-border-tertiary)] rounded-[0.2em] px-[0.5em] py-[0.1em] mr-[0.4em]': '')}>
+              <span className="float-right flex flex-row items-center">
                 {contestant?.youtube &&
                   <div
                     onClick={() => { props.openSongModal() }}
-                    className='cursor-pointer rounded text-[var(--er-text-muted)] hover:text-[var(--er-text-secondary)] mr-[1.3em] -ml-1'>
-                    <FaFileAlt className='text-base' title="lyrics"/>
+                    className='cursor-pointer rounded text-[var(--er-text-muted)] hover:text-[var(--er-text-secondary)] mr-[0.4em]'>
+                    <FaInfoCircle className='text-base' title="song info"/>
                   </div>
-                }
-                {contestant?.youtube &&
-                  <a href={contestant?.youtube} target="_blank" rel="noopener noreferrer" className='rounded text-[var(--er-text-muted)] hover:text-[var(--er-text-secondary)]'>
-                    <FaTv className='text-xl -m-[0.1em] my-[0.1em]' title="youtube"/>
-                  </a>
                 }
               </span>
               <span className="overflow-hidden overflow-ellipsis">{country?.name}</span>

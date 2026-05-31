@@ -5,6 +5,16 @@ import { useAppDispatch, useAppSelector } from './stateHooks';
 import { setShowUnranked } from '../redux/rootSlice';
 import { AppDispatch, AppState } from '../redux/store';
 
+/** Resolve the dark surface color for the active theme (falling back to default). */
+function resolveSurfaceColor(theme: string): string {
+    const effectiveTheme = (theme && theme !== 'ab')
+        ? theme
+        : THEME_OPTIONS.find(t => t.default)?.code || '';
+
+    return THEME_SURFACE_COLORS[effectiveTheme]
+        ?? THEME_SURFACE_COLORS[THEME_OPTIONS.find(t => t.default)?.code || ''];
+}
+
 export function useThemeEffect() {
     const theme = useAppSelector(state => state.theme);
     const dispatch: AppDispatch = useAppDispatch();
@@ -26,8 +36,7 @@ export function useThemeEffect() {
 
         document.documentElement.setAttribute('data-theme', effectiveTheme);
 
-        const color = THEME_SURFACE_COLORS[effectiveTheme]
-            ?? THEME_SURFACE_COLORS[THEME_OPTIONS.find(t => t.default)?.code || ''];
+        const color = resolveSurfaceColor(theme);
 
         document.body.style.backgroundColor = color;
 

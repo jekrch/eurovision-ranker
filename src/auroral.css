@@ -20,6 +20,15 @@
   }
 }
 
+@keyframes bg-pulse {
+  0%, 100% {
+    background-size: 100% 100%;
+  }
+  50% {
+    background-size: 150% 110%;
+  }
+}
+
 .star-sky {
     padding-bottom: env(safe-area-inset-bottom);
     height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom));

@@ -73,48 +73,60 @@ code {
   background: rgba(0, 0, 0, 0);
 }
 
+/* keep the heat map tooltip arrow in sync with its themed surface */
+#country-tooltip .react-tooltip-arrow {
+  background-color: var(--er-surface-accent);
+}
+
 .normal-bg {
   padding-bottom: env(safe-area-inset-bottom);
   height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
   overflow: hidden;
   max-height: -webkit-fill-available;
-  position: relative;
-  /* establish a stacking context so the z-index:-1 gradient pseudo paints at
-     the back of THIS element rather than sinking behind an ancestor bg */
-  isolation: isolate;
-}
-
-/* Pulsing background lives on a pseudo-element so we can animate transform
-   (compositor-only) instead of background-size, which forces a fullscreen
-   repaint every frame. overflow:hidden on .normal-bg clips the scaled layer. */
-.normal-bg::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
   background: radial-gradient(ellipse at bottom, var(--er-ranked-bg-end) 0%, var(--er-nav-gradient-start) 100%);
   background-size: 100% 100%;
   background-repeat: no-repeat;
-  animation: bg-pulse-scale 10s infinite ease-in-out;
-  /* anchor the scale to the bottom so the lighter "ellipse at bottom" band
-     stays pinned to the viewport edge instead of being clipped away */
-  transform-origin: center bottom;
-  will-change: transform;
-}
-
-@keyframes bg-pulse-scale {
-  0%, 100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.1);
-  }
+  animation: bg-pulse 10s infinite ease-in-out;
+  position: relative;
+  /* own stacking context so the bottom backdrop below paints above this
+     element's gradient but behind its content (z-index: -1) */
+  isolation: isolate;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .normal-bg::before {
+  .normal-bg {
     animation: none;
   }
+}
+
+/* On scroll, iOS Safari makes the bottom toolbar translucent and tints it by
+   SAMPLING the backdrop behind it. The gradient's light "ellipse at bottom" sits
+   at the viewport edge, so the toolbar reads that lighter color. Paint a STATIC
+   (non-animated) backdrop of the themed surface color across the toolbar region
+   so the sampled color stays dark. --er-surface-dark == the body bg / theme-color,
+   so it tracks the active theme.
+
+   position: fixed pins it to the real viewport bottom (where iOS samples),
+   independent of .normal-bg's box model, which does not reliably reach the
+   viewport edge. Height scales with the safe-area inset, so it is 0 on desktop
+   (preserving the bottom glow) and only appears on devices with a bottom inset.
+   z-index:-1 keeps it above the gradient but behind the content; view mode is
+   excluded since it runs its gradient edge-to-edge. */
+.normal-bg:not(.view-mode)::after {
+  content: "";
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: calc(env(safe-area-inset-bottom) * 4);
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(
+    to top,
+    var(--er-surface-dark) 0,
+    var(--er-surface-dark) 80%,
+    transparent 100%
+  );
 }
 
 /* Ranked list / view mode: extend the container through the full
@@ -199,6 +211,24 @@ code {
 /* NAVIGATION GRADIENT - THEMED */
 .nav-diagonal-split-bg {
   background: linear-gradient(135deg, var(--er-nav-gradient-start), var(--er-nav-gradient-end));
+}
+
+/* EditNav is the bottom bar (sticky bottom-0). On iOS, when Safari's bottom
+   toolbar expands it overlaps this bar and samples it to tint itself; the
+   diagonal gradient ends in a lighter color, so the iOS bar reads light. Layer
+   the dark themed surface color over the bottom edge (where the toolbar sits)
+   so the sampled color stays dark, while keeping the diagonal gradient for the
+   visible bar above. --er-surface-dark == the body bg / theme-color, so it
+   tracks the theme. Tune the 35%/70% stops if the iOS bar still catches light. */
+.edit-nav-bg {
+  background:
+    linear-gradient(
+      to top,
+      var(--er-surface-dark) 0%,
+      var(--er-surface-dark) 35%,
+      transparent 70%
+    ),
+    linear-gradient(135deg, var(--er-nav-gradient-start), var(--er-nav-gradient-end));
 }
 
 .subtle-pulse {

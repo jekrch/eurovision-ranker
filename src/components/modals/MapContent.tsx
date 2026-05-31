@@ -55,21 +55,23 @@ const GeographyRenderer: React.FC<{
                             onMouseLeave={onLeave}
                             style={{
                                 default: {
-                                    fill: highlight ? fillColor : '#333',
-                                    stroke: '#FFF',
+                                    fill: highlight ? fillColor : 'var(--er-surface-tertiary)',
+                                    stroke: 'var(--er-border-subtle)',
                                     strokeWidth: 0.5,
                                     outline: 'none',
+                                    transition: 'fill 0.2s ease, stroke 0.15s ease',
                                 },
                                 hover: {
-                                    stroke: highlight ? 'yellow' : '#FFF',
-                                    fill: highlight ? fillColor : '#333',
-                                    strokeWidth: 2.5,
+                                    fill: highlight ? fillColor : 'var(--er-surface-accent)',
+                                    stroke: highlight ? 'var(--er-focus-ring)' : 'var(--er-border-secondary)',
+                                    strokeWidth: 2,
                                     outline: 'none',
+                                    transition: 'fill 0.2s ease, stroke 0.15s ease',
                                 },
                                 pressed: {
-                                    fill: highlight ? '#FFCCBC' : '#555',
-                                    stroke: '#FFF',
-                                    strokeWidth: 0.5,
+                                    fill: highlight ? 'var(--er-accent-blue)' : 'var(--er-surface-accent)',
+                                    stroke: 'var(--er-focus-ring)',
+                                    strokeWidth: 1,
                                     outline: 'none',
                                 },
                             }}
@@ -101,8 +103,13 @@ const MapContent: React.FC<MapContentProps> = ({
         <div className="relative w-full">
             {/* Main Europe-centered map */}
             <ComposableMap
-                className="bg-black rounded-md w-full max-h-[60vh] shadow-md"
-                projectionConfig={{ scale: 800, center: [15, 50] }}
+                className="rounded-lg w-full h-[65vh] sm:h-auto sm:max-h-[75vh] shadow-lg ring-1"
+                preserveAspectRatio="xMidYMid slice"
+                style={{
+                    backgroundColor: 'var(--er-surface-primary)',
+                    '--tw-ring-color': 'var(--er-border-subtle)',
+                } as React.CSSProperties}
+                projectionConfig={{ scale: 550, center: [15, 50] }}
             >
                 <ZoomableGroup>
                     <GeographyRenderer
@@ -113,7 +120,13 @@ const MapContent: React.FC<MapContentProps> = ({
             </ComposableMap>
 
             {/* Australia inset */}
-            <div className="absolute bottom-2 left-2 w-[100px] h-[80px] bg-black/80 rounded border border-white/30 overflow-hidden">
+            <div
+                className="absolute bottom-2 left-2 w-[100px] h-[80px] rounded-md border overflow-hidden backdrop-blur-sm"
+                style={{
+                    backgroundColor: 'var(--er-overlay-heavy)',
+                    borderColor: 'var(--er-border-subtle)',
+                }}
+            >
                 <ComposableMap
                     projectionConfig={{ scale: 400, center: [134, -26] }}
                     width={300}
@@ -125,7 +138,10 @@ const MapContent: React.FC<MapContentProps> = ({
                         filterFn={(geo) => geo.properties.iso_a2_eh === 'AU'}
                     />
                 </ComposableMap>
-                <span className="absolute bottom-0 left-0 right-0 text-[8px] text-white/60 text-center leading-tight">
+                <span
+                    className="absolute bottom-0 left-0 right-0 text-[8px] text-center leading-tight"
+                    style={{ color: 'var(--er-text-muted)' }}
+                >
                     Australia
                 </span>
             </div>

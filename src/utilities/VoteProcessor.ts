@@ -238,7 +238,8 @@ function getContestantVoteFieldValue(
         return 0;
     }
     let value = votes[fieldName as keyof ContestantVotes] as string;
-    return parseInt(value, 10);
+    const parsed = parseInt(value, 10);
+    return isNaN(parsed) ? 0 : parsed;
 }
 
 

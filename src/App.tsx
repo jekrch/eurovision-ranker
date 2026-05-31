@@ -3,7 +3,7 @@ import { DragDropContext, DropResult } from '@hello-pangea/dnd';
 import classNames from 'classnames';
 import { CountryContestant } from './data/CountryContestant';
 import { AppDispatch, AppState } from './redux/store';
-import { setRankedItems, setUnrankedItems, setShowUnranked, setActiveCategory, setShowTotalRank, setCategories, setGlobalSearch, setTheme, setName, setYear } from './redux/rootSlice';
+import { setRankedItems, setUnrankedItems, setShowUnranked, setActiveCategory, setShowTotalRank, setCategories, setGlobalSearch, setTheme, setName, setYear, setCurrentRankingId, setLastSavedSignature, setLoadedAuthor, patchUser } from './redux/rootSlice';
 import { loadRankingsFromURL, encodeRankingsToURL, updateQueryParams, updateUrlFromRankedItems, urlHasRankings } from './utilities/UrlUtil';
 import WelcomeOverlay from './components/modals/WelcomeOverlay';
 import toast, { Toaster } from 'react-hot-toast';
@@ -26,8 +26,10 @@ import AuthModal, { AuthView } from './components/modals/auth/AuthModal';
 import JoinGroupModal from './components/modals/groups/JoinGroupModal';
 import { ping } from './utilities/api/health';
 import { getPublicRanking, getRanking } from './utilities/api/rankings';
+import { getMe } from './utilities/api/me';
 import { getToken } from './utilities/api/client';
 import { parseStoredRanking } from './utilities/api/rankingParams';
+import { signatureFromRanking } from './utilities/api/rankingSignature';
 import { ApiError } from './utilities/api/types';
 
 // lazy load components to reduce initial bundle size
@@ -242,6 +244,18 @@ const App: React.FC = () => {
     });
   }, []);
 
+  // Hydrate the signed-in user's username from /api/me whenever the auth token
+  // appears (page load with a stored token, or a fresh in-session login). JWTs
+  // issued before the username feature don't carry it, so we fetch rather than
+  // read the token. Best-effort: failures (offline, expired token) are non-fatal.
+  const token = useAppSelector((state: AppState) => state.token);
+  useEffect(() => {
+    if (!token) return;
+    getMe()
+      .then((me) => dispatch(patchUser({ username: me.username })))
+      .catch(() => { /* ignore */ });
+  }, [token]);
+
   async function loadPublicRankingById(id: string) {
     try {
       // When signed in, use the authenticated endpoint: it returns the
@@ -279,9 +293,21 @@ const App: React.FC = () => {
       window.history.pushState(null, '', '?id=' + encodeURIComponent(id));
 
       dispatch(setShowUnranked(false));
+
+      // Tie into the shared dirty-tracking mechanism so the header can show a
+      // subtle "loaded ranking by <author>" indicator that disappears on the
+      // first edit (when the live signature diverges from this baseline).
+      dispatch(setCurrentRankingId(full.ranking_id));
+      dispatch(setLastSavedSignature(signatureFromRanking(full)));
+      dispatch(setLoadedAuthor({
+        username: full.author_username,
+        email: full.author_email,
+        userId: full.user_id,
+      }));
     } catch (e) {
       publicViewActiveRef.current = false;
       publicViewLoadedRef.current = false;
+      dispatch(setLoadedAuthor(null));
       if (e instanceof ApiError && e.status === 404) {
         toast.error('That ranking is not available.');
       } else if (e instanceof ApiError) {

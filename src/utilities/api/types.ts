@@ -1,6 +1,7 @@
 export interface AuthUser {
     id: string;
     email: string;
+    username?: string;
     created_at?: string;
 }
 
@@ -20,6 +21,10 @@ export interface UserRanking {
     group_ids?: string[];
     created_at?: string;
     updated_at?: string;
+    // Read-only author attribution, only present on single-ranking reads
+    // (load-by-id). Username is preferred; email is the fallback.
+    author_username?: string;
+    author_email?: string;
 }
 
 export interface CreateRankingPayload {

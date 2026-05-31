@@ -35,7 +35,7 @@ const headerBar =
 const RankingsTab: React.FC = () => {
     const year = useAppSelector((state: AppState) => state.year);
     const theme = useAppSelector((state: AppState) => state.theme);
-    const [rankingYear, setRankingYear] = useState(year !== '2026' ? year : '2025');
+    const [rankingYear, setRankingYear] = useState(year);
     const [voteSource, setVoteSource] = useState('All');
     const [voteSourceOptions, setVoteSourceOptions] = useState<string[]>([
         'All',
@@ -232,11 +232,11 @@ const RankingsTab: React.FC = () => {
                 <div className="flex flex-wrap items-center gap-x-2.5 gap-y-2 mb-3.5">
                     <span className={fieldLabel}>Year</span>
                     <Dropdown
-                        className="w-20"
+                        className="w-24"
                         menuClassName=""
                         value={rankingYear ?? year}
                         onChange={(y) => setRankingYear(y)}
-                        options={supportedYears.filter((i) => i !== '2020' && i !== '2026')}
+                        options={supportedYears.filter((i) => i !== '2020')}
                         showSearch={true}
                     />
                     <span className={fieldLabel}>from</span>
@@ -255,30 +255,24 @@ const RankingsTab: React.FC = () => {
                     />
                 </div>
 
-                {rankingYear === '2026' ? (
-                    <p className="text-xs italic text-[var(--er-text-subtle)]">
-                        No voting data available yet for 2026.
-                    </p>
-                ) : (
-                    <div className="flex flex-wrap gap-2">
-                        <button type="button" onClick={openTotalRanking} className={primaryBtn}>
-                            <FontAwesomeIcon icon={faGlobe} className="text-xs" />
-                            Total
+                <div className="flex flex-wrap gap-2">
+                    <button type="button" onClick={openTotalRanking} className={primaryBtn}>
+                        <FontAwesomeIcon icon={faGlobe} className="text-xs" />
+                        Total
+                    </button>
+                    {hasTeleVotes && (
+                        <button type="button" onClick={openTotalTelevoteRanking} className={primaryBtn}>
+                            <FontAwesomeIcon icon={faMobileScreenButton} className="text-xs" />
+                            Televote
                         </button>
-                        {hasTeleVotes && (
-                            <button type="button" onClick={openTotalTelevoteRanking} className={primaryBtn}>
-                                <FontAwesomeIcon icon={faMobileScreenButton} className="text-xs" />
-                                Televote
-                            </button>
-                        )}
-                        {hasJuryVotes && (
-                            <button type="button" onClick={openTotalJuryRanking} className={primaryBtn}>
-                                <FontAwesomeIcon icon={faGavel} className="text-xs" />
-                                Jury
-                            </button>
-                        )}
-                    </div>
-                )}
+                    )}
+                    {hasJuryVotes && (
+                        <button type="button" onClick={openTotalJuryRanking} className={primaryBtn}>
+                            <FontAwesomeIcon icon={faGavel} className="text-xs" />
+                            Jury
+                        </button>
+                    )}
+                </div>
                 </div>
             </section>
 

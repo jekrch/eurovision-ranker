@@ -12,12 +12,17 @@ import { useEffect } from 'react';
  *
  * Uses reference counting so that layered modals (e.g. a confirmation modal
  * over another modal) don't release the lock until the last one closes.
+ *
+ * Dropdown menus are portaled to `document.body` (outside the modal content),
+ * so they're matched separately via their `.dropdown-menu` marker to keep them
+ * scrollable while the lock is active.
  */
 
 let lockCount = 0;
 
 const isInsideModalContent = (target: EventTarget | null): boolean =>
-  target instanceof Element && !!target.closest('[data-modal-content]');
+  target instanceof Element &&
+  !!target.closest('[data-modal-content], .dropdown-menu');
 
 const preventBackgroundScroll = (e: Event) => {
   if (e.cancelable && !isInsideModalContent(e.target)) {

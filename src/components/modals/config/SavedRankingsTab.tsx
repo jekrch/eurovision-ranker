@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash, faUpload, faPen, faPlus, faSave, faRightFromBracket, faGlobe, faLock, faLink, faCheck, faRotate, faCircleInfo, faShareNodes, faXmark } from '@fortawesome/free-solid-svg-icons';
@@ -10,7 +10,6 @@ import {
     createRanking,
     updateRanking,
     deleteRanking,
-    getRanking,
 } from '../../../utilities/api/rankings';
 import {
     listGroups,
@@ -27,20 +26,14 @@ import {
     setSavedRankings,
     upsertSavedRanking,
     removeSavedRanking,
-    setCategories,
-    setActiveCategory,
-    setShowTotalRank,
     setGroups,
     addGroupIdToRanking,
     removeGroupIdFromRanking,
 } from '../../../redux/rootSlice';
-import { parseCategoriesUrlParam } from '../../../utilities/CategoryUtil';
-import { buildSignature, signatureFromRanking } from '../../../utilities/api/rankingSignature';
-import {
-    buildRankingParamsFromUrl,
-    MAX_RANKING_LENGTH,
-    parseStoredRanking,
-} from '../../../utilities/api/rankingParams';
+import { signatureFromRanking } from '../../../utilities/api/rankingSignature';
+import { MAX_RANKING_LENGTH } from '../../../utilities/api/rankingParams';
+import { useRankingDirty } from '../../../hooks/useRankingDirty';
+import UsernameField from './UsernameField';
 
 interface SavedRankingsTabProps {
     openAuthModal: () => void;
@@ -63,18 +56,6 @@ function yearToNumber(year: string | undefined): number | undefined {
     return /^\d+$/.test(year) ? Number(year) : undefined;
 }
 
-// Wipe everything the app keeps in the URL and re-seed from the saved record.
-// Keeps any unrelated params untouched (e.g. dev/debug flags).
-function applyLoadedRankingToUrl(r: UserRanking) {
-    const sp = parseStoredRanking(r.ranking ?? '');
-    if (r.name) sp.set('n', r.name); else sp.delete('n');
-    if (r.year != null) sp.set('y', String(r.year).slice(-2)); else sp.delete('y');
-    sp.delete('id');
-    sp.delete('signup');
-    const query = sp.toString();
-    window.history.pushState(null, '', query ? `?${query}` : window.location.pathname);
-}
-
 const SavedRankingsTab: React.FC<SavedRankingsTabProps> = ({ openAuthModal }) => {
     const dispatch = useAppDispatch();
     const user = useAppSelector((s: AppState) => s.user);
@@ -82,7 +63,6 @@ const SavedRankingsTab: React.FC<SavedRankingsTabProps> = ({ openAuthModal }) =>
     const year = useAppSelector((s: AppState) => s.year);
     const rankedItems = useAppSelector((s: AppState) => s.rankedItems);
     const currentRankingId = useAppSelector((s: AppState) => s.currentRankingId);
-    const lastSavedSignature = useAppSelector((s: AppState) => s.lastSavedSignature);
 
     const rankings = useAppSelector((s: AppState) => s.savedRankings);
     const groups = useAppSelector((s: AppState) => s.groups);
@@ -97,26 +77,7 @@ const SavedRankingsTab: React.FC<SavedRankingsTabProps> = ({ openAuthModal }) =>
     const [shareLoading, setShareLoading] = useState(false);
     const [pendingShareToggle, setPendingShareToggle] = useState<string | null>(null);
 
-    // `rankingParams` reflects everything in the URL except n/y/id/signup.
-    // It's recomputed whenever `rankedItems` changes (a proxy for "the URL
-    // has been re-synced") so dirty-detection stays live.
-    const rankingParams = useMemo(() => buildRankingParamsFromUrl(), [rankedItems]);
-    const currentSignature = useMemo(
-        () =>
-            buildSignature({
-                name: name || '',
-                description: '',
-                year: year || '',
-                ranking: rankingParams,
-                isPublic: false,
-            }),
-        [name, year, rankingParams]
-    );
-
-    const isDirty = currentRankingId
-        ? lastSavedSignature !== currentSignature
-        : true;
-    const isEmpty = rankedItems.length === 0;
+    const { rankingParams, isDirty, isEmpty } = useRankingDirty();
 
     const refresh = useCallback(async () => {
         if (!user) return;
@@ -211,35 +172,14 @@ const SavedRankingsTab: React.FC<SavedRankingsTabProps> = ({ openAuthModal }) =>
         }
     };
 
-    const doLoad = async (r: UserRanking) => {
-        try {
-            // Fetch fresh copy in case list was stale.
-            const full = await getRanking(r.ranking_id);
-            dispatch(upsertSavedRanking(full));
-            applyLoadedRankingToUrl(full);
-
-            // Categories and activeCategory live in Redux and are only seeded
-            // from the URL on mount, so we need to dispatch them explicitly
-            // when loading a saved ranking that has different ones.
-            const sp = new URLSearchParams(window.location.search);
-            const categoriesParam = sp.get('c');
-            const parsedCategories = categoriesParam
-                ? parseCategoriesUrlParam(categoriesParam)
-                : [];
-            dispatch(setCategories(parsedCategories));
-            dispatch(setActiveCategory(parsedCategories.length ? 0 : undefined));
-            dispatch(setShowTotalRank(false));
-
-            dispatch(setName(full.name || ''));
-            dispatch(setCurrentRankingId(full.ranking_id));
-            dispatch(setLastSavedSignature(signatureFromRanking(full)));
-            // App.tsx watches popstate to reload rankings from URL.
-            window.dispatchEvent(new PopStateEvent('popstate'));
-            toast.success('Loaded.');
-        } catch (e) {
-            if (e instanceof ApiError) toast.error(e.body?.trim() || 'Failed to load.');
-            else toast.error('Failed to load.');
-        }
+    // Navigate the current window to the ?id= URL so the app boots into its
+    // public-view-by-id flow (App.loadPublicRankingById). That path keeps the
+    // id in the URL and sets the loaded-author metadata, matching how shared
+    // rankings open from the Groups tab.
+    const doLoad = (r: UserRanking) => {
+        window.location.assign(
+            `${window.location.pathname}?id=${encodeURIComponent(r.ranking_id)}`
+        );
     };
 
     const handleLoad = (r: UserRanking) => {
@@ -422,6 +362,9 @@ const SavedRankingsTab: React.FC<SavedRankingsTabProps> = ({ openAuthModal }) =>
                     <FontAwesomeIcon icon={faRightFromBracket} />
                 </button>
             </div>
+
+            {/* Username (how others see you when they open your shared rankings) */}
+            <UsernameField />
 
             {/* Current ranking card */}
             <div>

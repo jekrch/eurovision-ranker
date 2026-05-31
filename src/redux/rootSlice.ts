@@ -39,6 +39,16 @@ interface AppState extends AuthSliceFields {
     groupDetails: Record<string, Group>;
     groupInvites: Record<string, GroupInvite[]>;
     groupSharedRankings: Record<string, SharedRanking[]>;
+    // Author of a ranking loaded by id (share/public link). Set when a ranking
+    // is loaded, cleared when the current ranking is reset. Drives the subtle
+    // "loaded ranking by <author>" attribution in the header.
+    loadedAuthor: LoadedAuthor | null;
+}
+
+export interface LoadedAuthor {
+    username?: string;
+    email?: string;
+    userId?: string;
 }
 
 const initialAuth = loadInitialAuth();
@@ -73,6 +83,7 @@ const initialState: AppState = {
     groupDetails: {},
     groupInvites: {},
     groupSharedRankings: {},
+    loadedAuthor: null,
     tableState: {
         sortColumn: 'year',
         sortDirection: 'desc',
@@ -224,6 +235,7 @@ const rootSlice = createSlice({
             state.authError = null;
             state.currentRankingId = null;
             state.lastSavedSignature = null;
+            state.loadedAuthor = null;
             state.savedRankings = null;
             state.groups = null;
             state.groupDetails = {};
@@ -240,6 +252,15 @@ const rootSlice = createSlice({
         clearCurrentRanking: (state) => {
             state.currentRankingId = null;
             state.lastSavedSignature = null;
+            state.loadedAuthor = null;
+        },
+        setLoadedAuthor: (state, action: PayloadAction<LoadedAuthor | null>) => {
+            state.loadedAuthor = action.payload;
+        },
+        patchUser: (state, action: PayloadAction<Partial<AuthUser>>) => {
+            if (state.user) {
+                state.user = { ...state.user, ...action.payload };
+            }
         },
         setSavedRankings: (state, action: PayloadAction<UserRanking[] | null>) => {
             state.savedRankings = action.payload;
@@ -402,6 +423,8 @@ export const {
     setCurrentRankingId,
     setLastSavedSignature,
     clearCurrentRanking,
+    setLoadedAuthor,
+    patchUser,
     setSavedRankings,
     upsertSavedRanking,
     removeSavedRanking,

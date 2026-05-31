@@ -27,7 +27,7 @@ const MainModal: React.FC<MainModalProps> = (props: MainModalProps) => {
     //if (!props.isOpen) return null;
 
     return (
-        <Modal isOpen={props.isOpen} onClose={props.onClose} className="h-[85vh] !max-h-[500px]">
+        <Modal isOpen={props.isOpen} onClose={props.onClose} className="h-[85vh] !max-h-[550px]">
             <div className="border-b border-[var(--er-border-lightest)] dark:border-[var(--er-border-darker)] -mt-4">
                 <ul className="flex flex-wrap -mb-px text-sm font-medium text-center text-[var(--er-text-muted)] dark:text-[var(--er-text-subtle)]">
                     <TabButton
@@ -45,7 +45,7 @@ const MainModal: React.FC<MainModalProps> = (props: MainModalProps) => {
                 </ul>
             </div>
 
-            <div className="overflow-y-auto pt-4 select-text pb-3 flex-grow [scrollbar-gutter:stable]">
+            <div className="overflow-y-auto pt-4 pr-4 -mr-4 select-text pb-3 flex-grow min-h-0 [scrollbar-gutter:stable]">
                 {activeTab === 'about' &&
                     <div className="">
                         <p>Thanks for using my app! Confused? Try taking the <span onClick={startTour} className="text-link">tour</span>. </p>

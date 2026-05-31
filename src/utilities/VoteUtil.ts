@@ -137,25 +137,20 @@ function getKeyVoteMap(votes: Vote[]) {
         let juryPointsToAdd: number = getVoteFieldValue(vote, 'juryPoints');
         let telePointsToAdd: number = getVoteFieldValue(vote, 'telePoints');
 
-        if (totalPointsToAdd) {
-            if (!contestantVotes.totalPoints)
-                contestantVotes.totalPoints = 0;
-
-            contestantVotes.totalPoints! += totalPointsToAdd;
+        // Accumulate whenever the column holds a real number (including 0) so that
+        // recipients with 0 points still report 0 rather than undefined. A blank
+        // column (e.g. pre-split years with no tele/jury data) parses to NaN and is
+        // left undefined so it stays hidden.
+        if (!isNaN(totalPointsToAdd)) {
+            contestantVotes.totalPoints = (contestantVotes.totalPoints ?? 0) + totalPointsToAdd;
         }
 
-        if (juryPointsToAdd) {
-            if (!contestantVotes.juryPoints)
-                contestantVotes.juryPoints = 0;
-
-            contestantVotes.juryPoints! += juryPointsToAdd;
+        if (!isNaN(juryPointsToAdd)) {
+            contestantVotes.juryPoints = (contestantVotes.juryPoints ?? 0) + juryPointsToAdd;
         }
 
-        if (telePointsToAdd) {
-            if (!contestantVotes.telePoints)
-                contestantVotes.telePoints = 0;
-
-            contestantVotes.telePoints! += telePointsToAdd;
+        if (!isNaN(telePointsToAdd)) {
+            contestantVotes.telePoints = (contestantVotes.telePoints ?? 0) + telePointsToAdd;
         }
 
         // if (voteToAdd) {

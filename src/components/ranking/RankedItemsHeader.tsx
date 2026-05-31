@@ -8,7 +8,8 @@ import classNames from 'classnames';
 import Ripples from 'react-ripples';
 import { useAppDispatch, useAppSelector } from '../../hooks/stateHooks';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSort } from '@fortawesome/free-solid-svg-icons';
+import { faSort, faShareNodes } from '@fortawesome/free-solid-svg-icons';
+import { useRankingDirty } from '../../hooks/useRankingDirty';
 
 interface IRankedItemsHeaderProps {
     setMapModalShow: () => void;
@@ -40,7 +41,18 @@ const RankedItemsHeader: React.FC<IRankedItemsHeaderProps> = ({
     const categories = useAppSelector((state: AppState) => state.categories);
     const showUnranked = useAppSelector((state: AppState) => state.showUnranked);
     const activeCategory = useAppSelector((state: AppState) => state.activeCategory);
+    const loadedAuthor = useAppSelector((state: AppState) => state.loadedAuthor);
+    const currentRankingId = useAppSelector((state: AppState) => state.currentRankingId);
+    const user = useAppSelector((state: AppState) => state.user);
+    const { isDirty } = useRankingDirty();
     const [activeTab, setActiveTab] = useState(0);
+
+    // Show a subtle attribution while a ranking loaded by id is still pristine.
+    // It disappears on the first edit (dirty), signalling the viewer has taken
+    // it over as their own working copy.
+    const isPristineLoaded = !!(loadedAuthor && currentRankingId && !isDirty);
+    const isOwnLoaded = !!(loadedAuthor && user && loadedAuthor.userId === user.id);
+    const authorLabel = loadedAuthor?.username || loadedAuthor?.email;
 
     useEffect(() => {
         if (activeTab === 0) {
@@ -109,11 +121,24 @@ const RankedItemsHeader: React.FC<IRankedItemsHeaderProps> = ({
 
                     {/* ---- Center Content (Title) ---- */}
                     <div className="justify-center text-center flex-grow mx-2"> {/* Use flex-grow to take available space, mx-2 for spacing */}
-                        {!globalSearch ? year : null}
-                        {name && (
-                            <span className="font-bold text-[var(--er-text-tertiary)] text-md">
-                                {!globalSearch ? ` - ` : ``}{name}
-                            </span>
+                        <div>
+                            {!globalSearch ? year : null}
+                            {name && (
+                                <span className="font-bold text-[var(--er-text-tertiary)] text-md">
+                                    {!globalSearch ? ` - ` : ``}{name}
+                                </span>
+                            )}
+                        </div>
+                        {isPristineLoaded && (isOwnLoaded || authorLabel) && (
+                            <div
+                                className="mt-0.5 flex items-center justify-center gap-1 text-[0.65rem] font-medium tracking-normal text-[var(--er-text-subtle)] opacity-80"
+                                title={isOwnLoaded ? 'You opened your own shared ranking' : `Shared ranking by ${authorLabel}`}
+                            >
+                                <FontAwesomeIcon icon={faShareNodes} className="text-[0.6rem]" />
+                                <span className="truncate max-w-[14em]">
+                                    {isOwnLoaded ? 'shared ranking · by you' : <>shared ranking · by {authorLabel}</>}
+                                </span>
+                            </div>
                         )}
                     </div>
                     {/* ---- End Center Content ---- */}

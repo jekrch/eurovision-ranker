@@ -20,6 +20,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { AppState } from '../../../redux/store';
 import { useAppDispatch, useAppSelector } from '../../../hooks/stateHooks';
+import { useRankingDirty } from '../../../hooks/useRankingDirty';
 import GlobalConfirmationModal from '../GlobalConfirmationModal';
 import {
     addGroupInvite,
@@ -419,8 +420,32 @@ const GroupDetail: React.FC<{
     const [confirmDelete, setConfirmDelete] = useState(false);
     const [confirmLeave, setConfirmLeave] = useState(false);
     const [confirmUnshare, setConfirmUnshare] = useState<SharedRanking | null>(null);
+    const [confirmLoad, setConfirmLoad] = useState<SharedRanking | null>(null);
+
+    const currentRankingId = useAppSelector((s: AppState) => s.currentRankingId);
+    const { isDirty, isEmpty } = useRankingDirty();
+
+    // Navigate the current window to the ?id= URL so the app boots into its
+    // public-view-by-id flow (App.loadPublicRankingById). That path keeps the
+    // id in the URL and sets the loaded-author metadata — which the profile
+    // tab's in-place load deliberately strips, so we can't reuse it here.
+    const openById = (rankingId: string) => {
+        window.location.assign(
+            `${window.location.pathname}?id=${encodeURIComponent(rankingId)}`
+        );
+    };
 
     const isOwner = detail?.role === 'owner';
+
+    // Same window instead of a new tab, but guard unsaved work first since the
+    // navigation discards the current ranking (a new tab couldn't clobber it).
+    const handleOpen = (r: SharedRanking) => {
+        if (currentRankingId && currentRankingId !== r.ranking_id && isDirty && !isEmpty) {
+            setConfirmLoad(r);
+            return;
+        }
+        openById(r.ranking_id);
+    };
 
     const fetchDetail = useCallback(async () => {
         setLoading(true);
@@ -736,15 +761,14 @@ const GroupDetail: React.FC<{
                                         </div>
                                     </div>
                                     <div className="flex flex-wrap items-center gap-1 -ml-1.5">
-                                        <a
-                                            href={`${window.location.pathname}?id=${encodeURIComponent(r.ranking_id)}`}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
+                                        <button
+                                            type="button"
+                                            onClick={() => handleOpen(r)}
                                             className={actionBtn}
                                         >
                                             <FontAwesomeIcon icon={faLink} className="text-xs" />
                                             Open
-                                        </a>
+                                        </button>
                                         {mine && (
                                             <button
                                                 type="button"
@@ -810,6 +834,12 @@ const GroupDetail: React.FC<{
                 onClose={() => setConfirmUnshare(null)}
                 onConfirm={() => { if (confirmUnshare) handleUnshare(confirmUnshare); }}
                 message={`Stop sharing "${confirmUnshare?.name || 'this ranking'}" with the group?`}
+            />
+            <GlobalConfirmationModal
+                isOpen={!!confirmLoad}
+                onClose={() => setConfirmLoad(null)}
+                onConfirm={() => { if (confirmLoad) openById(confirmLoad.ranking_id); }}
+                message={`You have unsaved changes. Discard them and load "${confirmLoad?.name || 'Untitled'}"?`}
             />
         </div>
     );

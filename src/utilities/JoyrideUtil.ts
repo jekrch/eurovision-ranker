@@ -1,3 +1,7 @@
+// sessionStorage flag set when a tour exits so the reloaded app can skip the
+// welcome overlay and land the user directly in the select view.
+export const SKIP_WELCOME_AFTER_TOUR_KEY = 'er-skip-welcome-after-tour';
+
 export const joyrideOptions = {
     overlay: {
       height: '100vh',

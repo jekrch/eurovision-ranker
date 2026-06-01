@@ -4,7 +4,7 @@ import { AppDispatch, AppState } from '../redux/store';
 import { setYear, setName, setShowUnranked, setRankedItems, setUnrankedItems, setShowTotalRank, setHeaderMenuOpen, setContestants, setGlobalSearch, setTheme } from '../redux/rootSlice';
 import { fetchCountryContestantsByYear } from '../utilities/ContestantRepository';
 import { tourSteps } from '../tour/steps';
-import { joyrideOptions } from '../utilities/JoyrideUtil';
+import { joyrideOptions, SKIP_WELCOME_AFTER_TOUR_KEY } from '../utilities/JoyrideUtil';
 import type Joyride from 'react-joyride';
 import { clearCategories, clearCategories as clearCategoriesUtil } from '../utilities/CategoryUtil';
 import { CountryContestant } from '../data/CountryContestant';
@@ -55,9 +55,14 @@ const JoyrideTour: React.FC<JoyrideTourProps> = (props: JoyrideTourProps) => {
 
       setStartTour(props.runTour);
 
-      // if we're exiting the tour, return to the URL we had 
-      // when the tour began 
+      // if we're exiting the tour, return to the URL we had
+      // when the tour began. Flag that we just came from the tour so
+      // the reloaded app skips the welcome overlay and drops the user
+      // straight into the select view instead.
       if (!props.runTour) {
+        try {
+          sessionStorage.setItem(SKIP_WELCOME_AFTER_TOUR_KEY, '1');
+        } catch { /* sessionStorage may be unavailable */ }
         goToUrl(originalUrlQuery, undefined);
       }
     }

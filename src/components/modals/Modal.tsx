@@ -105,6 +105,11 @@ const Modal: React.FC<ModalContainerProps> = ({
             if ((event.target as Element).closest('.dropdown-menu')) {
                 return;
             }
+            // ignore clicks on the floating/docked video player (portaled to
+            // <body>, so it sits outside the modal's DOM subtree)
+            if ((event.target as Element).closest('.er-video-player-root')) {
+                return;
+            }
             // check if click is outside the main modal content area
             if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
                 handleAttemptClose();

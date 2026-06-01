@@ -8,8 +8,9 @@ import { Vote } from '../../data/Vote';
 import { countries } from '../../data/Countries';
 import { getYouTubeVideoId } from '../../utilities/YoutubeUtil';
 import { useAppSelector } from '../../hooks/stateHooks';
+import { useVideoPip, VideoDock } from '../video/VideoPipContext';
 
-import { FaYoutube } from 'react-icons/fa';
+import { FaYoutube, FaClone } from 'react-icons/fa';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAlignLeft, faPlay, faChartColumn } from '@fortawesome/free-solid-svg-icons';
 import { LazyLoadedFlag } from '../LazyFlag';
@@ -107,6 +108,11 @@ const SongModal: React.FC<SongModalProps> = (props: SongModalProps) => {
     const contestant = props.countryContestant?.contestant;
     const videoId = contestant?.youtube ? getYouTubeVideoId(contestant.youtube) : null;
     const hasVotes = roundVotes.length > 0;
+
+    // when the user expands a floating (pip) video, the provider bumps this
+    // nonce; swing the modal back to the video tab so the player re-docks
+    const { expandNonce, popOut } = useVideoPip();
+    const lastExpandNonce = useRef(expandNonce);
 
     const selectTab = (tab: TabKey) => {
         userPickedTab.current = true;
@@ -242,6 +248,18 @@ const SongModal: React.FC<SongModalProps> = (props: SongModalProps) => {
             readStickyTab()
         ));
     }, [detailsLoaded, votesLoaded, hasLyrics, videoId, roundVotes.length]);
+
+    // expanding the pip re-opens this modal; jump straight to the video tab so
+    // the still-playing iframe docks back into place (declared after the tab
+    // resolution effect so it wins when both fire in the same commit)
+    useEffect(() => {
+        if (expandNonce !== lastExpandNonce.current) {
+            lastExpandNonce.current = expandNonce;
+            if (videoId) {
+                selectTab('video');
+            }
+        }
+    }, [expandNonce, videoId]);
 
     function assignLyrics(
         lyrics: string | undefined,
@@ -489,27 +507,43 @@ const SongModal: React.FC<SongModalProps> = (props: SongModalProps) => {
                 </div>
             )}
 
-            {/* ---- Video tab (iframe only mounts while active so it stops on switch) ---- */}
-            {activeTab === 'video' && videoId && (
+            {/* ---- Video tab ----
+                The actual <iframe> lives in the app-level VideoPipProvider so it
+                can keep playing as a floating pip when the user leaves this tab
+                or closes the modal. VideoDock just reserves the area and tells
+                the provider to glue the persistent player on top of it. Gated on
+                isOpen so closing the modal hands the player off immediately
+                (rather than letting it shrink with the modal's exit animation). */}
+            {activeTab === 'video' && videoId && props.isOpen && props.countryContestant && (
                 <div className="flex-1 min-h-0 overflow-auto mt-[1em]">
-                    <div className="relative w-full aspect-video rounded-md overflow-hidden bg-black ring-1 ring-[var(--er-border-secondary)]">
-                        <iframe
-                            className="absolute inset-0 w-full h-full"
-                            src={`https://www.youtube-nocookie.com/embed/${videoId}`}
-                            title={`${contestant?.artist} - ${contestant?.song}`}
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                            allowFullScreen
-                        />
+                    <VideoDock
+                        info={{
+                            videoId,
+                            title: `${contestant?.artist} - ${contestant?.song}`,
+                            youtubeUrl: contestant?.youtube,
+                            contestant: props.countryContestant,
+                        }}
+                    />
+                    <div className="mt-3 flex flex-wrap items-center gap-2">
+                        <a
+                            href={contestant?.youtube}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-2 rounded-md bg-[var(--er-surface-tertiary-70)] hover:bg-[var(--er-interactive-secondary)] border-[0.1em] border-[var(--er-border-tertiary)] px-3 py-[0.35em] text-sm font-medium text-[var(--er-text-secondary)] transition-colors"
+                        >
+                            <FaYoutube className="text-lg text-[#FF0000]" />
+                            Watch on YouTube
+                        </a>
+                        <button
+                            type="button"
+                            onClick={popOut}
+                            title="Keep playing in a floating window"
+                            className="inline-flex items-center gap-2 rounded-md bg-[var(--er-surface-tertiary-70)] hover:bg-[var(--er-interactive-secondary)] border-[0.1em] border-[var(--er-border-tertiary)] px-3 py-[0.35em] text-sm font-medium text-[var(--er-text-secondary)] transition-colors"
+                        >
+                            <FaClone className="text-base" />
+                            Pop out
+                        </button>
                     </div>
-                    <a
-                        href={contestant?.youtube}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="mt-3 inline-flex items-center gap-2 rounded-md bg-[var(--er-surface-tertiary-70)] hover:bg-[var(--er-interactive-secondary)] border-[0.1em] border-[var(--er-border-tertiary)] px-3 py-[0.35em] text-sm font-medium text-[var(--er-text-secondary)] transition-colors"
-                    >
-                        <FaYoutube className="text-lg text-[#FF0000]" />
-                        Watch on YouTube
-                    </a>
                 </div>
             )}
 

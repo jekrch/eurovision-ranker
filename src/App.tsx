@@ -8,6 +8,7 @@ import { loadRankingsFromURL, encodeRankingsToURL, updateQueryParams, updateUrlF
 import WelcomeOverlay from './components/modals/WelcomeOverlay';
 import toast, { Toaster } from 'react-hot-toast';
 import { toastOptions } from './utilities/ToasterUtil';
+import { SKIP_WELCOME_AFTER_TOUR_KEY } from './utilities/JoyrideUtil';
 import { areCategoriesSet, categoryRankingsExist, parseCategoriesUrlParam, reorderByAllWeightedRankings } from './utilities/CategoryUtil';
 import { isArrayEqual } from './utilities/RankAnalyzer';
 import { addWindowEventListeners, handlePopState, removeWindowEventListeners, setVh } from './utilities/EventListenerUtil';
@@ -18,6 +19,7 @@ import ContentPlaceholder from './components/ranking/ContentPlaceholder';
 import EditNav from './components/nav/EditNav';
 import { deleteRankedCountry } from './redux/rankingActions';
 import { useModal, ModalType } from './hooks/useModal';
+import { VideoPipProvider } from './components/video/VideoPipContext';
 import CanvasDevModal from './components/ranking/CanvasDevModal';
 import SorterModal from './components/ranking/SorterModal';
 import useSorterModal from './hooks/useSortModal';
@@ -72,7 +74,7 @@ const App: React.FC = () => {
   const activeCategory = useAppSelector((state: AppState) => state.activeCategory);
 
   const [selectedCountryContestant, setSelectedCountryContestant] = useState<CountryContestant | undefined>(undefined);
-  const [showOverlay, setShowOverlay] = useState(!areRankingsSet() && !isAuthDeepLink() && !hasIdParam() && !hasJoinToken());
+  const [showOverlay, setShowOverlay] = useState(!cameFromTour() && !areRankingsSet() && !isAuthDeepLink() && !hasIdParam() && !hasJoinToken());
   const [isOverlayExit, setIsOverlayExit] = useState(false);
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authModalView, setAuthModalView] = useState<AuthView | undefined>(undefined);
@@ -123,8 +125,21 @@ const App: React.FC = () => {
   }, [showUnranked]);
 
   /**
+   * Whether the app was just reloaded as a result of exiting a tour. When true,
+   * we skip the welcome overlay and send the user straight to the select view.
+   * This only peeks at the flag — the boot effect clears it once consumed.
+   */
+  function cameFromTour() {
+    try {
+      return sessionStorage.getItem(SKIP_WELCOME_AFTER_TOUR_KEY) === '1';
+    } catch {
+      return false;
+    }
+  }
+
+  /**
    * Determines whether any rankings are set in the url
-   * @returns 
+   * @returns
    */
   function areRankingsSet() {
     const urlParams = new URLSearchParams(window.location.search);
@@ -345,10 +360,21 @@ const App: React.FC = () => {
       category
     );
 
-    // Set showUnranked based on whether rankings exist
-    dispatch(
-      setShowUnranked(!rankingsExist)
-    );
+    // If we just returned from a tour, clear the one-shot flag and force the
+    // select view rather than deriving it from the restored URL.
+    if (cameFromTour()) {
+      try {
+        sessionStorage.removeItem(SKIP_WELCOME_AFTER_TOUR_KEY);
+      } catch { /* sessionStorage may be unavailable */ }
+      dispatch(
+        setShowUnranked(true)
+      );
+    } else {
+      // Set showUnranked based on whether rankings exist
+      dispatch(
+        setShowUnranked(!rankingsExist)
+      );
+    }
 
     // handle pop and vh event listners
     const handlePopStateCallback = (event: PopStateEvent) => {
@@ -636,6 +662,13 @@ const App: React.FC = () => {
     openModal('song');
   }
 
+  // re-open the song modal when the user expands a floating (pip) video; the
+  // modal's video tab then re-docks the still-playing player
+  const handleExpandVideo = useCallback((countryContestant: CountryContestant) => {
+    setSelectedCountryContestant(countryContestant);
+    openModal('song');
+  }, []);
+
   const openLoginModal = useCallback(() => {
     setAuthModalView({ tab: 'login' });
     setAuthModalAllowRegister(false);
@@ -643,6 +676,7 @@ const App: React.FC = () => {
   }, []);
 
   return (
+    <VideoPipProvider onExpand={handleExpandVideo} onMinimize={() => closeModal('song')}>
     <div className="overflow-hidden">
 
       {showOverlay && (
@@ -900,6 +934,7 @@ const App: React.FC = () => {
       />
 
     </div>
+    </VideoPipProvider>
   );
 };
 

@@ -204,6 +204,10 @@ export const VideoPipProvider: React.FC<{
 
     const rafRef = useRef<number | null>(null);
     const animTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    // running exit-animation timer / guard so a closing pip animates out once
+    // before it's torn down (rather than vanishing instantly)
+    const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const closingRef = useRef(false);
     const lastGeomRef = useRef<Geom | null>(null);
     // user-chosen pip position (from dragging the control bar); null = default
     // bottom-right corner. reset each fresh pop-out so the pip reappears there.
@@ -297,10 +301,26 @@ export const VideoPipProvider: React.FC<{
         }
     }, [ensureRaf, stopRaf, positionNow]);
 
+    // abort an in-flight exit animation and clear the faded-out styles, so the
+    // same container can be reused (re-dock / load a new pip) cleanly
+    const cancelClose = useCallback(() => {
+        if (closeTimerRef.current) {
+            clearTimeout(closeTimerRef.current);
+            closeTimerRef.current = null;
+        }
+        closingRef.current = false;
+        const el = containerRef.current;
+        if (el) {
+            el.style.opacity = '';
+            el.style.transform = '';
+        }
+    }, []);
+
     const registerDock = useCallback((el: HTMLElement, info: VideoInfo) => {
         // flying back from a floating pip should glide into place; a fresh open
         // (or a brand-new video) should lock straight onto the modal
         const animateIn = modeRef.current === 'pip';
+        cancelClose();
         dockElRef.current = el;
         if (videoRef.current?.videoId !== info.videoId) {
             // a different song: (re)load the iframe with the new id. opening from
@@ -315,7 +335,7 @@ export const VideoPipProvider: React.FC<{
             videoRef.current = { ...videoRef.current, ...info };
         }
         goMode('docked', animateIn);
-    }, [goMode]);
+    }, [goMode, cancelClose]);
 
     const unregisterDock = useCallback((el: HTMLElement) => {
         // ignore stale unmounts from a placeholder we already moved past
@@ -338,13 +358,56 @@ export const VideoPipProvider: React.FC<{
         }
     }, [goMode, stopRaf]);
 
-    const closePip = useCallback(() => {
+    // rip the player out of the DOM and stop everything
+    const teardownPlayer = useCallback(() => {
         stopRaf();
         dockElRef.current = null;
         lastGeomRef.current = null;
         videoRef.current = null;
         setVideo(null);
     }, [stopRaf]);
+
+    const closePip = useCallback(() => {
+        if (closingRef.current) return;
+        // pause the embed straight away so audio stops while it animates out
+        const w = iframeRef.current?.contentWindow;
+        if (w) {
+            try {
+                w.postMessage(
+                    JSON.stringify({
+                        event: 'command',
+                        func: 'pauseVideo',
+                        args: [],
+                        id: PLAYER_FRAME_ID,
+                        channel: 'widget',
+                    }),
+                    '*'
+                );
+            } catch {
+                /* ignore */
+            }
+        }
+        const el = containerRef.current;
+        // no element to animate (e.g. ended off-screen) -> tear down immediately
+        if (!el) {
+            teardownPlayer();
+            return;
+        }
+        // freeze the glue loop and shrink/fade the floating box toward its
+        // corner, then unmount once the transition has played
+        closingRef.current = true;
+        stopRaf();
+        el.style.transition =
+            'opacity 220ms ease, transform 240ms cubic-bezier(0.4,0,0.7,1)';
+        el.style.transformOrigin = 'bottom right';
+        el.style.opacity = '0';
+        el.style.transform = 'scale(0.82) translateY(12px)';
+        closeTimerRef.current = setTimeout(() => {
+            closeTimerRef.current = null;
+            closingRef.current = false;
+            teardownPlayer();
+        }, 240);
+    }, [stopRaf, teardownPlayer]);
 
     const expand = useCallback(() => {
         const cc = videoRef.current?.contestant;
@@ -395,11 +458,12 @@ export const VideoPipProvider: React.FC<{
     // swap the pip to a different video (and autoplay it). geometry stays put,
     // so the floating box doesn't move — only the iframe src changes.
     const loadPipVideo = useCallback((info: VideoInfo) => {
+        cancelClose();
         playerStateRef.current = -1;
         videoRef.current = info;
         setAutoplay(true);
         setVideo(info);
-    }, []);
+    }, [cancelClose]);
 
     // step to the adjacent ranked item that has a video, wrapping at the ends.
     // dir = +1 -> next, -1 -> previous.
@@ -428,6 +492,7 @@ export const VideoPipProvider: React.FC<{
         if (!playable.length) return;
         const info = videoInfoFor(playable[0]);
         if (!info) return;
+        cancelClose();
         // turn auto-continue on (and persist it) so it advances down the list
         setAutoContinue(true);
         autoContinueRef.current = true;
@@ -443,7 +508,7 @@ export const VideoPipProvider: React.FC<{
         setAutoplay(true);
         setVideo(info);
         goMode('pip');
-    }, [goMode]);
+    }, [goMode, cancelClose]);
 
     const toggleAutoContinue = useCallback(() => {
         setAutoContinue((on) => {
@@ -536,6 +601,7 @@ export const VideoPipProvider: React.FC<{
         return () => {
             stopRaf();
             if (animTimerRef.current) clearTimeout(animTimerRef.current);
+            if (closeTimerRef.current) clearTimeout(closeTimerRef.current);
         };
     }, [stopRaf]);
 

@@ -14,6 +14,9 @@ import { useAppSelector } from '../../../hooks/stateHooks';
 type ConfigModalProps = {
     isOpen: boolean;
     tab: string;
+    // Bumped on a forced (deep-link) open so we jump to `tab` even when it
+    // matches the current selection — overriding the sticky-tab memory below.
+    tabRequestNonce?: number;
     onClose: () => void;
     startTour: () => void;
     openAuthModal: () => void;
@@ -31,6 +34,11 @@ const ACTIVE_TAB_STORAGE_KEY = 'configModalActiveTab';
 
 const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
     const [activeTab, setActiveTab] = useState(() => {
+        // A forced open (nonce already bumped at mount time) deep-links to the
+        // requested tab, bypassing the sticky selection stored in localStorage.
+        if (props.tabRequestNonce) {
+            return props.tab === 'export' ? 'display' : props.tab;
+        }
         try {
             const stored = localStorage.getItem(ACTIVE_TAB_STORAGE_KEY);
             if (stored === 'export') return 'display';
@@ -56,6 +64,18 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
         }
         setActiveTab(props.tab);
     }, [props.tab]);
+
+    // Honor forced (deep-link) opens once the modal is already mounted: jump to
+    // the requested tab whenever the nonce changes, even if `props.tab` did not.
+    const didMountNonceRef = useRef(false);
+    useEffect(() => {
+        if (!didMountNonceRef.current) {
+            didMountNonceRef.current = true;
+            return;
+        }
+        setActiveTab(props.tab);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [props.tabRequestNonce]);
 
     useEffect(() => {
         try {

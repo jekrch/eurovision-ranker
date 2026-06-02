@@ -11,7 +11,7 @@ import { faRightToBracket } from '@fortawesome/free-solid-svg-icons';
 
 export type IntroColumnProps = {
     openModal: (tabName: string) => void;
-    openConfigModal: (tabName: string) => void;
+    openConfigModal: (tabName: string, force?: boolean) => void;
     setRunTour: (runTour: boolean) => void;
     setRunSortTour: (runSortTour: boolean) => void;
     openAuthModal: () => void;
@@ -86,7 +86,7 @@ const IntroColumn: React.FC<IntroColumnProps> = ({ openModal, openConfigModal, s
                     <MenuItem 
                         icon={faList}
                         text="Rankings"
-                        onClick={() => openConfigModal('rankings')}
+                        onClick={() => openConfigModal('rankings', true)}
                     />
 
                     <MenuItem 

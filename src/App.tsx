@@ -50,6 +50,9 @@ const LazyJoyrideTourSort = React.lazy(() => import('./tour/JoyrideTourSort'));
 const App: React.FC = () => {
   const { modalState, openModal, closeModal, setModalTab, currentTab } = useModal('about');
   const [configModalTab, setConfigModalTab] = useState('display');
+  // Incremented on forced opens so the ConfigModal jumps to the requested tab
+  // even when the tab string is unchanged (overriding its sticky-tab memory).
+  const [configTabNonce, setConfigTabNonce] = useState(0);
   const [refreshUrl, setRefreshUrl] = useState(0);
   const dispatch: AppDispatch = useAppDispatch();
 
@@ -652,8 +655,11 @@ const App: React.FC = () => {
     openModal('main');
   }
 
-  function openConfigModalWithTab(tabName: string): void {
+  function openConfigModalWithTab(tabName: string, force = false): void {
     setConfigModalTab(tabName);
+    if (force) {
+      setConfigTabNonce((n) => n + 1);
+    }
     openModal('config');
   }
 
@@ -843,6 +849,7 @@ const App: React.FC = () => {
           <Suspense fallback={<div />}>
             <LazyConfigModal
               tab={configModalTab}
+              tabRequestNonce={configTabNonce}
               isOpen={modalState.config.isOpen}
               onClose={() => closeModal('config')}
               startTour={() => {

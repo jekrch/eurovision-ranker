@@ -98,26 +98,26 @@ const RankedItemsHeader: React.FC<IRankedItemsHeaderProps> = ({
                         {rankedItems?.length > 0 && ( // Only show if there are items
                             <button
                                 title={isSorterDisabled ? "Sorter unavailable (need >1 item and not on Total Rank tab)" : "Open Sorter"}
-                                aria-label="Open Sorter"  
-                                data-umami-event="Sorter Button (header)"                              
+                                aria-label="Open Sorter"
+                                data-umami-event="Sorter Button (header)"
                                 className={classNames(
                                     "w-6 h-6 bg-[var(--er-surface-muted-accent)] rounded-full flex justify-center items-center text-[var(--er-text-tertiary)] hover:text-[var(--er-text-muted)]",
                                     {
                                         "hover:bg-[var(--er-surface-light)] hover:cursor-pointer": !isSorterDisabled,
-                                        "opacity-50 cursor-not-allowed": isSorterDisabled 
+                                        "opacity-50 cursor-not-allowed": isSorterDisabled
                                     }
                                 )}
                                 onClick={openSorterModal}
-                                disabled={isSorterDisabled} 
+                                disabled={isSorterDisabled}
                             >
                                 <FontAwesomeIcon
-                                    className="" 
+                                    className=""
                                     icon={faSort}
                                 />
                             </button>
                         )}
                     </div>
-                   
+
 
                     {/* ---- Center Content (Title) ---- */}
                     <div className="justify-center text-center flex-grow mx-2"> {/* Use flex-grow to take available space, mx-2 for spacing */}

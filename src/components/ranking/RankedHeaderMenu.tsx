@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, Dispatch } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEllipsisH, faGlobe, faTv, faCopy, faLink, faFile, faFileCode, faList, faEdit, faPen, faSlidersH, faSort } from '@fortawesome/free-solid-svg-icons';
+import { faEllipsisH, faGlobe, faTv, faCopy, faLink, faFile, faFileCode, faList, faEdit, faPen, faSlidersH, faSort, faPlay } from '@fortawesome/free-solid-svg-icons';
 import { CSSTransition } from 'react-transition-group';
 import classNames from 'classnames';
 import MenuItem from '../MenuItem';
@@ -13,6 +13,7 @@ import { setHeaderMenuOpen } from '../../redux/rootSlice';
 import { useAppDispatch, useAppSelector } from '../../hooks/stateHooks';
 import ImageCaptureMenuItem from './ImageCaptureMenuItem';
 import useSorterModal from '../../hooks/useSortModal';
+import { useVideoPip } from '../video/VideoPipContext';
 
 interface RankedHeaderMenuProps {
   onMapClick?: () => void;
@@ -28,6 +29,7 @@ const RankedHeaderMenu: React.FC<RankedHeaderMenuProps> = (props: RankedHeaderMe
   const rankedItems = useAppSelector((state: AppState) => state.rankedItems);
   const globalMenuOpenTrigger = useAppSelector((state: AppState) => state.headerMenuOpen);
   const dispatch: AppDispatch = useAppDispatch();
+  const { playList, hasPlayableVideos } = useVideoPip();
   const CLOSING_DURATION = 300;
   const menuNodeRef = useRef(null);
   const showTotalRank = useAppSelector((state: AppState) => state.showTotalRank);
@@ -120,13 +122,16 @@ const RankedHeaderMenu: React.FC<RankedHeaderMenuProps> = (props: RankedHeaderMe
           role="menu"
           className="absolute z-20 min-w-[190px] right-0 mt-2 rounded-xl border border-[var(--er-border-subtle)] bg-[var(--er-surface-secondary)] shadow-2xl shadow-black/50 overflow-hidden flex flex-col py-1"
         >
-          <MenuItem
-            icon={faGlobe}
-            text="View Heat Map"
-            className="tour-step-8"
-            onClick={props.onMapClick}
-            afterClick={close}
-          />
+
+          {
+            hasPlayableVideos &&
+            <MenuItem
+              icon={faPlay}
+              text="Play Ranking"
+              onClick={playList}
+              afterClick={close}
+            />
+          }
 
           {
             rankedHasAnyYoutubeLinks(rankedItems) &&
@@ -138,6 +143,14 @@ const RankedHeaderMenu: React.FC<RankedHeaderMenuProps> = (props: RankedHeaderMe
               afterClick={close}
             />
           }
+
+          <MenuItem
+            icon={faGlobe}
+            text="View Heat Map"
+            className="tour-step-8"
+            onClick={props.onMapClick}
+            afterClick={close}
+          />
 
           <MenuItem
             icon={faPen}

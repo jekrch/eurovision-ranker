@@ -66,11 +66,19 @@ interface VideoPipContextValue {
     // videoId of the currently loaded video, or null. lets the modal know which
     // song is "live" in the player.
     activeVideoId: string | null;
+    // videoId of the video currently loaded in the floating pip, or null when
+    // it's docked / nothing is up. lets the ranked list flag the live card.
+    pipVideoId: string | null;
     // bumped each time the user expands the pip; the modal watches this to swing
     // itself back to the video tab
     expandNonce: number;
     // pops the docked player out to a floating pip and closes the modal
     popOut: () => void;
+    // floats a pip starting from the top ranked playable video with
+    // auto-continue on, so it plays straight down the ranked list
+    playList: () => void;
+    // whether the ranked list has at least one playable video
+    hasPlayableVideos: boolean;
 }
 
 const VideoPipContext = createContext<VideoPipContextValue | null>(null);
@@ -411,6 +419,32 @@ export const VideoPipProvider: React.FC<{
         if (info) loadPipVideo(info);
     }, [loadPipVideo]);
 
+    // start a floating pip from the top playable ranked item with auto-continue
+    // on, so the list plays straight through without opening the song modal.
+    const playList = useCallback(() => {
+        const playable = rankedItemsRef.current.filter(
+            (cc) => cc.contestant?.youtube && getYouTubeVideoId(cc.contestant.youtube)
+        );
+        if (!playable.length) return;
+        const info = videoInfoFor(playable[0]);
+        if (!info) return;
+        // turn auto-continue on (and persist it) so it advances down the list
+        setAutoContinue(true);
+        autoContinueRef.current = true;
+        try {
+            localStorage.setItem(AUTO_CONTINUE_KEY, 'true');
+        } catch {
+            /* ignore storage errors (e.g. private mode) */
+        }
+        advancingRef.current = false;
+        playerStateRef.current = -1;
+        lastGeomRef.current = null;
+        videoRef.current = info;
+        setAutoplay(true);
+        setVideo(info);
+        goMode('pip');
+    }, [goMode]);
+
     const toggleAutoContinue = useCallback(() => {
         setAutoContinue((on) => {
             const next = !on;
@@ -541,8 +575,13 @@ export const VideoPipProvider: React.FC<{
         registerDock,
         unregisterDock,
         activeVideoId: video?.videoId ?? null,
+        pipVideoId: mode === 'pip' && video ? video.videoId : null,
         expandNonce,
         popOut,
+        playList,
+        hasPlayableVideos: rankedItems.some(
+            (cc) => cc.contestant?.youtube && getYouTubeVideoId(cc.contestant.youtube)
+        ),
     };
 
     const isPip = mode === 'pip';
@@ -588,7 +627,7 @@ export const VideoPipProvider: React.FC<{
                                     aria-label="Next video"
                                     title="Next"
                                     onClick={() => navigate(1)}
-                                    className="flex h-7 w-7 items-center justify-center rounded hover:bg-white/15 hover:text-white"
+                                    className="flex h-7 w-7 items-center justify-center rounded hover:bg-white/15 hover:text-white ml-2"
                                 >
                                     <FaChevronRight className="text-xs" />
                                 </button>
@@ -602,7 +641,7 @@ export const VideoPipProvider: React.FC<{
                                             : 'Auto-continue to next video'
                                     }
                                     onClick={toggleAutoContinue}
-                                    className={`flex h-7 items-center gap-1 rounded px-1.5 text-[0.65rem] font-semibold uppercase tracking-wide ${
+                                    className={`flex h-7 items-center gap-1 rounded px-1.5 ml-3 text-[0.65rem] font-semibold uppercase tracking-wide ${
                                         autoContinue
                                             ? 'bg-white/90 text-black'
                                             : 'text-white/80 hover:bg-white/15 hover:text-white'
@@ -619,7 +658,7 @@ export const VideoPipProvider: React.FC<{
                                     aria-label="Return to tab"
                                     title="Return to tab"
                                     onClick={expand}
-                                    className="flex h-7 w-7 items-center justify-center rounded hover:bg-white/15 hover:text-white"
+                                    className="flex h-7 w-7 items-center justify-center rounded hover:bg-white/15 hover:text-white mr-3"
                                 >
                                     <FaExpand className="text-xs" />
                                 </button>

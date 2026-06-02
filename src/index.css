@@ -83,18 +83,40 @@ code {
   height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
   overflow: hidden;
   max-height: -webkit-fill-available;
-  background: radial-gradient(ellipse at bottom, var(--er-ranked-bg-end) 0%, var(--er-nav-gradient-start) 100%);
-  background-size: 100% 100%;
-  background-repeat: no-repeat;
-  animation: bg-pulse 10s infinite ease-in-out;
   position: relative;
   /* own stacking context so the bottom backdrop below paints above this
-     element's gradient but behind its content (z-index: -1) */
+     element's gradient (::before) but behind its content (z-index: -1) */
   isolation: isolate;
 }
 
+/* The full-screen gradient lives on a composited ::before layer so its slow
+   "breathe" animates `transform: scale` (GPU-composited, no per-frame repaint)
+   instead of `background-size`. Animating `background-size` re-rasterized the
+   entire viewport every frame — a paint property that can't be composited and a
+   major battery/thermal cost on mobile. transform-origin pins the bottom edge so
+   the layer grows upward/outward, matching the original `ellipse at bottom`
+   gradient. The ::before sits at z-index:-1 behind content; the bottom toolbar
+   backdrop (::after, also z-index:-1) paints above it via DOM order. */
+.normal-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(ellipse at bottom, var(--er-ranked-bg-end) 0%, var(--er-nav-gradient-start) 100%);
+  background-repeat: no-repeat;
+  transform-origin: center bottom;
+  animation: bg-breathe 10s infinite ease-in-out;
+  will-change: transform;
+}
+
+@keyframes bg-breathe {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.5, 1.1); }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .normal-bg {
+  .normal-bg::before {
     animation: none;
   }
 }
@@ -184,28 +206,64 @@ code {
   background-clip: text;
 }
 
-/* GLOW ANIMATION - THEMED */
-@keyframes glow {
-  0%, 100% {
-    box-shadow: 0 0 10px var(--er-glow-shadow-1), 0 0 30px var(--er-glow-shadow-2), 0 0 25px var(--er-glow-shadow-3);
-    background: radial-gradient(circle, var(--er-glow-bg-center) 50%, var(--er-glow-bg-outer-1) 100%);
-  }
-
-  25%, 75% {
-    box-shadow: 0 0 8.5px var(--er-glow-shadow-1), 0 0 45px var(--er-glow-shadow-2), 0 0 47.5px var(--er-glow-shadow-3);
-    background: radial-gradient(circle, var(--er-glow-bg-center) 50%, var(--er-glow-bg-outer-2) 100%);
-  }
-
-  50% {
-    box-shadow: 0 0 10px var(--er-glow-shadow-1), 0 0 60px var(--er-glow-shadow-2), 0 0 25px var(--er-glow-shadow-3);
-    background: radial-gradient(circle, var(--er-glow-bg-center) 50%, var(--er-glow-bg-outer-3) 100%);
-  }
+/* GLOW ANIMATION - THEMED
+   Performance: box-shadow and background (radial-gradient) are paint properties
+   and cannot be GPU-composited, so animating them re-rasterizes the card (plus
+   its large blurred shadow) every frame — expensive enough to eat CPU/GPU.
+   Instead we paint a static outer glow once and animate only
+   `opacity` on a composited ::after layer for the "breathing" pulse. */
+/* INNER glow — the radial fill behind the card's content. */
+.first-card-glow {
+  position: relative;
+  /* establish a stacking context so the z-index:-1 pseudo below resolves
+     WITHIN the card (above its own background, beneath its content) instead of
+     escaping behind the page/ancestor background, where it would be invisible */
+  isolation: isolate;
+  background-clip: padding-box;
 }
 
-.first-card-glow {
-  animation: glow 15s ease-in-out infinite;
-  background-clip: padding-box;
-  transition: box-shadow 0.5s ease-in-out, background 0.5s ease-in-out;
+/* The radial-gradient lives on this composited layer behind the card content;
+   opacity is the only property that animates, so the compositor just cross-fades
+   a cached layer with no per-frame repaints. The resting opacity doubles as the
+   static look under reduced-motion. */
+.first-card-glow::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(circle, var(--er-glow-bg-center) 45%, var(--er-glow-bg-outer-3) 100%);
+  opacity: 0.65;
+}
+
+/* OUTER halo — the glow that spills onto the page around the card. It must live
+   OUTSIDE the card's overflow-hidden box, so it is rendered as a sibling behind
+   the card inside a non-clipped, isolated wrapper (see Card/DetailsCard). The
+   big blurred box-shadow is painted once; only opacity animates. */
+.first-card-halo {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: 0.5rem;
+  pointer-events: none;
+  box-shadow: 0 0 10px var(--er-glow-shadow-1),
+              0 0 60px var(--er-glow-shadow-2),
+              0 0 25px var(--er-glow-shadow-3);
+  opacity: 0.65;
+}
+
+@keyframes glow-pulse {
+  0%, 100% { opacity: 0.4; }
+  50%      { opacity: 0.8; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .first-card-glow::after,
+  .first-card-halo {
+    animation: glow-pulse 15s ease-in-out infinite;
+    will-change: opacity;
+  }
 }
 
 /* NAVIGATION GRADIENT - THEMED */
@@ -243,6 +301,37 @@ code {
 
 .subtle-pulse {
   animation: subtle-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* NOW-PLAYING EQUALIZER — small animated bars shown on the bottom edge of a
+   ranked card's rank-number cell while that card's video is playing. */
+@keyframes eq-bar {
+  0%, 100% { transform: scaleY(0.3); }
+  50%      { transform: scaleY(1); }
+}
+
+.eq-bars {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 1.5px;
+  height: 0.65em;
+}
+
+.eq-bars > span {
+  display: block;
+  width: 2px;
+  height: 100%;
+  border-radius: 1px;
+  background-color: var(--er-accent-blue);
+  transform-origin: bottom;
+  animation: eq-bar 1.2s ease-in-out infinite;
+}
+
+.eq-bars > span:nth-child(2) { animation-delay: 0.3s; }
+.eq-bars > span:nth-child(3) { animation-delay: 0.15s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .eq-bars > span { animation: none; transform: scaleY(0.7); }
 }
 
 @keyframes subtle-pulse {

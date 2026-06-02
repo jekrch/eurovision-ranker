@@ -9,7 +9,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAngleDoubleDown, faAngleDoubleUp, faAngleDown, faAngleUp } from '@fortawesome/free-solid-svg-icons';
 import { getContestantCategoryRankingsFromUrl } from '../../utilities/CategoryUtil';
 import { useAppSelector } from '../../hooks/stateHooks';
-import { getYoutubeThumbnail, } from '../../utilities/YoutubeUtil';
+import { getYoutubeThumbnail, getYouTubeVideoId } from '../../utilities/YoutubeUtil';
+import { useVideoPip } from '../video/VideoPipContext';
 
 export interface DetailsCardProps {
   rank?: number;
@@ -42,6 +43,16 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
   const categoryRankingsRef = useRef<HTMLDivElement>(null);
 
   const youtubeThumb = getYoutubeThumbnail(contestant?.youtube);
+
+  // when this card's video is the one loaded in the floating pip, flag it
+  const { pipVideoId } = useVideoPip();
+  const cardVideoId = contestant?.youtube ? getYouTubeVideoId(contestant.youtube) : null;
+  const isNowPlaying = !!pipVideoId && cardVideoId === pipVideoId;
+
+  // the #1 card gets a pulsing glow: an inner radial fill (first-card-glow) plus
+  // an outer halo rendered behind the card (first-card-halo) so it can spill
+  // outside the card's overflow-hidden box
+  const showGlow = !props.isDragging && props.rank === 1;
 
   useEffect(() => {
     if (categoryRankingsRef.current) {
@@ -77,16 +88,18 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
 
   return (
     <div>
+      <div className={classNames("relative mx-[.5rem]", { "isolate": showGlow })}>
+      {showGlow && <span className="first-card-halo" aria-hidden="true" />}
       <div
         key={props.rank ? 'ranked-' : `unranked-card-${contestant?.id ?? country.id}`}
         className={classNames(
           props.className,
           "m-auto text-[var(--er-text-tertiary)] bg-[var(--er-surface-primary)]x bg-opacity-30 no-select",
-          "relative mx-[.5rem] min-h-[2.5em] py-[0.4em] flex flex-row", // Main card padding is py-[0.4em]
+          "relative min-h-[2.5em] py-[0.4em] flex flex-row", // Main card padding is py-[0.4em]
           "items-stretch !cursor-grabber whitespace-normal text-sm overflow-hidden",
           "shadow border border-0.5 border-solid border-[var(--er-border-primary)] rounded-l-lg rounded-r-sm",
           props.isDragging ? "shadow-[var(--er-button-primary-hover)] shadow-sm border-solid" : "",
-          !props.isDragging && props.rank === 1 ? "first-card-glow" : ""
+          showGlow ? "first-card-glow" : ""
         )}
         style={{
           position: 'relative',
@@ -123,8 +136,17 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
 
         <div className="relative z-10 flex flex-row items-stretch w-full">
 
-          <div className="-my-2 flex-shrink-0 pb-[1px] mr-0 font-bold w-8 pr-[0.01em] border-r-[0.05em] border-[var(--er-border-secondary)] bg-[var(--er-surface-accent-70)] bg-opacity-70 text-[var(--er-text-primary)] tracking-tighter items-center justify-center flex text-lg rounded-sm">
+          <div className="relative -my-2 flex-shrink-0 pb-[1px] mr-0 font-bold w-8 pr-[0.01em] border-r-[0.05em] border-[var(--er-border-secondary)] bg-[var(--er-surface-accent-70)] bg-opacity-70 text-[var(--er-text-primary)] tracking-tighter items-center justify-center flex text-lg rounded-sm">
             {props.rank}
+            {isNowPlaying &&
+              <span
+                className="eq-bars absolute bottom-[3px] left-1/2 -translate-x-1/2"
+                title="Now playing"
+                aria-label="Now playing"
+              >
+                <span /><span /><span />
+              </span>
+            }
           </div>
 
           <div className="relative w-[5em] min-w-[4rem] -my-[0.2em]x my-1 ml-[0.2em]x ml-2 -mr-3 self-stretch overflow-hidden">
@@ -231,6 +253,7 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
             </div>
           }
         </div>
+      </div>
       </div>
 
       {categories?.length > 0 && (showTotalRank || showComparison) && (

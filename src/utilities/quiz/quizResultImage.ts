@@ -33,7 +33,7 @@ const roundRect = (
 export const createQuizResultCanvas = (result: QuizResult): HTMLCanvasElement => {
   const breakdown = typeBreakdown(result);
   const W = 700;
-  const breakdownTop = 410;
+  const breakdownTop = 446;
   const rowH = 30;
   const breakdownH = breakdown.length ? 30 + breakdown.length * rowH : 0;
   const H = breakdownTop + breakdownH + 58; // + footer area

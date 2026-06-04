@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { FaList, FaTv, FaGlobe, FaCog, FaHeart, FaSort } from 'react-icons/fa';
+import { FaList, FaTv, FaGlobe, FaCog, FaHeart, FaSort, FaQuestionCircle } from 'react-icons/fa';
 import IconButton from '../IconButton';
 import { faCheck, faGlasses } from '@fortawesome/free-solid-svg-icons';
 import classNames from 'classnames';
@@ -114,6 +114,21 @@ const WelcomeOverlay: React.FC<WelcomeOverlayProps> = ({ handleGetStarted, handl
                                     clipPath: 'polygon(0% 0%, 80% 0%, 100% 50%, 80% 100%, 0% 100%)'
                                 }}
                             >NEW</span> */}
+                        </li>
+                        <li className="flex items-start">
+                            <FaQuestionCircle className='mt-1 mr-2 text-pink-500' />
+                            <span>test your knowledge with a quiz</span>
+                            <span className={classNames(
+                                "absolute -left-[0.9em] subtle-pulse",
+                                "inline-block bg-gradient-to-r from-[var(--er-surface-medium)] to-[var(--er-interactive-dark)] text-[var(--er-text-secondary)]",
+                                "text-[0.6rem] font-bold pl-[1.2em] pr-[1.5em] py-0.2",
+                                "transition-opacity duration-[2000] ease-in",
+                                (welcomeOverlayIsOpen && !exiting) ? 'opacity-100' : 'opacity-0'
+                            )}
+                                style={{
+                                    clipPath: 'polygon(0% 0%, 80% 0%, 100% 50%, 80% 100%, 0% 100%)'
+                                }}
+                            >NEW</span>
                         </li>
                         <li className="flex items-start"> <FaHeart className='mt-1 mr-2 opacity-0' /> <span>...and more!</span></li>
                     </ol>

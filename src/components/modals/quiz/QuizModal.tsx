@@ -2,8 +2,10 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'react-hot-toast';
 import Modal from '../Modal';
 import QuizSetup from './QuizSetup';
+import QuizPreview from './QuizPreview';
 import QuizPlay from './QuizPlay';
 import QuizResults from './QuizResults';
+import QuizCelebration from './QuizCelebration';
 import { QuizAnswer, QuizConfig, QuizQuestion, QuizResult } from '../../../data/quiz/quizTypes';
 import { generateQuiz } from '../../../utilities/quiz/quizGenerator';
 import { decodeQuizCode, mulberry32, randomSeed } from '../../../utilities/quiz/quizCode';
@@ -18,7 +20,7 @@ interface QuizModalProps {
   initialCode?: string | null;
 }
 
-type Phase = 'setup' | 'loading' | 'play' | 'results';
+type Phase = 'setup' | 'preview' | 'loading' | 'play' | 'results';
 
 const QuizModal: React.FC<QuizModalProps> = ({ isOpen, onClose, initialCode }) => {
   const [phase, setPhase] = useState<Phase>('setup');
@@ -47,20 +49,23 @@ const QuizModal: React.FC<QuizModalProps> = ({ isOpen, onClose, initialCode }) =
     }
   }, []);
 
-  // On open: rebuild from a shared code if one was provided, else fresh setup.
+  // On open with a shared code, show the quiz's parameters and let the player start
+  // it themselves (so the timer doesn't begin before they're ready); otherwise fresh setup.
   useEffect(() => {
     if (!isOpen) return;
     setResult(null);
     if (initialCode) {
       const decoded = decodeQuizCode(initialCode);
       if (decoded) {
-        buildQuiz(decoded.config, decoded.seed);
+        setConfig(decoded.config);
+        seedRef.current = decoded.seed;
+        setPhase('preview');
         return;
       }
       toast.error('That quiz code is invalid or out of date.');
     }
     setPhase('setup');
-  }, [isOpen, initialCode, buildQuiz]);
+  }, [isOpen, initialCode]);
 
   const handleFinish = (answers: QuizAnswer[], elapsedMs: number) => {
     if (!config) return;
@@ -83,20 +88,44 @@ const QuizModal: React.FC<QuizModalProps> = ({ isOpen, onClose, initialCode }) =
   };
 
   const isPlaying = phase === 'play';
+  const isResults = phase === 'results';
 
   return (
     <Modal
       isOpen={isOpen}
       onClose={onClose}
       className={`!max-w-xl${phase === 'setup' ? ' h-[85vh]' : ''}`}
-      shouldCloseWarn={isPlaying}
-      closeWarning="Leave the quiz? Your progress will be lost."
+      shouldCloseWarn={isPlaying || isResults}
+      closeWarning={
+        isResults
+          ? 'Close your results?'
+          : 'Leave the quiz? Your progress will be lost.'
+      }
+      backdropContent={
+        phase === 'results' && result ? (
+          <QuizCelebration pct={result.total ? Math.round((result.score / result.total) * 100) : 0} />
+        ) : undefined
+      }
     >
       <div className="mt-2 flex flex-col min-h-0 flex-1">
         {phase === 'setup' && <QuizSetup onStart={buildQuiz} />}
 
-        {phase !== 'setup' && (
+        {/* Results manage their own scroll (static header/footer, scrollable middle), so
+            they render outside the generic overflow wrapper used by the other phases. */}
+        {phase === 'results' && result && (
+          <QuizResults
+            result={result}
+            onPlayAgain={handlePlayAgain}
+            onNewQuiz={() => setPhase('setup')}
+          />
+        )}
+
+        {phase !== 'setup' && phase !== 'results' && (
           <div className="max-h-[78vh] overflow-y-auto px-1 -mx-1">
+            {phase === 'preview' && config && (
+              <QuizPreview config={config} onBegin={() => buildQuiz(config, seedRef.current)} />
+            )}
+
             {phase === 'loading' && (
               <div className="flex flex-col items-center justify-center py-20 gap-4">
                 <div className="w-10 h-10 border-4 border-white/20 border-t-[var(--er-interactive-primary)] rounded-full animate-spin" />
@@ -106,14 +135,6 @@ const QuizModal: React.FC<QuizModalProps> = ({ isOpen, onClose, initialCode }) =
 
             {phase === 'play' && questions.length > 0 && (
               <QuizPlay key={questions[0]?.id} questions={questions} onFinish={handleFinish} />
-            )}
-
-            {phase === 'results' && result && (
-              <QuizResults
-                result={result}
-                onPlayAgain={handlePlayAgain}
-                onNewQuiz={() => setPhase('setup')}
-              />
             )}
           </div>
         )}

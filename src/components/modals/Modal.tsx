@@ -11,6 +11,12 @@ type ModalContainerProps = {
     children: ReactNode;
     closeWarning?: string;
     shouldCloseWarn?: boolean;
+    /**
+     * Optional decorative content rendered full-bleed inside the overlay, *behind* the
+     * modal panel (over the dimmed backdrop). Pointer-transparent — e.g. the quiz's
+     * results confetti. Fades in/out with the modal.
+     */
+    backdropContent?: ReactNode;
 };
 
 /**
@@ -28,6 +34,7 @@ const Modal: React.FC<ModalContainerProps> = ({
     children,
     closeWarning,
     shouldCloseWarn = false,
+    backdropContent,
 }: ModalContainerProps) => {
     const modalRef = useRef<HTMLDivElement>(null);
     const [showModal, setShowModal] = useState(false);
@@ -142,11 +149,17 @@ const Modal: React.FC<ModalContainerProps> = ({
                 // prevent clicks on the overlay from triggering when confirmation is open
                 onClick={isConfirmationOpen ? (e) => e.stopPropagation() : undefined}
             >
+                {/* full-bleed decorative layer behind the panel, over the dimmed backdrop */}
+                {backdropContent && (
+                    <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+                        {backdropContent}
+                    </div>
+                )}
                 <div
                     ref={modalRef}
                     data-modal-content
                     className={classNames(
-                        "relative bg-[var(--er-surface-secondary)] m-4 max-h-[85vh] text-[var(--er-text-tertiary)] p-6 rounded-xl ring-1 ring-white/10 shadow-2xl shadow-black/40 max-w-lg w-full min-w-0 flex flex-col transform transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]",
+                        "relative z-10 bg-[var(--er-surface-secondary)] m-4 max-h-[85vh] text-[var(--er-text-tertiary)] p-6 rounded-xl ring-1 ring-white/10 shadow-2xl shadow-black/40 max-w-lg w-full min-w-0 flex flex-col transform transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]",
                         isOpen && showModal ? `${transitionStyles.opacity} ${transitionStyles.transform}` : 'opacity-0 translate-y-4 scale-95', // Control modal visibility/position smoothly
                         className
                     )}

@@ -130,7 +130,7 @@ const QuizPlay: React.FC<QuizPlayProps> = ({ questions, onFinish }) => {
     // options list gives up space (and scrolls if needed) to the feedback area.
     <div className="flex flex-col h-[min(31rem,78vh)]">
       {/* progress + timer */}
-      <div className="flex items-center justify-between text-xs text-[var(--er-text-subtle)] font-semibold flex-shrink-0">
+      <div className="flex items-center justify-between text-xs text-[var(--er-text-subtle)] font-semibold flex-shrink-0 mr-8">
         <span>
           Question {index + 1} / {questions.length}
         </span>

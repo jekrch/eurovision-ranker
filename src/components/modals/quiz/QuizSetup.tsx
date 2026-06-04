@@ -84,7 +84,7 @@ const QuizSetup: React.FC<QuizSetupProps> = ({ onStart }) => {
     <div className="flex flex-col gap-5 flex-1 min-h-0">
       <div className="text-center shrink-0">
         <div className="text-[var(--er-text-secondary)] text-2xl font-bold flex items-center justify-center gap-2">
-          <FontAwesomeIcon icon={faCircleQuestion} className="text-[var(--r-accent-blue)]" />
+          <FontAwesomeIcon size="sm" icon={faCircleQuestion} className="text-[var(--r-accent-blue)] mt-[4px]" />
           Eurovision Quiz
         </div>
         <p className="text-[var(--er-text-subtle)] text-xs mt-1">
@@ -102,8 +102,8 @@ const QuizSetup: React.FC<QuizSetupProps> = ({ onStart }) => {
             {[
               { label: 'Last 10', fn: () => setYears(QUIZ_YEARS.slice(0, 10)) },
               { label: '2020s', fn: () => decadePreset((y) => y >= 2020) },
-              { label: '2010s', fn: () => decadePreset((y) => y >= 2010 && y < 2020) },
-              { label: '2000s', fn: () => decadePreset((y) => y >= 2000 && y < 2010) },
+              // { label: '2010s', fn: () => decadePreset((y) => y >= 2010 && y < 2020) },
+              // { label: '2000s', fn: () => decadePreset((y) => y >= 2000 && y < 2010) },
               { label: 'All', fn: () => setYears(QUIZ_YEARS) },
               { label: 'Clear', fn: () => setYears([]) },
             ].map((p) => (

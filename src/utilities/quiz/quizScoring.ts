@@ -10,7 +10,7 @@ export const formatDuration = (ms: number): string => {
   return `${m}:${String(s).padStart(2, '0')}`;
 };
 
-import { QUESTION_TYPE_META, QuizResult } from '../../data/quiz/quizTypes';
+import { QUESTION_GROUP_META, QuizResult } from '../../data/quiz/quizTypes';
 import { QUIZ_YEARS } from './quizGenerator';
 
 /**
@@ -56,21 +56,29 @@ export interface TypeBreakdownRow {
   total: number;
 }
 
-/** Per-question-type correct/total split, ordered by the canonical type list. */
+// Underlying question types are grouped on the setup screen (e.g. "Contest winners"
+// bundles winner/televote/jury), so the breakdown aggregates by those same groups.
+const GROUP_BY_TYPE = new Map(
+  QUESTION_GROUP_META.flatMap((g) => g.types.map((t) => [t, g.id] as const))
+);
+
+/** Correct/total split per setup question group, ordered by the canonical group list. */
 export const typeBreakdown = (result: QuizResult): TypeBreakdownRow[] => {
   const answerByQuestion = new Map(result.answers.map((a) => [a.questionId, a]));
   const stats = new Map<string, { correct: number; total: number }>();
 
   for (const q of result.questions) {
-    const entry = stats.get(q.type) || { correct: 0, total: 0 };
+    const groupId = GROUP_BY_TYPE.get(q.type);
+    if (!groupId) continue;
+    const entry = stats.get(groupId) || { correct: 0, total: 0 };
     entry.total += 1;
     if (answerByQuestion.get(q.id)?.correct) entry.correct += 1;
-    stats.set(q.type, entry);
+    stats.set(groupId, entry);
   }
 
-  return QUESTION_TYPE_META.filter((m) => stats.has(m.type)).map((m) => ({
-    label: m.label,
-    ...stats.get(m.type)!,
+  return QUESTION_GROUP_META.filter((g) => stats.has(g.id)).map((g) => ({
+    label: g.label,
+    ...stats.get(g.id)!,
   }));
 };
 
@@ -79,7 +87,6 @@ export const scoreMessage = (pct: number): string => {
   if (pct >= 100) return 'Douze points! Perfect score!';
   if (pct >= 90) return 'Eurovision legend!';
   if (pct >= 75) return 'Grand finalist!';
-  if (pct >= 50) return 'Through to the final!';
   if (pct >= 25) return 'Semi-final qualifier';
   return 'Nul points... try again!';
 };

@@ -20,6 +20,7 @@ interface IRankedItemsHeaderProps {
     className: string;
     downloadButton?: React.ReactNode;
     openSorterModal: () => void;
+    openQuizModal: () => void;
 }
 
 const RankedItemsHeader: React.FC<IRankedItemsHeaderProps> = ({
@@ -30,7 +31,8 @@ const RankedItemsHeader: React.FC<IRankedItemsHeaderProps> = ({
     supportedYears,
     className,
     downloadButton,
-    openSorterModal
+    openSorterModal,
+    openQuizModal
 }) => {
     const dispatch: AppDispatch = useAppDispatch();
     const year = useAppSelector((state: AppState) => state.year);
@@ -149,6 +151,7 @@ const RankedItemsHeader: React.FC<IRankedItemsHeaderProps> = ({
                         openConfig={openConfig}
                         onMapClick={setMapModalShow}
                         openSorterModal={openSorterModal} // This is still needed for the menu item
+                        openQuizModal={openQuizModal}
                         generateYoutubePlaylistUrl={() => generateYoutubePlaylistUrl(rankedItems)}
                     />
                     {/* ---- End Right Side Menu Button ---- */}

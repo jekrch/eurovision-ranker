@@ -44,6 +44,7 @@ const LazyNavbar = React.lazy(() => import('./components/nav/NavBar'));
 const LazyMapModal = React.lazy(() => import('./components/modals/MapModal'));
 const LazyConfigModal = React.lazy(() => import('./components/modals/config/ConfigModal'));
 const LazySongModal = React.lazy(() => import('./components/modals/LyricsModal'));
+const LazyQuizModal = React.lazy(() => import('./components/modals/quiz/QuizModal'));
 const LazyJoyrideTour = React.lazy(() => import('./tour/JoyrideTour'));
 const LazyJoyrideTourSort = React.lazy(() => import('./tour/JoyrideTourSort'));
 
@@ -77,12 +78,15 @@ const App: React.FC = () => {
   const activeCategory = useAppSelector((state: AppState) => state.activeCategory);
 
   const [selectedCountryContestant, setSelectedCountryContestant] = useState<CountryContestant | undefined>(undefined);
-  const [showOverlay, setShowOverlay] = useState(!cameFromTour() && !areRankingsSet() && !isAuthDeepLink() && !hasIdParam() && !hasJoinToken());
+  const [showOverlay, setShowOverlay] = useState(!cameFromTour() && !areRankingsSet() && !isAuthDeepLink() && !hasIdParam() && !hasJoinToken() && !hasQuizCode());
   const [isOverlayExit, setIsOverlayExit] = useState(false);
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authModalView, setAuthModalView] = useState<AuthView | undefined>(undefined);
   const [authModalAllowRegister, setAuthModalAllowRegister] = useState(false);
   const [joinGroupToken, setJoinGroupToken] = useState<string | null>(null);
+  const [quizModalOpen, setQuizModalOpen] = useState(false);
+  // a ?quiz=<code> deep link replays the exact same quiz; null = normal setup
+  const [quizCode, setQuizCode] = useState<string | null>(null);
   //const [isDevModalOpen, setIsDevModalOpen] = useState(true);
   const memoizedRankedItems = useMemo(() => rankedItems, [rankedItems]);
   const memoizedUnrankedItems = useMemo(() => unrankedItems, [unrankedItems]);
@@ -173,6 +177,12 @@ const App: React.FC = () => {
     return !!new URLSearchParams(window.location.search).get('id');
   }
 
+  // ?quiz=<code> opens the quiz modal on boot — skip the welcome overlay so it
+  // doesn't sit on top of (and swallow clicks to) the quiz.
+  function hasQuizCode() {
+    return !!new URLSearchParams(window.location.search).get('quiz');
+  }
+
   // Invite deep-links come in two shapes:
   //   /join-group?token=…  (the canonical link the API builds)
   //   ?join=…              (query-only fallback for gh-pages-style hosts
@@ -245,6 +255,14 @@ const App: React.FC = () => {
       // Query-only fallback for static hosts that can't route /join-group.
       setJoinGroupToken(params.get('join'));
       stripParamsAndPath(['join']);
+    }
+
+    // ?quiz=<code> — open the quiz modal and replay the exact same quiz.
+    const quizParam = params.get('quiz');
+    if (quizParam) {
+      setQuizCode(quizParam);
+      setQuizModalOpen(true);
+      stripParamsAndPath(['quiz']);
     }
 
     // ?id=<ranking_id> — fetch a public ranking and load it. Set the flag
@@ -776,6 +794,7 @@ const App: React.FC = () => {
                     openMapModal={() => openModal('map')}
                     openSorterModal={openSorterModal}
                     openAuthModal={openLoginModal}
+                    openQuizModal={() => setQuizModalOpen(true)}
                   />
                 </Suspense>
               }
@@ -916,6 +935,19 @@ const App: React.FC = () => {
           openConfigModalWithTab('account');
         }}
       />
+
+      {quizModalOpen && (
+        <Suspense fallback={<div />}>
+          <LazyQuizModal
+            isOpen={quizModalOpen}
+            initialCode={quizCode}
+            onClose={() => {
+              setQuizModalOpen(false);
+              setQuizCode(null);
+            }}
+          />
+        </Suspense>
+      )}
 
       <JoinGroupModal
         isOpen={!!joinGroupToken}

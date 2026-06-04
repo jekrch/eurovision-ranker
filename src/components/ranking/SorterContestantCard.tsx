@@ -47,6 +47,14 @@ const SorterContestantCard: React.FC<SorterContestantCardProps> = ({
     transform: 'scale(1.05)'
   };
 
+  // fade the artist/song bar backgrounds out toward the right so the thumbnail
+  // shows through. the dark scrim is solid on the left (keeping text readable
+  // over the flag) and fades to fully transparent before the right edge.
+  const nameBarBgStyle: React.CSSProperties = {
+    backgroundImage:
+      'linear-gradient(to right, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.32) 45%, transparent 80%)',
+  };
+
   // note: removed useEffect hook for flag-mask css as styles are applied inline
 
   return (
@@ -102,7 +110,7 @@ const SorterContestantCard: React.FC<SorterContestantCardProps> = ({
             {/* country name container prevents pushing youtube link down */}
             <div className="flex justify-between items-center mb-2">
               {/* allow country name to truncate */}
-              <span className="overflow-hidden text-ellipsis whitespace-nowrap text-lg tracking-wide bg-[#301c4c] bg-opacity-35 rounded-md px-2 py-1 shadow-sm mr-2 flex-shrink">
+              <span className="overflow-hidden text-ellipsis whitespace-nowrap text-lg tracking-wide bg-black/30 ring-1 ring-white/10 backdrop-blur-sm rounded-md px-2 py-1 shadow-sm mr-2 flex-shrink">
                 {country?.name}
               </span>
 
@@ -127,12 +135,17 @@ const SorterContestantCard: React.FC<SorterContestantCardProps> = ({
               {contestant ? (
                 <>
                   {/* use block and truncate artist name to prevent wrapping */}
-                  <div className="block font-medium text-base bg-[#301c4c] bg-opacity-35 rounded-md px-2 py-1 text-[var(--er-text-primary)] shadow-sm overflow-hidden text-ellipsis whitespace-nowrap">
+                  <div
+                    className="block font-medium text-base rounded-md px-2 py-1 text-[var(--er-text-primary)] overflow-hidden text-ellipsis whitespace-nowrap"
+                    style={nameBarBgStyle}
+                  >
                     {contestant?.artist}
                   </div>
 
                   {/* use block and truncate song name to prevent wrapping */}
-                  <div className="mt-2 block font-medium text-sm bg-[#301c4c] bg-opacity-35 rounded-md px-2 py-1 text-[var(--er-text-primary)] shadow-sm overflow-hidden text-ellipsis whitespace-nowrap">
+                  <div
+                    style={nameBarBgStyle}
+                    className="mt-2 block font-medium text-sm rounded-md px-2 py-1 text-[var(--er-text-primary)] overflow-hidden text-ellipsis whitespace-nowrap">
                     {contestant.song?.length && !contestant.song?.toLowerCase().includes("tbd")
                       ? `"${contestant.song}"`
                       : `${contestant.song}`}

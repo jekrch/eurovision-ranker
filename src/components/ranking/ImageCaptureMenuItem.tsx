@@ -1,69 +1,32 @@
-import React, { useState } from 'react';
-import { FaDownload, FaSpinner } from 'react-icons/fa';
-import classNames from 'classnames';
-import { downloadRankingImage, RankingCanvasConfig } from '../../utilities/CanvasGeneratorUtil';
-import { useAppSelector } from '../../hooks/stateHooks';
-import { AppState } from '../../redux/store';
-import { toast } from 'react-hot-toast';
+import React from 'react';
 import MenuItem from '../MenuItem';
 import { faCamera } from '@fortawesome/free-solid-svg-icons';
 
-interface CanvasDownloadButtonProps {
+interface ImageCaptureMenuItemProps {
   className?: string;
-  title?: string;
   iconClassName?: string;
   showText?: boolean;
+  onClick: () => void;
   afterClick?: () => void;
 }
 
 /**
- * button that generates a ranking image directly on canvas
- * 
+ * Menu item that opens the image style chooser so the user can pick a style
+ * before downloading a picture of their ranking.
+ *
  * @param props component props
- * @returns download button component
+ * @returns menu item component
  */
-const ImageCaptureMenuItem: React.FC<CanvasDownloadButtonProps> = ({
-  className = '',
-  showText = true, 
-  afterClick = () => {}
+const ImageCaptureMenuItem: React.FC<ImageCaptureMenuItemProps> = ({
+  onClick,
+  afterClick = () => {},
 }) => {
-  const [isDownloading, setIsDownloading] = useState(false);
-  const rankingName = useAppSelector((state: AppState) => state.name);
-  const rankedItems = useAppSelector((state: AppState) => state.rankedItems);
-  const showPlace = useAppSelector((state: AppState) => state.showPlace);
-  const vote = useAppSelector((state: AppState) => state.vote);
-
-  let customConfig: Partial<RankingCanvasConfig>  = {};
-
-
-  const handleDownload = async () => {
-    // Check if there are ranked items
-    if (rankedItems.length === 0) {
-      toast.error('Please rank some countries first');
-      return;
-    }
-    
-    setIsDownloading(true);
-    
-    try {
-      await downloadRankingImage(rankedItems, rankingName, customConfig);
-    } catch (error) {
-      console.error('Error during download:', error);
-      toast.error('Failed to create image');
-    } finally {
-      // Reset download state after a short delay
-      setTimeout(() => {
-        setIsDownloading(false);
-      }, 1000);
-    }
-  };
-  
   return (
-    <MenuItem 
-      icon={faCamera} 
-      text="Download image" 
-      onClick={handleDownload}
-      afterClick={afterClick} 
+    <MenuItem
+      icon={faCamera}
+      text="Download image"
+      onClick={onClick}
+      afterClick={afterClick}
     />
   );
 };

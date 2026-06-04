@@ -28,6 +28,7 @@ interface RankedCountriesListProps {
     openMapModal: () => void;
     openSorterModal: () => void;
     openAuthModal: () => void;
+    openQuizModal: () => void;
 }
 
 /**
@@ -47,6 +48,7 @@ const RankedCountriesList: React.FC<RankedCountriesListProps> = ({
     openMapModal,
     openSorterModal,
     openAuthModal,
+    openQuizModal,
 }) => {
     const dispatch: AppDispatch = useAppDispatch();
     const [refreshUrl, setRefreshUrl] = useState(0);
@@ -104,6 +106,7 @@ const RankedCountriesList: React.FC<RankedCountriesListProps> = ({
                             openNameModal={openNameModal}
                             openConfig={openConfigModal}
                             openSorterModal={openSorterModal}
+                            openQuizModal={openQuizModal}
                             className={
                                 showUnranked
                                     ? "min-w-[9em] max-w-50vw-6em"
@@ -130,6 +133,7 @@ const RankedCountriesList: React.FC<RankedCountriesListProps> = ({
                                         setRunTour={setRunTour}
                                         setRunSortTour={setRunSortTour}
                                         openAuthModal={openAuthModal}
+                                        openQuizModal={openQuizModal}
                                     />
                                 )}
                                 {!showUnranked && rankedItems.length === 0 && (

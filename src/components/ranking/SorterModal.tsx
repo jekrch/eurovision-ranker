@@ -561,6 +561,21 @@ const SorterModal: React.FC<SorterModalProps> = ({
 
     // --- render ---
 
+    // shared sleek button styles — subtle glass surfaces with ring borders,
+    // matching the modal shell's aesthetic. only the apply action carries accent.
+    const btnBase = "px-4 py-2 text-sm rounded-lg ring-1 transition-colors duration-150";
+    const btnNeutralEnabled = "bg-white/5 hover:bg-white/10 text-[var(--er-text-secondary)] ring-white/10";
+    const btnNeutralDisabled = "bg-transparent text-[var(--er-text-subtle)] ring-white/5 opacity-40 cursor-not-allowed";
+    const btnCancel = classNames(btnBase, "bg-transparent hover:bg-white/10 text-[var(--er-text-secondary)] ring-white/10 disabled:opacity-40 disabled:cursor-not-allowed");
+    const btnApply = classNames(
+        btnBase,
+        "font-semibold text-white shadow-sm ring-white/10",
+        "bg-[var(--er-accent-success)] hover:bg-[var(--er-accent-success)] hover:brightness-110",
+        "disabled:bg-white/5 disabled:text-[var(--er-text-subtle)] disabled:opacity-50 disabled:shadow-none disabled:cursor-not-allowed"
+    );
+    const navBtnClass = (enabled: boolean, extra?: string) =>
+        classNames(btnBase, enabled ? btnNeutralEnabled : btnNeutralDisabled, extra);
+
     let content;
     let comparisonDenominator: number | string = '?';
     if (currentSortState) {
@@ -606,7 +621,7 @@ const SorterModal: React.FC<SorterModalProps> = ({
                                 return (
                                     <li
                                         key={item.uid || index}
-                                        className="flex items-stretch bg-[var(--er-surface-accent-70)] rounded-lg shadow-md overflow-hidden"
+                                        className="flex items-stretch bg-[var(--er-surface-accent-70)] rounded-lg ring-1 ring-white/5 shadow-sm overflow-hidden"
                                     >
                                         {/* Rank box */}
                                         <div className={classNames(
@@ -669,7 +684,11 @@ const SorterModal: React.FC<SorterModalProps> = ({
                     />
                 </div>
 
-                <div className="text-md font-bold text-[var(--er-text-secondary)] my-1">vs</div>
+                <div className="flex items-center gap-3 w-full max-w-[14rem] my-1 select-none">
+                    <span className="h-px flex-1 bg-gradient-to-r from-transparent to-[var(--er-border-subtle)]" />
+                    <span className="text-[0.7rem] font-semibold uppercase tracking-[0.25em] text-[var(--er-text-tertiary)]">vs</span>
+                    <span className="h-px flex-1 bg-gradient-to-l from-transparent to-[var(--er-border-subtle)]" />
+                </div>
 
                 {/* right choice card */}
                 <div
@@ -733,9 +752,9 @@ const SorterModal: React.FC<SorterModalProps> = ({
                     {/* show progress bar only when sorting is active */}
                     {!currentSortState?.isComplete && isSessionLoaded && (
                         <div className="mb-3">
-                            <div className="w-full bg-[var(--er-button-secondary-hover)] rounded-full h-2">
+                            <div className="w-full bg-white/5 ring-1 ring-white/5 rounded-full h-1.5 overflow-hidden">
                                 <div
-                                    className="h-2 rounded-full bg-[var(--er-interactive-secondary)] transition-all duration-300"
+                                    className="h-full rounded-full bg-[var(--er-interactive-primary)] transition-[width] duration-500 ease-out"
                                     style={{ width: `${progress}%` }}
                                 />
                             </div>
@@ -774,12 +793,7 @@ const SorterModal: React.FC<SorterModalProps> = ({
                             <IconButton
                                 onClick={handleBack}
                                 disabled={!canGoBack || !canInteract}
-                                className={classNames(
-                                    "px-4 py-2 text-sm text-white rounded",
-                                    (!canGoBack || !canInteract)
-                                        ? "bg-gray-600 text-[var(--er-text-subtle)] cursor-not-allowed"
-                                        : "bg-[var(--er-interactive-secondary)] hover:bg-[var(--er-button-primary-hover)]"
-                                )}
+                                className={navBtnClass(canGoBack && canInteract)}
                                 title="Back"
                                 icon={faChevronLeft}
                             />
@@ -788,7 +802,7 @@ const SorterModal: React.FC<SorterModalProps> = ({
                             <IconButton
                                 onClick={onClose}
                                 disabled={isComputing}
-                                className="px-4 pr-4 py-2 text-sm text-white  bg-[var(--er-button-secondary)] rounded hover:bg-[var(--er-button-secondary-hover)] disabled:bg-gray-700 disabled:text-[var(--er-text-muted)]"
+                                className={btnCancel}
                                 title="Cancel"
                                 icon={faCancel}
                             />
@@ -797,7 +811,7 @@ const SorterModal: React.FC<SorterModalProps> = ({
                             <IconButton
                                 onClick={handleApplyRanking}
                                 disabled={!canInteract || !currentSortState?.isComplete}
-                                className="pr-4 py-2 text-sm font-semibold text-white bg-green-600 rounded hover:bg-green-700 disabled:bg-gray-700 disabled:text-[var(--er-text-subtle)]"
+                                className={btnApply}
                                 title="Apply"
                                 icon={faCheck}
                             />
@@ -809,12 +823,7 @@ const SorterModal: React.FC<SorterModalProps> = ({
                                     <IconButton
                                         onClick={handleForward}
                                         disabled={!canGoForward || !canInteract}
-                                        className={classNames(
-                                            "px-4 py-2 text-sm text-white rounded",
-                                            (!canGoForward || !canInteract)
-                                                ? "bg-gray-600 text-[var(--er-text-subtle)] cursor-not-allowed"
-                                                : "bg-[var(--er-interactive-secondary)] hover:bg-[var(--er-button-primary-hover)]"
-                                        )}
+                                        className={navBtnClass(canGoForward && canInteract)}
                                         title="Forward"
                                         icon={faChevronRight}
                                     />
@@ -830,13 +839,7 @@ const SorterModal: React.FC<SorterModalProps> = ({
                                     <IconButton
                                         onClick={handleBack}
                                         disabled={!canGoBack || !canInteract}
-                                        className={classNames(
-                                            "flex items-center px-4 py-2 text-sm rounded text-white",
-                                            (!canGoBack || !canInteract)
-                                                ? "bg-gray-600 text-[var(--er-text-subtle)] cursor-not-allowed"
-                                                : "bg-[var(--er-interactive-secondary)] hover:bg-[var(--er-button-primary-hover)]",
-                                            !canGoBack && "invisible" // hide but maintain space
-                                        )}
+                                        className={navBtnClass(canGoBack && canInteract, !canGoBack ? "invisible" : undefined)}
                                         title="Back"
                                         icon={faChevronLeft}
                                     />
@@ -847,7 +850,7 @@ const SorterModal: React.FC<SorterModalProps> = ({
                                     <IconButton
                                         onClick={onClose}
                                         disabled={isComputing}
-                                        className="px-4 pr-4 py-2 text-sm text-white  bg-[var(--er-button-secondary)] rounded hover:bg-[var(--er-button-secondary-hover)] disabled:bg-gray-700 disabled:text-[var(--er-text-muted)]"
+                                        className={btnCancel}
                                         title="Cancel"
                                         icon={faCancel}
                                     />
@@ -858,13 +861,7 @@ const SorterModal: React.FC<SorterModalProps> = ({
                                     <IconButton
                                         onClick={handleForward}
                                         disabled={!canGoForward || !canInteract}
-                                        className={classNames(
-                                            "flex items-center px-4 py-2 text-sm rounded text-white",
-                                            (!canGoForward || !canInteract)
-                                                ? "bg-gray-600 text-[var(--er-text-subtle)] cursor-not-allowed"
-                                                : "bg-[var(--er-interactive-secondary)] hover:bg-[var(--er-button-primary-hover)]",
-                                            !canGoForward && "invisible" // hide but maintain space
-                                        )}
+                                        className={navBtnClass(canGoForward && canInteract, !canGoForward ? "invisible" : undefined)}
                                         title="Forward"
                                         icon={faChevronRight}
                                     />

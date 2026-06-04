@@ -80,14 +80,14 @@ export const Card: FC<CardProps> = (props) => {
       {props.addCallBack &&
         <button
           className={classNames(
-            "rounded-sm ml-1 -mt-[3px] -mb-[2px] mr-[4px] font-normal py-0 px-2 text-2xl",
+            "rounded-sm ml-1 mr-[4px] flex items-center justify-center leading-none font-normal py-0 px-2 text-2xl",
             "text-[var(--er-text-tertiary)] opacity-30 hover:opacity-80 active:opacity-100 transition-opacity duration-150"
           )}
           onClick={(e) => {
             e.stopPropagation();
             props.addCallBack?.();
           }}
-        >+</button>
+        ><span className="-mt-[6px]">+</span></button>
       }
       </div>
     </div>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHouseUser, faHeart, faList, faGlasses, faSort } from '@fortawesome/free-solid-svg-icons';
+import { faHouseUser, faHeart, faList, faGlasses, faSort, faCircleQuestion } from '@fortawesome/free-solid-svg-icons';
 import { IconDefinition } from '@fortawesome/free-solid-svg-icons';
 import { useAppDispatch, useAppSelector } from '../../hooks/stateHooks';
 import { AppState } from '../../redux/store';
@@ -15,6 +15,7 @@ export type IntroColumnProps = {
     setRunTour: (runTour: boolean) => void;
     setRunSortTour: (runSortTour: boolean) => void;
     openAuthModal: () => void;
+    openQuizModal: () => void;
 };
 
 type MenuItemProps = {
@@ -51,7 +52,7 @@ const MenuItem: React.FC<MenuItemProps> = ({ icon, text, onClick, isCustomIcon =
     );
 };
 
-const IntroColumn: React.FC<IntroColumnProps> = ({ openModal, openConfigModal, setRunTour, setRunSortTour, openAuthModal }) => {
+const IntroColumn: React.FC<IntroColumnProps> = ({ openModal, openConfigModal, setRunTour, setRunSortTour, openAuthModal, openQuizModal }) => {
     const dispatch = useAppDispatch();
     const theme = useAppSelector((state: AppState) => state.theme);
     const user = useAppSelector((state: AppState) => state.user);
@@ -71,7 +72,8 @@ const IntroColumn: React.FC<IntroColumnProps> = ({ openModal, openConfigModal, s
                 </ol>
 
                 <div className="">
-                    <MenuItem 
+                    
+                    <MenuItem
                         icon={faHouseUser}
                         text="About"
                         onClick={() => openModal('about')}
@@ -100,6 +102,13 @@ const IntroColumn: React.FC<IntroColumnProps> = ({ openModal, openConfigModal, s
                         text="Sorter"
                         onClick={() => setRunSortTour(true)}
                         isCustomIcon={true}
+                        className="mb-7"
+                    />
+
+                    <MenuItem
+                        icon={faCircleQuestion}
+                        text="Quiz"
+                        onClick={openQuizModal}
                         className="mb-7"
                     />
 

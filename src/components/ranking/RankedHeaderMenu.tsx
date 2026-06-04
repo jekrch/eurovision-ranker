@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, Dispatch } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEllipsisH, faGlobe, faTv, faCopy, faLink, faFile, faFileCode, faList, faEdit, faPen, faSlidersH, faSort, faPlay } from '@fortawesome/free-solid-svg-icons';
+import { faEllipsisH, faGlobe, faTv, faCopy, faLink, faFile, faFileCode, faList, faEdit, faPen, faSlidersH, faSort, faPlay, faCircleQuestion } from '@fortawesome/free-solid-svg-icons';
 import { CSSTransition } from 'react-transition-group';
 import classNames from 'classnames';
 import MenuItem from '../MenuItem';
@@ -12,6 +12,7 @@ import { rankedHasAnyYoutubeLinks } from '../../utilities/YoutubeUtil';
 import { setHeaderMenuOpen } from '../../redux/rootSlice';
 import { useAppDispatch, useAppSelector } from '../../hooks/stateHooks';
 import ImageCaptureMenuItem from './ImageCaptureMenuItem';
+import ImageStyleModal from './ImageStyleModal';
 import useSorterModal from '../../hooks/useSortModal';
 import { useVideoPip } from '../video/VideoPipContext';
 
@@ -20,11 +21,13 @@ interface RankedHeaderMenuProps {
   openNameModal: () => void;
   openConfig: (tab: string) => void;
   openSorterModal: () => void;
+  openQuizModal: () => void;
   generateYoutubePlaylistUrl?: () => string;
 }
 
 const RankedHeaderMenu: React.FC<RankedHeaderMenuProps> = (props: RankedHeaderMenuProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isImageStyleModalOpen, setIsImageStyleModalOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const rankedItems = useAppSelector((state: AppState) => state.rankedItems);
   const globalMenuOpenTrigger = useAppSelector((state: AppState) => state.headerMenuOpen);
@@ -145,6 +148,13 @@ const RankedHeaderMenu: React.FC<RankedHeaderMenuProps> = (props: RankedHeaderMe
           }
 
           <MenuItem
+            icon={faCircleQuestion}
+            text="Quiz"
+            onClick={props.openQuizModal}
+            afterClick={close}
+          />
+
+          <MenuItem
             icon={faGlobe}
             text="View Heat Map"
             className="tour-step-8"
@@ -193,6 +203,7 @@ const RankedHeaderMenu: React.FC<RankedHeaderMenuProps> = (props: RankedHeaderMe
             <ImageCaptureMenuItem
               className="text-[var(--r-accent-blue)] hover:text-white mr-2"
               iconClassName="text-lg"
+              onClick={() => setIsImageStyleModalOpen(true)}
               afterClick={close}
             />
           )}
@@ -241,6 +252,11 @@ const RankedHeaderMenu: React.FC<RankedHeaderMenuProps> = (props: RankedHeaderMe
 
         </ul>
       </CSSTransition>
+
+      <ImageStyleModal
+        isOpen={isImageStyleModalOpen}
+        onClose={() => setIsImageStyleModalOpen(false)}
+      />
     </div>
   );
 };

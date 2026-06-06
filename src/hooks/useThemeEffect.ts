@@ -1,9 +1,7 @@
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 
 import { THEME_OPTIONS, THEME_SURFACE_COLORS } from '../components/modals/config/DisplayTab';
-import { useAppDispatch, useAppSelector } from './stateHooks';
-import { setShowUnranked } from '../redux/rootSlice';
-import { AppDispatch, AppState } from '../redux/store';
+import { useAppSelector } from './stateHooks';
 
 /** Resolve the dark surface color for the active theme (falling back to default). */
 function resolveSurfaceColor(theme: string): string {
@@ -15,19 +13,35 @@ function resolveSurfaceColor(theme: string): string {
         ?? THEME_SURFACE_COLORS[THEME_OPTIONS.find(t => t.default)?.code || ''];
 }
 
+/**
+ * iOS Safari samples the page content painted behind its translucent bottom
+ * toolbar and CACHES that tint, only re-sampling on a reflow/scroll of the
+ * region. After a theme change the safe-area backdrops (.normal-bg::after /
+ * .edit-nav-bg) already hold the new --er-surface-dark color, but iOS keeps
+ * showing the stale tint until we invalidate its sample.
+ *
+ * This used to be forced by toggling `showUnranked` off→on, which reflows the
+ * whole app — re-rendering the ranked list and unmounting/remounting EditNav
+ * (the glitchy list "reload" + EditNav re-animation). Instead, toggle a
+ * transient class that nudges ONLY those fixed backdrop elements with a
+ * sub-pixel transform: that repaints the exact region iOS samples, forces the
+ * re-sample, and touches no React state, so the list and EditNav stay put.
+ *
+ * If the iOS bar still doesn't re-tint on a real device, escalate the nudge in
+ * index.css (e.g. change height instead of transform) — see .ios-safe-area-repaint.
+ */
+function forceSafeAreaRepaint() {
+    const root = document.documentElement;
+    root.classList.add('ios-safe-area-repaint');
+    // Flush the class as its own paint, then drop it next frame.
+    void root.offsetHeight;
+    requestAnimationFrame(() => {
+        root.classList.remove('ios-safe-area-repaint');
+    });
+}
+
 export function useThemeEffect() {
     const theme = useAppSelector(state => state.theme);
-    const dispatch: AppDispatch = useAppDispatch();
-    const showUnranked = useAppSelector((state: AppState) => state.showUnranked);
-    const isInitialMount = useRef(true);
-    const isToggling = useRef(false);
-    const savedShowUnranked = useRef(showUnranked);
-
-    useEffect(() => {
-        if (!isToggling.current) {
-            savedShowUnranked.current = showUnranked;
-        }
-    }, [showUnranked]);
 
     useEffect(() => {
         const effectiveTheme = (theme && theme !== 'ab')
@@ -45,23 +59,6 @@ export function useThemeEffect() {
             meta.setAttribute('content', color);
         }
 
-        const doToggle = () => {
-            const restoreValue = savedShowUnranked.current;
-            isToggling.current = true;
-            dispatch(setShowUnranked(!restoreValue));
-            requestAnimationFrame(() => {
-                dispatch(setShowUnranked(restoreValue));
-                isToggling.current = false;
-            });
-        };
-
-        if (isInitialMount.current) {
-            isInitialMount.current = false;
-            queueMicrotask(() => {
-                doToggle();
-            });
-        } else {
-            doToggle();
-        }
+        forceSafeAreaRepaint();
     }, [theme]);
 }

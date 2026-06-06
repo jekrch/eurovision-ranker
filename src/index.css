@@ -151,6 +151,19 @@ code {
   );
 }
 
+/* Theme-change repaint nudge. useThemeEffect briefly adds .ios-safe-area-repaint
+   to <html> after a theme switch. iOS Safari caches the tint it samples from the
+   content behind its bottom toolbar and only re-samples on a repaint of that
+   region; a transient sub-pixel transform on the two backdrops it actually
+   samples (.normal-bg::after and .edit-nav-bg) forces that re-sample without
+   reflowing the app content (so the list + EditNav don't re-render). If the bar
+   still won't re-tint on-device, make this a real layout change instead, e.g.
+   `height: calc(env(safe-area-inset-bottom) * 4 + 1px)` on .normal-bg::after. */
+.ios-safe-area-repaint .normal-bg::after,
+.ios-safe-area-repaint .edit-nav-bg {
+  transform: translateY(0.5px);
+}
+
 /* Ranked list / view mode: extend the container through the full
 */
 .normal-bg.view-mode {

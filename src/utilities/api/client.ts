@@ -76,8 +76,9 @@ export async function request<T = unknown>(opts: RequestOptions): Promise<T> {
             headers,
             body: body !== undefined ? JSON.stringify(body) : undefined,
         });
-    } catch (e: any) {
-        throw new ApiError(e?.message || 'Network error', 0, 'network');
+    } catch (e) {
+        const message = e instanceof Error ? e.message : 'Network error';
+        throw new ApiError(message || 'Network error', 0, 'network');
     }
 
     const rawBody = await response.text();

@@ -1,3 +1,4 @@
+import { logger } from '../utilities/logger';
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import Papa from 'papaparse';
 import { useAppDispatch, useAppSelector } from './stateHooks';
@@ -50,7 +51,7 @@ export const useContestantTable = () => {
                     );
 
                     const initialSelectedContestants = allEntries.filter(
-                        (entry: any) => rankedItemsSet.has(entry.id)
+                        (entry: ContestantRow) => rankedItemsSet.has(entry.id)
                     );
 
                     if (
@@ -67,7 +68,7 @@ export const useContestantTable = () => {
                 // update URL parameters for main ranking and category rankings
                 convertRankingURLParams();
             } catch (error) {
-                console.error('Error fetching data:', error);
+                logger.error('Error fetching data:', error);
             }
         };
 
@@ -75,7 +76,6 @@ export const useContestantTable = () => {
     }, [globalSearch, entries.length, rankedItems, dispatch]);
     
     const updateRankingURLParams = useCallback(() => {
-        const mainRanking = rankedItems.map(item => item.uid).join('');
         const params: { [key: string]: string } = { };
 
         categories.forEach((_, index) => {
@@ -103,7 +103,7 @@ export const useContestantTable = () => {
         });
 
         return parseResult.data
-            .map((row: any) => ({
+            .map((row: Record<string, string>) => ({
                 id: row.id,
                 year: parseInt(row.year, 10),
                 to_country_id: row.to_country_id,
@@ -185,7 +185,7 @@ export const useContestantTable = () => {
 
                 prevSelectedContestantsRef.current = selectedContestants;
             } catch (error) {
-                console.error('Error updating ranked items:', error);
+                logger.error('Error updating ranked items:', error);
             }
         };
 
@@ -230,7 +230,7 @@ export const useContestantTable = () => {
 
         // apply sorting
         if (sortColumn) {
-            result.sort((a: any, b: any) => {
+            result.sort((a: ContestantRow, b: ContestantRow) => {
                 if (a[sortColumn as keyof ContestantRow] < b[sortColumn as keyof ContestantRow]) return sortDirection === 'asc' ? -1 : 1;
                 if (a[sortColumn as keyof ContestantRow] > b[sortColumn as keyof ContestantRow]) return sortDirection === 'asc' ? 1 : -1;
                 return 0;

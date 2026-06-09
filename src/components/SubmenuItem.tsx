@@ -94,7 +94,7 @@ const SubmenuItem: React.FC<SubmenuContainerProps> = ({ buttonIcon, text, childr
       {createPortal(
         <ul
           ref={submenuRef}
-          style={submenuStyle as unknown as any}
+          style={submenuStyle}
           className="rounded-xl border border-[var(--er-border-subtle)] bg-[var(--er-surface-secondary)] shadow-2xl shadow-black/50 overflow-hidden flex flex-col min-w-[190px] z-50 py-1"
           onMouseDown={e => e.stopPropagation()}
         >

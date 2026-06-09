@@ -6,7 +6,7 @@ import { fetchCountryContestantsByYear } from '../utilities/ContestantRepository
 import { tourSteps } from '../tour/steps';
 import { joyrideOptions, SKIP_WELCOME_AFTER_TOUR_KEY } from '../utilities/JoyrideUtil';
 import type Joyride from 'react-joyride';
-import { clearCategories, clearCategories as clearCategoriesUtil } from '../utilities/CategoryUtil';
+import { clearCategories } from '../utilities/CategoryUtil';
 import { CountryContestant } from '../data/CountryContestant';
 import { clearAllRankingParams, goToUrl, updateQueryParams } from '../utilities/UrlUtil';
 import { useAppDispatch, useAppSelector } from '../hooks/stateHooks';
@@ -107,7 +107,7 @@ const JoyrideTour: React.FC<JoyrideTourProps> = (props: JoyrideTourProps) => {
     }
 
     if (
-      [STATUS.FINISHED, STATUS.SKIPPED].includes(status as any) ||
+      ([STATUS.FINISHED, STATUS.SKIPPED] as string[]).includes(status) ||
       (action === ACTIONS.CLOSE && type === EVENTS.STEP_AFTER)
     ) {
       props.setRunTour(false); // End the tour

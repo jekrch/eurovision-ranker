@@ -1,7 +1,6 @@
 import toast from "react-hot-toast";
 import { convertRankingsStrToArray, updateQueryParams } from "./UrlUtil";
 import { CountryContestant } from "../data/CountryContestant";
-import { Dispatch } from "react";
 import { setActiveCategory, setCategories, setShowTotalRank } from "../redux/rootSlice";
 import { Country } from "../data/Country";
 import { AppDispatch } from "../redux/store";
@@ -427,9 +426,6 @@ function calculateCountryScores(ranking: string[]): { [key: string]: number } {
 export const areCategoriesSet = () => {
   const urlParams = new URLSearchParams(window.location.search);
   const rParam = urlParams.get('c');
-  // console.log(urlParams)
-  // console.log(window.location.search)
-  // console.log(rParam)
   return rParam !== null && rParam !== '';
 };
 

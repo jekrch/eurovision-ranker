@@ -1,3 +1,4 @@
+import { logger } from '../../utilities/logger';
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import pako from 'pako';
 import { CountryContestant } from '../../data/CountryContestant';
@@ -43,16 +44,17 @@ interface SorterModalProps {
 }
 
 // json serialization helpers with support for map/set
-const jsonReplacer = (key: string, value: any) => {
+const jsonReplacer = (key: string, value: unknown) => {
     if (value instanceof Map) return { __dataType: 'Map', value: Array.from(value.entries()) };
     if (value instanceof Set) return { __dataType: 'Set', value: Array.from(value.values()) };
     return value;
 };
 
-const jsonReviver = (key: string, value: any) => {
+const jsonReviver = (key: string, value: unknown) => {
     if (typeof value === 'object' && value !== null) {
-        if (value.__dataType === 'Map') return new Map(value.value);
-        if (value.__dataType === 'Set') return new Set(value.value);
+        const tagged = value as { __dataType?: string; value: [unknown, unknown][] & unknown[] };
+        if (tagged.__dataType === 'Map') return new Map(tagged.value);
+        if (tagged.__dataType === 'Set') return new Set(tagged.value);
         // add custom revival logic here if CountryContestant or other types need it
     }
     return value;
@@ -69,7 +71,7 @@ const compressFullState = (state: SortState): Uint8Array | null => {
         const compressed = pako.deflate(jsonString);
         return compressed;
     } catch (e) {
-        console.error("error compressing full state:", e);
+        logger.error("error compressing full state:", e);
         return null;
     }
 };
@@ -101,17 +103,10 @@ const decompressFullState = (compressedData: Uint8Array): SortState | null => {
         };
         return freezedState;
     } catch (e) {
-        console.error("error decompressing full state:", e);
+        logger.error("error decompressing full state:", e);
         return null;
     }
 };
-
-/*
- * estimates the size of the compressed data in bytes.
- */
-function estimateCompressedSize(data: Uint8Array): number {
-    return data?.byteLength || 0;
-}
 
 /*
  * modal component for pairwise comparison sorting.
@@ -163,7 +158,7 @@ const SorterModal: React.FC<SorterModalProps> = ({
                 const fullInitialState = initSortState(initialItems); // gets state ready for the first comparison
 
                 if (!fullInitialState) {
-                    console.error("initSortState returned null or undefined");
+                    logger.error("initSortState returned null or undefined");
                     // reset state fully on init failure
                     setIsSessionLoaded(false);
                     setChoiceLog([]);
@@ -241,11 +236,11 @@ const SorterModal: React.FC<SorterModalProps> = ({
                             closestCachedIndex = index;
                             break; // found best starting point
                         } else {
-                            console.warn(`compute: cache index ${index} state mismatch. expected ${index} comparisons, found ${decompressed.totalComparisons}. discarding.`);
+                            logger.warn(`compute: cache index ${index} state mismatch. expected ${index} comparisons, found ${decompressed.totalComparisons}. discarding.`);
                             // optionally remove invalid cache entry: delete currentCache[index]; updateCache({...currentCache});
                         }
                     } else {
-                        console.error(`compute: failed to decompress state for index ${index}.`);
+                        logger.error(`compute: failed to decompress state for index ${index}.`);
                     }
                 }
             }
@@ -267,25 +262,25 @@ const SorterModal: React.FC<SorterModalProps> = ({
         for (let i = closestCachedIndex; i < targetIndex; i++) {
             const logEntry = choiceLog[i];
             if (!logEntry) {
-                console.error(`compute error: missing log entry at index ${i} (target ${targetIndex}, start ${closestCachedIndex}).`);
+                logger.error(`compute error: missing log entry at index ${i} (target ${targetIndex}, start ${closestCachedIndex}).`);
                 return currentState; // return last valid state computed
             }
             if (currentState.isComplete) {
-                console.warn(`compute warning: state was complete at step ${i}, stopping replay for target ${targetIndex}.`);
+                logger.warn(`compute warning: state was complete at step ${i}, stopping replay for target ${targetIndex}.`);
                 break; // stop if state became complete earlier than expected
             }
 
             // get the state *after* choice `i` was made
             const nextState = processChoice(currentState, logEntry.choice);
             if (!nextState) {
-                console.error(`compute error: processChoice failed for step ${i} with choice ${logEntry.choice}.`);
+                logger.error(`compute error: processChoice failed for step ${i} with choice ${logEntry.choice}.`);
                 return currentState; // return last valid state
             }
             currentState = nextState;
 
             // safety check: ensure totalComparisons matches index after processing
             if (currentState.totalComparisons !== i + 1) {
-                console.error(`compute error: state comparison count mismatch after step ${i}. expected ${i + 1}, got ${currentState.totalComparisons}.`);
+                logger.error(`compute error: state comparison count mismatch after step ${i}. expected ${i + 1}, got ${currentState.totalComparisons}.`);
                 return currentState; // return state before mismatch
             }
 
@@ -313,7 +308,7 @@ const SorterModal: React.FC<SorterModalProps> = ({
                 if (isComputing) setIsComputing(false); // turn off if it was on
                 return decompressed; // return valid cached state
             } else {
-                console.error(`memo: decompression failed or state inconsistent for cached index ${currentHistoryIndex}. expected ${currentHistoryIndex}, got ${decompressed?.totalComparisons}. falling back to compute...`);
+                logger.error(`memo: decompression failed or state inconsistent for cached index ${currentHistoryIndex}. expected ${currentHistoryIndex}, got ${decompressed?.totalComparisons}. falling back to compute...`);
                 // proceed to compute below
             }
         }
@@ -325,21 +320,13 @@ const SorterModal: React.FC<SorterModalProps> = ({
 
         // validate computed state consistency (allow mismatch only if complete)
         if (computedState && computedState.totalComparisons !== currentHistoryIndex && !computedState.isComplete) {
-            console.error(`memo: computed state inconsistent for index ${currentHistoryIndex}. expected ${currentHistoryIndex}, got ${computedState.totalComparisons}. state complete: ${computedState.isComplete}`);
+            logger.error(`memo: computed state inconsistent for index ${currentHistoryIndex}. expected ${currentHistoryIndex}, got ${computedState.totalComparisons}. state complete: ${computedState.isComplete}`);
         } else if (computedState && computedState.isComplete && computedState.totalComparisons < currentHistoryIndex) {
-            console.warn(`memo: sorting completed at ${computedState.totalComparisons} comparisons, but history index is ${currentHistoryIndex}.`);
+            logger.warn(`memo: sorting completed at ${computedState.totalComparisons} comparisons, but history index is ${currentHistoryIndex}.`);
         }
 
         return computedState;
     }, [isSessionLoaded, currentHistoryIndex, cacheVersion, computeStateAtIndex, isComputing]); // dependencies
-
-
-    // memoized calculation of current cache size in bytes
-    const currentCacheSizeBytes = useMemo(() => {
-        if (!isSessionLoaded) return 0;
-        return Object.values(stateCacheRef.current)
-            .reduce((sum, compressedState) => sum + estimateCompressedSize(compressedState), 0);
-    }, [isSessionLoaded, cacheVersion]);
 
 
     // derived state for UI interaction checks
@@ -378,12 +365,12 @@ const SorterModal: React.FC<SorterModalProps> = ({
         // log based on the state *before* the choice
         const comparisonIndexForLog = stateBeforeChoice.comparisons.length - 1;
         if (comparisonIndexForLog < 0) {
-            console.error(`choice error: no comparisons found in state before choice.`);
+            logger.error(`choice error: no comparisons found in state before choice.`);
             return;
         }
         const currentComparisonForLog = stateBeforeChoice.comparisons[comparisonIndexForLog];
         if (!currentComparisonForLog || currentComparisonForLog.choice) {
-            console.warn(`choice warning: last comparison missing or already has choice. index: ${comparisonIndexForLog}`);
+            logger.warn(`choice warning: last comparison missing or already has choice. index: ${comparisonIndexForLog}`);
             // proceed anyway, SorterUtils might handle it
         }
 
@@ -391,12 +378,12 @@ const SorterModal: React.FC<SorterModalProps> = ({
         const nextFullState = processChoice(stateBeforeChoice, choice);
 
         if (!nextFullState) {
-            console.error("choice error: processChoice returned null/undefined.");
+            logger.error("choice error: processChoice returned null/undefined.");
             return;
         }
         // verify comparison count incremented correctly
         if (nextFullState.totalComparisons !== stateBeforeChoice.totalComparisons + 1) {
-            console.error(`choice error: comparison count mismatch. before: ${stateBeforeChoice.totalComparisons}, after: ${nextFullState.totalComparisons}`);
+            logger.error(`choice error: comparison count mismatch. before: ${stateBeforeChoice.totalComparisons}, after: ${nextFullState.totalComparisons}`);
             // proceed but log error, state might be recoverable
         }
 
@@ -411,7 +398,7 @@ const SorterModal: React.FC<SorterModalProps> = ({
         // compress the new state for caching
         const compressedNextState = compressFullState(nextFullState);
         if (!compressedNextState) {
-            console.error("cache: failed to compress next state.");
+            logger.error("cache: failed to compress next state.");
         }
 
         // update cache
@@ -499,7 +486,7 @@ const SorterModal: React.FC<SorterModalProps> = ({
             // basic validation against original item count
             const expectedCount = activeInitialItemsRef.current?.filter(item => !!item?.uid).length ?? 0;
             if (sortedItems.length !== expectedCount) {
-                console.warn(`count mismatch: getSortedItems returned ${sortedItems.length}, expected ${expectedCount}. state:`, stateForCheck);
+                logger.warn(`count mismatch: getSortedItems returned ${sortedItems.length}, expected ${expectedCount}. state:`, stateForCheck);
             }
             // ensure items have uids (fallback if necessary)
             const validItems = sortedItems.map((item, index) => ({
@@ -511,7 +498,7 @@ const SorterModal: React.FC<SorterModalProps> = ({
             updateUrlFromRankedItems(activeCategory, categories, validItems);
             onClose(); // close modal after applying
         } else {
-            console.error("getSortedItems returned empty or null despite completion flag. state:", stateForCheck);
+            logger.error("getSortedItems returned empty or null despite completion flag. state:", stateForCheck);
             onClose(); // close modal even on error
         }
     }, [

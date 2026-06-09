@@ -1,4 +1,3 @@
-import { Contestant } from "./Contestant";
 
 export const supportedYears = Array.from(
   { length: 2026 - 1956 + 1 }, 

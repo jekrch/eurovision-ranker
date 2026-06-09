@@ -1,11 +1,11 @@
-import { lazy, Suspense, useState, useEffect } from 'react';
+import { lazy, Suspense, useState, useEffect, CSSProperties } from 'react';
 
 const LazyFlag = lazy(() => import('react-world-flags').then(module => ({ default: module.default })));
 
 interface FlagProps {
   code: string;
   className?: string;
-  style?: any;
+  style?: CSSProperties;
 }
 
 export const LazyLoadedFlag: React.FC<FlagProps> = ({ code, className, style }) => {

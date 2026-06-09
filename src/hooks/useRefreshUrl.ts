@@ -13,7 +13,6 @@ export const useRefreshUrl = () => {
   const [shouldRefresh, setShouldRefresh] = useState(false);
 
   const refreshUrl = useCallback(() => {
-    //console.log('Refreshing URL with:', rankedItems);
     updateUrlFromRankedItems(
       activeCategory, 
       categories, 

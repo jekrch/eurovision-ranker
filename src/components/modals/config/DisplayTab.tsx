@@ -80,7 +80,9 @@ const DisplayTab: React.FC = () => {
     async function downloadExport() {
         const data = await getExportDataString(exportTypeSelection as EXPORT_TYPE, rankedItems);
         const exportType = getExportType(exportTypeSelection);
-        downloadFile(data, exportType?.fileExtension);
+        if (exportType) {
+            downloadFile(data, exportType.fileExtension);
+        }
     }
 
     // Get display name for current theme

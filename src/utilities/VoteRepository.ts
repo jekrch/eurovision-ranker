@@ -1,4 +1,19 @@
 import Papa from 'papaparse';
+
+/** Shape of a row parsed from the votes CSV (all cells are strings). */
+/** Minimal structural view of a PapaParse result (only `data` is consumed). */
+interface CsvParseResult<T> { data: T[]; }
+
+interface VoteCsvRow {
+  year: string;
+  round: string;
+  from_country_id: string;
+  to_country_id: string;
+  total_points: string;
+  tele_points: string;
+  jury_points: string;
+  [key: string]: string;
+}
 import { Vote } from "../data/Vote";
 import { sanitizeYear } from '../data/Contestants';
 import { fetchVoteCsv } from './CsvCache';
@@ -41,11 +56,11 @@ export function fetchVotesForYear(
       .then(csvString => {
         Papa.parse(csvString, {
           header: true,
-          complete: (results: any) => {
+          complete: (results: CsvParseResult<VoteCsvRow>) => {
             // Filter and map the data
             const votes = results.data
               .filter(
-                (row: any) =>
+                (row: VoteCsvRow) =>
                   row.year === year &&
                   (
                     !countryKey?.length ||
@@ -59,20 +74,20 @@ export function fetchVotesForYear(
                     !toCountryKey?.length || 
                     row.to_country_id === toCountryKey
                   )
-              ).map((row: any) => ({
+              ).map((row: VoteCsvRow) => ({
                 year: row.year,
                 round: convertRoundToLongName(row.round),
                 fromCountryKey: row.from_country_id,
                 toCountryKey: row.to_country_id,
-                totalPoints: row.total_points ?? parseInt(row.total_points),
-                telePoints: row.tele_points ?? parseInt(row.tele_points),
-                juryPoints: row.jury_points ?? parseInt(row.jury_points),
+                totalPoints: row.total_points ? parseInt(row.total_points) : 0,
+                telePoints: row.tele_points ? parseInt(row.tele_points) : 0,
+                juryPoints: row.jury_points ? parseInt(row.jury_points) : 0,
               }));
 
             voteCache[cacheKey] = votes;
             resolve(votes);
           },
-          error: (error: any) => reject(error)
+          error: (error: Error) => reject(error)
         });
       })
       .catch(error => reject(error));
@@ -108,14 +123,14 @@ export async function fetchVotesForYearsAndCountries(
       .then(csvString => {
         Papa.parse(csvString, {
           header: true,
-          complete: (results: any) => {
+          complete: (results: CsvParseResult<VoteCsvRow>) => {
             const votes = results.data
-              .filter((row: any) =>
+              .filter((row: VoteCsvRow) =>
                 uniqueYears.has(row.year) &&
                 uniqueCountries.has(row.to_country_id) &&
                 (!round || row.round === round)
               )
-              .map((row: any) => ({
+              .map((row: VoteCsvRow) => ({
                 year: row.year,
                 round: convertRoundToLongName(row.round),
                 fromCountryKey: row.from_country_id,
@@ -128,7 +143,7 @@ export async function fetchVotesForYearsAndCountries(
             voteCache[cacheKey] = votes;
             resolve(votes);
           },
-          error: (error: any) => reject(error)
+          error: (error: Error) => reject(error)
         });
       })
       .catch(error => reject(error));
@@ -176,15 +191,15 @@ export function fetchDistinctFromCountryIdsForYear(
       .then(csvString => {
         Papa.parse(csvString, {
           header: true,
-          complete: (results: any) => {
+          complete: (results: CsvParseResult<VoteCsvRow>) => {
             const fromCountryIds = results.data
-              .filter((row: any) => row.year === year)
-              .map((row: any) => row.from_country_id)
+              .filter((row: VoteCsvRow) => row.year === year)
+              .map((row: VoteCsvRow) => row.from_country_id)
               .filter((value: string, index: number, self: string[]) => self.indexOf(value) === index); // Removing duplicates
 
             resolve(fromCountryIds);
           },
-          error: (error: any) => reject(error)
+          error: (error: Error) => reject(error)
         });
       })
       .catch(error => reject(error));

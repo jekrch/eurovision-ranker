@@ -1,3 +1,4 @@
+import { logger } from '../../../utilities/logger';
 import React, { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -85,7 +86,7 @@ const RankingsTab: React.FC = () => {
         if (voteSource?.length && voteSource !== 'All') {
             sourceCountryKey = countries.find((c) => c.name === voteSource)?.key;
             if (!sourceCountryKey) {
-                console.error('Unable to find vote source: ' + voteSource);
+                logger.error('Unable to find vote source: ' + voteSource);
             } else {
                 voteCode = `${round}-${voteType}-${sourceCountryKey}`;
             }

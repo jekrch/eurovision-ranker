@@ -1,3 +1,4 @@
+import { logger } from '../../utilities/logger';
 import React, { useState, useCallback, useEffect } from 'react';
 import { AppState } from '../../redux/store';
 import { useAppSelector } from '../../hooks/stateHooks';
@@ -16,8 +17,6 @@ const CanvasDevModal: React.FC<{
   const [refreshKey, setRefreshKey] = useState(0);
   const [containerRef, setContainerRef] = useState<HTMLDivElement | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const showPlace = useAppSelector((state: AppState) => state.showPlace);
-  const vote = useAppSelector((state: AppState) => state.vote);
   
   // Get existing data from Redux store
   const rankedItems = useAppSelector((state: AppState) => state.rankedItems);
@@ -26,7 +25,7 @@ const CanvasDevModal: React.FC<{
   let customConfig: Partial<RankingCanvasConfig>  = {};
 
   // Import canvas utilities dynamically to avoid loading them when not in use
-  const [canvasUtils, setCanvasUtils] = useState<any>(null);
+  const [canvasUtils, setCanvasUtils] = useState<typeof import('../../utilities/CanvasGeneratorUtil') | null>(null);
   
   useEffect(() => {
     if (isOpen) {
@@ -62,7 +61,7 @@ const CanvasDevModal: React.FC<{
         // Display the canvas
         containerRef.appendChild(canvas);
       } catch (err) {
-        console.error('Error rendering preview:', err);
+        logger.error('Error rendering preview:', err);
         setError(err instanceof Error ? err.message : 'Unknown error rendering preview');
       }
     };

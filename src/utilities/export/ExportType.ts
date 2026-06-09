@@ -5,7 +5,7 @@ export enum EXPORT_TYPE {
     EXCEL = 'Excel',
 }
 
-export function getExportType(value: string): any {
+export function getExportType(value: string): ExportType | undefined {
     const entry: EXPORT_TYPE | undefined = Object.entries(EXPORT_TYPE)
         .find(
             ([key, val]) => val === value

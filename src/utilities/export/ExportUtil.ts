@@ -1,3 +1,4 @@
+import { logger } from '../logger';
 import { CountryContestant } from "../../data/CountryContestant";
 import { hasAnyJuryVotes, hasAnyTeleVotes } from "../VoteUtil";
 import Papa from 'papaparse';
@@ -33,7 +34,7 @@ export function convertToCSV(
     headers.push({ id: 'totalVotes', title: 'total votes' });
 
     const data = countryContestants.map((cc, index) => {
-        const record: any = {
+        const record: Record<string, string | number> = {
             rank: index + 1,
             countryName: cc.country.name,
             countryKey: cc.country.key,
@@ -69,14 +70,14 @@ export async function convertToJSON(
     return JSON.stringify(jsonArray);
 }
 
-function converCsvToJson(csvString: string): Promise<any[]> {
+function converCsvToJson(csvString: string): Promise<Record<string, string>[]> {
     return new Promise((resolve, reject) => {
         Papa.parse(csvString, {
             header: true,
-            complete: (result: any) => {
-                resolve(result.data as any[]);
+            complete: (result: { data: Record<string, string>[] }) => {
+                resolve(result.data);
             },
-            error: (error: any) => {
+            error: (error: Error) => {
                 reject(error);
             }
         });
@@ -120,11 +121,11 @@ export const copyDataToClipboard = async (text: string) => {
     try {
         await navigator.clipboard.writeText(text);
     } catch (err) {
-        console.error("Failed to copy: ", err);
+        logger.error("Failed to copy: ", err);
     }
 };
 
-export async function getExportDataString(exportType: string, data: any) {
+export async function getExportDataString(exportType: string, data: CountryContestant[]) {
     switch (exportType) {
         case EXPORT_TYPE.CSV:
         case EXPORT_TYPE.EXCEL:

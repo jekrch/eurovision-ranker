@@ -1,7 +1,6 @@
 import { sanitizeYear } from "../data/Contestants";
 import { CountryContestant } from '../data/CountryContestant';
 import { ContestantVotes, Vote } from "../data/Vote";
-import { clone, getUids } from "./ContestantUtil";
 import { fetchVotesForYear, fetchVotesForYearsAndCountries } from "./VoteRepository";
 import { assignVotes } from "./VoteUtil";
 
@@ -34,7 +33,6 @@ export async function getVotes(
         );
         cachedVoteRound = round;
         cachedVoteYear = year;
-        //console.log('caching')
     }
 
     return cachedVotes.filter(v =>
@@ -103,7 +101,6 @@ async function assignVotesByContestant(
     } else {
         // use the existing method for a single year
         const year = years.size === 1 ? sanitizeYear(Array.from(years)[0]!) : '';
-        //console.log(fromCountryKey)
         votes = await getVotes(year, fromCountryKey, validRound);
     }
 
@@ -269,8 +266,6 @@ export async function assignVotesByCode(
 
         votes = await fetchVotesForYearsAndCountries(yearCountryPairs, round);
 
-        //console.log('getting votes by years');
-        //console.log(votes)
         if (fromCountryKey) {
             votes = votes.filter(v => v.fromCountryKey === fromCountryKey);
         }
@@ -290,10 +285,7 @@ export async function assignVotesByContestants(
 
     let { fromCountryKey, round } = getVoteCodeSettings(voteCode);
 
-    // console.log(fromCountryKey);
-    // console.log(round)
     // if (!fromCountryKey?.length && round == 'final') {
-    //     console.log('use default');
     //     return countryContestants;
     // }
 
@@ -308,7 +300,6 @@ function getVoteCodeSettings(voteCode: string) {
     let codes = voteCode?.split("-");
 
     let roundCode = codes?.[0];
-    let voteTypeCode = codes?.[1];
     let fromCountryKey = codes?.[2];
 
     let round = processVotingRound(roundCode);

@@ -1,4 +1,4 @@
-import React, { Dispatch } from 'react';
+import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCog, faHouseUser } from '@fortawesome/free-solid-svg-icons';
 import { AppDispatch, AppState } from '../../redux/store';

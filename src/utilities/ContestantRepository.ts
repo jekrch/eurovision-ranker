@@ -1,17 +1,42 @@
+import { logger } from './logger';
 import { Contestant, ContestantData } from '../data/Contestant';
 import { CountryContestant } from "../data/CountryContestant";
 import { countries } from '../data/Countries';
 import Papa from 'papaparse';
-import { assignVotesByContestants, voteCodeHasSourceCountry } from "./VoteProcessor";
-import { cachedYear, initialCountryContestantCache } from "../data/InitialContestants";
+
+/** Shape of a row parsed from the contestants CSV (all cells are strings). */
+/** Minimal structural view of a PapaParse result (only `data` is consumed). */
+interface CsvParseResult<T> { data: T[]; }
+
+interface ContestantCsvRow {
+  id: string;
+  year: string;
+  to_country_id: string;
+  performer: string;
+  song: string;
+  youtube_url: string;
+  place_contest: string;
+  place_final: string;
+  place_sf: string;
+  points_final: string;
+  points_tele_final: string;
+  points_jury_final: string;
+  yearCountry?: string;
+  [key: string]: string | undefined;
+}
+import { assignVotesByContestants } from "./VoteProcessor";
 import { SongDetails } from "../data/SongDetails";
 import { fetchContestantCsv, fetchLyricsCsv } from "./CsvCache";
-import { clone } from "./ContestantUtil";
 import { sanitizeYear } from "../data/Contestants";
 import { getUrlParam } from "./UrlUtil";
 
-const yearContestantCache: { [year: string]: Contestant[] } = {};
-const idContestantCache: { [id: string]: Contestant } = {};
+
+/** CSV cells are strings; parse a numeric column into a number (or undefined when blank/NaN). */
+function parseOptionalInt(value: string | undefined): number | undefined {
+  if (value === undefined || value === '') return undefined;
+  const parsed = parseInt(value, 10);
+  return Number.isNaN(parsed) ? undefined : parsed;
+}
 
 export async function fetchCountryContestantsByYear(
   year: string,
@@ -150,14 +175,14 @@ const individualContestantCache: { [id: string]: Contestant } = {};
  * @returns processed contestants
  */
 function processContestants(
-  results: any,
-  filterFn: (row: any) => boolean
+  results: CsvParseResult<ContestantCsvRow>,
+  filterFn: (row: ContestantCsvRow) => boolean
 ): Contestant[] {
   const tempStorage = new Map<string, Contestant>();
 
   results.data
     .filter(filterFn)
-    .forEach((row: any) => {
+    .forEach((row: ContestantCsvRow) => {
       const year = row.year;
       const countryKey = row.to_country_id;
       const id = `${year}-${countryKey}`;
@@ -179,22 +204,22 @@ function processContestants(
  * @param row - CSV row data
  * @returns contestant object
  */
-function createContestant(row: any): Contestant {
+function createContestant(row: ContestantCsvRow): Contestant {
   const contestantData: ContestantData = {
     id: row.id,
     countryKey: row.to_country_id,
     artist: row.performer,
     song: row.song,
     youtube: row.youtube_url,
-    finalsRank: row.place_contest?.length ? row.place_contest : row.place_final,
-    semiFinalsRank: row.place_sf,
+    finalsRank: parseOptionalInt(row.place_contest?.length ? row.place_contest : row.place_final),
+    semiFinalsRank: parseOptionalInt(row.place_sf),
     year: row.year,
     votes: {
       round: 'Final',
       year: row.year,
-      totalPoints: row.points_final,
-      telePoints: row.points_tele_final,
-      juryPoints: row.points_jury_final
+      totalPoints: parseOptionalInt(row.points_final),
+      telePoints: parseOptionalInt(row.points_tele_final),
+      juryPoints: parseOptionalInt(row.points_jury_final)
     }
   };
 
@@ -211,18 +236,18 @@ function createContestant(row: any): Contestant {
 function handleDuplicateEntry(
   tempStorage: Map<string, Contestant>,
   id: string,
-  row: any
+  row: ContestantCsvRow
 ): void {
   const [year, countryKey] = id.split('-');
   if (year !== '1956') {
-    console.debug('dupe found ' + year + ' ' + countryKey);
+    logger.debug('dupe found ' + year + ' ' + countryKey);
     // update the existing entry
     const existingEntry = tempStorage.get(id)!;
     if (row.place_contest) {
-      existingEntry.finalsRank = row.place_contest;
+      existingEntry.finalsRank = parseOptionalInt(row.place_contest);
     }
     if (row.place_sf) {
-      existingEntry.semiFinalsRank = row.place_sf;
+      existingEntry.semiFinalsRank = parseOptionalInt(row.place_sf);
     }
   } else {
     // since 1956 had two songs per country, allow country dupes here
@@ -241,15 +266,15 @@ function handleDuplicateEntry(
  * 
  * @returns promise resolving to parsed CSV data
  */
-function fetchAndParseCsv(year: string = ''): Promise<any> {
+function fetchAndParseCsv(year: string = ''): Promise<CsvParseResult<ContestantCsvRow>> {
   return new Promise((resolve, reject) => {
     fetchContestantCsv(year)
       .then(response => response)
       .then(csvString => {
         Papa.parse(csvString, {
           header: true,
-          complete: (results: any) => resolve(results),
-          error: (error: any) => reject(error)
+          complete: (results: CsvParseResult<ContestantCsvRow>) => resolve(results),
+          error: (error: Error) => reject(error)
         });
       })
       .catch(error => reject(error));
@@ -299,7 +324,7 @@ export async function getCountryContestantsByUids(
   const orderedCountryContestants = uids.map(id => {
     const contestant = contestantMap.get(id);
     if (!contestant) {
-      console.error(`No contestant found for id: ${id}`);
+      logger.error(`No contestant found for id: ${id}`);
     }
     return contestant;
   }).filter((cc): cc is CountryContestant => cc !== undefined);
@@ -371,27 +396,27 @@ export function getSongDetails(
 ): Promise<SongDetails | undefined> {
 
   return new Promise((resolve, reject) => {
-    const fetchMain = (csvYear: string): Promise<any> =>
+    const fetchMain = (csvYear: string): Promise<CsvParseResult<ContestantCsvRow>> =>
       fetchContestantCsv(csvYear)
         .then(csvString => new Promise((res, rej) =>
           Papa.parse(csvString, {
             header: true,
-            complete: (results: any) => res(results),
-            error: (error: any) => rej(error)
+            complete: (results: CsvParseResult<ContestantCsvRow>) => res(results),
+            error: (error: Error) => rej(error)
           })
         ));
 
-    const findRow = (results: any) =>
-      results.data.find((row: any) => row.id === uid);
+    const findRow = (results: CsvParseResult<ContestantCsvRow>) =>
+      results.data.find((row: ContestantCsvRow) => row.id === uid);
 
-    const fetchLyricsAndResolve = (mainRow: any) => {
+    const fetchLyricsAndResolve = (mainRow: ContestantCsvRow) => {
       fetchLyricsCsv()
         .then(lyricsCsvString => {
           Papa.parse(lyricsCsvString, {
             header: true,
-            complete: (lyricsResults: any) => {
+            complete: (lyricsResults: CsvParseResult<ContestantCsvRow>) => {
               const lyricsRow = lyricsResults.data.find(
-                (row: any) => row.id === uid
+                (row: ContestantCsvRow) => row.id === uid
               );
               
               // Return main details with or without lyrics
@@ -402,7 +427,7 @@ export function getSongDetails(
                 lyricists: mainRow.lyricists
               } as SongDetails);
             },
-            error: (error: any) => reject(error)
+            error: (error: Error) => reject(error)
           });
         })
         .catch(error => {

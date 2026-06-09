@@ -12,7 +12,15 @@ export interface AuthSliceFields {
     lastSavedSignature: string | null;
 }
 
-function decodeJwtPayload(token: string): Record<string, any> | null {
+interface JwtPayload {
+    exp?: number;
+    sub?: string;
+    user_id?: string;
+    email?: string;
+    [key: string]: unknown;
+}
+
+function decodeJwtPayload(token: string): JwtPayload | null {
     try {
         const parts = token.split('.');
         if (parts.length !== 3) return null;

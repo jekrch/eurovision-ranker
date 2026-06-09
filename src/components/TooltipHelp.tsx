@@ -1,14 +1,14 @@
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
-import { Tooltip } from 'react-tooltip';
+import { Tooltip, PlacesType } from 'react-tooltip';
 import { faQuestionCircle } from '@fortawesome/free-solid-svg-icons';
 import classNames from 'classnames';
 
 interface TooltipHelpProps {
     icon?: IconDefinition;
     content: string;
-    place?: string;
+    place?: PlacesType;
     className?: string;
 }
 
@@ -34,7 +34,7 @@ const TooltipHelp: React.FC<TooltipHelpProps> = ({
             <Tooltip
                 className="z-50 max-w-[15em] !bg-[var(--er-button-primary)] !text-[var(--er-text-secondary)] !font-normal shadow-xl shadow-black"
                 id={tooltipId}
-                place={place as any}
+                place={place}
                 variant="info"
                 opacity={1}
             />

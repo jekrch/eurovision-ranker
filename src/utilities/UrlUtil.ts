@@ -1,13 +1,12 @@
 
 import { setName, setYear, setRankedItems, setUnrankedItems, setContestants, setTheme, setVote, setShowComparison, setGlobalSearch, setShowThumbnail, setShowPlace } from '../redux/rootSlice';
-import { fetchCountryContestantsByYear, getContestantsByUids, getCountryContestantsByUids } from './ContestantRepository';
+import { fetchCountryContestantsByYear, getCountryContestantsByUids } from './ContestantRepository';
 import { CountryContestant, createCountryContestant } from '../data/CountryContestant';
 import { countries } from '../data/Countries';
 import { defaultYear, sanitizeYear } from '../data/Contestants';
 
 import { Category } from './CategoryUtil';
 import { AppDispatch } from '../redux/store';
-import { Contestant } from '../data/Contestant';
 
 export type UrlParams = {
     rankingName: string | null;     // n
@@ -84,7 +83,6 @@ export async function processAndUpdateRankings(
     dispatch: AppDispatch
 ): Promise<string[] | undefined> {
     const isGlobalMode = globalMode === 't';
-    //console.log(isGlobalMode ? 'in global mode' : 'in normal mode');
 
     let yearContestants;
     if (!isGlobalMode) {
@@ -194,10 +192,6 @@ export async function loadRankingsFromURL(
 
     const extractedParams: UrlParams = getUrlParams(activeCategory);
 
-    // console.log(activeCategory)
-    // console.log(window.location.search)
-    // console.log(extractedParams.rankings)
-    // console.log(extractedParams.contestYear)
     updateStates(extractedParams, dispatch);
 
     return await processAndUpdateRankings(
@@ -323,7 +317,6 @@ export const updateUrlFromRankedItems = async (
     isGlobalMode: boolean = urlParamHasValue('g', 't')
 ) => {
     const encodedRankings = encodeRankingsToURL(rankedItems, isGlobalMode);
-    //console.log(encodedRankings)
     if (categories?.length > 0 && activeCategory !== undefined) {
         updateQueryParams({ [`r${activeCategory + 1}`]: encodedRankings });
     } else {
@@ -366,6 +359,5 @@ export function goToUrl(queryString: string, theme: string | undefined) {
     if (theme) {
         url += `&t=${theme}`;
     }
-    //console.log(url);
     window.location.href = url;
 }

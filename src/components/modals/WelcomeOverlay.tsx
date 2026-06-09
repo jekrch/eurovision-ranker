@@ -1,3 +1,4 @@
+import { logger } from '../../utilities/logger';
 import React, { useRef, useState } from 'react';
 import { FaList, FaTv, FaGlobe, FaCog, FaHeart, FaSort, FaQuestionCircle } from 'react-icons/fa';
 import IconButton from '../IconButton';
@@ -34,7 +35,7 @@ const WelcomeOverlay: React.FC<WelcomeOverlayProps> = ({ handleGetStarted, handl
         dispatch(
             setWelcomeOverlayIsOpen(true)
         )
-        console.log("set")
+        logger.log("set")
     }
 
     const handleClickOutside = (event: React.MouseEvent) => {
@@ -48,7 +49,7 @@ const WelcomeOverlay: React.FC<WelcomeOverlayProps> = ({ handleGetStarted, handl
             setWelcomeOverlayIsOpen(false)
         );
         setClosed(true);
-        console.log('closed')
+        logger.log('closed')
         handleGetStarted();
     }
 

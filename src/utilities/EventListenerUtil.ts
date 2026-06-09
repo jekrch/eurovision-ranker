@@ -1,4 +1,3 @@
-import { Dispatch } from 'redux';
 import { loadRankingsFromURL } from './UrlUtil';
 import { setShowUnranked } from '../redux/rootSlice';
 import { AppDispatch } from '../redux/store';

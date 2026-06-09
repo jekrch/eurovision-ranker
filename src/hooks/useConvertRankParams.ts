@@ -1,6 +1,5 @@
 import { useCallback } from 'react';
 import { useAppSelector } from './stateHooks';
-import { convertRankingsStrToArray, getUrlParam, updateQueryParams } from '../utilities/UrlUtil';
 import { AppState } from '../redux/store';
 import { convertRankingUrlParamsByMode } from '../utilities/ContestantUtil';
 

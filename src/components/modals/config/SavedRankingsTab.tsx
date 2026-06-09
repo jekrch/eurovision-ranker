@@ -1,3 +1,4 @@
+import { logger } from '../../../utilities/logger';
 import React, { useCallback, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -134,8 +135,8 @@ const SavedRankingsTab: React.FC<SavedRankingsTabProps> = ({ openAuthModal }) =>
             } else if (e instanceof ApiError) {
                 toast.error(e.body?.trim() || `Failed to save (status ${e.status} ${e.kind}).`);
             } else {
-                console.error('handleSaveNew: unexpected error', e);
-                toast.error(`Failed to save: ${(e as any)?.message ?? String(e)}`);
+                logger.error('handleSaveNew: unexpected error', e);
+                toast.error(`Failed to save: ${(e instanceof Error ? e.message : undefined) ?? String(e)}`);
             }
         } finally {
             setSaving(false);

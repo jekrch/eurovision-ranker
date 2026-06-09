@@ -1,3 +1,4 @@
+import { logger } from './logger';
 import { CountryContestant } from '../data/CountryContestant';
 import { toast } from 'react-hot-toast';
 
@@ -176,12 +177,12 @@ const loadFlagImage = async (countryCode: string): Promise<HTMLImageElement | nu
           return img;
         }
       } catch (error) {
-        console.warn(`Failed to load flag from ${source}:`, error);
+        logger.warn(`Failed to load flag from ${source}:`, error);
       }
     }
     throw new Error(`Could not load flag for ${countryCode} from any source`);
   } catch (error) {
-    console.warn(`Could not load flag image for ${countryCode}:`, error);
+    logger.warn(`Could not load flag image for ${countryCode}:`, error);
     return null;
   }
 };
@@ -231,15 +232,15 @@ const loadFont = (fontFamily: string, fontWeight: string = 'normal'): Promise<bo
                 document.fonts.add(loadedFont);
                 resolve(true);
             }).catch(() => {
-                console.warn(`Failed to load font: ${fontFamily} ${fontWeight}`);
+                logger.warn(`Failed to load font: ${fontFamily} ${fontWeight}`);
                 resolve(false);
             });
         }).catch(() => {
-             console.warn(`document.fonts.ready promise rejected for ${fontFamily}`);
+             logger.warn(`document.fonts.ready promise rejected for ${fontFamily}`);
              resolve(false);
         });
     } else {
-        console.warn('document.fonts API not fully available. Font loading might be unreliable.');
+        logger.warn('document.fonts API not fully available. Font loading might be unreliable.');
         resolve(true);
     }
   });
@@ -419,7 +420,7 @@ const drawFlagWithCover = (
     const imgHeight = flagImage.naturalHeight || flagImage.height;
 
     if (!imgWidth || !imgHeight) {
-        console.warn("Flag image has no dimensions, drawing fallback", countryCode);
+        logger.warn("Flag image has no dimensions, drawing fallback", countryCode);
         ctx.restore();
         drawFallbackFlag(ctx, countryCode, x, y, boxWidth, boxHeight, config, fillColor);
         return;
@@ -441,7 +442,7 @@ const drawFlagWithCover = (
     try {
         ctx.drawImage(flagImage, sx, sy, sWidth, sHeight, x, y, boxWidth, boxHeight);
     } catch (e) {
-        console.error("Error drawing flag image with cover:", e);
+        logger.error("Error drawing flag image with cover:", e);
     }
     ctx.restore();
 };
@@ -690,7 +691,7 @@ export const createRankingCanvas = async (
       try {
         flagImages[code] = await loadFlagImage(code);
       } catch (error) {
-        console.warn(`Failed to load flag for ${code} in preload:`, error);
+        logger.warn(`Failed to load flag for ${code} in preload:`, error);
         flagImages[code] = null;
       }
     })
@@ -1087,7 +1088,7 @@ export const downloadRankingImage = async (
     toast.dismiss(toastId);
     toast.success('Ranking image downloaded!');
   } catch (error) {
-    console.error('Error creating ranking image:', error);
+    logger.error('Error creating ranking image:', error);
     toast.dismiss(toastId);
     toast.error(`Failed to create image: ${error instanceof Error ? error.message : String(error)}`);
   }

@@ -1,3 +1,4 @@
+import { logger } from '../../utilities/logger';
 import React, { useState, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -51,7 +52,7 @@ const ImageStyleModal: React.FC<ImageStyleModalProps> = ({ isOpen, onClose }) =>
         containerRef.innerHTML = '';
         containerRef.appendChild(canvas);
       } catch (err) {
-        console.error('Error rendering preview:', err);
+        logger.error('Error rendering preview:', err);
       } finally {
         if (!cancelled) setIsRendering(false);
       }
@@ -78,7 +79,7 @@ const ImageStyleModal: React.FC<ImageStyleModalProps> = ({ isOpen, onClose }) =>
       await downloadRankingImage(rankedItems, rankingName, {}, {}, style);
       onClose();
     } catch (error) {
-      console.error('Error during download:', error);
+      logger.error('Error during download:', error);
       toast.error('Failed to create image');
     } finally {
       setIsDownloading(false);

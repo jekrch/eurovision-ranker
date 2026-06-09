@@ -1,3 +1,4 @@
+import { logger } from './logger';
 import { countries } from "../data/Countries";
 import { CountryContestant } from "../data/CountryContestant";
 import { sanitizeYear } from '../data/Contestants';
@@ -10,7 +11,7 @@ export function getSourceCountryKey(voteSource: string) {
         const sourceCountryKey = countries.find(c => c.name === voteSource)?.key;
 
         if (!sourceCountryKey?.length) {
-            console.error('Source country not found for ' + voteSource);
+            logger.error('Source country not found for ' + voteSource);
         }
 
         return sourceCountryKey;

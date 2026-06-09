@@ -1,3 +1,4 @@
+import { logger } from './utilities/logger';
 import React, { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { DragDropContext, DropResult } from '@hello-pangea/dnd';
 import classNames from 'classnames';
@@ -18,9 +19,8 @@ import TooltipHelp from './components/TooltipHelp';
 import ContentPlaceholder from './components/ranking/ContentPlaceholder';
 import EditNav from './components/nav/EditNav';
 import { deleteRankedCountry } from './redux/rankingActions';
-import { useModal, ModalType } from './hooks/useModal';
+import { useModal } from './hooks/useModal';
 import { VideoPipProvider } from './components/video/VideoPipContext';
-import CanvasDevModal from './components/ranking/CanvasDevModal';
 import SorterModal from './components/ranking/SorterModal';
 import useSorterModal from './hooks/useSortModal';
 import { useThemeEffect } from './hooks/useThemeEffect';
@@ -276,7 +276,7 @@ const App: React.FC = () => {
 
     // Fire-and-forget reachability check; surface only on dev console.
     ping().catch((e) => {
-      if (import.meta.env.DEV) console.warn('API healthz failed', e);
+      if (import.meta.env.DEV) logger.warn('API healthz failed', e);
     });
   }, []);
 
@@ -435,7 +435,7 @@ const App: React.FC = () => {
       // loadRankingsFromURL would just clear them.
       if (publicViewActiveRef.current) return;
       if (!showTotalRank) {
-        const rankingsExist = await loadRankingsFromURL(
+        await loadRankingsFromURL(
           activeCategory,
           dispatch
         );
@@ -443,7 +443,7 @@ const App: React.FC = () => {
         // if this is the first page load and we have categories we
         // should load the first so that Total tab has contestants
         // available to populated the total ranking
-        const rankingsExist = await loadRankingsFromURL(
+        await loadRankingsFromURL(
           0,
           dispatch
         );
@@ -623,8 +623,8 @@ const App: React.FC = () => {
         if (id) {
           addNewItemToAllCategoryRankings(id);
         } else {
-          console.error('Contestant lacks valid ID:')
-          console.error(reorderedItem);
+          logger.error('Contestant lacks valid ID:')
+          logger.error(reorderedItem);
         }
       }
 

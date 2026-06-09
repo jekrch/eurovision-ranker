@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, Dispatch } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEllipsisH, faGlobe, faTv, faCopy, faLink, faFile, faFileCode, faList, faEdit, faPen, faSlidersH, faSort, faPlay, faCircleQuestion } from '@fortawesome/free-solid-svg-icons';
 import { CSSTransition } from 'react-transition-group';
@@ -13,7 +13,6 @@ import { setHeaderMenuOpen } from '../../redux/rootSlice';
 import { useAppDispatch, useAppSelector } from '../../hooks/stateHooks';
 import ImageCaptureMenuItem from './ImageCaptureMenuItem';
 import ImageStyleModal from './ImageStyleModal';
-import useSorterModal from '../../hooks/useSortModal';
 import { useVideoPip } from '../video/VideoPipContext';
 
 interface RankedHeaderMenuProps {
@@ -76,7 +75,7 @@ const RankedHeaderMenu: React.FC<RankedHeaderMenuProps> = (props: RankedHeaderMe
 
 
   useEffect(() => {
-    let timeoutId: any;
+    let timeoutId: ReturnType<typeof setTimeout> | undefined;
 
     document.addEventListener('mousedown', handleClickOutside);
     return () => {

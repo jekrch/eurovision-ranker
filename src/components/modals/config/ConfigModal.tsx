@@ -49,11 +49,6 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
     });
     const globalSearch = useAppSelector((state: AppState) => state.globalSearch);
     const rankedItems = useAppSelector((state: AppState) => state.rankedItems);
-    const uniqueRankedYears = new Set(
-        rankedItems.map(r => r.contestant?.year).filter(Boolean)
-    );
-    const hasMultipleYears = uniqueRankedYears.size > 1;
-
     // Reset to props.tab only when the requested tab actually changes (explicit deep-link),
     // not on mount and not every time the modal reopens — that keeps the selection sticky.
     const didMountRef = useRef(false);

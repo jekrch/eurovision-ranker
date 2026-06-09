@@ -51,8 +51,6 @@ const AnalyzeTab: React.FC = () => {
         globalMode, voteType, 'final', countryContestants, country.key
       );
 
-      //console.log(globalMode)
-      //console.log(concatenatedIds)
       if (codeCountryNameMap.has(concatenatedIds)) {
         codeCountryNameMap.get(concatenatedIds)?.push(country);
       } else {

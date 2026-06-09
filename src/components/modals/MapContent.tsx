@@ -2,6 +2,18 @@ import React from 'react';
 import { ComposableMap, Geographies, Geography, ZoomableGroup } from 'react-simple-maps';
 import geoJson from '../../data/geoJson.json';
 
+/** Shape of a geography feature exposed by react-simple-maps (which ships untyped). */
+interface MapGeography {
+    rsmKey?: string;
+    properties: {
+        iso_a2_eh?: string;
+        name?: string;
+        UNIQUE_KEY?: string;
+        [key: string]: unknown;
+    };
+    [key: string]: unknown;
+}
+
 interface MapContentProps {
     countryCodes: string[];
     isHighlighted: (code: string) => boolean;
@@ -26,7 +38,7 @@ const preparedGeography = {
 };
 
 const GeographyRenderer: React.FC<{
-    filterFn?: (geo: any) => boolean;
+    filterFn?: (geo: MapGeography) => boolean;
     countryCodes: string[];
     isHighlighted: (code: string) => boolean;
     getColorByIndex: (code: string) => string;
@@ -34,10 +46,10 @@ const GeographyRenderer: React.FC<{
     onLeave: () => void;
 }> = ({ filterFn, countryCodes, isHighlighted, getColorByIndex, onHover, onLeave }) => (
     <Geographies geography={{ ...preparedGeography }}>
-        {({ geographies }: any) =>
+        {({ geographies }: { geographies: MapGeography[] }) =>
             geographies
-                ?.filter((geo: any) => (filterFn ? filterFn(geo) : true))
-                .map((geo: any) => {
+                ?.filter((geo: MapGeography) => (filterFn ? filterFn(geo) : true))
+                .map((geo: MapGeography) => {
                     if (!geo?.properties) return null;
                     const countryCode = geo.properties.iso_a2_eh;
                     if (!countryCode) return null;

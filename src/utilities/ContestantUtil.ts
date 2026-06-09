@@ -27,11 +27,11 @@ export function getUids(contestants: CountryContestant[]): string[] {
  * @param rankedItems 
  * @returns 
  */
-export const getDistinctRankedYears = (rankedItems: CountryContestant[]): any[] => {
+export const getDistinctRankedYears = (rankedItems: CountryContestant[]): string[] => {
     // map years and filter out undefined values
     const years = rankedItems
       .map(item => item?.contestant?.year)
-      .filter((year): any => year !== undefined);
+      .filter((year): year is string => year !== undefined);
   
     // create a Set to remove duplicates, then convert back to array
     return Array.from(new Set(years));

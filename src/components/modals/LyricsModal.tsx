@@ -1,3 +1,4 @@
+import { logger } from '../../utilities/logger';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { AppState } from '../../redux/store';
 import Modal from './Modal';
@@ -167,7 +168,7 @@ const SongModal: React.FC<SongModalProps> = (props: SongModalProps) => {
                     setComposers(fetchedSongDetails?.composers ?? '');
                     setLyricists(fetchedSongDetails?.lyricists ?? '');
                 })
-                .catch(console.error)
+                .catch(logger.error)
                 .finally(() => setDetailsLoaded(true));
         } else {
             setHasLyrics(false);
@@ -224,7 +225,7 @@ const SongModal: React.FC<SongModalProps> = (props: SongModalProps) => {
                 setRoundVotes(grouped);
                 setSelectedRound(grouped[0]?.round ?? '');
             })
-            .catch(console.error)
+            .catch(logger.error)
             .finally(() => {
                 if (!cancelled) {
                     setVotesLoaded(true);
@@ -467,7 +468,7 @@ const SongModal: React.FC<SongModalProps> = (props: SongModalProps) => {
                                         <input type="checkbox"
                                             value=""
                                             checked={showEngLyrics}
-                                            onChange={(e: any) => { updateShowEngLyrics(e.target.checked); }}
+                                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => { updateShowEngLyrics(e.target.checked); }}
                                             className="sr-only peer"
                                         />
                                         <div className="relative w-7 h-4 bg-[var(--er-surface-tertiary-70)] peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-[var(--er-interactive-secondary)] dark:peer-focus:ring-[var(--er-interactive-dark)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-[var(--er-border-default)] after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-[var(--er-border-lighter)] after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-[var(--er-interactive-secondary)]"></div>

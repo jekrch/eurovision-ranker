@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import IconButton from '../../IconButton';
 import { AppDispatch, AppState } from '../../../redux/store';

@@ -1,3 +1,4 @@
+import { logger } from './logger';
 import { CountryContestant } from "../data/CountryContestant";
 
 // state for a single merge step
@@ -229,7 +230,7 @@ const advanceAlgorithmInternal = (state: SortState): SortState => {
             } else {
                 // error state
                 // stack empty unexpectedly (should only happen with empty input, handled in init)
-                console.error("advanceAlgorithmInternal: merge stack empty unexpectedly during processing.");
+                logger.error("advanceAlgorithmInternal: merge stack empty unexpectedly during processing.");
                 return {
                     ...currentState,
                     isComplete: true,
@@ -320,7 +321,7 @@ export const initSortState = (items: CountryContestant[]): SortState => {
 export const processChoice = (state: SortState, choice: 'left' | 'right'): SortState => {
     // guard against processing choice in wrong state
     if (state.isComplete || !state.currentMergeStep || state.action !== ActionType.COMPARE) {
-        console.warn("processChoice called inappropriately.", { stateAction: state.action, isComplete: state.isComplete, hasMergeStep: !!state.currentMergeStep });
+        logger.warn("processChoice called inappropriately.", { stateAction: state.action, isComplete: state.isComplete, hasMergeStep: !!state.currentMergeStep });
         return state;
     }
 
@@ -329,7 +330,7 @@ export const processChoice = (state: SortState, choice: 'left' | 'right'): SortS
 
     // guard against missing/already processed comparison
     if (!lastComparison || lastComparison.choice) {
-        console.warn(`processChoice: Last comparison invalid or already has choice. Index: ${currentComparisonIndex}`, lastComparison);
+        logger.warn(`processChoice: Last comparison invalid or already has choice. Index: ${currentComparisonIndex}`, lastComparison);
         return state;
     }
 
@@ -357,7 +358,7 @@ export const processChoice = (state: SortState, choice: 'left' | 'right'): SortS
             step.leftIndex++;
         } else {
             // error: index out of bounds
-            console.error("processChoice error: leftIndex out of bounds despite pending comparison.");
+            logger.error("processChoice error: leftIndex out of bounds despite pending comparison.");
             return state; // return original state on error
         }
     } else { // choice === 'right'
@@ -366,7 +367,7 @@ export const processChoice = (state: SortState, choice: 'left' | 'right'): SortS
             step.rightIndex++;
         } else {
             // error: index out of bounds
-            console.error("processChoice error: rightIndex out of bounds despite pending comparison.");
+            logger.error("processChoice error: rightIndex out of bounds despite pending comparison.");
             return state; // return original state on error
         }
     }
@@ -390,13 +391,13 @@ export const processChoice = (state: SortState, choice: 'left' | 'right'): SortS
  */
 export const getSortedItems = (state: SortState): CountryContestant[] => {
     if (!state.isComplete || state.action !== ActionType.DONE) {
-        console.warn("getSortedItems called before sorting is complete or in unexpected state.", { isComplete: state.isComplete, action: state.action });
+        logger.warn("getSortedItems called before sorting is complete or in unexpected state.", { isComplete: state.isComplete, action: state.action });
         return [];
     }
     // sanity check: final count should match initial count
     const originalValidCount = state.allItems.filter(item => !!item?.uid).length;
     if (!state.currentRanking || state.currentRanking.length !== originalValidCount) {
-        console.error(`getSortedItems: final ranking count (${state.currentRanking?.length ?? 'undefined'}) mismatch vs original valid items (${originalValidCount}). Returning original items as fallback.`);
+        logger.error(`getSortedItems: final ranking count (${state.currentRanking?.length ?? 'undefined'}) mismatch vs original valid items (${originalValidCount}). Returning original items as fallback.`);
         // fallback: return original items if ranking seems corrupt
         return [...state.allItems.filter(item => !!item?.uid)];
     }

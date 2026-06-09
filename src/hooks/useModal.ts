@@ -5,12 +5,12 @@ export type ModalType = 'main' | 'name' | 'map' | 'song' | 'config' | 'tour' | '
 interface ModalState {
   isOpen: boolean;
   hasRendered: boolean;
-  data?: any;
+  data?: unknown;
 }
 
 export interface UseModalReturn {
   modalState: Record<ModalType, ModalState>;
-  openModal: (type: ModalType, data?: any) => void;
+  openModal: (type: ModalType, data?: unknown) => void;
   closeModal: (type: ModalType) => void;
   setModalTab: (tab: string) => void;
   currentTab: string;
@@ -47,7 +47,7 @@ export const useModal = (initialTab: string = 'about'): UseModalReturn => {
     }
   }, [modalState]);
 
-  const openModal = (type: ModalType, data?: any) => {
+  const openModal = (type: ModalType, data?: unknown) => {
     setModalState((prev) => ({
       ...prev,
       [type]: { ...prev[type], isOpen: true, data },

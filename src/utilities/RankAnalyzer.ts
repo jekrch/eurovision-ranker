@@ -247,8 +247,6 @@ function processRankComparisonForContestant(
         listSize
     );
 
-    //console.log(` -- ${indexInList1} vs ${indexInList2}` );
-    //console.log(similarityScore + ` > ${songScore1} vs ${songScore2}` );
 
     totalScore += similarityScore;
 
@@ -257,7 +255,6 @@ function processRankComparisonForContestant(
         (isContestantInList2 ? indexInList2 : list2.length)
     );
 
-    //console.log(rankDifference);
 
     let newDifference: RankingDifference = {
         id: contestant,
@@ -314,16 +311,6 @@ function convertDiffToCountryComparison(smallestDifferences: RankingDifference[]
             );
         }
     );
-}
-
-function getIntersectedLists(list1Code: string, list2Code: string) {
-    let list1 = convertRankingsStrToArray(list1Code);
-    let list2 = convertRankingsStrToArray(list2Code);
-
-    // remove all items that are not in both lists
-    list1 = list1.filter(item => list2.includes(item));
-    list2 = list2.filter(item => list1.includes(item));
-    return { list1, list2 };
 }
 
 /**
@@ -424,7 +411,7 @@ function updateRankingDifferences(
     );
 }
 
-export function isArrayEqual(arr1: any[], arr2: any[]): boolean {
+export function isArrayEqual<T>(arr1: T[], arr2: T[]): boolean {
     if (arr1.length !== arr2.length) {
         return false;
     }

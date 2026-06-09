@@ -1,12 +1,13 @@
 import React from 'react';
 import Dropdown from '../Dropdown';
 import classNames from 'classnames';
+import { ContestantRow } from './tableTypes';
 
 interface PaginationProps {
     pageSize: number;
     currentPage: number;
     totalPages: number;
-    displayedContestants: any[];
+    displayedContestants: ContestantRow[];
     handlePageSizeChange: (value: string) => void;
     handlePageChange: (page: number) => void;
 }

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { AppState } from '../../redux/store';
 import { useContestantTable } from '../../hooks/useContestantTable';
 import TableHeader from './TableHeader';
@@ -160,7 +160,7 @@ const ContestantTable: React.FC = () => {
                         <TableHeader 
                             handleSort={handleSort} 
                             sortColumn={sortColumn} 
-                            sortDirection={sortDirection as any} 
+                            sortDirection={sortDirection as 'asc' | 'desc'} 
                             showSelected={false}
                         />
                         <TableBody

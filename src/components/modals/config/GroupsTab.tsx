@@ -4,7 +4,6 @@ import toast from 'react-hot-toast';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
     faArrowLeft,
-    faCheck,
     faCircleInfo,
     faCopy,
     faCrown,

@@ -31,10 +31,6 @@ const Dropdown: React.FC<DropdownProps> = ({ value, onChange, options, className
 
   const portalMountNode = document.body;
 
-  const handleMenuClose = () => {
-    setFilter('');
-  };
-
   const updateMenuPosition = () => {
     if (buttonRef.current) {
       const rect = buttonRef.current.getBoundingClientRect();

@@ -13,7 +13,7 @@ type IconButtonProps = {
     isGrayTheme?: boolean;
 };
 
-function rippleEffect(event: any) {
+function rippleEffect(event: React.MouseEvent<HTMLElement>) {
     const button = event.currentTarget;
 
     const circle = document.createElement("span");

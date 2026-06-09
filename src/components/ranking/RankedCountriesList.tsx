@@ -14,7 +14,7 @@ import { generateYoutubePlaylistUrl } from '../../utilities/YoutubeUtil';
 import { updateUrlFromRankedItems } from '../../utilities/UrlUtil';
 import { IntroColumnWrapper } from './IntroColumnWrapper';
 import { deleteRankedCountry } from '../../redux/rankingActions';
-import { Draggable } from '@hello-pangea/dnd';
+import { Draggable, DraggableProvided, DraggableStateSnapshot, DroppableProvided } from '@hello-pangea/dnd';
 import { useAppDispatch, useAppSelector } from '../../hooks/stateHooks';
 import { HeartIcon } from '../HeartIcon';
 
@@ -91,7 +91,7 @@ const RankedCountriesList: React.FC<RankedCountriesListProps> = ({
     return (
         <div className="tour-step-5 z-20">
             <StrictModeDroppable droppableId="rankedItems">
-                {(provided: any) => (
+                {(provided: DroppableProvided) => (
                     <div
                         className={classNames(
                             "grid h-full max-h-full min-h-full grid-rows-[auto_1fr]"
@@ -158,7 +158,7 @@ const RankedCountriesList: React.FC<RankedCountriesListProps> = ({
                                         index={index}
                                         isDragDisabled={showTotalRank}
                                     >
-                                        {(provided: any, snapshot: any) => (
+                                        {(provided: DraggableProvided, snapshot: DraggableStateSnapshot) => (
                                             <li
                                                 key={`li-${countryContestant?.uid ?? countryContestant.id}`}
                                                 ref={provided.innerRef}

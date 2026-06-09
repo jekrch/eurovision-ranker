@@ -1,12 +1,11 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { CountryContestant } from '../data/CountryContestant';
 import { Category } from '../utilities/CategoryUtil';
-import { ContestantVotes, Vote } from '../data/Vote';
+import { Vote } from '../data/Vote';
 import { assignVotes } from '../utilities/VoteUtil';
 import { clone } from '../utilities/ContestantUtil';
 import { ContestantRow, TableState } from '../components/table/tableTypes';
 import { changePageSize, filterTable, sortTable } from './tableSlice';
-import { THEME_OPTIONS, THEME_SURFACE_COLORS } from '../components/modals/config/DisplayTab';
 import { AuthSliceFields, AuthStatus, loadInitialAuth } from './authSlice';
 import { AuthUser, Group, GroupInvite, SharedRanking, UserRanking } from '../utilities/api/types';
 import { setToken } from '../utilities/api/client';

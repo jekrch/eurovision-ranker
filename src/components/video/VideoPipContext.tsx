@@ -553,7 +553,7 @@ export const VideoPipProvider: React.FC<{
         const onMessage = (e: MessageEvent) => {
             if (typeof e.data !== 'string') return;
             if (e.origin && e.origin.indexOf('youtube') === -1) return;
-            let data: any;
+            let data: { event?: string; info?: number | { playerState?: number } } | null;
             try {
                 data = JSON.parse(e.data);
             } catch {
@@ -566,7 +566,8 @@ export const VideoPipProvider: React.FC<{
                 state = data.info;
             } else if (
                 data.event === 'infoDelivery' &&
-                data.info &&
+                typeof data.info === 'object' &&
+                data.info !== null &&
                 typeof data.info.playerState === 'number'
             ) {
                 state = data.info.playerState;

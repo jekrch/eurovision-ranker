@@ -151,22 +151,6 @@ code {
   );
 }
 
-/* Theme-change repaint nudge. useThemeEffect FLIPS .ios-safe-area-repaint on
-   <html> on each theme switch (persistent, not same-frame). iOS Safari caches
-   the tint it samples from the content behind its bottom toolbar and only
-   re-samples on a real geometry change of that region — so a GPU-only transform
-   or a coalesced same-frame toggle does nothing. Bumping the height of the two
-   backdrops it actually samples (.normal-bg::after and .edit-nav-bg) by a few
-   px IS a real reflow of the sampled zone, so iOS re-tints. The delta sits
-   behind the toolbar in the safe-area inset, so it's visually imperceptible,
-   and no React state changes (the list + EditNav don't re-render). Only the
-   z-index:-1 ::after backdrop is nudged — never --edit-nav-lift, which would
-   visibly jump the EditNav buttons. Raise the px delta if the bar still won't
-   re-tint on-device. */
-.ios-safe-area-repaint .normal-bg::after {
-  height: calc(env(safe-area-inset-bottom) * 4 + 6px);
-}
-
 /* Ranked list / view mode: extend the container through the full
 */
 .normal-bg.view-mode {

@@ -828,7 +828,15 @@ const App: React.FC = () => {
         </div>
 
         {(showUnranked && (!showOverlay || isOverlayExit)) &&
-          <div className={`edit-nav-container ${(!showOverlay || isOverlayExit) && 'slide-up-animation'}`}>
+          /* `key` is derived from the theme so a theme switch REMOUNTS just this
+             EditNav (the bar whose dark fill the iOS Safari bottom toolbar
+             samples). Replacing this exact node forces iOS to re-sample its tint
+             to the new theme color, while the main list above is left untouched
+             (no glitchy reload). The bar's slide-up animation replays on remount,
+             which is the accepted trade-off. */
+          <div
+            key={`edit-nav-${theme}`}
+            className={`edit-nav-container ${(!showOverlay || isOverlayExit) && 'slide-up-animation'}`}>
             <EditNav
               setNameModalShow={() => openModal('name')}
             />

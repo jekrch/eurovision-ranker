@@ -19,7 +19,12 @@ const Pagination: React.FC<PaginationProps> = ({
     handlePageSizeChange,
     handlePageChange
 }) => {
-    const isCompact = true;
+    const navButtonClass = classNames(
+        "flex h-8 min-w-[2rem] items-center justify-center rounded-md px-2 text-base font-semibold leading-none",
+        "text-[var(--er-text-primary)] bg-[var(--er-button-neutral)]",
+        "hover:bg-[var(--er-button-primary)] hover:text-white transition-colors",
+        "disabled:opacity-40 disabled:pointer-events-none"
+    );
 
     const renderPageButtons = () => {
         return (
@@ -27,33 +32,37 @@ const Pagination: React.FC<PaginationProps> = ({
                 <button
                     onClick={() => handlePageChange(1)}
                     disabled={currentPage === 1}
-                    className="text-sm px-2 py-1 rounded bg-[var(--er-button-primary)] text-gray-300 hover:bg-[var(--er-button-primary-hover)] disabled:opacity-50 disabled:pointer-events-none"
+                    aria-label="First page"
+                    className={navButtonClass}
                 >
-                    {'<<'}
+                    {'«'}
                 </button>
                 <button
                     onClick={() => handlePageChange(currentPage - 1)}
                     disabled={currentPage === 1}
-                    className="text-sm px-2 py-1 rounded bg-[var(--er-button-primary)] text-gray-300 hover:bg-[var(--er-button-primary-hover)] disabled:opacity-50 disabled:pointer-events-none"
+                    aria-label="Previous page"
+                    className={navButtonClass}
                 >
-                    {'<'}
+                    {'‹'}
                 </button>
-                <span className="text-sm text-gray-300">
+                <span className="px-1.5 text-sm font-medium text-[var(--er-text-secondary)] tabular-nums whitespace-nowrap">
                     {currentPage} / {totalPages}
                 </span>
                 <button
                     onClick={() => handlePageChange(currentPage + 1)}
                     disabled={currentPage === totalPages}
-                    className="text-sm px-2 py-1 rounded bg-[var(--er-button-primary)] text-gray-300 hover:bg-[var(--er-button-primary-hover)] disabled:opacity-50 disabled:pointer-events-none"
+                    aria-label="Next page"
+                    className={navButtonClass}
                 >
-                    {'>'}
+                    {'›'}
                 </button>
                 <button
                     onClick={() => handlePageChange(totalPages)}
                     disabled={currentPage === totalPages}
-                    className="text-sm px-2 py-1 rounded bg-[var(--er-button-primary)] text-gray-300 hover:bg-[var(--er-button-primary-hover)] disabled:opacity-50 disabled:pointer-events-none"
+                    aria-label="Last page"
+                    className={navButtonClass}
                 >
-                    {'>>'}
+                    {'»'}
                 </button>
             </>
         );
@@ -114,22 +123,22 @@ const Pagination: React.FC<PaginationProps> = ({
     };
 
     return (
-        <div className="mt-1 flex justify-between px-2">
-            <div>
+        <div className="mt-2 mr-1 flex items-center justify-between gap-2 rounded-md bg-[var(--er-surface-tertiary-70)] px-2 py-1.5">
+            <div className="flex items-center gap-2">
                 <Dropdown
                     value={`${pageSize}`}
                     onChange={handlePageSizeChange}
                     options={['10', '25', '50']}
                     buttonClassName=''
-                    className="min-w-[0.9em] text-xs mt-2"
+                    className="min-w-[0.9em] text-sm"
                     openUpwards={true}
                     mini={true}
                 />
-                <span className={classNames("text-sm text-gray-300 ml-2 mr-3 whitespace-nowrap", isCompact ? "text-xs mr-1" : "")}>
+                <span className="text-sm text-[var(--er-text-secondary)] whitespace-nowrap">
                     of {displayedContestants.length}
                 </span>
             </div>
-            <div className="space-x-1 space-y-2">
+            <div className="flex items-center gap-1">
                 {renderPageButtons()}
             </div>
         </div>

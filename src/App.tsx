@@ -749,17 +749,20 @@ const App: React.FC = () => {
             }}
           >
 
-            <div className="flex flex-row justify-center gap-4 px-4 py-2">
+            <div className={classNames(
+              "flex flex-row justify-center gap-4 py-2",
+              globalSearch ? "px-1 sm:px-4" : "px-4"
+            )}>
 
               {/* Unranked Countries List */}
               {showUnranked && !globalSearch && (
 
                 <div className="relative flex flex-col">
                   <div className="tour-step-15 sticky top-0 rounded-t-md round-b-sm text-center font-bold bg-[var(--er-surface-bar)] gradient-background-reverse text-[var(--er-text-secondary)] tracking-tighter shadow-md z-50">
-                    <div className="flex items-center justify-center py-1 px-0">
+                    <div className="flex items-center justify-center gap-1 py-1 px-0">
                       <TooltipHelp
                         content="Select countries across all contest years"
-                        className="text-[var(--er-text-secondary)] align-middle mb-1 -mr-1"
+                        className="text-[var(--er-text-secondary)] align-middle mb-1 mr-1 -ml-1"
                       />
                       <Switch
                         label="adv"

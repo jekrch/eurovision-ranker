@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 import { THEME_OPTIONS, THEME_SURFACE_COLORS } from '../components/modals/config/DisplayTab';
 import { useAppSelector } from './stateHooks';
@@ -15,33 +15,33 @@ function resolveSurfaceColor(theme: string): string {
 
 /**
  * iOS Safari samples the page content painted behind its translucent bottom
- * toolbar and CACHES that tint, only re-sampling on a reflow/scroll of the
- * region. After a theme change the safe-area backdrops (.normal-bg::after /
- * .edit-nav-bg) already hold the new --er-surface-dark color, but iOS keeps
- * showing the stale tint until we invalidate its sample.
+ * toolbar and CACHES that tint, only re-sampling when the geometry of that
+ * region actually changes (a real layout reflow — not a GPU-only transform, and
+ * not a same-frame add/remove the compositor coalesces away). After a theme
+ * change the safe-area backdrops (.normal-bg::after / .edit-nav-bg) already hold
+ * the new --er-surface-dark color, but iOS keeps showing the stale tint.
  *
  * This used to be forced by toggling `showUnranked` off→on, which reflows the
  * whole app — re-rendering the ranked list and unmounting/remounting EditNav
- * (the glitchy list "reload" + EditNav re-animation). Instead, toggle a
- * transient class that nudges ONLY those fixed backdrop elements with a
- * sub-pixel transform: that repaints the exact region iOS samples, forces the
- * re-sample, and touches no React state, so the list and EditNav stay put.
+ * (the glitchy list "reload" + EditNav re-animation). That worked only because
+ * it was a real, persisting height change in the sampled zone.
  *
- * If the iOS bar still doesn't re-tint on a real device, escalate the nudge in
- * index.css (e.g. change height instead of transform) — see .ios-safe-area-repaint.
+ * So we reproduce just that: flip a PERSISTENT class on each theme change that
+ * bumps the height of the backdrops iOS samples by a few (invisible) px. Each
+ * switch leaves the sampled region a different height than before, so iOS
+ * re-samples — with zero React state change, so the list and EditNav stay put.
  */
-function forceSafeAreaRepaint() {
-    const root = document.documentElement;
-    root.classList.add('ios-safe-area-repaint');
-    // Flush the class as its own paint, then drop it next frame.
-    void root.offsetHeight;
-    requestAnimationFrame(() => {
-        root.classList.remove('ios-safe-area-repaint');
-    });
+function forceSafeAreaRepaint(repaintToggle: { current: boolean }) {
+    repaintToggle.current = !repaintToggle.current;
+    document.documentElement.classList.toggle(
+        'ios-safe-area-repaint',
+        repaintToggle.current,
+    );
 }
 
 export function useThemeEffect() {
     const theme = useAppSelector(state => state.theme);
+    const repaintToggle = useRef(false);
 
     useEffect(() => {
         const effectiveTheme = (theme && theme !== 'ab')
@@ -59,6 +59,6 @@ export function useThemeEffect() {
             meta.setAttribute('content', color);
         }
 
-        forceSafeAreaRepaint();
+        forceSafeAreaRepaint(repaintToggle);
     }, [theme]);
 }

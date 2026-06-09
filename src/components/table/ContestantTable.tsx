@@ -106,38 +106,37 @@ const ContestantTable: React.FC = () => {
                     />
                 </div>
                 <div className={classNames(
-                    "flex items-center justify-between pb-1 text-sm mt-1 sm:mt-0 sm:justify-end sm:flex-grow min-w-[50%]"
+                    "flex items-center justify-between gap-3 pb-1 text-sm mt-1 sm:mt-0 sm:justify-end sm:flex-grow min-w-[50%]"
                 )}>
-                    <Switch
-                        label='selected'
-                        className="text-base"
-                        labelClassName='text-[var(--er-text-tertiary)]'
-                        checked={showSelected}
-                        setChecked={setShowSelected}
-                    />
-                    <div className="flex items-center gap-1 mr-3">
-                        <div className="flex items-center">
-                            <TooltipHelp
-                                content="Uncheck this to use the simple year-based selection mode"
-                                className="text-[var(--er-text-secondary)] align-middle mb-0 -mr-1"
-                            />
+                    <div className="flex items-center gap-2">
+                        <TooltipHelp
+                            content="Uncheck this to use the simple year-based selection mode"
+                            className="text-[var(--er-text-secondary)] !mt-0 !mb-0"
+                        />
+                        <div className="flex items-center gap-3 rounded-md border border-[var(--er-border-primary)] bg-[var(--er-surface-tertiary-70)] px-3 py-[0.3em]">
                             <Switch
                                 label="adv"
-                                className="items-center align-middle"
-                                labelClassName="text-base text-[var(--er-text-tertiary)]"
+                                labelClassName="text-sm text-[var(--er-text-tertiary)]"
                                 checked={globalSearch}
                                 setChecked={switchAdvancedMode}
                             />
+                            <span className="h-4 w-px bg-[var(--er-border-subtle)]" aria-hidden="true" />
+                            <Switch
+                                label="selected"
+                                labelClassName="text-sm text-[var(--er-text-tertiary)]"
+                                checked={showSelected}
+                                setChecked={setShowSelected}
+                            />
                         </div>
-                        <IconButton
-                            className={classNames(
-                                "tada-animation pl-[0.7em] pr-[0.9em] w-[6em]",
-                                { "tada-animation": showUnranked && rankedItems?.length }
-                            )}
-                            onClick={() => dispatch(setShowUnranked(!showUnranked))}
-                            title={'View List'}
-                        />
                     </div>
+                    <IconButton
+                        className={classNames(
+                            "tada-animation pl-[0.7em] pr-[0.9em] w-[6em] shrink-0",
+                            { "tada-animation": showUnranked && rankedItems?.length }
+                        )}
+                        onClick={() => dispatch(setShowUnranked(!showUnranked))}
+                        title={'View List'}
+                    />
                 </div>
             </div>
 

@@ -2,6 +2,7 @@ import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faMinus, faCheck } from '@fortawesome/free-solid-svg-icons';
 import Ripples from 'react-ripples';
+import classNames from 'classnames';
 import { ContestantRow } from './tableTypes';
 
 
@@ -20,9 +21,24 @@ const TableBody: React.FC<TableBodyProps> = ({
 }) => {
     return (
         <tbody className="bg-transparent divide-y divide-gray-700">
-            {paginatedContestants.map((contestant) => (
-                <tr key={contestant.id} className="hover:bg-[var(--er-surface-dark)] bg-opacity-50 text-[var(--er-text-secondary)]">
-                    <td className="py-0 whitespace-nowrap sticky left-0 z-30 bg-[var(--er-surface-dark)] hover:bg-[var(--er-button-primary)]">
+            {paginatedContestants.map((contestant) => {
+                const isSelected = !showSelected && selectedContestants.some(c => c.id === contestant.id);
+                return (
+                <tr
+                    key={contestant.id}
+                    className={classNames(
+                        "text-[var(--er-text-secondary)] transition-colors",
+                        isSelected
+                            ? "bg-[var(--er-surface-accent-70)] hover:bg-[var(--er-surface-accent)]"
+                            : "bg-opacity-50 hover:bg-[var(--er-surface-dark)]"
+                    )}
+                >
+                    <td className={classNames(
+                        "py-0 whitespace-nowrap sticky left-0 z-30",
+                        isSelected
+                            ? "bg-[var(--er-surface-accent)] hover:bg-[var(--er-button-primary)]"
+                            : "bg-[var(--er-surface-dark)] hover:bg-[var(--er-button-primary)]"
+                    )}>
                         <div className="flex justify-center h-full">
                             <Ripples className="flex items-center justify-center w-full h-full" placeholder={<></>}>
                                 <button
@@ -30,9 +46,9 @@ const TableBody: React.FC<TableBodyProps> = ({
                                     className="text-[var(--er-text-secondary)] hover:text-slate-100 p-2 rounded-md h-full w-full"
                                 >
                                     {showSelected ? (
-                                        <FontAwesomeIcon icon={faMinus} className="text-[var(--r-accent-error)]" />
-                                    ) : selectedContestants.some(c => c.id === contestant.id) ? (
-                                        <FontAwesomeIcon icon={faCheck} className="text-[var(--r-accent-success)]" />
+                                        <FontAwesomeIcon icon={faMinus} className="text-[var(--er-accent-error)]" />
+                                    ) : isSelected ? (
+                                        <FontAwesomeIcon icon={faCheck} className="text-[var(--er-accent-success)]" />
                                     ) : (
                                         <FontAwesomeIcon icon={faPlus}/>
                                     )}
@@ -45,7 +61,8 @@ const TableBody: React.FC<TableBodyProps> = ({
                     <td className="px-6 py-4 whitespace-nowrap overflow-x-clip" title={contestant.performer}>{contestant.performer}</td>
                     <td className="px-6 py-4 whitespace-nowrap overflow-x-clip" title={contestant.song}>{contestant.song}</td>
                 </tr>
-            ))}
+                );
+            })}
         </tbody>
     );
 };

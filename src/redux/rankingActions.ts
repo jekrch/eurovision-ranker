@@ -9,7 +9,7 @@ export const deleteRankedCountry = createAsyncThunk(
   async (id: string, { getState, dispatch }) => {
     const state = getState() as AppState;
 
-    const { rankedItems, unrankedItems, categories } = state;
+    const { rankedItems, unrankedItems, categories } = state.root;
 
     const index = rankedItems.findIndex(i => i.id === id);
     if (index === -1) throw new Error('Country not found in ranked items');

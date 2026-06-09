@@ -52,13 +52,13 @@ const RankedCountriesList: React.FC<RankedCountriesListProps> = ({
 }) => {
     const dispatch: AppDispatch = useAppDispatch();
     const [refreshUrl, setRefreshUrl] = useState(0);
-    const showUnranked = useAppSelector((state: AppState) => state.showUnranked);
-    const theme = useAppSelector((state: AppState) => state.theme);
-    const showTotalRank = useAppSelector((state: AppState) => state.showTotalRank);
-    const isDeleteMode = useAppSelector((state: AppState) => state.isDeleteMode);
-    const rankedItems = useAppSelector((state: AppState) => state.rankedItems);
-    const categories = useAppSelector((state: AppState) => state.categories);
-    const activeCategory = useAppSelector((state: AppState) => state.activeCategory);
+    const showUnranked = useAppSelector((state: AppState) => state.root.showUnranked);
+    const theme = useAppSelector((state: AppState) => state.root.theme);
+    const showTotalRank = useAppSelector((state: AppState) => state.root.showTotalRank);
+    const isDeleteMode = useAppSelector((state: AppState) => state.root.isDeleteMode);
+    const rankedItems = useAppSelector((state: AppState) => state.root.rankedItems);
+    const categories = useAppSelector((state: AppState) => state.root.categories);
+    const activeCategory = useAppSelector((state: AppState) => state.root.activeCategory);
 
     /**
     * used to synchronize the horizontal scrollbar on detail cards across all ranked items

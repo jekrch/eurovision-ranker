@@ -6,10 +6,10 @@ import { setRankedItems, setUnrankedItems } from '../redux/rootSlice';
 
 export const useRefreshUrl = () => {
   const dispatch = useAppDispatch();
-  const categories = useAppSelector((state: AppState) => state.categories);
-  const activeCategory = useAppSelector((state: AppState) => state.activeCategory);
-  const rankedItems = useAppSelector((state: AppState) => state.rankedItems);
-  const unrankedItems = useAppSelector((state: AppState) => state.unrankedItems);
+  const categories = useAppSelector((state: AppState) => state.root.categories);
+  const activeCategory = useAppSelector((state: AppState) => state.root.activeCategory);
+  const rankedItems = useAppSelector((state: AppState) => state.root.rankedItems);
+  const unrankedItems = useAppSelector((state: AppState) => state.root.unrankedItems);
   const [shouldRefresh, setShouldRefresh] = useState(false);
 
   const refreshUrl = useCallback(() => {

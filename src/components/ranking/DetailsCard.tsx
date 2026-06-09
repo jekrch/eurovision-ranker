@@ -30,14 +30,14 @@ export interface DetailsCardProps {
  * @returns 
  */
 export const DetailsCard: FC<DetailsCardProps> = (props) => {
-  const categories = useAppSelector((state: AppState) => state.categories);
-  const activeCategory = useAppSelector((state: AppState) => state.activeCategory);
-  const isGlobalMode = useAppSelector((state: AppState) => state.globalSearch);
-  const showTotalRank = useAppSelector((state: AppState) => state.showTotalRank);
-  const showComparison = useAppSelector((state: AppState) => state.showComparison);
-  const showThumbnail = useAppSelector((state: AppState) => state.showThumbnail);
-  const showPlace = useAppSelector((state: AppState) => state.showPlace);
-  const vote = useAppSelector((state: AppState) => state.vote);
+  const categories = useAppSelector((state: AppState) => state.root.categories);
+  const activeCategory = useAppSelector((state: AppState) => state.root.activeCategory);
+  const isGlobalMode = useAppSelector((state: AppState) => state.root.globalSearch);
+  const showTotalRank = useAppSelector((state: AppState) => state.root.showTotalRank);
+  const showComparison = useAppSelector((state: AppState) => state.root.showComparison);
+  const showThumbnail = useAppSelector((state: AppState) => state.root.showThumbnail);
+  const showPlace = useAppSelector((state: AppState) => state.root.showPlace);
+  const vote = useAppSelector((state: AppState) => state.root.vote);
   const contestant = props.countryContestant.contestant;
   const country = props.countryContestant.country;
   const categoryRankingsRef = useRef<HTMLDivElement>(null);

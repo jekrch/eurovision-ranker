@@ -1,16 +1,16 @@
 import { logger } from './utilities/logger';
-import React, { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { DragDropContext, DropResult } from '@hello-pangea/dnd';
+import React, { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
+import { DragDropContext } from '@hello-pangea/dnd';
 import classNames from 'classnames';
 import { CountryContestant } from './data/CountryContestant';
 import { AppDispatch, AppState } from './redux/store';
-import { setRankedItems, setUnrankedItems, setShowUnranked, setActiveCategory, setShowTotalRank, setCategories, setGlobalSearch, setTheme, setName, setYear, setCurrentRankingId, setLastSavedSignature, setLoadedAuthor, patchUser } from './redux/rootSlice';
+import { setRankedItems, setShowUnranked, setActiveCategory, setShowTotalRank, setCategories, setGlobalSearch, setTheme, patchUser } from './redux/rootSlice';
 import { loadRankingsFromURL, encodeRankingsToURL, updateQueryParams, updateUrlFromRankedItems, urlHasRankings } from './utilities/UrlUtil';
 import WelcomeOverlay from './components/modals/WelcomeOverlay';
-import toast, { Toaster } from 'react-hot-toast';
+import { Toaster } from 'react-hot-toast';
 import { toastOptions } from './utilities/ToasterUtil';
 import { SKIP_WELCOME_AFTER_TOUR_KEY } from './utilities/JoyrideUtil';
-import { areCategoriesSet, categoryRankingsExist, parseCategoriesUrlParam, reorderByAllWeightedRankings } from './utilities/CategoryUtil';
+import { areCategoriesSet, parseCategoriesUrlParam, reorderByAllWeightedRankings } from './utilities/CategoryUtil';
 import { isArrayEqual } from './utilities/RankAnalyzer';
 import { addWindowEventListeners, handlePopState, removeWindowEventListeners, setVh } from './utilities/EventListenerUtil';
 import { useAppDispatch, useAppSelector } from './hooks/stateHooks';
@@ -18,21 +18,25 @@ import { Switch } from './components/Switch';
 import TooltipHelp from './components/TooltipHelp';
 import ContentPlaceholder from './components/ranking/ContentPlaceholder';
 import EditNav from './components/nav/EditNav';
-import { deleteRankedCountry } from './redux/rankingActions';
 import { useModal } from './hooks/useModal';
 import { VideoPipProvider } from './components/video/VideoPipContext';
 import SorterModal from './components/ranking/SorterModal';
 import useSorterModal from './hooks/useSortModal';
 import { useThemeEffect } from './hooks/useThemeEffect';
+import { usePublicRankingView } from './hooks/usePublicRankingView';
+import { useRankingDragDrop } from './hooks/useRankingDragDrop';
 import AuthModal, { AuthView } from './components/modals/auth/AuthModal';
 import JoinGroupModal from './components/modals/groups/JoinGroupModal';
 import { ping } from './utilities/api/health';
-import { getPublicRanking, getRanking } from './utilities/api/rankings';
 import { getMe } from './utilities/api/me';
-import { getToken } from './utilities/api/client';
-import { parseStoredRanking } from './utilities/api/rankingParams';
-import { signatureFromRanking } from './utilities/api/rankingSignature';
-import { ApiError } from './utilities/api/types';
+import {
+  cameFromTour,
+  areRankingsSet,
+  isAuthDeepLink,
+  hasIdParam,
+  hasQuizCode,
+  hasJoinToken,
+} from './utilities/deepLinkUtil';
 
 // lazy load components to reduce initial bundle size
 const LazyRankedCountriesList = React.lazy(() => import('./components/ranking/RankedCountriesList'));
@@ -57,25 +61,16 @@ const App: React.FC = () => {
   const [refreshUrl, setRefreshUrl] = useState(0);
   const dispatch: AppDispatch = useAppDispatch();
 
-  // Public-view-by-id mode: when active, the URL is just `?id=<ranking_id>`
-  // and we suppress the n/y/r URL-writing effects so the share URL stays
-  // tidy. The first user-initiated change (drag/drop, year change, rename)
-  // exits the mode and re-syncs the URL.
-  const publicViewActiveRef = useRef(false);
-  const publicViewLoadedRef = useRef(false);
-  const loadedNameRef = useRef<string>('');
-  const loadedYearRef = useRef<string>('');
-
-  const showUnranked = useAppSelector((state: AppState) => state.showUnranked);
-  const theme = useAppSelector((state: AppState) => state.theme);
-  const name = useAppSelector((state: AppState) => state.name);
-  const showTotalRank = useAppSelector((state: AppState) => state.showTotalRank);
-  const rankedItems = useAppSelector((state: AppState) => state.rankedItems);
-  const unrankedItems = useAppSelector((state: AppState) => state.unrankedItems);
-  const year = useAppSelector((state: AppState) => state.year);
-  const globalSearch = useAppSelector((state: AppState) => state.globalSearch);
-  const categories = useAppSelector((state: AppState) => state.categories);
-  const activeCategory = useAppSelector((state: AppState) => state.activeCategory);
+  const showUnranked = useAppSelector((state: AppState) => state.root.showUnranked);
+  const theme = useAppSelector((state: AppState) => state.root.theme);
+  const name = useAppSelector((state: AppState) => state.root.name);
+  const showTotalRank = useAppSelector((state: AppState) => state.root.showTotalRank);
+  const rankedItems = useAppSelector((state: AppState) => state.root.rankedItems);
+  const unrankedItems = useAppSelector((state: AppState) => state.root.unrankedItems);
+  const year = useAppSelector((state: AppState) => state.root.year);
+  const globalSearch = useAppSelector((state: AppState) => state.root.globalSearch);
+  const categories = useAppSelector((state: AppState) => state.root.categories);
+  const activeCategory = useAppSelector((state: AppState) => state.root.activeCategory);
 
   const [selectedCountryContestant, setSelectedCountryContestant] = useState<CountryContestant | undefined>(undefined);
   const [showOverlay, setShowOverlay] = useState(!cameFromTour() && !areRankingsSet() && !isAuthDeepLink() && !hasIdParam() && !hasJoinToken() && !hasQuizCode());
@@ -98,6 +93,19 @@ const App: React.FC = () => {
     closeSorterModal,
     getItemsToSort
   } = useSorterModal();
+
+  // Public-view-by-id mode: when active, the URL is just `?id=<ranking_id>`
+  // and we suppress the n/y/r URL-writing effects so the share URL stays
+  // tidy. The first user-initiated change (drag/drop, year change, rename)
+  // exits the mode and re-syncs the URL.
+  const {
+    publicViewActiveRef,
+    publicViewLoadedRef,
+    loadedNameRef,
+    loadedYearRef,
+    loadPublicRankingById,
+    exitPublicView,
+  } = usePublicRankingView({ activeCategory, name, year, dispatch });
 
   const loadAuroralCSS = () => {
     return import('./auroral.css');
@@ -130,68 +138,6 @@ const App: React.FC = () => {
       )
     }
   }, [showUnranked]);
-
-  /**
-   * Whether the app was just reloaded as a result of exiting a tour. When true,
-   * we skip the welcome overlay and send the user straight to the select view.
-   * This only peeks at the flag — the boot effect clears it once consumed.
-   */
-  function cameFromTour() {
-    try {
-      return sessionStorage.getItem(SKIP_WELCOME_AFTER_TOUR_KEY) === '1';
-    } catch {
-      return false;
-    }
-  }
-
-  /**
-   * Determines whether any rankings are set in the url
-   * @returns
-   */
-  function areRankingsSet() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const rParam = urlParams.get('r');
-
-    if (rParam !== null && rParam !== '') {
-      return true;
-    }
-
-    return categoryRankingsExist(urlParams)
-  };
-
-  // Auth deep-links (?signup=beta, /complete-registration, /reset-password) should
-  // skip the welcome overlay — otherwise it covers the AuthModal and a click on the
-  // overlay outside the auth modal can close the auth modal too.
-  function isAuthDeepLink() {
-    const path = window.location.pathname;
-    const params = new URLSearchParams(window.location.search);
-    return (
-      path.endsWith('/complete-registration') ||
-      path.endsWith('/reset-password') ||
-      path.endsWith('/join-group') ||
-      params.get('signup') === 'beta'
-    );
-  }
-
-  function hasIdParam() {
-    return !!new URLSearchParams(window.location.search).get('id');
-  }
-
-  // ?quiz=<code> opens the quiz modal on boot — skip the welcome overlay so it
-  // doesn't sit on top of (and swallow clicks to) the quiz.
-  function hasQuizCode() {
-    return !!new URLSearchParams(window.location.search).get('quiz');
-  }
-
-  // Invite deep-links come in two shapes:
-  //   /join-group?token=…  (the canonical link the API builds)
-  //   ?join=…              (query-only fallback for gh-pages-style hosts
-  //                          that don't rewrite unknown paths to index.html)
-  function hasJoinToken(): boolean {
-    const params = new URLSearchParams(window.location.search);
-    const path = window.location.pathname;
-    return (path.endsWith('/join-group') && !!params.get('token')) || !!params.get('join');
-  }
 
   const handleGetStarted = useCallback(() => {
     setIsOverlayExit(true);
@@ -284,86 +230,13 @@ const App: React.FC = () => {
   // appears (page load with a stored token, or a fresh in-session login). JWTs
   // issued before the username feature don't carry it, so we fetch rather than
   // read the token. Best-effort: failures (offline, expired token) are non-fatal.
-  const token = useAppSelector((state: AppState) => state.token);
+  const token = useAppSelector((state: AppState) => state.auth.token);
   useEffect(() => {
     if (!token) return;
     getMe()
       .then((me) => dispatch(patchUser({ username: me.username })))
       .catch(() => { /* ignore */ });
   }, [token]);
-
-  async function loadPublicRankingById(id: string) {
-    try {
-      // When signed in, use the authenticated endpoint: it returns the
-      // caller's own rankings, public rankings, and non-public rankings shared
-      // with a group they belong to. Anonymous visitors get public-only.
-      const full = getToken() ? await getRanking(id) : await getPublicRanking(id);
-      const loadedName = full.name || '';
-      const loadedYear = full.year != null ? String(full.year) : '';
-      const yearShort = full.year != null ? String(full.year).slice(-2) : undefined;
-
-      loadedNameRef.current = loadedName;
-      loadedYearRef.current = loadedYear;
-      // Mark loaded *before* dispatching so the n/y useEffects, which fire
-      // after the dispatches, can compare against the loaded values rather
-      // than treating themselves as user actions.
-      publicViewLoadedRef.current = true;
-
-      // Temporarily replace the URL search with the saved params + n/y so
-      // loadRankingsFromURL can read them, then strip back to ?id=<id> below.
-      // `full.ranking` may be the new query-string format (e.g. r=…&r1=…&v=…)
-      // or the legacy raw r-value — parseStoredRanking handles both.
-      const sp = parseStoredRanking(full.ranking ?? '');
-      if (loadedName) sp.set('n', loadedName);
-      if (yearShort) sp.set('y', yearShort);
-      sp.set('id', id);
-      window.history.pushState(null, '', '?' + sp.toString());
-
-      dispatch(setName(loadedName));
-      if (loadedYear) dispatch(setYear(loadedYear));
-
-      await loadRankingsFromURL(activeCategory, dispatch);
-
-      // Keep the URL tidy: just ?id=<id>. The n/y/refreshUrl effects below
-      // check publicViewActiveRef and won't write back.
-      window.history.pushState(null, '', '?id=' + encodeURIComponent(id));
-
-      dispatch(setShowUnranked(false));
-
-      // Tie into the shared dirty-tracking mechanism so the header can show a
-      // subtle "loaded ranking by <author>" indicator that disappears on the
-      // first edit (when the live signature diverges from this baseline).
-      dispatch(setCurrentRankingId(full.ranking_id));
-      dispatch(setLastSavedSignature(signatureFromRanking(full)));
-      dispatch(setLoadedAuthor({
-        username: full.author_username,
-        email: full.author_email,
-        userId: full.user_id,
-      }));
-    } catch (e) {
-      publicViewActiveRef.current = false;
-      publicViewLoadedRef.current = false;
-      dispatch(setLoadedAuthor(null));
-      if (e instanceof ApiError && e.status === 404) {
-        toast.error('That ranking is not available.');
-      } else if (e instanceof ApiError) {
-        toast.error(e.body?.trim() || 'Failed to load ranking.');
-      } else {
-        toast.error('Failed to load ranking.');
-      }
-      updateQueryParams({ id: undefined });
-    }
-  }
-
-  function exitPublicView() {
-    publicViewActiveRef.current = false;
-    // Restore n/y in URL since we suppressed those writes while in public view.
-    updateQueryParams({
-      id: undefined,
-      n: name || undefined,
-      y: year ? year.slice(-2) : undefined,
-    });
-  }
 
   /**
     * First determines whether to display the list view on first page load. If there 
@@ -570,102 +443,16 @@ const App: React.FC = () => {
     }
   }, [categories]);
 
-  /**
-     * Handler for the drop event. Either reposition an item within 
-     * its source array or move it to the other array 
-     * 
-     * @param result 
-     * @returns 
-     */
-  const handleOnDragEnd = useCallback((result: DropResult) => {
-    const { source, destination } = result;
-
-    if (!destination) return;
-
-    let activeList, setActiveList, otherList, setOtherList;
-
-
-    const isDeleteFromRanking = source.droppableId === 'rankedItems' &&
-      destination.droppableId === 'unrankedItems';
-
-    if (source.droppableId === 'unrankedItems') {
-      activeList = memoizedUnrankedItems;
-      setActiveList = setUnrankedItems;
-      otherList = memoizedRankedItems;
-      setOtherList = setRankedItems;
-    } else {
-      activeList = memoizedRankedItems;
-      setActiveList = setRankedItems;
-      otherList = memoizedUnrankedItems;
-      setOtherList = setUnrankedItems;
-    }
-
-    let items = Array.from(activeList);
-    const [reorderedItem] = items.splice(source.index, 1);
-
-    // moving between lists
-    if (destination.droppableId !== source.droppableId) {
-      let destinationItems = Array.from(otherList);
-
-      destinationItems.splice(destination.index, 0, reorderedItem);
-
-      if (isDeleteFromRanking) {
-        // this is here especially to ensure that we delete from all category rankings,
-        // and not just the currently selected one
-        dispatch(
-          deleteRankedCountry(reorderedItem.id)
-        );
-        setRefreshUrl(Math.random());
-      } else {
-        // Update the URL parameters for all categories 
-        // (this adds the new item to all category rankings)
-        let id = globalSearch ? reorderedItem.uid : reorderedItem.country.id;
-        if (id) {
-          addNewItemToAllCategoryRankings(id);
-        } else {
-          logger.error('Contestant lacks valid ID:')
-          logger.error(reorderedItem);
-        }
-      }
-
-      dispatch(setOtherList(destinationItems));
-
-    } else {
-      items.splice(destination.index, 0, reorderedItem);
-      dispatch(setActiveList(items));
-    }
-
-    dispatch(setActiveList(items));
-    setRefreshUrl(Math.random());
-  }, [memoizedUnrankedItems, memoizedRankedItems, categories, dispatch]);
-
-  const handleAddToRanked = useCallback((item: CountryContestant) => {
-    const sourceIndex = memoizedUnrankedItems.findIndex(i => i.id === item.id);
-    if (sourceIndex === -1) return;
-
-    const newUnranked = Array.from(memoizedUnrankedItems);
-    newUnranked.splice(sourceIndex, 1);
-
-    const newRanked = [...memoizedRankedItems, item];
-
-    const id = globalSearch ? item.uid : item.country.id;
-    if (id) {
-      addNewItemToAllCategoryRankings(id);
-    }
-
-    dispatch(setRankedItems(newRanked));
-    dispatch(setUnrankedItems(newUnranked));
-    setRefreshUrl(Math.random());
-  }, [memoizedUnrankedItems, memoizedRankedItems, globalSearch, categories, dispatch]);
-
-  function addNewItemToAllCategoryRankings(newContestantId: String) {
-    categories.forEach((_, index) => {
-      const categoryParam = `r${index + 1}`;
-      const currentRanking = new URLSearchParams(window.location.search).get(categoryParam) || '';
-      const updatedRanking = `${currentRanking}${newContestantId}`;
-      updateQueryParams({ [categoryParam]: updatedRanking });
-    });
-  }
+  // Drag-and-drop + add-to-ranked handlers, including keeping every category
+  // ranking in the URL in sync. Extracted to keep App focused on composition.
+  const { handleOnDragEnd, handleAddToRanked } = useRankingDragDrop({
+    rankedItems: memoizedRankedItems,
+    unrankedItems: memoizedUnrankedItems,
+    globalSearch,
+    categories,
+    dispatch,
+    setRefreshUrl,
+  });
 
   // Helper functions to handle modal operations with selected tab
   function openMainModalWithTab(tabName: string): void {

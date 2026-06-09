@@ -15,8 +15,8 @@ const SorterContestantCard: React.FC<SorterContestantCardProps> = ({
   countryContestant,
   showAsPreviousChoice,
 }) => {
-  const isGlobalMode = useAppSelector((state) => state.globalSearch);
-  const showThumbnail = useAppSelector((state) => state.showThumbnail);
+  const isGlobalMode = useAppSelector((state) => state.root.globalSearch);
+  const showThumbnail = useAppSelector((state) => state.root.showThumbnail);
 
   const contestant = countryContestant.contestant;
   const country = countryContestant.country;

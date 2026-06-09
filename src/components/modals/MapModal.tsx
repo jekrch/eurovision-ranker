@@ -21,7 +21,7 @@ interface TooltipData {
  * Opened from the ranked items header menu
  */
 const MapModal: React.FC<MapModalProps> = ({ isOpen, onClose }) => {
-    const rankedItems = useAppSelector((state: AppState) => state.rankedItems);
+    const rankedItems = useAppSelector((state: AppState) => state.root.rankedItems);
     const [tooltipData, setTooltipData] = useState<TooltipData | null>(null);
 
     const countryCodes = rankedItems.map(i => i.country.key.toUpperCase());

@@ -26,11 +26,11 @@ export interface RankingDirtyState {
  * treated as dirty so it reads as "unsaved".
  */
 export function useRankingDirty(): RankingDirtyState {
-    const name = useAppSelector((s: AppState) => s.name);
-    const year = useAppSelector((s: AppState) => s.year);
-    const rankedItems = useAppSelector((s: AppState) => s.rankedItems);
-    const currentRankingId = useAppSelector((s: AppState) => s.currentRankingId);
-    const lastSavedSignature = useAppSelector((s: AppState) => s.lastSavedSignature);
+    const name = useAppSelector((s: AppState) => s.root.name);
+    const year = useAppSelector((s: AppState) => s.root.year);
+    const rankedItems = useAppSelector((s: AppState) => s.root.rankedItems);
+    const currentRankingId = useAppSelector((s: AppState) => s.auth.currentRankingId);
+    const lastSavedSignature = useAppSelector((s: AppState) => s.auth.lastSavedSignature);
 
     // `rankingParams` reflects everything in the URL except n/y/id/signup.
     // It's recomputed whenever `rankedItems` changes (a proxy for "the URL

@@ -20,12 +20,12 @@ import { loadRankingsFromURL, urlHasRankings } from '../../utilities/UrlUtil';
 
 const ContestantTable: React.FC = () => {
     const dispatch = useAppDispatch();
-    const showUnranked = useAppSelector((state: AppState) => state.showUnranked);
-    const rankedItems = useAppSelector((state: AppState) => state.rankedItems);
-    const tableState = useAppSelector((state: AppState) => state.tableState);
+    const showUnranked = useAppSelector((state: AppState) => state.root.showUnranked);
+    const rankedItems = useAppSelector((state: AppState) => state.root.rankedItems);
+    const tableState = useAppSelector((state: AppState) => state.table.tableState);
     const { sortColumn, sortDirection } = tableState;
     const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
-    const activeCategory = useAppSelector((state: AppState) => state.activeCategory);
+    const activeCategory = useAppSelector((state: AppState) => state.root.activeCategory);
     const resetRanking = useResetRanking();
     const { refreshUrl } = useRefreshUrl();
     const convertRankParams = useConvertRankParams();

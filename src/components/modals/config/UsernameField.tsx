@@ -20,7 +20,7 @@ const inputClass =
  */
 const UsernameField: React.FC = () => {
     const dispatch = useAppDispatch();
-    const username = useAppSelector((s: AppState) => s.user?.username);
+    const username = useAppSelector((s: AppState) => s.auth.user?.username);
 
     const [editing, setEditing] = useState(false);
     const [value, setValue] = useState('');

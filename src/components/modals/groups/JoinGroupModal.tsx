@@ -24,7 +24,7 @@ const secondaryBtn =
 
 const JoinGroupModal: React.FC<JoinGroupModalProps> = ({ isOpen, token, onClose, onSignInRequired, onJoined }) => {
     const dispatch = useAppDispatch();
-    const user = useAppSelector((s: AppState) => s.user);
+    const user = useAppSelector((s: AppState) => s.auth.user);
 
     const [loading, setLoading] = useState(false);
     const [preview, setPreview] = useState<GroupInvitePreview | null>(null);

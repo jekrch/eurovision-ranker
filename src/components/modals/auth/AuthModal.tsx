@@ -78,8 +78,8 @@ const FieldIcon: React.FC<{ icon: typeof faEnvelope }> = ({ icon }) => (
 
 const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialView, allowRegister = false, onAuthSuccess }) => {
     const dispatch = useAppDispatch();
-    const authStatus = useAppSelector((s: AppState) => s.authStatus);
-    const authError = useAppSelector((s: AppState) => s.authError);
+    const authStatus = useAppSelector((s: AppState) => s.auth.authStatus);
+    const authError = useAppSelector((s: AppState) => s.auth.authError);
 
     const [view, setView] = useState<AuthView>(initialView ?? { tab: 'login' });
 

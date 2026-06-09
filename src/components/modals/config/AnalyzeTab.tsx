@@ -19,9 +19,9 @@ import { useAppDispatch, useAppSelector } from '../../../hooks/stateHooks';
 
 const AnalyzeTab: React.FC = () => {
   const dispatch = useAppDispatch();
-  const year = useAppSelector((state: AppState) => state.year);
-  const categories = useAppSelector((state: AppState) => state.categories);
-  const activeCategory = useAppSelector((state: AppState) => state.activeCategory);
+  const year = useAppSelector((state: AppState) => state.root.year);
+  const categories = useAppSelector((state: AppState) => state.root.categories);
+  const activeCategory = useAppSelector((state: AppState) => state.root.activeCategory);
   const [voteType, setVoteType] = useState(
     // if we have all 3 vote types for this year, use Televote as the default, else use Total
     getVoteTypeOptionsByYear(year)?.length > 1 ? 'Televote' : 'Total'
@@ -29,8 +29,8 @@ const AnalyzeTab: React.FC = () => {
   const [mostSimilarComparisons, setMostSimilarComparisons] = useState<RankingComparison[]>([]);
   const [mostDissimilarComparisons, setMostDissimilarComparisons] = useState<RankingComparison[]>([]);
   const [codeCountryNameMap, setCodeCountryNameMap] = useState<Map<string, Country[]>>(new Map());
-  const showComparison = useAppSelector((state: AppState) => state.showComparison);
-  const globalSearch = useAppSelector((state: AppState) => state.globalSearch);
+  const showComparison = useAppSelector((state: AppState) => state.root.showComparison);
+  const globalSearch = useAppSelector((state: AppState) => state.root.globalSearch);
 
   /**
    * Get all country rank codes for the selected year and vote type

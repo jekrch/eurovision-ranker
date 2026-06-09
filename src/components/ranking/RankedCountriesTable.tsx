@@ -14,9 +14,9 @@ import ContestantTable from '../table/ContestantTable';
  */
 const RankedCountriesTable: React.FC = () => {
     const [refreshUrl, setRefreshUrl] = useState(0);
-    const rankedItems = useAppSelector((state: AppState) => state.rankedItems);
-    const categories = useAppSelector((state: AppState) => state.categories);
-    const activeCategory = useAppSelector((state: AppState) => state.activeCategory);
+    const rankedItems = useAppSelector((state: AppState) => state.root.rankedItems);
+    const categories = useAppSelector((state: AppState) => state.root.categories);
+    const activeCategory = useAppSelector((state: AppState) => state.root.activeCategory);
 
     useEffect(() => {
         if (refreshUrl === 0) return;

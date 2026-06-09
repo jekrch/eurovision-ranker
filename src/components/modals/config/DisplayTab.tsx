@@ -43,14 +43,14 @@ export const THEME_SURFACE_COLORS: Record<string, string> = {
 
 const DisplayTab: React.FC = () => {
     const dispatch = useAppDispatch();
-    const vote = useAppSelector((state: AppState) => state.vote);
-    const theme = useAppSelector((state: AppState) => state.theme);
-    const showComparison = useAppSelector((state: AppState) => state.showComparison);
-    const showThumbnail = useAppSelector((state: AppState) => state.showThumbnail);
-    const showPlace = useAppSelector((state: AppState) => state.showPlace);
-    const rankedItems = useAppSelector((state: AppState) => state.rankedItems);
-    const year = useAppSelector((state: AppState) => state.year);
-    const globalSearch = useAppSelector((state: AppState) => state.globalSearch);
+    const vote = useAppSelector((state: AppState) => state.root.vote);
+    const theme = useAppSelector((state: AppState) => state.root.theme);
+    const showComparison = useAppSelector((state: AppState) => state.root.showComparison);
+    const showThumbnail = useAppSelector((state: AppState) => state.root.showThumbnail);
+    const showPlace = useAppSelector((state: AppState) => state.root.showPlace);
+    const rankedItems = useAppSelector((state: AppState) => state.root.rankedItems);
+    const year = useAppSelector((state: AppState) => state.root.year);
+    const globalSearch = useAppSelector((state: AppState) => state.root.globalSearch);
 
     // Get vote source option based on vote code
     const getVoteSourceOption = (voteCode: string) => {

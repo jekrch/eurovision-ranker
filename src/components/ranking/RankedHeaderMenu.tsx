@@ -28,13 +28,13 @@ const RankedHeaderMenu: React.FC<RankedHeaderMenuProps> = (props: RankedHeaderMe
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isImageStyleModalOpen, setIsImageStyleModalOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
-  const rankedItems = useAppSelector((state: AppState) => state.rankedItems);
-  const globalMenuOpenTrigger = useAppSelector((state: AppState) => state.headerMenuOpen);
+  const rankedItems = useAppSelector((state: AppState) => state.root.rankedItems);
+  const globalMenuOpenTrigger = useAppSelector((state: AppState) => state.root.headerMenuOpen);
   const dispatch: AppDispatch = useAppDispatch();
   const { playList, hasPlayableVideos } = useVideoPip();
   const CLOSING_DURATION = 300;
   const menuNodeRef = useRef(null);
-  const showTotalRank = useAppSelector((state: AppState) => state.showTotalRank);
+  const showTotalRank = useAppSelector((state: AppState) => state.root.showTotalRank);
   const toggleMenu = () => {
     const shouldClose = isMenuOpen;
     setIsMenuOpen(!isMenuOpen);

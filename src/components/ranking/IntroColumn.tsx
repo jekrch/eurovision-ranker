@@ -54,8 +54,8 @@ const MenuItem: React.FC<MenuItemProps> = ({ icon, text, onClick, isCustomIcon =
 
 const IntroColumn: React.FC<IntroColumnProps> = ({ openModal, openConfigModal, setRunTour, setRunSortTour, openAuthModal, openQuizModal }) => {
     const dispatch = useAppDispatch();
-    const theme = useAppSelector((state: AppState) => state.theme);
-    const user = useAppSelector((state: AppState) => state.user);
+    const theme = useAppSelector((state: AppState) => state.root.theme);
+    const user = useAppSelector((state: AppState) => state.auth.user);
 
     const handleThemeChange = (themeCode: string) => {
         dispatch(setTheme(themeCode));

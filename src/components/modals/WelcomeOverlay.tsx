@@ -27,7 +27,7 @@ interface WelcomeOverlayProps {
 const WelcomeOverlay: React.FC<WelcomeOverlayProps> = ({ handleGetStarted, handleTakeTour, exiting }) => {
 
     const dispatch: AppDispatch = useAppDispatch();
-    const welcomeOverlayIsOpen = useAppSelector((state: AppState) => state.welcomeOverlayIsOpen);
+    const welcomeOverlayIsOpen = useAppSelector((state: AppState) => state.root.welcomeOverlayIsOpen);
     const overlayContentRef = useRef<HTMLDivElement>(null);
     const [closed, setClosed] = useState(false);
 

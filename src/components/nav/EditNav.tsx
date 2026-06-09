@@ -22,12 +22,12 @@ type EditNavProps = {
  */
 const EditNav: React.FC<EditNavProps> = ({ setNameModalShow }) => {
     const dispatch: AppDispatch = useAppDispatch();
-    const rankedItems = useAppSelector((state: AppState) => state.rankedItems);
-    const selectedContestants = useAppSelector((state: AppState) => state.tableState.selectedContestants);
-    const unrankedItems = useAppSelector((state: AppState) => state.unrankedItems);
-    const isDeleteMode = useAppSelector((state: AppState) => state.isDeleteMode);
-    const paginatedContestants = useAppSelector((state: AppState) => state.tableState.paginatedContestants);
-    const globalSearch = useAppSelector((state: AppState) => state.globalSearch);
+    const rankedItems = useAppSelector((state: AppState) => state.root.rankedItems);
+    const selectedContestants = useAppSelector((state: AppState) => state.table.tableState.selectedContestants);
+    const unrankedItems = useAppSelector((state: AppState) => state.root.unrankedItems);
+    const isDeleteMode = useAppSelector((state: AppState) => state.root.isDeleteMode);
+    const paginatedContestants = useAppSelector((state: AppState) => state.table.tableState.paginatedContestants);
+    const globalSearch = useAppSelector((state: AppState) => state.root.globalSearch);
     const resetRanking = useResetRanking();
     const { handleAddAllUnranked } = useRefreshUrl();
 

@@ -64,10 +64,10 @@ const joyRideTourSteps = [
 
 const JoyrideTourSort: React.FC<JoyrideTourSortProps> = (props: JoyrideTourSortProps) => {
   const dispatch: AppDispatch = useAppDispatch();
-  const year = useAppSelector((state: AppState) => state.year);
-  const categories = useAppSelector((state: AppState) => state.categories);
-  const rankedItems = useAppSelector((state: AppState) => state.rankedItems);
-  const unrankedItems = useAppSelector((state: AppState) => state.unrankedItems);
+  const year = useAppSelector((state: AppState) => state.root.year);
+  const categories = useAppSelector((state: AppState) => state.root.categories);
+  const rankedItems = useAppSelector((state: AppState) => state.root.rankedItems);
+  const unrankedItems = useAppSelector((state: AppState) => state.root.unrankedItems);
   
   const [startTour, setStartTour] = useState<boolean>(false);
   const resetRanking = useResetRanking();

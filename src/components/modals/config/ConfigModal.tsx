@@ -47,8 +47,8 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
             return props.tab;
         }
     });
-    const globalSearch = useAppSelector((state: AppState) => state.globalSearch);
-    const rankedItems = useAppSelector((state: AppState) => state.rankedItems);
+    const globalSearch = useAppSelector((state: AppState) => state.root.globalSearch);
+    const rankedItems = useAppSelector((state: AppState) => state.root.rankedItems);
     // Reset to props.tab only when the requested tab actually changes (explicit deep-link),
     // not on mount and not every time the modal reopens — that keeps the selection sticky.
     const didMountRef = useRef(false);

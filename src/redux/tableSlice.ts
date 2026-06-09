@@ -1,13 +1,33 @@
-import { createAsyncThunk } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { AppState } from './store';
 import { setRankedItems, setUnrankedItems } from './rootSlice';
+import { ContestantRow, TableState } from '../components/table/tableTypes';
+
+export interface TableSliceState {
+    tableState: TableState;
+}
+
+const initialState: TableSliceState = {
+    tableState: {
+        sortColumn: 'year',
+        sortDirection: 'desc',
+        filters: {},
+        pageSize: 10,
+        currentPage: 1,
+        filteredEntries: [],
+        entries: [],
+        searchTerm: '',
+        selectedContestants: [],
+        paginatedContestants: []
+    } as TableState
+};
 
 export const sortTable = createAsyncThunk(
   'table/sortTable',
   async (column: string, { getState }) => {
     const state = getState() as AppState;
-    const currentSort = state.tableState.sortColumn;
-    const currentDirection = state.tableState.sortDirection;
+    const currentSort = state.table.tableState.sortColumn;
+    const currentDirection = state.table.tableState.sortDirection;
 
     let newDirection = 'asc';
     if (column === currentSort) {
@@ -36,7 +56,7 @@ export const addAllUnranked = createAsyncThunk(
   'items/addAllUnranked',
   async (_, { dispatch, getState }) => {
     const state = getState() as AppState;
-    const { rankedItems, unrankedItems, categories } = state;
+    const { rankedItems, unrankedItems, categories } = state.root;
 
     // Clear unranked items
     dispatch(setUnrankedItems([]));
@@ -66,3 +86,72 @@ export const addAllUnranked = createAsyncThunk(
     };
   }
 );
+
+const tableSlice = createSlice({
+    name: 'table',
+    initialState,
+    reducers: {
+        setTableCurrentPage: (state, action: PayloadAction<number>) => {
+            state.tableState.currentPage = action.payload;
+        },
+        setEntries: (state, action: PayloadAction<ContestantRow[]>) => {
+            state.tableState.entries = action.payload;
+        },
+        setSelectedContestants: (state, action: PayloadAction<ContestantRow[]>) => {
+            state.tableState.selectedContestants = action.payload;
+        },
+        setPaginatedContestants: (state, action: PayloadAction<ContestantRow[]>) => {
+            state.tableState.paginatedContestants = action.payload;
+        },
+        toggleSelectedContestant: (state, action: PayloadAction<string>) => {
+            const contestantId = action.payload;
+            const index = state.tableState.selectedContestants.findIndex(c => c.id === contestantId);
+            if (index !== -1) {
+                state.tableState.selectedContestants.splice(index, 1);
+            } else {
+                const contestant = state.tableState.entries.find(c => c.id === contestantId);
+                if (contestant) {
+                    state.tableState.selectedContestants.push(contestant);
+                }
+            }
+        },
+        addAllPaginatedContestants: (state) => {
+            const newSelectedContestants = state.tableState.paginatedContestants.filter(
+                paginatedContestant => !state.tableState.selectedContestants.some(
+                    selectedContestant => selectedContestant.id === paginatedContestant.id
+                )
+            );
+
+            state.tableState.selectedContestants = [
+                ...state.tableState.selectedContestants,
+                ...newSelectedContestants
+            ];
+        },
+    },
+    extraReducers: (builder) => {
+        builder
+            .addCase(sortTable.fulfilled, (state, action) => {
+                state.tableState.sortColumn = action.payload.column;
+                state.tableState.sortDirection = action.payload.direction;
+            })
+            .addCase(filterTable.fulfilled, (state, action) => {
+                state.tableState.filters = action.payload;
+                state.tableState.currentPage = 1; // Reset to first page when filters change
+            })
+            .addCase(changePageSize.fulfilled, (state, action) => {
+                state.tableState.pageSize = action.payload;
+                state.tableState.currentPage = 1; // Reset to first page when page size changes
+            });
+    },
+});
+
+export const {
+    setTableCurrentPage,
+    setEntries,
+    setSelectedContestants,
+    setPaginatedContestants,
+    toggleSelectedContestant,
+    addAllPaginatedContestants,
+} = tableSlice.actions;
+
+export default tableSlice.reducer;

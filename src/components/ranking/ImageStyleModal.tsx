@@ -30,8 +30,8 @@ const ImageStyleModal: React.FC<ImageStyleModalProps> = ({ isOpen, onClose }) =>
   const [isRendering, setIsRendering] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
 
-  const rankedItems = useAppSelector((state: AppState) => state.rankedItems);
-  const rankingName = useAppSelector((state: AppState) => state.name);
+  const rankedItems = useAppSelector((state: AppState) => state.root.rankedItems);
+  const rankingName = useAppSelector((state: AppState) => state.root.name);
 
   // render a live preview of the currently selected style
   useEffect(() => {

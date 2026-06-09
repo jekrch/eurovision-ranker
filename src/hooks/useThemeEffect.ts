@@ -14,7 +14,7 @@ function resolveSurfaceColor(theme: string): string {
 }
 
 export function useThemeEffect() {
-    const theme = useAppSelector(state => state.theme);
+    const theme = useAppSelector(state => state.root.theme);
 
     useEffect(() => {
         const effectiveTheme = (theme && theme !== 'ab')

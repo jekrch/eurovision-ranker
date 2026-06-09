@@ -174,7 +174,7 @@ export const VideoPipProvider: React.FC<{
     });
 
     // the ranked list drives left/right navigation between adjacent videos
-    const rankedItems = useAppSelector((state) => state.rankedItems);
+    const rankedItems = useAppSelector((state) => state.root.rankedItems);
     const rankedItemsRef = useRef(rankedItems);
     rankedItemsRef.current = rankedItems;
     const autoContinueRef = useRef(autoContinue);

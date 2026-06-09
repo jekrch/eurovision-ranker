@@ -14,11 +14,11 @@ import { fetchContestantCsv } from '../utilities/CsvCache';
 
 export const useContestantTable = () => {
     const dispatch = useAppDispatch();
-    const tableState = useAppSelector((state: AppState) => state.tableState);
-    const rankedItems = useAppSelector((state: AppState) => state.rankedItems);
-    const globalSearch = useAppSelector((state: AppState) => state.globalSearch);
-    const categories = useAppSelector((state: AppState) => state.categories);
-    const activeCategory = useAppSelector((state: AppState) => state.activeCategory);
+    const tableState = useAppSelector((state: AppState) => state.table.tableState);
+    const rankedItems = useAppSelector((state: AppState) => state.root.rankedItems);
+    const globalSearch = useAppSelector((state: AppState) => state.root.globalSearch);
+    const categories = useAppSelector((state: AppState) => state.root.categories);
+    const activeCategory = useAppSelector((state: AppState) => state.root.activeCategory);
     
     const { sortColumn, sortDirection, pageSize, currentPage, entries, selectedContestants } = tableState;
     

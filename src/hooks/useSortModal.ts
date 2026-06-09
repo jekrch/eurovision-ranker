@@ -8,8 +8,8 @@ import { useAppSelector } from './stateHooks';
  */
 export const useSorterModal = () => {
   const [isSorterModalOpen, setIsSorterModalOpen] = useState(false);
-  const rankedItems = useAppSelector((state) => state.rankedItems);
-  const unrankedItems = useAppSelector((state) => state.unrankedItems);
+  const rankedItems = useAppSelector((state) => state.root.rankedItems);
+  const unrankedItems = useAppSelector((state) => state.root.unrankedItems);
 
   /**
    * Open the sorter modal

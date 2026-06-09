@@ -19,8 +19,8 @@ const CanvasDevModal: React.FC<{
   const [error, setError] = useState<string | null>(null);
   
   // Get existing data from Redux store
-  const rankedItems = useAppSelector((state: AppState) => state.rankedItems);
-  const rankingName = useAppSelector((state: AppState) => state.name);
+  const rankedItems = useAppSelector((state: AppState) => state.root.rankedItems);
+  const rankingName = useAppSelector((state: AppState) => state.root.name);
   
   let customConfig: Partial<RankingCanvasConfig>  = {};
 

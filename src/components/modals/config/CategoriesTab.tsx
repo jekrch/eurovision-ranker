@@ -11,10 +11,10 @@ import { useAppDispatch, useAppSelector } from '../../../hooks/stateHooks';
 
 const CategoriesTab: React.FC = () => {
   const dispatch: AppDispatch = useAppDispatch();
-  const categories = useAppSelector((state: AppState) => state.categories);
-  const activeCategory = useAppSelector((state: AppState) => state.activeCategory);
+  const categories = useAppSelector((state: AppState) => state.root.categories);
+  const activeCategory = useAppSelector((state: AppState) => state.root.activeCategory);
   const [newCategoryName, setNewCategoryName] = useState('');
-  const showComparison = useAppSelector((state: AppState) => state.showComparison);
+  const showComparison = useAppSelector((state: AppState) => state.root.showComparison);
 
 
   const addCategory = () => {

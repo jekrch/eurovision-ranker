@@ -34,8 +34,8 @@ const headerBar =
     'flex items-center gap-2 px-4 py-2.5 border-b border-white/5 bg-[var(--er-button-neutral)]/15';
 
 const RankingsTab: React.FC = () => {
-    const year = useAppSelector((state: AppState) => state.year);
-    const theme = useAppSelector((state: AppState) => state.theme);
+    const year = useAppSelector((state: AppState) => state.root.year);
+    const theme = useAppSelector((state: AppState) => state.root.theme);
     const [rankingYear, setRankingYear] = useState(year);
     const [voteSource, setVoteSource] = useState('All');
     const [voteSourceOptions, setVoteSourceOptions] = useState<string[]>([

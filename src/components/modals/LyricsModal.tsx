@@ -76,7 +76,7 @@ type RoundVotes = { round: string; votes: Vote[] };
  * detailsCard.
  */
 const SongModal: React.FC<SongModalProps> = (props: SongModalProps) => {
-    const year = useAppSelector((state: AppState) => state.year);
+    const year = useAppSelector((state: AppState) => state.root.year);
     const [lyrics, setLyrics] = useState<string | undefined>('');
     const [engLyrics, setEngLyrics] = useState<string | undefined>('');
     const [composers, setComposers] = useState('');

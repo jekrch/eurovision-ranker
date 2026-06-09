@@ -119,8 +119,8 @@ const SorterModal: React.FC<SorterModalProps> = ({
     initialItems,
 }) => {
     const dispatch: AppDispatch = useAppDispatch();
-    const categories = useAppSelector((state: AppState) => state.categories);
-    const activeCategory = useAppSelector((state: AppState) => state.activeCategory);
+    const categories = useAppSelector((state: AppState) => state.root.categories);
+    const activeCategory = useAppSelector((state: AppState) => state.root.activeCategory);
 
     const initialSortStateRef = useRef<SortState | null>(null); // stores the state *after* 0 comparisons (ready for first choice)
     const [choiceLog, setChoiceLog] = useState<ChoiceLogEntry[]>([]);

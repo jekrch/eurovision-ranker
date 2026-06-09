@@ -8,9 +8,9 @@ import { CountryContestant } from '../data/CountryContestant';
 
 export const useResetRanking = () => {
   const dispatch = useAppDispatch();
-  const year = useAppSelector((state: AppState) => state.year);
-  const categories = useAppSelector((state: AppState) => state.categories);
-  const activeCategory = useAppSelector((state: AppState) => state.activeCategory);
+  const year = useAppSelector((state: AppState) => state.root.year);
+  const categories = useAppSelector((state: AppState) => state.root.categories);
+  const activeCategory = useAppSelector((state: AppState) => state.root.activeCategory);
 
   const refreshUrl = () => {
     updateUrlFromRankedItems(

@@ -16,9 +16,9 @@ interface UnrankedCountriesListProps {
  * displays all ranked countries in the left column list on the select view
  */
 const UnrankedCountriesList: React.FC<UnrankedCountriesListProps> = ({ onAddToRanked }) => {
-  const unrankedItems = useAppSelector((state: AppState) => state.unrankedItems);
-  const rankedItems = useAppSelector((state: AppState) => state.rankedItems);
-  const welcomeOverlayIsOpen = useAppSelector((state: AppState) => state.welcomeOverlayIsOpen);
+  const unrankedItems = useAppSelector((state: AppState) => state.root.unrankedItems);
+  const rankedItems = useAppSelector((state: AppState) => state.root.rankedItems);
+  const welcomeOverlayIsOpen = useAppSelector((state: AppState) => state.root.welcomeOverlayIsOpen);
     
   return (
     <div className="min-w-[10em] max-w-[40vw] overflow-y-auto overflow-x-hidden flex-grow mr-0 relative">

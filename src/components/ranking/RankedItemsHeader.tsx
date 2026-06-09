@@ -35,17 +35,17 @@ const RankedItemsHeader: React.FC<IRankedItemsHeaderProps> = ({
     openQuizModal
 }) => {
     const dispatch: AppDispatch = useAppDispatch();
-    const year = useAppSelector((state: AppState) => state.year);
-    const name = useAppSelector((state: AppState) => state.name);
-    const globalSearch = useAppSelector((state: AppState) => state.globalSearch);
-    const rankedItems = useAppSelector((state: AppState) => state.rankedItems);
-    const showTotalRank = useAppSelector((state: AppState) => state.showTotalRank);
-    const categories = useAppSelector((state: AppState) => state.categories);
-    const showUnranked = useAppSelector((state: AppState) => state.showUnranked);
-    const activeCategory = useAppSelector((state: AppState) => state.activeCategory);
-    const loadedAuthor = useAppSelector((state: AppState) => state.loadedAuthor);
-    const currentRankingId = useAppSelector((state: AppState) => state.currentRankingId);
-    const user = useAppSelector((state: AppState) => state.user);
+    const year = useAppSelector((state: AppState) => state.root.year);
+    const name = useAppSelector((state: AppState) => state.root.name);
+    const globalSearch = useAppSelector((state: AppState) => state.root.globalSearch);
+    const rankedItems = useAppSelector((state: AppState) => state.root.rankedItems);
+    const showTotalRank = useAppSelector((state: AppState) => state.root.showTotalRank);
+    const categories = useAppSelector((state: AppState) => state.root.categories);
+    const showUnranked = useAppSelector((state: AppState) => state.root.showUnranked);
+    const activeCategory = useAppSelector((state: AppState) => state.root.activeCategory);
+    const loadedAuthor = useAppSelector((state: AppState) => state.auth.loadedAuthor);
+    const currentRankingId = useAppSelector((state: AppState) => state.auth.currentRankingId);
+    const user = useAppSelector((state: AppState) => state.auth.user);
     const { isDirty } = useRankingDirty();
     const [activeTab, setActiveTab] = useState(0);
 

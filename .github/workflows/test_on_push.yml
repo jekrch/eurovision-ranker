@@ -27,6 +27,13 @@ jobs:
     - name: Install dependencies
       run: npm ci
 
+    - name: Typecheck
+      run: npm run typecheck
+
+    - name: Lint
+      # warnings are allowed for now (import/order + exhaustive-deps); fail only on errors.
+      run: npm run lint
+
     - name: Run tests with coverage
       # Coverage thresholds in vitest.config.ts fail the build on regression.
       run: npm run test:coverage

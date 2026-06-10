@@ -1,7 +1,8 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { CountryContestant } from '../data/CountryContestant';
+
 import { setRankedItems, setUnrankedItems } from './rootSlice';
 import { AppState } from './store';
+import { CountryContestant } from '../data/CountryContestant';
 import { removeCountryFromUrlCategoryRankings } from '../utilities/CategoryUtil';
 
 export const deleteRankedCountry = createAsyncThunk(
@@ -11,23 +12,24 @@ export const deleteRankedCountry = createAsyncThunk(
 
     const { rankedItems, unrankedItems, categories } = state.root;
 
-    const index = rankedItems.findIndex(i => i.id === id);
+    const index = rankedItems.findIndex((i) => i.id === id);
     if (index === -1) throw new Error('Country not found in ranked items');
 
     const objectToMove = rankedItems[index];
     const newRankedItems = rankedItems.filter((item: CountryContestant) => item.id !== id);
 
     const insertionIndex = unrankedItems.findIndex(
-      i => i.country.name > objectToMove.country.name
+      (i) => i.country.name > objectToMove.country.name,
     );
 
-    const newUnrankedItems = insertionIndex === -1
-      ? [...unrankedItems, objectToMove]
-      : [
-          ...unrankedItems.slice(0, insertionIndex),
-          objectToMove,
-          ...unrankedItems.slice(insertionIndex)
-        ];
+    const newUnrankedItems =
+      insertionIndex === -1
+        ? [...unrankedItems, objectToMove]
+        : [
+            ...unrankedItems.slice(0, insertionIndex),
+            objectToMove,
+            ...unrankedItems.slice(insertionIndex),
+          ];
 
     dispatch(setRankedItems(newRankedItems));
     dispatch(setUnrankedItems(newUnrankedItems));
@@ -36,5 +38,5 @@ export const deleteRankedCountry = createAsyncThunk(
     removeCountryFromUrlCategoryRankings(categories, id);
 
     return { id };
-  }
+  },
 );

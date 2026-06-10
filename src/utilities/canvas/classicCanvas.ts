@@ -1,9 +1,9 @@
-import { logger } from '../logger';
-import { CountryContestant } from '../../data/CountryContestant';
-import { RankingCanvasConfig, RankingColors } from './canvasTypes';
-import { getCSSVariable, getThemeColors } from './canvasTheme';
 import { loadFlagImage, loadFont } from './canvasAssets';
 import { roundRect, wrapText, drawFallbackFlag, drawFlagWithCover } from './canvasPrimitives';
+import { getCSSVariable, getThemeColors } from './canvasTheme';
+import { RankingCanvasConfig, RankingColors } from './canvasTypes';
+import { CountryContestant } from '../../data/CountryContestant';
+import { logger } from '../logger';
 
 /*
   Classic canvas style: a centered title, gradient background, and two columns of
@@ -51,7 +51,7 @@ const drawHeader = (
   width: number,
   height: number,
   colors: RankingColors,
-  config: RankingCanvasConfig
+  config: RankingCanvasConfig,
 ): void => {
   const headerGradient = ctx.createLinearGradient(0, 0, width, height);
   colors.headerGradient.forEach((color, index) => {
@@ -75,7 +75,7 @@ const drawFooter = (
   height: number,
   y: number,
   colors: RankingColors,
-  config: RankingCanvasConfig
+  config: RankingCanvasConfig,
 ): void => {
   // Create horizontal gradient that fades out at edges
   const footerGradient = ctx.createLinearGradient(0, y, width, y);
@@ -92,11 +92,11 @@ const drawFooter = (
     return color;
   };
 
-  footerGradient.addColorStop(0, addAlpha(bgColor, 0));      // transparent at left edge
-  footerGradient.addColorStop(0.2, addAlpha(bgColor, 0.6));  // fade in
-  footerGradient.addColorStop(0.5, addAlpha(bgColor, 0.8));  // solid in center
-  footerGradient.addColorStop(0.8, addAlpha(bgColor, 0.6));  // fade out
-  footerGradient.addColorStop(1, addAlpha(bgColor, 0));      // transparent at right edge
+  footerGradient.addColorStop(0, addAlpha(bgColor, 0)); // transparent at left edge
+  footerGradient.addColorStop(0.2, addAlpha(bgColor, 0.6)); // fade in
+  footerGradient.addColorStop(0.5, addAlpha(bgColor, 0.8)); // solid in center
+  footerGradient.addColorStop(0.8, addAlpha(bgColor, 0.6)); // fade out
+  footerGradient.addColorStop(1, addAlpha(bgColor, 0)); // transparent at right edge
 
   ctx.fillStyle = footerGradient;
   ctx.fillRect(0, y, width, height);
@@ -112,12 +112,17 @@ const calculateItemHeight = (
   ctx: CanvasRenderingContext2D,
   item: CountryContestant,
   columnItemWidth: number,
-  config: RankingCanvasConfig
+  config: RankingCanvasConfig,
 ): number => {
-  const artistName = item.contestant?.artist || "Unknown Artist";
-  const songName = item.contestant?.song ? `"${item.contestant.song}"` : "";
+  const artistName = item.contestant?.artist || 'Unknown Artist';
+  const songName = item.contestant?.song ? `"${item.contestant.song}"` : '';
 
-  const textBlockX = config.itemPadding + config.rankBoxWidth + config.boxGap + config.flagBoxWidth + config.textPaddingLeft;
+  const textBlockX =
+    config.itemPadding +
+    config.rankBoxWidth +
+    config.boxGap +
+    config.flagBoxWidth +
+    config.textPaddingLeft;
   const textBlockWidth = columnItemWidth - textBlockX - config.itemPadding;
 
   let textContentHeight = 0;
@@ -149,7 +154,7 @@ const drawRankedItem = (
   itemCardWidth: number,
   itemCardHeight: number,
   colors: RankingColors,
-  config: RankingCanvasConfig
+  config: RankingCanvasConfig,
 ): void => {
   const { country, contestant } = item;
 
@@ -164,7 +169,16 @@ const drawRankedItem = (
   ctx.shadowOffsetX = 2;
   ctx.shadowOffsetY = 2;
   ctx.fillStyle = colors.cardBackground;
-  roundRect(ctx, itemCardX, itemCardY, itemCardWidth, itemCardHeight, config.cardCornerRadius, true, false);
+  roundRect(
+    ctx,
+    itemCardX,
+    itemCardY,
+    itemCardWidth,
+    itemCardHeight,
+    config.cardCornerRadius,
+    true,
+    false,
+  );
   ctx.restore();
 
   const rankBoxActualX = itemCardX + config.itemPadding;
@@ -181,21 +195,51 @@ const drawRankedItem = (
     currentRankBoxColor = BRONZE_COLOR;
   }
   ctx.fillStyle = currentRankBoxColor;
-  roundRect(ctx, rankBoxActualX, rankBoxActualY, config.rankBoxWidth, rankBoxActualHeight, config.boxCornerRadius);
+  roundRect(
+    ctx,
+    rankBoxActualX,
+    rankBoxActualY,
+    config.rankBoxWidth,
+    rankBoxActualHeight,
+    config.boxCornerRadius,
+  );
 
   ctx.fillStyle = colors.rankText;
   ctx.font = `bold ${config.fontSizes.rankNumber}px ${config.fontFamily}`;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText(rank.toString(), rankBoxActualX + config.rankBoxWidth / 2, rankBoxActualY + rankBoxActualHeight / 2);
+  ctx.fillText(
+    rank.toString(),
+    rankBoxActualX + config.rankBoxWidth / 2,
+    rankBoxActualY + rankBoxActualHeight / 2,
+  );
 
   const flagBoxActualX = rankBoxActualX + config.rankBoxWidth + config.boxGap;
   const flagBoxActualY = itemCardY + (itemCardHeight - config.flagBoxHeight) / 2;
 
   if (flagImage) {
-    drawFlagWithCover(ctx, flagImage, country.key, flagBoxActualX, flagBoxActualY, config.flagBoxWidth, config.flagBoxHeight, config, colors.flagBoxColor);
+    drawFlagWithCover(
+      ctx,
+      flagImage,
+      country.key,
+      flagBoxActualX,
+      flagBoxActualY,
+      config.flagBoxWidth,
+      config.flagBoxHeight,
+      config,
+      colors.flagBoxColor,
+    );
   } else {
-    drawFallbackFlag(ctx, country.key, flagBoxActualX, flagBoxActualY, config.flagBoxWidth, config.flagBoxHeight, config, colors.flagBoxColor);
+    drawFallbackFlag(
+      ctx,
+      country.key,
+      flagBoxActualX,
+      flagBoxActualY,
+      config.flagBoxWidth,
+      config.flagBoxHeight,
+      config,
+      colors.flagBoxColor,
+    );
   }
 
   const textBoxActualX = flagBoxActualX + config.flagBoxWidth + config.textPaddingLeft;
@@ -204,12 +248,19 @@ const drawRankedItem = (
   const textBoxActualHeight = itemCardHeight - 2 * config.itemPadding;
 
   if (config.textBoxColor !== 'transparent') {
-      ctx.fillStyle = config.textBoxColor;
-      roundRect(ctx, textBoxActualX, textBoxActualY, textBoxActualWidth, textBoxActualHeight, config.boxCornerRadius);
+    ctx.fillStyle = config.textBoxColor;
+    roundRect(
+      ctx,
+      textBoxActualX,
+      textBoxActualY,
+      textBoxActualWidth,
+      textBoxActualHeight,
+      config.boxCornerRadius,
+    );
   }
 
-  const artistName = contestant?.artist || "Unknown Artist";
-  const songName = contestant?.song ? `"${contestant.song}"` : "";
+  const artistName = contestant?.artist || 'Unknown Artist';
+  const songName = contestant?.song ? `"${contestant.song}"` : '';
 
   const artistFont = `bold ${config.fontSizes.artist}px ${config.fontFamily}`;
   const songFont = `${config.fontSizes.song}px ${config.fontFamily}`;
@@ -222,7 +273,8 @@ const drawRankedItem = (
   let songLines: string[] = [];
   if (songName) {
     songLines = wrapText(ctx, songName, textBoxActualWidth, songFont);
-    textContentRenderHeight += spaceBetweenArtistSong + (songLines.length * config.fontSizes.song * lineHeightMultiplier);
+    textContentRenderHeight +=
+      spaceBetweenArtistSong + songLines.length * config.fontSizes.song * lineHeightMultiplier;
   }
 
   let textStartY = textBoxActualY + (textBoxActualHeight - textContentRenderHeight) / 2;
@@ -233,7 +285,7 @@ const drawRankedItem = (
 
   ctx.fillStyle = colors.artistText;
   ctx.font = artistFont;
-  artistLines.forEach(line => {
+  artistLines.forEach((line) => {
     ctx.fillText(line, textBoxActualX, textStartY);
     textStartY += config.fontSizes.artist * lineHeightMultiplier;
   });
@@ -242,7 +294,7 @@ const drawRankedItem = (
     textStartY += spaceBetweenArtistSong;
     ctx.fillStyle = colors.songText;
     ctx.font = songFont;
-    songLines.forEach(line => {
+    songLines.forEach((line) => {
       ctx.fillText(line, textBoxActualX, textStartY);
       textStartY += config.fontSizes.song * lineHeightMultiplier;
     });
@@ -256,7 +308,7 @@ export const createRankingCanvas = async (
   rankedItems: CountryContestant[],
   rankingName: string = 'My Eurovision Ranking',
   customConfig: Partial<RankingCanvasConfig> = {},
-  customColors: Partial<RankingColors> = {}
+  customColors: Partial<RankingColors> = {},
 ): Promise<HTMLCanvasElement> => {
   const currentThemeColors = getThemeColors();
 
@@ -266,7 +318,6 @@ export const createRankingCanvas = async (
     rankBoxColor: getCSSVariable('--er-surface-accent', '#334678'),
     flagBoxColor: getCSSVariable('--er-surface-tertiary', '#1c214c'),
   };
-
 
   const config: RankingCanvasConfig = { ...defaultConfigWithTheme, ...customConfig };
   config.fontSizes = { ...DEFAULT_CONFIG.fontSizes, ...customConfig.fontSizes };
@@ -282,10 +333,12 @@ export const createRankingCanvas = async (
   await loadFont(config.fontFamily, 'bold');
 
   const numColumns = 2;
-  const columnItemWidth = (config.canvasWidth - config.padding * 2 - config.columnPadding * (numColumns - 1)) / numColumns;
+  const columnItemWidth =
+    (config.canvasWidth - config.padding * 2 - config.columnPadding * (numColumns - 1)) /
+    numColumns;
 
-  const itemRealHeights = rankedItems.map(item =>
-    calculateItemHeight(ctx, item, columnItemWidth, config)
+  const itemRealHeights = rankedItems.map((item) =>
+    calculateItemHeight(ctx, item, columnItemWidth, config),
   );
 
   const itemsPerColumnTarget = Math.ceil(rankedItems.length / numColumns);
@@ -294,25 +347,28 @@ export const createRankingCanvas = async (
   for (let i = 0; i < rankedItems.length; i++) {
     const columnIndex = Math.floor(i / itemsPerColumnTarget);
     if (columnIndex < numColumns) {
-        columnActualContentHeights[columnIndex] += itemRealHeights[i] + config.itemMargin;
+      columnActualContentHeights[columnIndex] += itemRealHeights[i] + config.itemMargin;
     } else {
-        columnActualContentHeights[numColumns-1] += itemRealHeights[i] + config.itemMargin;
+      columnActualContentHeights[numColumns - 1] += itemRealHeights[i] + config.itemMargin;
     }
   }
 
-  columnActualContentHeights = columnActualContentHeights.map(h => h > 0 ? h - config.itemMargin : 0);
+  columnActualContentHeights = columnActualContentHeights.map((h) =>
+    h > 0 ? h - config.itemMargin : 0,
+  );
   const maxColumnContentHeight = Math.max(0, ...columnActualContentHeights);
 
   const showHeader = rankingName && rankingName.trim() !== '';
   const effectiveHeaderHeight = showHeader ? config.headerHeight : 0;
   const actualFooterHeight = 30;
 
-  const totalHeight = effectiveHeaderHeight +
-                    config.padding +
-                    maxColumnContentHeight +
-                    config.padding +
-                    config.footerMargin +
-                    actualFooterHeight;
+  const totalHeight =
+    effectiveHeaderHeight +
+    config.padding +
+    maxColumnContentHeight +
+    config.padding +
+    config.footerMargin +
+    actualFooterHeight;
 
   const physicalWidth = config.canvasWidth * config.pixelRatio;
   const physicalHeight = totalHeight * config.pixelRatio;
@@ -326,12 +382,12 @@ export const createRankingCanvas = async (
 
   // Draw gradient background with subtle glow in bottom right
   const bgGradient = ctx.createRadialGradient(
-    config.canvasWidth * 0.85,  // x0 - start x position (bottom right area)
-    totalHeight * 0.85,          // y0 - start y position (bottom right area)
-    0,                           // r0 - inner radius
-    config.canvasWidth * 0.85,   // x1 - end x position (same as start for concentric circles)
-    totalHeight * 0.85,          // y1 - end y position (same as start for concentric circles)
-    config.canvasWidth * 1.2     // r1 - outer radius (extends beyond canvas)
+    config.canvasWidth * 0.85, // x0 - start x position (bottom right area)
+    totalHeight * 0.85, // y0 - start y position (bottom right area)
+    0, // r0 - inner radius
+    config.canvasWidth * 0.85, // x1 - end x position (same as start for concentric circles)
+    totalHeight * 0.85, // y1 - end y position (same as start for concentric circles)
+    config.canvasWidth * 1.2, // r1 - outer radius (extends beyond canvas)
   );
   bgGradient.addColorStop(0, colors.backgroundGradient[1]); // lighter color at center
   bgGradient.addColorStop(0.4, colors.backgroundGradient[0]); // fade to dark
@@ -344,25 +400,25 @@ export const createRankingCanvas = async (
     drawHeader(ctx, rankingName, config.canvasWidth, config.headerHeight, colors, config);
   }
 
-  const countryCodes = rankedItems.map(item => item.country.key);
+  const countryCodes = rankedItems.map((item) => item.country.key);
   const flagImages: Record<string, HTMLImageElement | null> = {};
 
   await Promise.all(
-    countryCodes.map(async code => {
+    countryCodes.map(async (code) => {
       try {
         flagImages[code] = await loadFlagImage(code);
       } catch (error) {
         logger.warn(`Failed to load flag for ${code} in preload:`, error);
         flagImages[code] = null;
       }
-    })
+    }),
   );
 
   const itemsStartY = effectiveHeaderHeight + config.padding;
-  let currentYPerColumn = Array(numColumns).fill(itemsStartY);
-  const columnXStartPositions = Array(numColumns).fill(0).map((_, colIndex) =>
-    config.padding + colIndex * (columnItemWidth + config.columnPadding)
-  );
+  const currentYPerColumn = Array(numColumns).fill(itemsStartY);
+  const columnXStartPositions = Array(numColumns)
+    .fill(0)
+    .map((_, colIndex) => config.padding + colIndex * (columnItemWidth + config.columnPadding));
 
   for (let i = 0; i < rankedItems.length; i++) {
     const item = rankedItems[i];
@@ -373,17 +429,30 @@ export const createRankingCanvas = async (
     const columnIndex = Math.floor(i / itemsPerColumnTarget);
 
     drawRankedItem(
-      ctx, item, flagImage, rank,
+      ctx,
+      item,
+      flagImage,
+      rank,
       columnXStartPositions[columnIndex],
       currentYPerColumn[columnIndex],
-      columnItemWidth, itemH,
-      colors, config
+      columnItemWidth,
+      itemH,
+      colors,
+      config,
     );
     currentYPerColumn[columnIndex] += itemH + config.itemMargin;
   }
 
   const footerYPosition = totalHeight - actualFooterHeight - config.footerMargin;
-  drawFooter(ctx, 'created with eurovision-ranker.com', config.canvasWidth, actualFooterHeight, footerYPosition, colors, config);
+  drawFooter(
+    ctx,
+    'created with eurovision-ranker.com',
+    config.canvasWidth,
+    actualFooterHeight,
+    footerYPosition,
+    colors,
+    config,
+  );
 
   return canvas;
 };

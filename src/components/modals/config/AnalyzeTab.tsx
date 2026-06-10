@@ -1,21 +1,30 @@
 import React, { useState } from 'react';
-import { AppState } from '../../../redux/store';
+
 import { countries } from '../../../data/Countries';
-import { fetchCountryContestantsByYear } from '../../../utilities/ContestantRepository';
-import { sortByVotes } from '../../../utilities/VoteProcessor';
-import { RankingComparison, findMostDissimilarLists, findMostSimilarLists } from '../../../utilities/RankAnalyzer';
-import { getUrlParam, getUrlParams, updateQueryParams } from '../../../utilities/UrlUtil';
-import IconButton from '../../IconButton';
 import { Country } from '../../../data/Country';
 import { CountryContestant } from '../../../data/CountryContestant';
-import Dropdown from '../../Dropdown';
-import { saveCategories } from '../../../utilities/CategoryUtil';
-import { setShowComparison } from '../../../redux/rootSlice';
-import { getSourceCountryKey, getVoteTypeCodeFromOption, getVoteTypeOptionsByYear } from '../../../utilities/VoteUtil';
-import TooltipHelp from '../../TooltipHelp';
-import Checkbox from '../../Checkbox';
-import BetaBadge from '../../BetaBadge';
 import { useAppDispatch, useAppSelector } from '../../../hooks/stateHooks';
+import { setShowComparison } from '../../../redux/rootSlice';
+import { AppState } from '../../../redux/store';
+import { saveCategories } from '../../../utilities/CategoryUtil';
+import { fetchCountryContestantsByYear } from '../../../utilities/ContestantRepository';
+import {
+  RankingComparison,
+  findMostDissimilarLists,
+  findMostSimilarLists,
+} from '../../../utilities/RankAnalyzer';
+import { getUrlParam, getUrlParams, updateQueryParams } from '../../../utilities/UrlUtil';
+import { sortByVotes } from '../../../utilities/VoteProcessor';
+import {
+  getSourceCountryKey,
+  getVoteTypeCodeFromOption,
+  getVoteTypeOptionsByYear,
+} from '../../../utilities/VoteUtil';
+import BetaBadge from '../../BetaBadge';
+import Checkbox from '../../Checkbox';
+import Dropdown from '../../Dropdown';
+import IconButton from '../../IconButton';
+import TooltipHelp from '../../TooltipHelp';
 
 const AnalyzeTab: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -24,21 +33,23 @@ const AnalyzeTab: React.FC = () => {
   const activeCategory = useAppSelector((state: AppState) => state.root.activeCategory);
   const [voteType, setVoteType] = useState(
     // if we have all 3 vote types for this year, use Televote as the default, else use Total
-    getVoteTypeOptionsByYear(year)?.length > 1 ? 'Televote' : 'Total'
+    getVoteTypeOptionsByYear(year)?.length > 1 ? 'Televote' : 'Total',
   );
   const [mostSimilarComparisons, setMostSimilarComparisons] = useState<RankingComparison[]>([]);
-  const [mostDissimilarComparisons, setMostDissimilarComparisons] = useState<RankingComparison[]>([]);
+  const [mostDissimilarComparisons, setMostDissimilarComparisons] = useState<RankingComparison[]>(
+    [],
+  );
   const [codeCountryNameMap, setCodeCountryNameMap] = useState<Map<string, Country[]>>(new Map());
   const showComparison = useAppSelector((state: AppState) => state.root.showComparison);
   const globalSearch = useAppSelector((state: AppState) => state.root.globalSearch);
 
   /**
    * Get all country rank codes for the selected year and vote type
-   * 
-   * @param voteType 
-   * @param round 
-   * @param voteYear 
-   * @returns 
+   *
+   * @param voteType
+   * @param round
+   * @param voteYear
+   * @returns
    */
   const getAllCountryRankCodes = async (globalMode: boolean, round: string, voteYear: string) => {
     const codeCountryNameMap = new Map<string, Country[]>();
@@ -46,9 +57,12 @@ const AnalyzeTab: React.FC = () => {
     const countryContestants = await fetchCountryContestantsByYear(voteYear, '');
 
     for (const country of countries) {
-
       const concatenatedIds = await getRankingIds(
-        globalMode, voteType, 'final', countryContestants, country.key
+        globalMode,
+        voteType,
+        'final',
+        countryContestants,
+        country.key,
       );
 
       if (codeCountryNameMap.has(concatenatedIds)) {
@@ -63,40 +77,43 @@ const AnalyzeTab: React.FC = () => {
 
   /**
    * Get ranking IDs based on the selected vote year, vote type, round, and source country key
-   * 
-   * @param voteYear 
-   * @param voteType 
-   * @param round 
-   * @param countryContestants 
-   * @param sourceCountryKey 
-   * @returns 
+   *
+   * @param voteYear
+   * @param voteType
+   * @param round
+   * @param countryContestants
+   * @param sourceCountryKey
+   * @returns
    */
   const getRankingIds = async (
     globalMode: boolean,
     voteType: string,
     round: string,
     countryContestants: CountryContestant[],
-    sourceCountryKey: string
+    sourceCountryKey: string,
   ) => {
-    countryContestants = await sortByVotes(
-      countryContestants, voteType, round, sourceCountryKey
-    );
+    countryContestants = await sortByVotes(countryContestants, voteType, round, sourceCountryKey);
 
     const sortedContestants = countryContestants.filter(
-      (cc) => cc?.contestant?.votes !== undefined
+      (cc) => cc?.contestant?.votes !== undefined,
     );
 
-    return sortedContestants.map((cc) => {
+    return sortedContestants
+      .map((cc) => {
         return globalMode ? cc.uid : cc?.id;
-      }
-    ).join('');
+      })
+      .join('');
   };
 
   // Find the most similar vote by country for the current ranking
   const findMostSimilarVoteByCountry = async () => {
     const extractedParams = getUrlParams(activeCategory);
     const currentRankingCode = extractedParams.rankings;
-    const codeCountryMap: Map<string, Country[]> = await getAllCountryRankCodes(globalSearch, 'final', year);
+    const codeCountryMap: Map<string, Country[]> = await getAllCountryRankCodes(
+      globalSearch,
+      'final',
+      year,
+    );
     setCodeCountryNameMap(codeCountryMap);
     const codeArrays = Array.from(codeCountryMap.keys());
     const similarComparisons = await findMostSimilarLists(year, currentRankingCode!, codeArrays);
@@ -107,21 +124,28 @@ const AnalyzeTab: React.FC = () => {
   const findMostDissimilarVoteByCountry = async () => {
     const extractedParams = getUrlParams(activeCategory);
     const currentRankingCode = extractedParams.rankings;
-    const codeCountryMap: Map<string, Country[]> = await getAllCountryRankCodes(globalSearch, 'final', year);
+    const codeCountryMap: Map<string, Country[]> = await getAllCountryRankCodes(
+      globalSearch,
+      'final',
+      year,
+    );
     setCodeCountryNameMap(codeCountryMap);
     const codeArrays = Array.from(codeCountryMap.keys());
-    const dissimilarComparisons = await findMostDissimilarLists(year, currentRankingCode!, codeArrays);
+    const dissimilarComparisons = await findMostDissimilarLists(
+      year,
+      currentRankingCode!,
+      codeArrays,
+    );
     setMostDissimilarComparisons(dissimilarComparisons);
   };
 
-
   function getCountryNamesFromComparisons(
     mostSimilarComparisons: RankingComparison[],
-    codeCountryNameMap: Map<string, Country[]>
+    codeCountryNameMap: Map<string, Country[]>,
   ): string[] {
     const countries = mostSimilarComparisons
-      .flatMap(comparison => codeCountryNameMap.get(comparison.list2Code) ?? [])
-      .map(country => country.name);
+      .flatMap((comparison) => codeCountryNameMap.get(comparison.list2Code) ?? [])
+      .map((country) => country.name);
 
     return countries.sort((a, b) => a?.localeCompare(b));
   }
@@ -133,10 +157,12 @@ const AnalyzeTab: React.FC = () => {
 
   // Get the URL for the ranking link based on the comparison, year, vote type, and country name
   const getRankingUrl = (comparison: RankingComparison, countryName: string) => {
-    return `?r=${comparison.list2Code}` +
+    return (
+      `?r=${comparison.list2Code}` +
       `&y=${year.substring(2, 4)}` +
       `&n=${getRankingTitle(voteType, countryName).replaceAll(' ', '+')}` +
-      `&v=f-${getVoteTypeCodeFromOption(voteType)}-${getSourceCountryKey(countryName)}`;
+      `&v=f-${getVoteTypeCodeFromOption(voteType)}-${getSourceCountryKey(countryName)}`
+    );
   };
 
   // Format the percent similarity to the nearest tenth percent or percent if it's .0
@@ -150,19 +176,17 @@ const AnalyzeTab: React.FC = () => {
 
     let updatedCategories = [...categories];
 
-    // if there's an uncategorized ranking create a cat for it 
+    // if there's an uncategorized ranking create a cat for it
     if (currentNonCatRanking) {
-
       const currentRankingTitle = 'Original';
       const originalRanking = {
         name: currentRankingTitle,
         weight: 5,
       };
       updatedCategories = [...updatedCategories, originalRanking];
-
     }
 
-    // comparison categories should have no weight so that the total 
+    // comparison categories should have no weight so that the total
     // ranking reflect the original
     const newCategory = {
       name: rankingTitle,
@@ -170,12 +194,7 @@ const AnalyzeTab: React.FC = () => {
     };
 
     const categoriesWithNewRanking = [...updatedCategories, newCategory];
-    saveCategories(
-      categoriesWithNewRanking,
-      dispatch,
-      updatedCategories,
-      activeCategory
-    );
+    saveCategories(categoriesWithNewRanking, dispatch, updatedCategories, activeCategory);
 
     // add param for new ranking based on the category index
     const categoryIndex = categoriesWithNewRanking.length;
@@ -186,25 +205,25 @@ const AnalyzeTab: React.FC = () => {
 
   /**
    * Handle check even on show category comparison checkbox
-   * @param checked 
+   * @param checked
    */
   const onShowComparisonChange = (checked: boolean) => {
-    updateQueryParams({ cm: checked === true ? 't' : 'f' })
-    dispatch(
-      setShowComparison(checked === true)
-    );
+    updateQueryParams({ cm: checked === true ? 't' : 'f' });
+    dispatch(setShowComparison(checked === true));
   };
 
   const renderComparisonList = (comparisons: RankingComparison[], title: string) => (
     <div className="mt-4">
-      <p className="text-sm mb-2">{title} {voteType} rankings:</p>
+      <p className="text-sm mb-2">
+        {title} {voteType} rankings:
+      </p>
       <div className="grid grid-cols-[auto,1fr] gap-x-4 gap-y-2">
-        {comparisons.flatMap(comparison =>
+        {comparisons.flatMap((comparison) =>
           getCountryNamesFromComparisons([comparison], codeCountryNameMap).map((country, index) => (
             <React.Fragment key={`${comparison.list2Code}-${index}`}>
               <div className="whitespace-nowrap flex items-center">
-
-                <a href={getRankingUrl(comparison, country)}
+                <a
+                  href={getRankingUrl(comparison, country)}
                   target="_blank"
                   rel="noopener noreferrer"
                   className=" text-[var(--er-interactive-primary)] hover:underline"
@@ -218,20 +237,21 @@ const AnalyzeTab: React.FC = () => {
               <div>
                 <IconButton
                   className="pl-[0.7em] py-[0.5em] pr-[1em]"
-                  onClick={() => addRankingAsCategory(comparison.list2Code, getRankingTitle(voteType, country))}
+                  onClick={() =>
+                    addRankingAsCategory(comparison.list2Code, getRankingTitle(voteType, country))
+                  }
                   icon={undefined}
                   title="Add as Category"
                 />
               </div>
             </React.Fragment>
-          ))
+          )),
         )}
       </div>
     </div>
   );
 
   return (
-
     <div className="mb-0">
       <div className="relative mb-[1em] mt-2 flex items-center">
         <div className="flex justify-center items-center mr-3 ml-3">
@@ -283,8 +303,10 @@ const AnalyzeTab: React.FC = () => {
         />
       </div>
 
-      {mostSimilarComparisons.length > 0 && renderComparisonList(mostSimilarComparisons, "Most similar")}
-      {mostDissimilarComparisons.length > 0 && renderComparisonList(mostDissimilarComparisons, "Most dissimilar")}
+      {mostSimilarComparisons.length > 0 &&
+        renderComparisonList(mostSimilarComparisons, 'Most similar')}
+      {mostDissimilarComparisons.length > 0 &&
+        renderComparisonList(mostDissimilarComparisons, 'Most dissimilar')}
     </div>
   );
 };

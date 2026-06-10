@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { CountryContestant } from '../data/CountryContestant';
+
 import { Country } from '../data/Country';
+import { CountryContestant } from '../data/CountryContestant';
 
 // getRankingComparison loads contestant data for the year to attach
 // CountryContestant objects to the diff rows; mock it so the comparison math
@@ -102,10 +103,7 @@ describe('findMostSimilarLists / findMostDissimilarLists', () => {
   });
 
   it('finds the candidate least similar to the reference', async () => {
-    const matches = await findMostDissimilarLists('2023', 'abcde', [
-      'abcde',
-      'edcba',
-    ]);
+    const matches = await findMostDissimilarLists('2023', 'abcde', ['abcde', 'edcba']);
     expect(matches).toHaveLength(1);
     expect(matches[0].list2Code).toBe('edcba');
   });

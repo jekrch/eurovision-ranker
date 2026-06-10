@@ -1,11 +1,7 @@
 import { describe, it, expect } from 'vitest';
-import {
-  formatDuration,
-  formatYearRanges,
-  typeBreakdown,
-  scoreMessage,
-} from './quizScoring';
+
 import { QUIZ_YEARS } from './quizGenerator';
+import { formatDuration, formatYearRanges, typeBreakdown, scoreMessage } from './quizScoring';
 import { QuizAnswer, QuizQuestion, QuizResult } from '../../data/quiz/quizTypes';
 
 describe('formatDuration', () => {
@@ -122,8 +118,6 @@ describe('typeBreakdown', () => {
       answers: [],
     } as unknown as QuizResult;
 
-    expect(typeBreakdown(result)).toEqual([
-      { label: 'Country of artist', correct: 0, total: 1 },
-    ]);
+    expect(typeBreakdown(result)).toEqual([{ label: 'Country of artist', correct: 0, total: 1 }]);
   });
 });

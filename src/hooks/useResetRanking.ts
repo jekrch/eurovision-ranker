@@ -1,10 +1,16 @@
 import { useCallback } from 'react';
+
 import { useAppDispatch, useAppSelector } from './stateHooks';
-import { setContestants, setRankedItems, setUnrankedItems, setSelectedContestants } from '../redux/rootSlice';
+import { CountryContestant } from '../data/CountryContestant';
+import {
+  setContestants,
+  setRankedItems,
+  setUnrankedItems,
+  setSelectedContestants,
+} from '../redux/rootSlice';
+import { AppState } from '../redux/store';
 import { fetchCountryContestantsByYear } from '../utilities/ContestantRepository';
 import { clearAllRankingParams, updateUrlFromRankedItems } from '../utilities/UrlUtil';
-import { AppState } from '../redux/store';
-import { CountryContestant } from '../data/CountryContestant';
 
 export const useResetRanking = () => {
   const dispatch = useAppDispatch();
@@ -13,13 +19,11 @@ export const useResetRanking = () => {
   const activeCategory = useAppSelector((state: AppState) => state.root.activeCategory);
 
   const refreshUrl = () => {
-    updateUrlFromRankedItems(
-        activeCategory, categories, []
-    );
-  }
+    updateUrlFromRankedItems(activeCategory, categories, []);
+  };
 
   const resetRanking = useCallback(async () => {
-    let yearContestants: CountryContestant[] = await fetchCountryContestantsByYear(year, '');
+    const yearContestants: CountryContestant[] = await fetchCountryContestantsByYear(year, '');
 
     dispatch(setContestants(yearContestants));
     dispatch(setUnrankedItems(yearContestants));
@@ -28,7 +32,6 @@ export const useResetRanking = () => {
 
     clearAllRankingParams(categories);
     refreshUrl();
-
   }, [dispatch, year, categories]);
 
   return resetRanking;

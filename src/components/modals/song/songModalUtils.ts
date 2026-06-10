@@ -15,55 +15,52 @@ export type RoundVotes = { round: string; votes: Vote[] };
 
 // last tab the user viewed, remembered across modal opens within a session
 export const readStickyTab = (): TabKey | null => {
-    try {
-        const stored = sessionStorage.getItem(ACTIVE_TAB_KEY);
-        return stored === 'lyrics' || stored === 'video' || stored === 'votes' ? stored : null;
-    } catch {
-        return null;
-    }
+  try {
+    const stored = sessionStorage.getItem(ACTIVE_TAB_KEY);
+    return stored === 'lyrics' || stored === 'video' || stored === 'votes' ? stored : null;
+  } catch {
+    return null;
+  }
 };
 
 // pick which tab to show given what content this song actually has, preferring
 // the user's last-viewed (sticky) tab when it's available for this song
 export const resolveTab = (
-    available: { lyrics: boolean; video: boolean; votes: boolean },
-    sticky: TabKey | null
+  available: { lyrics: boolean; video: boolean; votes: boolean },
+  sticky: TabKey | null,
 ): TabKey => {
-    if (sticky && available[sticky]) {
-        return sticky;
-    }
-    if (available.lyrics) return 'lyrics';
-    if (available.video) return 'video';
-    if (available.votes) return 'votes';
-    return 'lyrics';
+  if (sticky && available[sticky]) {
+    return sticky;
+  }
+  if (available.lyrics) return 'lyrics';
+  if (available.video) return 'video';
+  if (available.votes) return 'votes';
+  return 'lyrics';
 };
 
 // a value is "present" if it's a non-empty, non-null cell from the vote CSV
 export const isPresent = (value: unknown): boolean =>
-    value !== undefined && value !== null && String(value).trim() !== '';
+  value !== undefined && value !== null && String(value).trim() !== '';
 
 export const toNumber = (value: unknown): number => {
-    const n = Number(value);
-    return Number.isFinite(n) ? n : 0;
+  const n = Number(value);
+  return Number.isFinite(n) ? n : 0;
 };
 
-export function formatLyrics(
-    lyrics: string | undefined,
-    song: string | undefined
-) {
-    if (!lyrics) {
-        return lyrics;
-    }
+export function formatLyrics(lyrics: string | undefined, song: string | undefined) {
+  if (!lyrics) {
+    return lyrics;
+  }
 
-    let lines = lyrics.split('\\n');
+  let lines = lyrics.split('\\n');
 
-    // if the first line is the song title and the second line is empty,
-    // remove those lines
-    if (lines.length >= 2 && lines[0] === song && !lines[1].trim()) {
-        lines = lines.slice(2);
-    }
+  // if the first line is the song title and the second line is empty,
+  // remove those lines
+  if (lines.length >= 2 && lines[0] === song && !lines[1].trim()) {
+    lines = lines.slice(2);
+  }
 
-    const finalLyrics = lines.join('\\n');
+  const finalLyrics = lines.join('\\n');
 
-    return finalLyrics;
+  return finalLyrics;
 }

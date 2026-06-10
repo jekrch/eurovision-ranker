@@ -21,8 +21,7 @@ import { useEffect } from 'react';
 let lockCount = 0;
 
 const isInsideModalContent = (target: EventTarget | null): boolean =>
-  target instanceof Element &&
-  !!target.closest('[data-modal-content], .dropdown-menu');
+  target instanceof Element && !!target.closest('[data-modal-content], .dropdown-menu');
 
 const preventBackgroundScroll = (e: Event) => {
   if (e.cancelable && !isInsideModalContent(e.target)) {

@@ -1,14 +1,15 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'react-hot-toast';
+
 import Modal from '../Modal';
-import QuizSetup from './QuizSetup';
-import QuizPreview from './QuizPreview';
-import QuizPlay from './QuizPlay';
-import QuizResults from './QuizResults';
 import QuizCelebration from './QuizCelebration';
+import QuizPlay from './QuizPlay';
+import QuizPreview from './QuizPreview';
+import QuizResults from './QuizResults';
+import QuizSetup from './QuizSetup';
 import { QuizAnswer, QuizConfig, QuizQuestion, QuizResult } from '../../../data/quiz/quizTypes';
-import { generateQuiz } from '../../../utilities/quiz/quizGenerator';
 import { decodeQuizCode, mulberry32, randomSeed } from '../../../utilities/quiz/quizCode';
+import { generateQuiz } from '../../../utilities/quiz/quizGenerator';
 
 interface QuizModalProps {
   isOpen: boolean;
@@ -43,7 +44,7 @@ const QuizModal: React.FC<QuizModalProps> = ({ isOpen, onClose, initialCode }) =
       }
       setQuestions(qs);
       setPhase('play');
-    } catch (e) {
+    } catch {
       toast.error('Failed to build quiz. Please try again.');
       setPhase('setup');
     }
@@ -97,13 +98,13 @@ const QuizModal: React.FC<QuizModalProps> = ({ isOpen, onClose, initialCode }) =
       className={`!max-w-xl${phase === 'setup' ? ' h-[85vh]' : ''}`}
       shouldCloseWarn={isPlaying || isResults}
       closeWarning={
-        isResults
-          ? 'Close your results?'
-          : 'Leave the quiz? Your progress will be lost.'
+        isResults ? 'Close your results?' : 'Leave the quiz? Your progress will be lost.'
       }
       backdropContent={
         phase === 'results' && result ? (
-          <QuizCelebration pct={result.total ? Math.round((result.score / result.total) * 100) : 0} />
+          <QuizCelebration
+            pct={result.total ? Math.round((result.score / result.total) * 100) : 0}
+          />
         ) : undefined
       }
     >

@@ -1,13 +1,14 @@
 import React, { Suspense } from 'react';
 import { Toaster } from 'react-hot-toast';
-import { toastOptions } from '../utilities/ToasterUtil';
-import { AppDispatch } from '../redux/store';
-import { setShowUnranked } from '../redux/rootSlice';
+
 import { CountryContestant } from '../data/CountryContestant';
 import { UseModalReturn } from '../hooks/useModal';
-import SorterModal from './ranking/SorterModal';
+import { setShowUnranked } from '../redux/rootSlice';
+import { AppDispatch } from '../redux/store';
+import { toastOptions } from '../utilities/ToasterUtil';
 import AuthModal, { AuthView } from './modals/auth/AuthModal';
 import JoinGroupModal from './modals/groups/JoinGroupModal';
+import SorterModal from './ranking/SorterModal';
 
 // lazy load the modal components to reduce initial bundle size
 const LazyMainModal = React.lazy(() => import('./modals/MainModal'));
@@ -97,10 +98,7 @@ const AppModals: React.FC<AppModalsProps> = ({
         )}
 
         {(modalState.name.isOpen || modalState.name.hasRendered) && (
-          <LazyNameModal
-            isOpen={modalState.name.isOpen}
-            onClose={() => closeModal('name')}
-          />
+          <LazyNameModal isOpen={modalState.name.isOpen} onClose={() => closeModal('name')} />
         )}
 
         {(modalState.song.isOpen || modalState.song.hasRendered) && (
@@ -132,10 +130,7 @@ const AppModals: React.FC<AppModalsProps> = ({
 
       {(modalState.map.isOpen || modalState.map.hasRendered) && (
         <Suspense fallback={<div />}>
-          <LazyMapModal
-            isOpen={modalState.map.isOpen}
-            onClose={() => closeModal('map')}
-          />
+          <LazyMapModal isOpen={modalState.map.isOpen} onClose={() => closeModal('map')} />
         </Suspense>
       )}
 
@@ -144,8 +139,8 @@ const AppModals: React.FC<AppModalsProps> = ({
           <LazyJoyrideTour
             setRefreshUrl={setRefreshUrl}
             openConfigModal={openConfigModalWithTab}
-            setConfigModalShow={(show) => show ? openModal('config') : closeModal('config')}
-            setRunTour={(run) => run ? openModal('tour') : closeModal('tour')}
+            setConfigModalShow={(show) => (show ? openModal('config') : closeModal('config'))}
+            setRunTour={(run) => (run ? openModal('tour') : closeModal('tour'))}
             runTour={modalState.tour.isOpen}
           />
         </Suspense>
@@ -157,8 +152,8 @@ const AppModals: React.FC<AppModalsProps> = ({
             openSortModal={openSorterModal}
             setRefreshUrl={setRefreshUrl}
             openConfigModal={openConfigModalWithTab}
-            setConfigModalShow={(show) => show ? openModal('config') : closeModal('config')}
-            setRunTour={(run) => run ? openModal('sortTour') : closeModal('sortTour')}
+            setConfigModalShow={(show) => (show ? openModal('config') : closeModal('config'))}
+            setRunTour={(run) => (run ? openModal('sortTour') : closeModal('sortTour'))}
             runTour={modalState.sortTour.isOpen}
             closeSortModal={closeSorterModal}
           />
@@ -180,7 +175,11 @@ const AppModals: React.FC<AppModalsProps> = ({
         onAuthSuccess={() => {
           // Pre-seed the ConfigModal's sticky-tab storage so a first-mount
           // (modal never opened this session) still lands on Account.
-          try { localStorage.setItem('configModalActiveTab', 'account'); } catch { /* ignore */ }
+          try {
+            localStorage.setItem('configModalActiveTab', 'account');
+          } catch {
+            /* ignore */
+          }
           openConfigModalWithTab('account');
         }}
       />
@@ -206,15 +205,16 @@ const AppModals: React.FC<AppModalsProps> = ({
         onJoined={() => {
           // Sticky-tab so the Groups tab is what they see when the
           // config modal opens.
-          try { localStorage.setItem('configModalActiveTab', 'groups'); } catch { /* ignore */ }
+          try {
+            localStorage.setItem('configModalActiveTab', 'groups');
+          } catch {
+            /* ignore */
+          }
           openConfigModalWithTab('groups');
         }}
       />
 
-      <Toaster
-        toastOptions={toastOptions}
-        position="top-center"
-      />
+      <Toaster toastOptions={toastOptions} position="top-center" />
     </>
   );
 };

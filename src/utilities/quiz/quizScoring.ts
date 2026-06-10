@@ -10,8 +10,8 @@ export const formatDuration = (ms: number): string => {
   return `${m}:${String(s).padStart(2, '0')}`;
 };
 
-import { QUESTION_GROUP_META, QuizResult } from '../../data/quiz/quizTypes';
 import { QUIZ_YEARS } from './quizGenerator';
+import { QUESTION_GROUP_META, QuizResult } from '../../data/quiz/quizTypes';
 
 /**
  * Format the selected quiz years compactly, collapsing blocks that are
@@ -59,7 +59,7 @@ export interface TypeBreakdownRow {
 // Underlying question types are grouped on the setup screen (e.g. "Contest winners"
 // bundles winner/televote/jury), so the breakdown aggregates by those same groups.
 const GROUP_BY_TYPE = new Map(
-  QUESTION_GROUP_META.flatMap((g) => g.types.map((t) => [t, g.id] as const))
+  QUESTION_GROUP_META.flatMap((g) => g.types.map((t) => [t, g.id] as const)),
 );
 
 /** Correct/total split per setup question group, ordered by the canonical group list. */

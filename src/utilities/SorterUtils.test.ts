@@ -1,14 +1,10 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import {
-  initSortState,
-  processChoice,
-  getSortedItems,
-  ActionType,
-  SortState,
-} from './SorterUtils'; // adjust path if necessary
+
+import { initSortState, processChoice, getSortedItems, ActionType, SortState } from './SorterUtils'; // adjust path if necessary
+
 import type { CountryContestant } from '../data/CountryContestant'; // adjust path if necessary
 
-// mock countryContestant data 
+// mock countryContestant data
 const createMockContestant = (id: string, name: string): CountryContestant => ({
   uid: id,
   id: id,
@@ -18,8 +14,8 @@ const createMockContestant = (id: string, name: string): CountryContestant => ({
     id: id,
     artist: `Artist ${name}`,
     song: `Song ${name}`,
-    year: "2024",
-    youtube: "https://youtube.com",
+    year: '2024',
+    youtube: 'https://youtube.com',
     countryKey: id.toLowerCase(),
     toJSON() {
       return {
@@ -31,85 +27,98 @@ const createMockContestant = (id: string, name: string): CountryContestant => ({
         finalsRank: this.finalsRank,
         semiFinalsRank: this.semiFinalsRank,
         votes: this.votes,
-        year: this.year
+        year: this.year,
       };
-    }
+    },
   },
 });
 
 // Generate a larger test data set (37 items) for our new tests
-const contestantsData = Array.from({ length: 37 }, (_, i) => 
-  createMockContestant(`C${i + 1}`, String.fromCharCode(65 + (i % 26))) // A-Z then repeat
+const contestantsData = Array.from(
+  { length: 37 },
+  (_, i) => createMockContestant(`C${i + 1}`, String.fromCharCode(65 + (i % 26))), // A-Z then repeat
 );
 
 // function to create a specific order
 function createOrderedList(ids: string[]): CountryContestant[] {
-    return ids.map(id => {
-        const found = contestantsData.find(c => c.uid === id);
-        if (!found) throw new Error(`Contestant with id ${id} not found in base data`);
-        return found;
-    });
+  return ids.map((id) => {
+    const found = contestantsData.find((c) => c.uid === id);
+    if (!found) throw new Error(`Contestant with id ${id} not found in base data`);
+    return found;
+  });
 }
 
 // helper to simulate the sorting process based on a target order
-const simulateSort = (initialList: CountryContestant[], targetOrder: CountryContestant[]): { finalState: SortState; comparisonsMade: number } => {
-    let state = initSortState(initialList);
-    let comparisonsMade = 0;
-    const maxSafetyIterations = initialList.length * initialList.length * 2; // generous upper bound
+const simulateSort = (
+  initialList: CountryContestant[],
+  targetOrder: CountryContestant[],
+): { finalState: SortState; comparisonsMade: number } => {
+  let state = initSortState(initialList);
+  let comparisonsMade = 0;
+  const maxSafetyIterations = initialList.length * initialList.length * 2; // generous upper bound
 
-    // helper function to determine rank in the target order
-    const getTargetRank = (uid: string | undefined): number => {
-        if (!uid) return Infinity;
-        const index = targetOrder.findIndex(c => c.uid === uid);
-        return index === -1 ? Infinity : index;
-    };
+  // helper function to determine rank in the target order
+  const getTargetRank = (uid: string | undefined): number => {
+    if (!uid) return Infinity;
+    const index = targetOrder.findIndex((c) => c.uid === uid);
+    return index === -1 ? Infinity : index;
+  };
 
-    while (!state.isComplete && comparisonsMade < maxSafetyIterations) {
-        if (state.action === ActionType.COMPARE) {
-            const currentComparison = state.comparisons[state.comparisons.length - 1];
-            expect(currentComparison).toBeDefined();
-            expect(currentComparison.choice).toBeUndefined(); // ensure it needs a choice
+  while (!state.isComplete && comparisonsMade < maxSafetyIterations) {
+    if (state.action === ActionType.COMPARE) {
+      const currentComparison = state.comparisons[state.comparisons.length - 1];
+      expect(currentComparison).toBeDefined();
+      expect(currentComparison.choice).toBeUndefined(); // ensure it needs a choice
 
-            const leftRank = getTargetRank(currentComparison.leftItem?.uid);
-            const rightRank = getTargetRank(currentComparison.rightItem?.uid);
-            const choice = leftRank < rightRank ? 'left' : 'right';
+      const leftRank = getTargetRank(currentComparison.leftItem?.uid);
+      const rightRank = getTargetRank(currentComparison.rightItem?.uid);
+      const choice = leftRank < rightRank ? 'left' : 'right';
 
-            state = processChoice(state, choice);
-            comparisonsMade++; // increment only when a choice is processed
-        } else {
-             // should not happen unless sort completes immediately
-             break;
-        }
+      state = processChoice(state, choice);
+      comparisonsMade++; // increment only when a choice is processed
+    } else {
+      // should not happen unless sort completes immediately
+      break;
     }
-    
-    // Log the number of comparisons (now always logged)
-    console.log(`Comparisons made for ${initialList.length} items: ${comparisonsMade}`);
-    
-    expect(comparisonsMade).toBeLessThan(maxSafetyIterations); // ensure no infinite loop
-    expect(state.isComplete).toBe(true); // ensure sorting finished
-    expect(state.action).toBe(ActionType.DONE);
-    // check internal consistency: comparisons made should match state count
-    expect(comparisonsMade).toBe(state.totalComparisons);
+  }
 
-    return { finalState: state, comparisonsMade };
+  // Log the number of comparisons (now always logged)
+  console.log(`Comparisons made for ${initialList.length} items: ${comparisonsMade}`);
+
+  expect(comparisonsMade).toBeLessThan(maxSafetyIterations); // ensure no infinite loop
+  expect(state.isComplete).toBe(true); // ensure sorting finished
+  expect(state.action).toBe(ActionType.DONE);
+  // check internal consistency: comparisons made should match state count
+  expect(comparisonsMade).toBe(state.totalComparisons);
+
+  return { finalState: state, comparisonsMade };
 };
 
-
 describe('SorterUtils - Merge Sort Implementation', () => {
-
   beforeEach(() => {
-      // We'll allow console.log to show the number of comparisons
-      vi.spyOn(console, 'warn').mockImplementation(() => {});
-      vi.spyOn(console, 'error').mockImplementation(() => {});
+    // We'll allow console.log to show the number of comparisons
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+    vi.spyOn(console, 'error').mockImplementation(() => {});
   });
 
   afterEach(() => {
-      vi.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   it('should initialize correctly for a list with multiple items (e.g., 10 items)', () => {
     // use a specific initial order for predictability if needed, or random
-    const initialList = createOrderedList(['C3', 'C1', 'C5', 'C2', 'C4', 'C10', 'C8', 'C6', 'C7', 'C9']);
+    const initialList = createOrderedList([
+      'C3',
+      'C1',
+      'C5',
+      'C2',
+      'C4',
+      'C10',
+      'C8',
+      'C6',
+      'C7',
+      'C9',
+    ]);
     const n = initialList.length;
     const state = initSortState(initialList);
 
@@ -118,7 +127,7 @@ describe('SorterUtils - Merge Sort Implementation', () => {
     expect(state.action).toBe(ActionType.COMPARE); // merge sort starts comparing immediately for n > 1
     expect(state.allItems).toHaveLength(n);
     // check all items are present, order might be shuffled by initSortState
-    expect(state.allItems.map(c => c.uid).sort()).toEqual(initialList.map(c => c.uid).sort());
+    expect(state.allItems.map((c) => c.uid).sort()).toEqual(initialList.map((c) => c.uid).sort());
     expect(state.totalComparisons).toBe(0);
     expect(state.comparisons).toHaveLength(1); // first comparison is set up
     //expect(state.currentMergeStep).toBeDefined(); // a merge should have started
@@ -160,7 +169,7 @@ describe('SorterUtils - Merge Sort Implementation', () => {
     const { finalState, comparisonsMade } = simulateSort(initialList, targetOrder);
     const finalRanking = getSortedItems(finalState);
 
-    expect(finalRanking.map(c => c.uid)).toEqual(targetOrder.map(c => c.uid));
+    expect(finalRanking.map((c) => c.uid)).toEqual(targetOrder.map((c) => c.uid));
     // check efficiency: merge sort for n=5 should be <= ceil(5*log2(5)) ~ 12 comparisons (often fewer)
     const theoreticalMax = Math.ceil(initialList.length * Math.log2(initialList.length));
     console.log(`Theoretical max for n=5: ~${theoreticalMax} comparisons`);
@@ -169,47 +178,49 @@ describe('SorterUtils - Merge Sort Implementation', () => {
   });
 
   it('should sort a reversed list', () => {
-      const n = 6;
-      const initialList = createOrderedList(['C6', 'C5', 'C4', 'C3', 'C2', 'C1']);
-      const targetOrder = createOrderedList(['C1', 'C2', 'C3', 'C4', 'C5', 'C6']);
+    const n = 6;
+    const initialList = createOrderedList(['C6', 'C5', 'C4', 'C3', 'C2', 'C1']);
+    const targetOrder = createOrderedList(['C1', 'C2', 'C3', 'C4', 'C5', 'C6']);
 
-      const { finalState, comparisonsMade } = simulateSort(initialList, targetOrder);
-      const finalRanking = getSortedItems(finalState);
+    const { finalState, comparisonsMade } = simulateSort(initialList, targetOrder);
+    const finalRanking = getSortedItems(finalState);
 
-      expect(finalRanking.map(c => c.uid)).toEqual(targetOrder.map(c => c.uid));
-      const theoreticalMax = Math.ceil(n * Math.log2(n)); // ~16
-      console.log(`Theoretical max for n=6 (reversed): ~${theoreticalMax} comparisons`);
-      expect(comparisonsMade).toBeLessThanOrEqual(theoreticalMax);
-      expect(comparisonsMade).toBeGreaterThan(0);
+    expect(finalRanking.map((c) => c.uid)).toEqual(targetOrder.map((c) => c.uid));
+    const theoreticalMax = Math.ceil(n * Math.log2(n)); // ~16
+    console.log(`Theoretical max for n=6 (reversed): ~${theoreticalMax} comparisons`);
+    expect(comparisonsMade).toBeLessThanOrEqual(theoreticalMax);
+    expect(comparisonsMade).toBeGreaterThan(0);
   });
 
   it('should sort an already sorted list', () => {
-      const n = 7;
-      const initialList = createOrderedList(['C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7']);
-      const targetOrder = createOrderedList(['C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7']);
+    const n = 7;
+    const initialList = createOrderedList(['C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7']);
+    const targetOrder = createOrderedList(['C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7']);
 
-      const { finalState, comparisonsMade } = simulateSort(initialList, targetOrder);
-      const finalRanking = getSortedItems(finalState);
+    const { finalState, comparisonsMade } = simulateSort(initialList, targetOrder);
+    const finalRanking = getSortedItems(finalState);
 
-      expect(finalRanking.map(c => c.uid)).toEqual(targetOrder.map(c => c.uid));
-      // merge sort still performs comparisons even if sorted, should be close to n*log(n) lower bound
-      const theoreticalMin = n - 1; // absolute minimum
-      const theoreticalMax = Math.ceil(n * Math.log2(n)); // ~ 20
-      console.log(`Theoretical range for n=7 (sorted): ~${theoreticalMin}-${theoreticalMax} comparisons`);
-      expect(comparisonsMade).toBeLessThanOrEqual(theoreticalMax);
-      expect(comparisonsMade).toBeGreaterThanOrEqual(theoreticalMin);
+    expect(finalRanking.map((c) => c.uid)).toEqual(targetOrder.map((c) => c.uid));
+    // merge sort still performs comparisons even if sorted, should be close to n*log(n) lower bound
+    const theoreticalMin = n - 1; // absolute minimum
+    const theoreticalMax = Math.ceil(n * Math.log2(n)); // ~ 20
+    console.log(
+      `Theoretical range for n=7 (sorted): ~${theoreticalMin}-${theoreticalMax} comparisons`,
+    );
+    expect(comparisonsMade).toBeLessThanOrEqual(theoreticalMax);
+    expect(comparisonsMade).toBeGreaterThanOrEqual(theoreticalMin);
   });
 
   // NEW TEST: Sort a list of 3 items
   it('should sort a list of 3 items', () => {
     const initialList = createOrderedList(['C3', 'C1', 'C2']);
     const targetOrder = createOrderedList(['C1', 'C2', 'C3']);
-    
+
     const { finalState, comparisonsMade } = simulateSort(initialList, targetOrder);
     const finalRanking = getSortedItems(finalState);
-    
-    expect(finalRanking.map(c => c.uid)).toEqual(targetOrder.map(c => c.uid));
-    
+
+    expect(finalRanking.map((c) => c.uid)).toEqual(targetOrder.map((c) => c.uid));
+
     const theoreticalMax = Math.ceil(3 * Math.log2(3)); // ~5
     console.log(`Theoretical max for n=3: ~${theoreticalMax} comparisons`);
     expect(comparisonsMade).toBeLessThanOrEqual(theoreticalMax);
@@ -228,7 +239,7 @@ describe('SorterUtils - Merge Sort Implementation', () => {
       const { finalState, comparisonsMade } = simulateSort(initialList, targetOrder);
       const finalRanking = getSortedItems(finalState);
 
-      expect(finalRanking.map(c => c.uid)).toEqual(targetOrder.map(c => c.uid));
+      expect(finalRanking.map((c) => c.uid)).toEqual(targetOrder.map((c) => c.uid));
       expect(finalRanking).toHaveLength(n);
 
       const theoreticalMax = Math.ceil(n * Math.log2(n)); // ~ 34 for n=10
@@ -250,7 +261,7 @@ describe('SorterUtils - Merge Sort Implementation', () => {
       const { finalState, comparisonsMade } = simulateSort(initialList, targetOrder);
       const finalRanking = getSortedItems(finalState);
 
-      expect(finalRanking.map(c => c.uid)).toEqual(targetOrder.map(c => c.uid));
+      expect(finalRanking.map((c) => c.uid)).toEqual(targetOrder.map((c) => c.uid));
       expect(finalRanking).toHaveLength(n);
 
       const theoreticalMax = Math.ceil(n * Math.log2(n)); // ~ 186 for n=37
@@ -261,18 +272,17 @@ describe('SorterUtils - Merge Sort Implementation', () => {
   }
 
   it('getSortedItems should return an empty array if sorting is not complete', () => {
-      const initialList = createOrderedList(['C3', 'C1', 'C5', 'C2', 'C4']);
-      const state = initSortState(initialList); // initializes but doesn't complete
+    const initialList = createOrderedList(['C3', 'C1', 'C5', 'C2', 'C4']);
+    const state = initSortState(initialList); // initializes but doesn't complete
 
-      // ensure it's not accidentally completed
-      expect(state.isComplete).toBe(false);
-      expect(state.action).toBe(ActionType.COMPARE);
+    // ensure it's not accidentally completed
+    expect(state.isComplete).toBe(false);
+    expect(state.action).toBe(ActionType.COMPARE);
 
-      const result = getSortedItems(state);
-      // should return empty because isComplete is false
-      //expect(result).toEqual([]);
+    getSortedItems(state);
+    // should return empty because isComplete is false
+    //expect(result).toEqual([]);
   });
-
 });
 
 /**
@@ -282,10 +292,10 @@ export const shuffleArray = <T>(array: T[]): T[] => {
   const result = [...array];
   // loop backwards through the array.
   for (let i = result.length - 1; i > 0; i--) {
-      // pick a random index from 0 to i (inclusive).
-      const j = Math.floor(Math.random() * (i + 1));
-      // swap the elements at indices i and j.
-      [result[i], result[j]] = [result[j], result[i]];
+    // pick a random index from 0 to i (inclusive).
+    const j = Math.floor(Math.random() * (i + 1));
+    // swap the elements at indices i and j.
+    [result[i], result[j]] = [result[j], result[i]];
   }
   return result;
 };

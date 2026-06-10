@@ -1,52 +1,72 @@
-import React from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import classNames from 'classnames';
+import React from 'react';
 
 interface MenuItemProps {
-    icon?: IconDefinition;
-    text: string;
-    url?: string;
-    disabled?: boolean;
-    className?: string;
-    onClick?: () => void;
-    afterClick?: () => void;
+  icon?: IconDefinition;
+  text: string;
+  url?: string;
+  disabled?: boolean;
+  className?: string;
+  onClick?: () => void;
+  afterClick?: () => void;
 }
 
-const MenuItem: React.FC<MenuItemProps> = ({ icon, text, className, url, onClick, afterClick, disabled }) => {
+const MenuItem: React.FC<MenuItemProps> = ({
+  icon,
+  text,
+  className,
+  url,
+  onClick,
+  afterClick,
+  disabled,
+}) => {
+  const openUrlInNewTab = (url: string): void => {
+    if (disabled) {
+      return;
+    }
+    window.open(url, '_blank', 'noopener,noreferrer');
+  };
 
-    const openUrlInNewTab = (url: string): void => {
-        if (disabled) {
-            return;
-        }
-        window.open(url, '_blank', 'noopener,noreferrer');
-    };
-
-    return (
-        <li
-            role="menuitem"
-            className={
-                classNames(
-                    "text-[var(--er-text-secondary)] hover:bg-[var(--er-surface-tertiary)] hover:text-[var(--er-text-primary)] flex w-full cursor-pointer select-none items-center gap-2 px-3 py-2.5 text-start transition-colors duration-100",
-                    className
-            )}
-            onClick={
-                url !== undefined ? () => openUrlInNewTab(url) : 
-                () => { 
-                    if (disabled) {
-                        return;
-                    }
-                    onClick?.(); 
-                    afterClick?.();                    
-                } 
+  return (
+    <li
+      role="menuitem"
+      className={classNames(
+        'text-[var(--er-text-secondary)] hover:bg-[var(--er-surface-tertiary)] hover:text-[var(--er-text-primary)] flex w-full cursor-pointer select-none items-center gap-2 px-3 py-2.5 text-start transition-colors duration-100',
+        className,
+      )}
+      onClick={
+        url !== undefined
+          ? () => openUrlInNewTab(url)
+          : () => {
+              if (disabled) {
+                return;
+              }
+              onClick?.();
+              afterClick?.();
             }
-        >
-            <div className="w-[1.2em] text-center">
-              { icon && <FontAwesomeIcon icon={icon} color={disabled ? "gray" : ""} className={classNames(disabled ? "fill-slate-300" : "")} />}
-            </div>
-            <p className={classNames("text-sm font-medium", disabled ? "text-[var(--er-text-subtle)]" : "")}>{text}</p>
-        </li>
-    );
+      }
+    >
+      <div className="w-[1.2em] text-center">
+        {icon && (
+          <FontAwesomeIcon
+            icon={icon}
+            color={disabled ? 'gray' : ''}
+            className={classNames(disabled ? 'fill-slate-300' : '')}
+          />
+        )}
+      </div>
+      <p
+        className={classNames(
+          'text-sm font-medium',
+          disabled ? 'text-[var(--er-text-subtle)]' : '',
+        )}
+      >
+        {text}
+      </p>
+    </li>
+  );
 };
 
 export default MenuItem;

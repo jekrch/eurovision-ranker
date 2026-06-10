@@ -1,11 +1,18 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import classNames from 'classnames';
+import {
+  faCheck,
+  faXmark,
+  faArrowRight,
+  faStopwatch,
+  faPlay,
+} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheck, faXmark, faArrowRight, faStopwatch, faPlay } from '@fortawesome/free-solid-svg-icons';
-import { LazyLoadedFlag } from '../../LazyFlag';
+import classNames from 'classnames';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+
 import { QuizAnswer, QuizOption, QuizQuestion } from '../../../data/quiz/quizTypes';
 import { formatDuration } from '../../../utilities/quiz/quizScoring';
 import { getYoutubeThumbnail } from '../../../utilities/YoutubeUtil';
+import { LazyLoadedFlag } from '../../LazyFlag';
 
 interface QuizPlayProps {
   questions: QuizQuestion[];
@@ -35,11 +42,16 @@ const RevealCard: React.FC<{ option: QuizOption }> = ({ option }) => {
         </div>
       ) : (
         option.countryKey && (
-          <LazyLoadedFlag code={option.countryKey} className="!w-12 !h-8 rounded-sm object-cover flex-shrink-0 shadow" />
+          <LazyLoadedFlag
+            code={option.countryKey}
+            className="!w-12 !h-8 rounded-sm object-cover flex-shrink-0 shadow"
+          />
         )
       )}
       <span className="min-w-0">
-        <span className="block text-[var(--er-text-tertiary)] text-sm font-semibold truncate">{caption}</span>
+        <span className="block text-[var(--er-text-tertiary)] text-sm font-semibold truncate">
+          {caption}
+        </span>
         {sub && <span className="block text-[var(--er-text-subtle)] text-xs truncate">{sub}</span>}
       </span>
     </div>
@@ -96,7 +108,10 @@ const QuizPlay: React.FC<QuizPlayProps> = ({ questions, onFinish }) => {
     if (answered) return;
     const correct = optionId === question.correctOptionId;
     setSelectedId(optionId);
-    setAnswers((prev) => [...prev, { questionId: question.id, selectedOptionId: optionId, correct }]);
+    setAnswers((prev) => [
+      ...prev,
+      { questionId: question.id, selectedOptionId: optionId, correct },
+    ]);
   };
 
   const handleNext = () => {
@@ -151,7 +166,9 @@ const QuizPlay: React.FC<QuizPlayProps> = ({ questions, onFinish }) => {
 
       {/* prompt */}
       <div className="min-h-[3.5rem] flex items-center flex-shrink-0 mt-3">
-        <h3 className="text-[var(--er-text-secondary)] text-lg font-semibold leading-snug">{renderPrompt()}</h3>
+        <h3 className="text-[var(--er-text-secondary)] text-lg font-semibold leading-snug">
+          {renderPrompt()}
+        </h3>
       </div>
 
       {/* options (scrolls within the fixed-height column) */}
@@ -159,7 +176,8 @@ const QuizPlay: React.FC<QuizPlayProps> = ({ questions, onFinish }) => {
         {displayOptions.map((opt) => {
           const isCorrect = opt.id === question.correctOptionId;
           const isSelected = opt.id === selectedId;
-          let stateClass = 'bg-[var(--er-surface-tertiary)] ring-white/10 hover:bg-[var(--er-surface-light)]';
+          let stateClass =
+            'bg-[var(--er-surface-tertiary)] ring-white/10 hover:bg-[var(--er-surface-light)]';
           if (answered) {
             if (isCorrect) {
               stateClass = 'bg-green-500/20 ring-green-400';
@@ -178,7 +196,7 @@ const QuizPlay: React.FC<QuizPlayProps> = ({ questions, onFinish }) => {
               className={classNames(
                 'flex items-center gap-3 px-3 py-2.5 rounded-lg ring-1 text-left transition-all duration-150 flex-shrink-0',
                 stateClass,
-                !answered && 'active:scale-[0.99] cursor-pointer'
+                !answered && 'active:scale-[0.99] cursor-pointer',
               )}
             >
               {opt.countryKey && (
@@ -188,9 +206,13 @@ const QuizPlay: React.FC<QuizPlayProps> = ({ questions, onFinish }) => {
                 />
               )}
               <span className="flex-grow min-w-0">
-                <span className="block text-[var(--er-text-tertiary)] font-medium truncate">{opt.label}</span>
+                <span className="block text-[var(--er-text-tertiary)] font-medium truncate">
+                  {opt.label}
+                </span>
                 {opt.sublabel && (
-                  <span className="block text-[var(--er-text-subtle)] text-xs truncate">{opt.sublabel}</span>
+                  <span className="block text-[var(--er-text-subtle)] text-xs truncate">
+                    {opt.sublabel}
+                  </span>
                 )}
               </span>
               {answered && isCorrect && (
@@ -209,7 +231,9 @@ const QuizPlay: React.FC<QuizPlayProps> = ({ questions, onFinish }) => {
         {answered ? (
           <div className="flex flex-col gap-2">
             {correctOption && <RevealCard option={correctOption} />}
-            <p className="text-[var(--er-text-subtle)] text-xs leading-snug line-clamp-2">{question.explanation}</p>
+            <p className="text-[var(--er-text-subtle)] text-xs leading-snug line-clamp-2">
+              {question.explanation}
+            </p>
             <button
               type="button"
               onClick={handleNext}

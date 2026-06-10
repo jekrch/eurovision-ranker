@@ -1,6 +1,6 @@
 import { logger } from '../logger';
-import { RankingCanvasConfig } from './canvasTypes';
 import { getColorForCountryCode } from './canvasTheme';
+import { RankingCanvasConfig } from './canvasTypes';
 
 /*
   Pure drawing/measurement primitives shared by both canvas styles. These take an
@@ -16,7 +16,7 @@ export const roundRect = (
   height: number,
   radius: number = 4,
   fill: boolean = true,
-  stroke: boolean = false
+  stroke: boolean = false,
 ): void => {
   if (width < 2 * radius) radius = width / 2;
   if (height < 2 * radius) radius = height / 2;
@@ -44,7 +44,7 @@ export const drawFallbackFlag = (
   width: number,
   height: number,
   config: RankingCanvasConfig,
-  fillColor: string
+  fillColor: string,
 ): void => {
   ctx.fillStyle = fillColor;
   roundRect(ctx, x, y, width, height, config.boxCornerRadius);
@@ -64,83 +64,86 @@ export const wrapText = (
   ctx: CanvasRenderingContext2D,
   text: string,
   maxWidth: number,
-  font: string
+  font: string,
 ): string[] => {
   if (maxWidth <= 0) return [text];
   const words = text.split(' ');
   const lines: string[] = [];
-  let currentLine = words[0] || "";
+  let currentLine = words[0] || '';
   ctx.font = font;
 
   for (let i = 1; i < words.length; i++) {
     const word = words[i];
-    const testLine = currentLine + " " + word;
+    const testLine = currentLine + ' ' + word;
     const { width: testWidth } = ctx.measureText(testLine);
     if (testWidth < maxWidth && currentLine) {
       currentLine = testLine;
     } else {
-      if(currentLine) lines.push(currentLine);
+      if (currentLine) lines.push(currentLine);
       currentLine = word;
     }
   }
   if (currentLine) lines.push(currentLine);
-  return lines.filter(line => line.trim() !== "");
+  return lines.filter((line) => line.trim() !== '');
 };
 
 export const drawFlagWithCover = (
-    ctx: CanvasRenderingContext2D,
-    flagImage: HTMLImageElement,
-    countryCode: string,
-    x: number,
-    y: number,
-    boxWidth: number,
-    boxHeight: number,
-    config: RankingCanvasConfig,
-    fillColor: string
+  ctx: CanvasRenderingContext2D,
+  flagImage: HTMLImageElement,
+  countryCode: string,
+  x: number,
+  y: number,
+  boxWidth: number,
+  boxHeight: number,
+  config: RankingCanvasConfig,
+  fillColor: string,
 ) => {
-    ctx.save();
+  ctx.save();
 
-    ctx.fillStyle = fillColor;
-    roundRect(ctx, x, y, boxWidth, boxHeight, config.boxCornerRadius, true, false);
+  ctx.fillStyle = fillColor;
+  roundRect(ctx, x, y, boxWidth, boxHeight, config.boxCornerRadius, true, false);
 
-    ctx.beginPath();
-    ctx.moveTo(x + config.boxCornerRadius -2, y);
-    ctx.arcTo(x + boxWidth, y, x + boxWidth, y + boxHeight, config.boxCornerRadius);
-    ctx.arcTo(x + boxWidth, y + boxHeight, x, y + boxHeight, config.boxCornerRadius);
-    ctx.arcTo(x, y + boxHeight, x, y, config.boxCornerRadius);
-    ctx.arcTo(x, y, x + boxWidth, y, config.boxCornerRadius);
-    ctx.closePath();
-    ctx.clip();
+  ctx.beginPath();
+  ctx.moveTo(x + config.boxCornerRadius - 2, y);
+  ctx.arcTo(x + boxWidth, y, x + boxWidth, y + boxHeight, config.boxCornerRadius);
+  ctx.arcTo(x + boxWidth, y + boxHeight, x, y + boxHeight, config.boxCornerRadius);
+  ctx.arcTo(x, y + boxHeight, x, y, config.boxCornerRadius);
+  ctx.arcTo(x, y, x + boxWidth, y, config.boxCornerRadius);
+  ctx.closePath();
+  ctx.clip();
 
-    const imgWidth = flagImage.naturalWidth || flagImage.width;
-    const imgHeight = flagImage.naturalHeight || flagImage.height;
+  const imgWidth = flagImage.naturalWidth || flagImage.width;
+  const imgHeight = flagImage.naturalHeight || flagImage.height;
 
-    if (!imgWidth || !imgHeight) {
-        logger.warn("Flag image has no dimensions, drawing fallback", countryCode);
-        ctx.restore();
-        drawFallbackFlag(ctx, countryCode, x, y, boxWidth, boxHeight, config, fillColor);
-        return;
-    }
-
-    const imgAspectRatio = imgWidth / imgHeight;
-    const boxAspectRatio = boxWidth / boxHeight;
-
-    let sx = 0, sy = 0, sWidth = imgWidth, sHeight = imgHeight;
-
-    if (imgAspectRatio > boxAspectRatio) {
-        sWidth = imgHeight * boxAspectRatio;
-        sx = (imgWidth - sWidth) / 2;
-    } else if (imgAspectRatio < boxAspectRatio) {
-        sHeight = imgWidth / boxAspectRatio;
-        sy = (imgHeight - sHeight) / 2;
-    }
-
-    try {
-        ctx.drawImage(flagImage, sx, sy, sWidth, sHeight, x, y, boxWidth, boxHeight);
-    } catch (e) {
-        logger.error("Error drawing flag image with cover:", e);
-    }
+  if (!imgWidth || !imgHeight) {
+    logger.warn('Flag image has no dimensions, drawing fallback', countryCode);
     ctx.restore();
+    drawFallbackFlag(ctx, countryCode, x, y, boxWidth, boxHeight, config, fillColor);
+    return;
+  }
+
+  const imgAspectRatio = imgWidth / imgHeight;
+  const boxAspectRatio = boxWidth / boxHeight;
+
+  let sx = 0,
+    sy = 0,
+    sWidth = imgWidth,
+    sHeight = imgHeight;
+
+  if (imgAspectRatio > boxAspectRatio) {
+    sWidth = imgHeight * boxAspectRatio;
+    sx = (imgWidth - sWidth) / 2;
+  } else if (imgAspectRatio < boxAspectRatio) {
+    sHeight = imgWidth / boxAspectRatio;
+    sy = (imgHeight - sHeight) / 2;
+  }
+
+  try {
+    ctx.drawImage(flagImage, sx, sy, sWidth, sHeight, x, y, boxWidth, boxHeight);
+  } catch (e) {
+    logger.error('Error drawing flag image with cover:', e);
+  }
+  ctx.restore();
 };
 
 // shorten text with a trailing ellipsis so a row stays single-line
@@ -148,7 +151,7 @@ export const truncateText = (
   ctx: CanvasRenderingContext2D,
   text: string,
   maxWidth: number,
-  font: string
+  font: string,
 ): string => {
   ctx.font = font;
   if (maxWidth <= 0 || ctx.measureText(text).width <= maxWidth) return text;
@@ -165,7 +168,7 @@ export const drawTracked = (
   text: string,
   x: number,
   y: number,
-  spacing: number
+  spacing: number,
 ): number => {
   let cx = x;
   for (const ch of text) {
@@ -181,7 +184,7 @@ export const drawModernGloss = (
   y: number,
   width: number,
   height: number,
-  radius: number
+  radius: number,
 ): void => {
   ctx.save();
   roundRect(ctx, x, y, width, height, radius, false, false);

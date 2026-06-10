@@ -1,6 +1,7 @@
-import React from 'react';
-import MenuItem from '../MenuItem';
 import { faCamera } from '@fortawesome/free-solid-svg-icons';
+import React from 'react';
+
+import MenuItem from '../MenuItem';
 
 interface ImageCaptureMenuItemProps {
   className?: string;
@@ -22,12 +23,7 @@ const ImageCaptureMenuItem: React.FC<ImageCaptureMenuItemProps> = ({
   afterClick = () => {},
 }) => {
   return (
-    <MenuItem
-      icon={faCamera}
-      text="Download image"
-      onClick={onClick}
-      afterClick={afterClick}
-    />
+    <MenuItem icon={faCamera} text="Download image" onClick={onClick} afterClick={afterClick} />
   );
 };
 

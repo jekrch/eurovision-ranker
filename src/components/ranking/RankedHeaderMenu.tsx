@@ -1,18 +1,34 @@
-import React, { useState, useRef, useEffect } from 'react';
+import {
+  faEllipsisH,
+  faGlobe,
+  faTv,
+  faCopy,
+  faLink,
+  faFile,
+  faFileCode,
+  faList,
+  faEdit,
+  faPen,
+  faSlidersH,
+  faSort,
+  faPlay,
+  faCircleQuestion,
+} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEllipsisH, faGlobe, faTv, faCopy, faLink, faFile, faFileCode, faList, faEdit, faPen, faSlidersH, faSort, faPlay, faCircleQuestion } from '@fortawesome/free-solid-svg-icons';
-import { CSSTransition } from 'react-transition-group';
 import classNames from 'classnames';
-import MenuItem from '../MenuItem';
-import SubmenuItem from '../SubmenuItem';
-import { copyToClipboard, copyUrlToClipboard } from '../../utilities/export/ExportUtil';
-import { AppDispatch, AppState } from '../../redux/store';
-import { EXPORT_TYPE } from '../../utilities/export/ExportType';
-import { rankedHasAnyYoutubeLinks } from '../../utilities/YoutubeUtil';
-import { setHeaderMenuOpen } from '../../redux/rootSlice';
-import { useAppDispatch, useAppSelector } from '../../hooks/stateHooks';
+import React, { useState, useRef, useEffect } from 'react';
+import { CSSTransition } from 'react-transition-group';
+
 import ImageCaptureMenuItem from './ImageCaptureMenuItem';
 import ImageStyleModal from './ImageStyleModal';
+import { useAppDispatch, useAppSelector } from '../../hooks/stateHooks';
+import { setHeaderMenuOpen } from '../../redux/rootSlice';
+import { AppDispatch, AppState } from '../../redux/store';
+import { EXPORT_TYPE } from '../../utilities/export/ExportType';
+import { copyToClipboard, copyUrlToClipboard } from '../../utilities/export/ExportUtil';
+import { rankedHasAnyYoutubeLinks } from '../../utilities/YoutubeUtil';
+import MenuItem from '../MenuItem';
+import SubmenuItem from '../SubmenuItem';
 import { useVideoPip } from '../video/VideoPipContext';
 
 interface RankedHeaderMenuProps {
@@ -39,7 +55,6 @@ const RankedHeaderMenu: React.FC<RankedHeaderMenuProps> = (props: RankedHeaderMe
     const shouldClose = isMenuOpen;
     setIsMenuOpen(!isMenuOpen);
 
-
     if (shouldClose) {
       setTimeout(() => {
         document.body.classList.remove('no-scroll');
@@ -65,14 +80,10 @@ const RankedHeaderMenu: React.FC<RankedHeaderMenuProps> = (props: RankedHeaderMe
 
     const isJoyrideElement = hasParentWithJoyrideId(target);
 
-    if (
-      !menuRef.current?.contains(target) &&
-      !isJoyrideElement
-    ) {
+    if (!menuRef.current?.contains(target) && !isJoyrideElement) {
       setIsMenuOpen(false);
     }
   };
-
 
   useEffect(() => {
     let timeoutId: ReturnType<typeof setTimeout> | undefined;
@@ -103,15 +114,14 @@ const RankedHeaderMenu: React.FC<RankedHeaderMenuProps> = (props: RankedHeaderMe
 
   return (
     <div className="relative inline-block" ref={menuRef}>
-
       <button
-        className={classNames("tour-step-6 w-6 h-6 bg-[var(--er-surface-muted-accent)] hover:bg-[var(--er-surface-light)] rounded-full flex justify-center items-center cursor-pointer transition-all duration-150 active:scale-90", { "!bg-[var(--er-surface-light)]": isMenuOpen })}
+        className={classNames(
+          'tour-step-6 w-6 h-6 bg-[var(--er-surface-muted-accent)] hover:bg-[var(--er-surface-light)] rounded-full flex justify-center items-center cursor-pointer transition-all duration-150 active:scale-90',
+          { '!bg-[var(--er-surface-light)]': isMenuOpen },
+        )}
         onClick={toggleMenu}
       >
-        <FontAwesomeIcon
-          className="text-[var(--er-text-secondary)]"
-          icon={faEllipsisH}
-        />
+        <FontAwesomeIcon className="text-[var(--er-text-secondary)]" icon={faEllipsisH} />
       </button>
       <CSSTransition
         in={isMenuOpen}
@@ -124,19 +134,11 @@ const RankedHeaderMenu: React.FC<RankedHeaderMenuProps> = (props: RankedHeaderMe
           role="menu"
           className="absolute z-20 min-w-[190px] right-0 mt-2 rounded-xl border border-[var(--er-border-subtle)] bg-[var(--er-surface-secondary)] shadow-2xl shadow-black/50 overflow-hidden flex flex-col py-1"
         >
+          {hasPlayableVideos && (
+            <MenuItem icon={faPlay} text="Play Ranking" onClick={playList} afterClick={close} />
+          )}
 
-          {
-            hasPlayableVideos &&
-            <MenuItem
-              icon={faPlay}
-              text="Play Ranking"
-              onClick={playList}
-              afterClick={close}
-            />
-          }
-
-          {
-            rankedHasAnyYoutubeLinks(rankedItems) &&
+          {rankedHasAnyYoutubeLinks(rankedItems) && (
             <MenuItem
               icon={faTv}
               text="YouTube Playlist"
@@ -144,7 +146,7 @@ const RankedHeaderMenu: React.FC<RankedHeaderMenuProps> = (props: RankedHeaderMe
               onClick={() => window.open(props.generateYoutubePlaylistUrl?.(), '_blank')}
               afterClick={close}
             />
-          }
+          )}
 
           <MenuItem
             icon={faCircleQuestion}
@@ -172,21 +174,21 @@ const RankedHeaderMenu: React.FC<RankedHeaderMenuProps> = (props: RankedHeaderMe
             icon={faSlidersH}
             text="Categories"
             className="tour-step-9"
-            onClick={() => props.openConfig("categories")}
+            onClick={() => props.openConfig('categories')}
             afterClick={close}
           />
 
           <MenuItem
             icon={faList}
             text="Rankings"
-            onClick={() => props.openConfig("rankings")}
+            onClick={() => props.openConfig('rankings')}
             afterClick={close}
           />
 
           <MenuItem
             icon={faEdit}
             text="Display settings"
-            onClick={() => props.openConfig("display")}
+            onClick={() => props.openConfig('display')}
             afterClick={close}
           />
 
@@ -207,48 +209,27 @@ const RankedHeaderMenu: React.FC<RankedHeaderMenuProps> = (props: RankedHeaderMe
             />
           )}
 
-          <SubmenuItem
-            text="Copy"
-            buttonIcon={faCopy}
-          >
-            <MenuItem
-              text="URL"
-              icon={faLink}
-              onClick={copyUrlToClipboard}
-            />
+          <SubmenuItem text="Copy" buttonIcon={faCopy}>
+            <MenuItem text="URL" icon={faLink} onClick={copyUrlToClipboard} />
 
             <MenuItem
               text="Text"
               icon={faFile}
-              onClick={
-                () => copyToClipboard(
-                  rankedItems,
-                  EXPORT_TYPE.TEXT
-                )}
+              onClick={() => copyToClipboard(rankedItems, EXPORT_TYPE.TEXT)}
             />
 
             <MenuItem
               text="CSV"
               icon={faFileCode}
-              onClick={
-                () => copyToClipboard(
-                  rankedItems,
-                  EXPORT_TYPE.CSV
-                )}
+              onClick={() => copyToClipboard(rankedItems, EXPORT_TYPE.CSV)}
             />
 
             <MenuItem
               text="JSON"
               icon={faFileCode}
-              onClick={
-                () => copyToClipboard(
-                  rankedItems,
-                  EXPORT_TYPE.JSON
-                )}
+              onClick={() => copyToClipboard(rankedItems, EXPORT_TYPE.JSON)}
             />
-
           </SubmenuItem>
-
         </ul>
       </CSSTransition>
 

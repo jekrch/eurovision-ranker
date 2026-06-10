@@ -1,6 +1,7 @@
 import { toast } from 'react-hot-toast';
-import { DIFFICULTY_META, QuizResult } from '../../data/quiz/quizTypes';
+
 import { formatDuration, formatYearRanges, scoreMessage, typeBreakdown } from './quizScoring';
+import { DIFFICULTY_META, QuizResult } from '../../data/quiz/quizTypes';
 
 const cssVar = (name: string, fallback: string): string => {
   if (typeof window === 'undefined' || !document.documentElement) return fallback;
@@ -14,7 +15,7 @@ const roundRect = (
   y: number,
   w: number,
   h: number,
-  r: number
+  r: number,
 ) => {
   if (w < 2 * r) r = w / 2;
   if (h < 2 * r) r = h / 2;
@@ -201,7 +202,7 @@ export const downloadQuizResultImage = async (result: QuizResult): Promise<void>
   try {
     const canvas = createQuizResultCanvas(result);
     const blob = await new Promise<Blob | null>((resolve) =>
-      canvas.toBlob((b) => resolve(b), 'image/png', 1.0)
+      canvas.toBlob((b) => resolve(b), 'image/png', 1.0),
     );
     if (!blob) throw new Error('Failed to create image blob.');
 
@@ -218,6 +219,8 @@ export const downloadQuizResultImage = async (result: QuizResult): Promise<void>
     toast.success('Result image downloaded!');
   } catch (error) {
     toast.dismiss(toastId);
-    toast.error(`Failed to create image: ${error instanceof Error ? error.message : String(error)}`);
+    toast.error(
+      `Failed to create image: ${error instanceof Error ? error.message : String(error)}`,
+    );
   }
 };

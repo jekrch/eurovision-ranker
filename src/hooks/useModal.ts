@@ -26,7 +26,7 @@ export const useModal = (initialTab: string = 'about'): UseModalReturn => {
     tour: { isOpen: false, hasRendered: false },
     sortTour: { isOpen: false, hasRendered: false },
   });
-  
+
   const [currentTab, setModalTab] = useState(initialTab);
 
   // Effect to update hasRendered when a modal opens

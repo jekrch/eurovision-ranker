@@ -2,7 +2,9 @@ import Papa from 'papaparse';
 
 /** Shape of a row parsed from the votes CSV (all cells are strings). */
 /** Minimal structural view of a PapaParse result (only `data` is consumed). */
-interface CsvParseResult<T> { data: T[]; }
+interface CsvParseResult<T> {
+  data: T[];
+}
 
 interface VoteCsvRow {
   year: string;
@@ -14,37 +16,35 @@ interface VoteCsvRow {
   jury_points: string;
   [key: string]: string;
 }
-import { Vote } from "../data/Vote";
-import { sanitizeYear } from '../data/Contestants';
 import { fetchVoteCsv } from './CsvCache';
+import { sanitizeYear } from '../data/Contestants';
+import { Vote } from '../data/Vote';
 
 const voteCache: { [key: string]: Vote[] } = {};
 
 /**
- * Return vote data for the provided year. If a countryKey is provided, 
- * only return the votes from that country on that year, otherwise return 
+ * Return vote data for the provided year. If a countryKey is provided,
+ * only return the votes from that country on that year, otherwise return
  * votes from all countries. Likewise for 'round' (final or semi-final)
- * 
- * @param year 
- * @param countryKey 
- * @returns 
+ *
+ * @param year
+ * @param countryKey
+ * @returns
  */
 export function fetchVotesForYear(
   year: string,
   countryKey?: string,
   round?: string,
-  toCountryKey?: string
+  toCountryKey?: string,
 ): Promise<Vote[]> {
   year = sanitizeYear(year);
   countryKey = countryKey?.toLowerCase();
 
-  if (round)
-    round = convertRoundToShortName(round);
+  if (round) round = convertRoundToShortName(round);
 
-  let cacheKey =`${year}-${countryKey}-${round}`
-  
-  if (toCountryKey)
-    cacheKey = `${year}-${countryKey}-${round}-${toCountryKey}`;
+  let cacheKey = `${year}-${countryKey}-${round}`;
+
+  if (toCountryKey) cacheKey = `${year}-${countryKey}-${round}-${toCountryKey}`;
 
   if (voteCache[cacheKey]) {
     return Promise.resolve(voteCache[cacheKey]);
@@ -52,8 +52,8 @@ export function fetchVotesForYear(
 
   return new Promise((resolve, reject) => {
     fetchVoteCsv(year)
-      .then(response => response)
-      .then(csvString => {
+      .then((response) => response)
+      .then((csvString) => {
         Papa.parse(csvString, {
           header: true,
           complete: (results: CsvParseResult<VoteCsvRow>) => {
@@ -62,73 +62,9 @@ export function fetchVotesForYear(
               .filter(
                 (row: VoteCsvRow) =>
                   row.year === year &&
-                  (
-                    !countryKey?.length ||
-                    row.from_country_id === countryKey
-                  ) &&
-                  (
-                    !round?.length ||
-                    row.round === round
-                  ) &&
-                  (
-                    !toCountryKey?.length || 
-                    row.to_country_id === toCountryKey
-                  )
-              ).map((row: VoteCsvRow) => ({
-                year: row.year,
-                round: convertRoundToLongName(row.round),
-                fromCountryKey: row.from_country_id,
-                toCountryKey: row.to_country_id,
-                totalPoints: row.total_points ? parseInt(row.total_points) : 0,
-                telePoints: row.tele_points ? parseInt(row.tele_points) : 0,
-                juryPoints: row.jury_points ? parseInt(row.jury_points) : 0,
-              }));
-
-            voteCache[cacheKey] = votes;
-            resolve(votes);
-          },
-          error: (error: Error) => reject(error)
-        });
-      })
-      .catch(error => reject(error));
-  });
-}
-
-/**
- * fetches votes for multiple years and countries
- * 
- * @param yearCountryPairs - array of objects containing year and country key
- * @param round - optional round filter
- */
-export async function fetchVotesForYearsAndCountries(
-  yearCountryPairs: Array<{ year: string, countryKey: string }>,
-  round?: string
-): Promise<Vote[]> {
-  const uniqueYears = new Set(yearCountryPairs.map(pair => sanitizeYear(pair.year)));
-  const uniqueCountries = new Set(yearCountryPairs.map(pair => pair.countryKey.toLowerCase()));
-
-  if (round) {
-    round = convertRoundToShortName(round);
-  }
-
-  const cacheKey = `${Array.from(uniqueYears).join(',')}-${Array.from(uniqueCountries).join(',')}-${round}`;
-
-  if (voteCache[cacheKey]) {
-    return Promise.resolve(voteCache[cacheKey]);
-  }
-
-  return new Promise((resolve, reject) => {
-    fetchVoteCsv('')
-      .then(response => response)
-      .then(csvString => {
-        Papa.parse(csvString, {
-          header: true,
-          complete: (results: CsvParseResult<VoteCsvRow>) => {
-            const votes = results.data
-              .filter((row: VoteCsvRow) =>
-                uniqueYears.has(row.year) &&
-                uniqueCountries.has(row.to_country_id) &&
-                (!round || row.round === round)
+                  (!countryKey?.length || row.from_country_id === countryKey) &&
+                  (!round?.length || row.round === round) &&
+                  (!toCountryKey?.length || row.to_country_id === toCountryKey),
               )
               .map((row: VoteCsvRow) => ({
                 year: row.year,
@@ -143,27 +79,84 @@ export async function fetchVotesForYearsAndCountries(
             voteCache[cacheKey] = votes;
             resolve(votes);
           },
-          error: (error: Error) => reject(error)
+          error: (error: Error) => reject(error),
         });
       })
-      .catch(error => reject(error));
+      .catch((error) => reject(error));
+  });
+}
+
+/**
+ * fetches votes for multiple years and countries
+ *
+ * @param yearCountryPairs - array of objects containing year and country key
+ * @param round - optional round filter
+ */
+export async function fetchVotesForYearsAndCountries(
+  yearCountryPairs: Array<{ year: string; countryKey: string }>,
+  round?: string,
+): Promise<Vote[]> {
+  const uniqueYears = new Set(yearCountryPairs.map((pair) => sanitizeYear(pair.year)));
+  const uniqueCountries = new Set(yearCountryPairs.map((pair) => pair.countryKey.toLowerCase()));
+
+  if (round) {
+    round = convertRoundToShortName(round);
+  }
+
+  const cacheKey = `${Array.from(uniqueYears).join(',')}-${Array.from(uniqueCountries).join(',')}-${round}`;
+
+  if (voteCache[cacheKey]) {
+    return Promise.resolve(voteCache[cacheKey]);
+  }
+
+  return new Promise((resolve, reject) => {
+    fetchVoteCsv('')
+      .then((response) => response)
+      .then((csvString) => {
+        Papa.parse(csvString, {
+          header: true,
+          complete: (results: CsvParseResult<VoteCsvRow>) => {
+            const votes = results.data
+              .filter(
+                (row: VoteCsvRow) =>
+                  uniqueYears.has(row.year) &&
+                  uniqueCountries.has(row.to_country_id) &&
+                  (!round || row.round === round),
+              )
+              .map((row: VoteCsvRow) => ({
+                year: row.year,
+                round: convertRoundToLongName(row.round),
+                fromCountryKey: row.from_country_id,
+                toCountryKey: row.to_country_id,
+                totalPoints: row.total_points ? parseInt(row.total_points) : 0,
+                telePoints: row.tele_points ? parseInt(row.tele_points) : 0,
+                juryPoints: row.jury_points ? parseInt(row.jury_points) : 0,
+              }));
+
+            voteCache[cacheKey] = votes;
+            resolve(votes);
+          },
+          error: (error: Error) => reject(error),
+        });
+      })
+      .catch((error) => reject(error));
   });
 }
 
 const convertRoundToLongName = (round: string) => {
   switch (round) {
     case 'f':
-      return 'Final'
+      return 'Final';
     case 'sf':
       return 'Semi-Final';
     case 'sf1':
-      return 'Semi-Final-1'
+      return 'Semi-Final-1';
     case 'sf2':
-      return 'Semi-Final-2'
+      return 'Semi-Final-2';
     default:
       throw new Error(round + ' not supported');
   }
-}
+};
 
 const convertRoundToShortName = (fullRound: string) => {
   switch (fullRound?.toLowerCase()) {
@@ -180,31 +173,28 @@ const convertRoundToShortName = (fullRound: string) => {
   }
 };
 
-export function fetchDistinctFromCountryIdsForYear(
-  year: string
-): Promise<string[]> {
+export function fetchDistinctFromCountryIdsForYear(year: string): Promise<string[]> {
   year = sanitizeYear(year);
 
   return new Promise((resolve, reject) => {
     fetch('/votes.csv')
-      .then(response => response.text())
-      .then(csvString => {
+      .then((response) => response.text())
+      .then((csvString) => {
         Papa.parse(csvString, {
           header: true,
           complete: (results: CsvParseResult<VoteCsvRow>) => {
             const fromCountryIds = results.data
               .filter((row: VoteCsvRow) => row.year === year)
               .map((row: VoteCsvRow) => row.from_country_id)
-              .filter((value: string, index: number, self: string[]) => self.indexOf(value) === index); // Removing duplicates
+              .filter(
+                (value: string, index: number, self: string[]) => self.indexOf(value) === index,
+              ); // Removing duplicates
 
             resolve(fromCountryIds);
           },
-          error: (error: Error) => reject(error)
+          error: (error: Error) => reject(error),
         });
       })
-      .catch(error => reject(error));
+      .catch((error) => reject(error));
   });
 }
-
-
-

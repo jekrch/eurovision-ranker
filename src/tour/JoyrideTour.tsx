@@ -1,17 +1,30 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { CallBackProps, EVENTS, ACTIONS, STATUS } from 'react-joyride';
-import { AppDispatch, AppState } from '../redux/store';
-import { setYear, setName, setShowUnranked, setRankedItems, setUnrankedItems, setShowTotalRank, setHeaderMenuOpen, setContestants, setGlobalSearch, setTheme } from '../redux/rootSlice';
-import { fetchCountryContestantsByYear } from '../utilities/ContestantRepository';
-import { tourSteps } from '../tour/steps';
-import { joyrideOptions, SKIP_WELCOME_AFTER_TOUR_KEY } from '../utilities/JoyrideUtil';
-import type Joyride from 'react-joyride';
-import { clearCategories } from '../utilities/CategoryUtil';
+
 import { CountryContestant } from '../data/CountryContestant';
-import { clearAllRankingParams, goToUrl, updateQueryParams } from '../utilities/UrlUtil';
 import { useAppDispatch, useAppSelector } from '../hooks/stateHooks';
-import { clone } from '../utilities/ContestantUtil';
 import { useResetRanking } from '../hooks/useResetRanking';
+import {
+  setYear,
+  setName,
+  setShowUnranked,
+  setRankedItems,
+  setUnrankedItems,
+  setShowTotalRank,
+  setHeaderMenuOpen,
+  setContestants,
+  setGlobalSearch,
+  setTheme,
+} from '../redux/rootSlice';
+import { AppDispatch, AppState } from '../redux/store';
+import { tourSteps } from '../tour/steps';
+import { clearCategories } from '../utilities/CategoryUtil';
+import { fetchCountryContestantsByYear } from '../utilities/ContestantRepository';
+import { clone } from '../utilities/ContestantUtil';
+import { joyrideOptions, SKIP_WELCOME_AFTER_TOUR_KEY } from '../utilities/JoyrideUtil';
+import { clearAllRankingParams, goToUrl, updateQueryParams } from '../utilities/UrlUtil';
+
+import type Joyride from 'react-joyride';
 
 interface JoyrideTourProps {
   setRefreshUrl: (num: number) => void;
@@ -34,7 +47,6 @@ const JoyrideTour: React.FC<JoyrideTourProps> = (props: JoyrideTourProps) => {
   const [JoyrideComponent, setJoyrideComponent] = useState<typeof Joyride | null>(null);
 
   useEffect(() => {
-
     if (props.runTour) {
       // Only import when the tour is about to run
       import('react-joyride').then((module) => {
@@ -43,14 +55,12 @@ const JoyrideTour: React.FC<JoyrideTourProps> = (props: JoyrideTourProps) => {
     }
 
     if (props.runTour !== startTour) {
-
-      // if we're starting the tour, save the current URL so we can 
-      // restore it after exiting the tour. Then clear the current 
+      // if we're starting the tour, save the current URL so we can
+      // restore it after exiting the tour. Then clear the current
       // ranking state.
       if (props.runTour) {
         setOriginalUrlQuery(window.location.search);
         clearRankingForTour();
-
       }
 
       setStartTour(props.runTour);
@@ -62,32 +72,28 @@ const JoyrideTour: React.FC<JoyrideTourProps> = (props: JoyrideTourProps) => {
       if (!props.runTour) {
         try {
           sessionStorage.setItem(SKIP_WELCOME_AFTER_TOUR_KEY, '1');
-        } catch { /* sessionStorage may be unavailable */ }
+        } catch {
+          /* sessionStorage may be unavailable */
+        }
         goToUrl(originalUrlQuery, undefined);
       }
     }
-
   }, [props.runTour]);
 
   /**
-   * In order to prepare for a tour, we should clear the theme, ensure 
+   * In order to prepare for a tour, we should clear the theme, ensure
    * that we're not in advanced/global mode, and clear any current ranking.
-   * Note that the original ranking will be restored when the tour ends. 
+   * Note that the original ranking will be restored when the tour ends.
    */
   function clearRankingForTour() {
     updateQueryParams({
-      'g': undefined,
-      t: ''
-    }
-    );
+      g: undefined,
+      t: '',
+    });
 
-    dispatch(
-      setGlobalSearch(false)
-    );
+    dispatch(setGlobalSearch(false));
 
-    dispatch(
-      setTheme('')
-    );
+    dispatch(setTheme(''));
 
     resetRanking();
   }
@@ -95,9 +101,9 @@ const JoyrideTour: React.FC<JoyrideTourProps> = (props: JoyrideTourProps) => {
   useEffect(() => {
     const executeJoyRideStep = async () => {
       await executeTourStepActions(joyrideStepIndex);
-    }
+    };
     executeJoyRideStep();
-  }, [joyrideStepIndex])
+  }, [joyrideStepIndex]);
 
   const handleJoyrideCallback = useCallback((data: CallBackProps) => {
     const { action, index, status, type } = data;
@@ -118,21 +124,12 @@ const JoyrideTour: React.FC<JoyrideTourProps> = (props: JoyrideTourProps) => {
   }, []);
 
   async function clearRanking(year: string) {
+    const yearContestants = await fetchCountryContestantsByYear(year, '');
 
-    let yearContestants = await fetchCountryContestantsByYear(
-      year, ''
-    );
+    dispatch(setContestants(yearContestants));
+    dispatch(setUnrankedItems(yearContestants));
 
-    dispatch(
-      setContestants(yearContestants)
-    );
-    dispatch(
-      setUnrankedItems(yearContestants)
-    );
-
-    dispatch(
-      setRankedItems([])
-    );
+    dispatch(setRankedItems([]));
 
     clearAllRankingParams(categories);
 
@@ -141,13 +138,10 @@ const JoyrideTour: React.FC<JoyrideTourProps> = (props: JoyrideTourProps) => {
 
   /**
    * Each case statement corresponds to a step in the tour
-   * @param index 
+   * @param index
    */
-  async function executeTourStepActions(
-    index: number
-  ) {
+  async function executeTourStepActions(index: number) {
     switch (index) {
-
       case 1:
         if (year !== '2023') {
           dispatch(setYear('2023'));
@@ -156,43 +150,33 @@ const JoyrideTour: React.FC<JoyrideTourProps> = (props: JoyrideTourProps) => {
 
         await clearRanking(year);
 
-        dispatch(
-          setName('')
-        );
+        dispatch(setName(''));
 
-        dispatch(
-          setShowUnranked(true)
-        );
+        dispatch(setShowUnranked(true));
 
-        clearCategories(
-          '', categories, dispatch
-        );
+        clearCategories('', categories, dispatch);
 
-        dispatch(
-          setShowTotalRank(false)
-        );
+        dispatch(setShowTotalRank(false));
 
         break;
 
-      case 2:
+      case 2: {
         const specificCountryCodes = ['fi', 'hr', 'es', 'cz', 'no', 'is'];
 
         // Filter out the specific items based on country codes
-        const specificItems = unrankedItems.filter(
-          item => specificCountryCodes.includes(item.country.key.toLowerCase())
+        const specificItems = unrankedItems.filter((item) =>
+          specificCountryCodes.includes(item.country.key.toLowerCase()),
         );
 
         // Remove these items from unrankedItems
         const remainingUnrankedItems = unrankedItems.filter(
-          item => !specificCountryCodes.includes(item.country.key.toLowerCase())
+          (item) => !specificCountryCodes.includes(item.country.key.toLowerCase()),
         );
 
         // Sort the specific items in the desired order
-        const sortedSpecificItems = specificCountryCodes.map(code =>
-          specificItems.find(
-            item => item.country.key.toLowerCase() === code
-          )
-        ).filter(item => item !== undefined) as CountryContestant[];
+        const sortedSpecificItems = specificCountryCodes
+          .map((code) => specificItems.find((item) => item.country.key.toLowerCase() === code))
+          .filter((item) => item !== undefined) as CountryContestant[];
 
         const newRankedItems = [...sortedSpecificItems, ...rankedItems];
 
@@ -200,20 +184,18 @@ const JoyrideTour: React.FC<JoyrideTourProps> = (props: JoyrideTourProps) => {
         dispatch(setUnrankedItems(remainingUnrankedItems));
         dispatch(setName("Sigrit's Top Picks"));
 
-        props.setRefreshUrl(Math.random())
+        props.setRefreshUrl(Math.random());
 
         break;
+      }
 
       case 4:
-        dispatch(
-          setShowUnranked(false)
-        );
+        dispatch(setShowUnranked(false));
 
         break;
 
-      case 5:
-
-        let swappedRankedItems = clone(rankedItems);
+      case 5: {
+        const swappedRankedItems = clone(rankedItems);
 
         if (rankedItems.length >= 2) {
           // swap the first two elements
@@ -222,28 +204,21 @@ const JoyrideTour: React.FC<JoyrideTourProps> = (props: JoyrideTourProps) => {
           swappedRankedItems[1] = rankedItems[0];
         }
 
-        dispatch(
-          setRankedItems(swappedRankedItems)
-        );
+        dispatch(setRankedItems(swappedRankedItems));
 
         props.setRefreshUrl(Math.random());
 
-        dispatch(
-          setHeaderMenuOpen(true)
-        );
+        dispatch(setHeaderMenuOpen(true));
 
         break;
+      }
 
       case 6:
-        dispatch(
-          setHeaderMenuOpen(true)
-        );
+        dispatch(setHeaderMenuOpen(true));
         break;
-      
+
       case 11:
-        dispatch(
-          setShowUnranked(true)
-        );
+        dispatch(setShowUnranked(true));
         //openModal('rankings');
         break;
 
@@ -257,11 +232,9 @@ const JoyrideTour: React.FC<JoyrideTourProps> = (props: JoyrideTourProps) => {
 
       case 16:
         props.setConfigModalShow(false);
-        dispatch(setName(""));
+        dispatch(setName(''));
         await clearRanking(year);
-        dispatch(
-          setShowUnranked(true)
-        );
+        dispatch(setShowUnranked(true));
         break;
     }
   }

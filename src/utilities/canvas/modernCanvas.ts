@@ -1,5 +1,3 @@
-import { CountryContestant } from '../../data/CountryContestant';
-import { DEFAULT_CONFIG } from './classicCanvas';
 import { loadFlagImage, loadFont } from './canvasAssets';
 import {
   roundRect,
@@ -9,6 +7,8 @@ import {
   drawFlagWithCover,
   drawFallbackFlag,
 } from './canvasPrimitives';
+import { DEFAULT_CONFIG } from './classicCanvas';
+import { CountryContestant } from '../../data/CountryContestant';
 
 /*
   Modern Canvas Style
@@ -81,7 +81,7 @@ const drawModernRow = (
   x: number,
   y: number,
   width: number,
-  palette: ModernPalette
+  palette: ModernPalette,
 ): void => {
   const h = MODERN.rowHeight;
 
@@ -100,9 +100,28 @@ const drawModernRow = (
   const flagY = y + (h - MODERN.flagHeight) / 2;
   const flagConfig = { ...DEFAULT_CONFIG, boxCornerRadius: MODERN.flagRadius };
   if (flagImage) {
-    drawFlagWithCover(ctx, flagImage, item.country.key, flagX, flagY, MODERN.flagWidth, MODERN.flagHeight, flagConfig, palette.rowBg);
+    drawFlagWithCover(
+      ctx,
+      flagImage,
+      item.country.key,
+      flagX,
+      flagY,
+      MODERN.flagWidth,
+      MODERN.flagHeight,
+      flagConfig,
+      palette.rowBg,
+    );
   } else {
-    drawFallbackFlag(ctx, item.country.key, flagX, flagY, MODERN.flagWidth, MODERN.flagHeight, flagConfig, palette.rowBg);
+    drawFallbackFlag(
+      ctx,
+      item.country.key,
+      flagX,
+      flagY,
+      MODERN.flagWidth,
+      MODERN.flagHeight,
+      flagConfig,
+      palette.rowBg,
+    );
   }
   drawModernGloss(ctx, flagX, flagY, MODERN.flagWidth, MODERN.flagHeight, MODERN.flagRadius);
 
@@ -124,7 +143,11 @@ const drawModernRow = (
   ctx.font = `bold 14px ${MODERN.fontFamily}`;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText(rank.toString().padStart(2, '0'), badgeX + MODERN.badgeWidth / 2, badgeY + MODERN.badgeHeight / 2 + 1);
+  ctx.fillText(
+    rank.toString().padStart(2, '0'),
+    badgeX + MODERN.badgeWidth / 2,
+    badgeY + MODERN.badgeHeight / 2 + 1,
+  );
 
   // text block: country (top) + artist / song (bottom)
   const textX = badgeX + MODERN.badgeWidth + MODERN.textGap;
@@ -150,13 +173,17 @@ const drawModernRow = (
     ctx.fillStyle = palette.meta;
     const metaFont = `${MODERN.metaSize}px ${MODERN.fontFamily}`;
     ctx.font = metaFont;
-    ctx.fillText(truncateText(ctx, meta, textWidth, metaFont), textX, y + h / 2 + MODERN.metaSize + 2);
+    ctx.fillText(
+      truncateText(ctx, meta, textWidth, metaFont),
+      textX,
+      y + h / 2 + MODERN.metaSize + 2,
+    );
   }
 };
 
 export const createModernRankingCanvas = async (
   rankedItems: CountryContestant[],
-  rankingName: string = 'My Eurovision Ranking'
+  rankingName: string = 'My Eurovision Ranking',
 ): Promise<HTMLCanvasElement> => {
   const palette = getModernPalette();
 
@@ -171,19 +198,20 @@ export const createModernRankingCanvas = async (
 
   const width = MODERN.canvasWidth;
   const numColumns = 2;
-  const columnWidth = (width - MODERN.outerPadding * 2 - MODERN.columnGap * (numColumns - 1)) / numColumns;
+  const columnWidth =
+    (width - MODERN.outerPadding * 2 - MODERN.columnGap * (numColumns - 1)) / numColumns;
   const itemsPerColumn = Math.ceil(rankedItems.length / numColumns);
   const maxRows = Math.min(itemsPerColumn, rankedItems.length);
 
   const showHeader = !!(rankingName && rankingName.trim() !== '');
   const headerHeight = showHeader ? MODERN.titleSize + MODERN.titleGap : MODERN.topPadding;
 
-  const rowsAreaHeight = maxRows > 0
-    ? maxRows * MODERN.rowHeight + (maxRows - 1) * MODERN.rowGap
-    : 0;
+  const rowsAreaHeight =
+    maxRows > 0 ? maxRows * MODERN.rowHeight + (maxRows - 1) * MODERN.rowGap : 0;
 
   const rowsStartY = MODERN.topPadding + headerHeight;
-  const totalHeight = rowsStartY + rowsAreaHeight + MODERN.footerGap + MODERN.footerSize + MODERN.topPadding;
+  const totalHeight =
+    rowsStartY + rowsAreaHeight + MODERN.footerGap + MODERN.footerSize + MODERN.topPadding;
 
   canvas.width = width * MODERN.pixelRatio;
   canvas.height = totalHeight * MODERN.pixelRatio;
@@ -204,7 +232,14 @@ export const createModernRankingCanvas = async (
   ctx.fillStyle = glow;
   ctx.fillRect(0, 0, width, totalHeight * 0.5);
 
-  const vignette = ctx.createRadialGradient(width / 2, totalHeight / 2, width * 0.3, width / 2, totalHeight / 2, width * 0.75);
+  const vignette = ctx.createRadialGradient(
+    width / 2,
+    totalHeight / 2,
+    width * 0.3,
+    width / 2,
+    totalHeight / 2,
+    width * 0.75,
+  );
   vignette.addColorStop(0, 'rgba(0, 0, 0, 0)');
   vignette.addColorStop(1, 'rgba(0, 0, 0, 0.28)');
   ctx.fillStyle = vignette;
@@ -219,8 +254,16 @@ export const createModernRankingCanvas = async (
     ctx.textBaseline = 'alphabetic';
 
     const spacing = 1.5;
-    const titleWidth = [...title].reduce((w, ch) => w + ctx.measureText(ch).width + spacing, -spacing);
-    const titleGrad = ctx.createLinearGradient((width - titleWidth) / 2, 0, (width + titleWidth) / 2, 0);
+    const titleWidth = [...title].reduce(
+      (w, ch) => w + ctx.measureText(ch).width + spacing,
+      -spacing,
+    );
+    const titleGrad = ctx.createLinearGradient(
+      (width - titleWidth) / 2,
+      0,
+      (width + titleWidth) / 2,
+      0,
+    );
     titleGrad.addColorStop(0, palette.titleFrom);
     titleGrad.addColorStop(1, palette.titleTo);
     ctx.fillStyle = titleGrad;
@@ -228,20 +271,26 @@ export const createModernRankingCanvas = async (
     ctx.shadowColor = 'rgba(0, 0, 0, 0.35)';
     ctx.shadowBlur = 6;
     ctx.shadowOffsetY = 2;
-    drawTracked(ctx, title, (width - titleWidth) / 2, MODERN.topPadding + MODERN.titleSize, spacing);
+    drawTracked(
+      ctx,
+      title,
+      (width - titleWidth) / 2,
+      MODERN.topPadding + MODERN.titleSize,
+      spacing,
+    );
     ctx.restore();
   }
 
   // preload flags
   const flagImages: Record<string, HTMLImageElement | null> = {};
   await Promise.all(
-    rankedItems.map(async item => {
+    rankedItems.map(async (item) => {
       try {
         flagImages[item.country.key] = await loadFlagImage(item.country.key);
       } catch {
         flagImages[item.country.key] = null;
       }
-    })
+    }),
   );
 
   // rows, filling column 0 then column 1
@@ -250,7 +299,16 @@ export const createModernRankingCanvas = async (
     const rowInColumn = i - columnIndex * itemsPerColumn;
     const x = MODERN.outerPadding + columnIndex * (columnWidth + MODERN.columnGap);
     const y = rowsStartY + rowInColumn * (MODERN.rowHeight + MODERN.rowGap);
-    drawModernRow(ctx, rankedItems[i], flagImages[rankedItems[i].country.key], i + 1, x, y, columnWidth, palette);
+    drawModernRow(
+      ctx,
+      rankedItems[i],
+      flagImages[rankedItems[i].country.key],
+      i + 1,
+      x,
+      y,
+      columnWidth,
+      palette,
+    );
   }
 
   // footer
@@ -258,7 +316,11 @@ export const createModernRankingCanvas = async (
   ctx.font = `italic ${MODERN.footerSize}px ${MODERN.fontFamily}`;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText('created with eurovision-ranker.com', width / 2, totalHeight - MODERN.topPadding - MODERN.footerSize / 2);
+  ctx.fillText(
+    'created with eurovision-ranker.com',
+    width / 2,
+    totalHeight - MODERN.topPadding - MODERN.footerSize / 2,
+  );
 
   return canvas;
 };

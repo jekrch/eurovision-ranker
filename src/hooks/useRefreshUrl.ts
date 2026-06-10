@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useState } from 'react';
+
 import { useAppDispatch, useAppSelector } from './stateHooks';
-import { updateUrlFromRankedItems } from '../utilities/UrlUtil';
-import { AppState } from '../redux/store';
 import { setRankedItems, setUnrankedItems } from '../redux/rootSlice';
+import { AppState } from '../redux/store';
+import { updateUrlFromRankedItems } from '../utilities/UrlUtil';
 
 export const useRefreshUrl = () => {
   const dispatch = useAppDispatch();
@@ -13,11 +14,7 @@ export const useRefreshUrl = () => {
   const [shouldRefresh, setShouldRefresh] = useState(false);
 
   const refreshUrl = useCallback(() => {
-    updateUrlFromRankedItems(
-      activeCategory, 
-      categories, 
-      rankedItems
-    );
+    updateUrlFromRankedItems(activeCategory, categories, rankedItems);
   }, [activeCategory, categories, rankedItems]);
 
   useEffect(() => {
@@ -39,7 +36,7 @@ export const useRefreshUrl = () => {
       categories.forEach((_, index) => {
         const categoryParam = `r${index + 1}`;
         const currentRanking = searchParams.get(categoryParam) || '';
-        const updatedRanking = `${currentRanking}${unrankedItems.map(item => item.country.id).join('')}`;
+        const updatedRanking = `${currentRanking}${unrankedItems.map((item) => item.country.id).join('')}`;
         searchParams.set(categoryParam, updatedRanking);
       });
 
@@ -50,5 +47,5 @@ export const useRefreshUrl = () => {
     setShouldRefresh(true);
   }, [dispatch, rankedItems, unrankedItems, categories]);
 
-  return { refreshUrl, handleAddAllUnranked  };
+  return { refreshUrl, handleAddAllUnranked };
 };

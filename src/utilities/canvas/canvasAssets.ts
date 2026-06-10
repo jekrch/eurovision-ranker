@@ -11,16 +11,18 @@ const loadSvgAsImage = (url: string, width: number, height: number): Promise<HTM
     fetch(url, {
       mode: 'cors',
       headers: {
-        'Origin': window.location.origin
-      }
+        Origin: window.location.origin,
+      },
     })
-      .then(response => {
+      .then((response) => {
         if (!response.ok) {
-          throw new Error(`Failed to load SVG: ${response.status} ${response.statusText} from ${url}`);
+          throw new Error(
+            `Failed to load SVG: ${response.status} ${response.statusText} from ${url}`,
+          );
         }
         return response.text();
       })
-      .then(svgText => {
+      .then((svgText) => {
         const svgBlob = new Blob([svgText], { type: 'image/svg+xml' });
         const dataUrl = URL.createObjectURL(svgBlob);
 
@@ -35,7 +37,7 @@ const loadSvgAsImage = (url: string, width: number, height: number): Promise<HTM
         };
         img.src = dataUrl;
       })
-      .catch(error => reject(error));
+      .catch((error) => reject(error));
   });
 };
 
@@ -43,7 +45,7 @@ export const loadFlagImage = async (countryCode: string): Promise<HTMLImageEleme
   try {
     const sources = [
       `https://flagcdn.com/w320/${countryCode.toLowerCase()}.png`,
-      `https://flagsapi.com/${countryCode.toUpperCase()}/flat/64.png`
+      `https://flagsapi.com/${countryCode.toUpperCase()}/flat/64.png`,
     ];
 
     for (const source of sources) {
@@ -75,26 +77,31 @@ export const loadFont = (fontFamily: string, fontWeight: string = 'normal'): Pro
   return new Promise<boolean>((resolve) => {
     const fontCheck = `${fontWeight} 16px ${fontFamily}`;
     if (document.fonts && typeof document.fonts.check === 'function') {
-        document.fonts.ready.then(() => {
-            if (document.fonts.check(fontCheck)) {
-                resolve(true);
-                return;
-            }
-            const font = new FontFace(fontFamily, `local('${fontFamily}')`, { weight: fontWeight });
-            font.load().then((loadedFont) => {
-                document.fonts.add(loadedFont);
-                resolve(true);
-            }).catch(() => {
-                logger.warn(`Failed to load font: ${fontFamily} ${fontWeight}`);
-                resolve(false);
+      document.fonts.ready
+        .then(() => {
+          if (document.fonts.check(fontCheck)) {
+            resolve(true);
+            return;
+          }
+          const font = new FontFace(fontFamily, `local('${fontFamily}')`, { weight: fontWeight });
+          font
+            .load()
+            .then((loadedFont) => {
+              document.fonts.add(loadedFont);
+              resolve(true);
+            })
+            .catch(() => {
+              logger.warn(`Failed to load font: ${fontFamily} ${fontWeight}`);
+              resolve(false);
             });
-        }).catch(() => {
-             logger.warn(`document.fonts.ready promise rejected for ${fontFamily}`);
-             resolve(false);
+        })
+        .catch(() => {
+          logger.warn(`document.fonts.ready promise rejected for ${fontFamily}`);
+          resolve(false);
         });
     } else {
-        logger.warn('document.fonts API not fully available. Font loading might be unreliable.');
-        resolve(true);
+      logger.warn('document.fonts API not fully available. Font loading might be unreliable.');
+      resolve(true);
     }
   });
 };

@@ -1,18 +1,19 @@
-import { logger } from '../../utilities/logger';
+import { faDownload, faSpinner } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import classNames from 'classnames';
 import React, { useState, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faDownload, faSpinner } from '@fortawesome/free-solid-svg-icons';
-import classNames from 'classnames';
 import { toast } from 'react-hot-toast';
-import { AppState } from '../../redux/store';
+
 import { useAppSelector } from '../../hooks/stateHooks';
+import { AppState } from '../../redux/store';
 import {
   createModernRankingCanvas,
   createRankingCanvas,
   downloadRankingImage,
   RankingImageStyle,
 } from '../../utilities/CanvasGeneratorUtil';
+import { logger } from '../../utilities/logger';
 
 interface ImageStyleModalProps {
   isOpen: boolean;
@@ -41,9 +42,10 @@ const ImageStyleModal: React.FC<ImageStyleModalProps> = ({ isOpen, onClose }) =>
       if (!isOpen || !containerRef || rankedItems.length === 0) return;
       setIsRendering(true);
       try {
-        const canvas = style === 'modern'
-          ? await createModernRankingCanvas(rankedItems, rankingName)
-          : await createRankingCanvas(rankedItems, rankingName);
+        const canvas =
+          style === 'modern'
+            ? await createModernRankingCanvas(rankedItems, rankingName)
+            : await createRankingCanvas(rankedItems, rankingName);
 
         if (cancelled) return;
         canvas.style.width = '100%';
@@ -59,12 +61,16 @@ const ImageStyleModal: React.FC<ImageStyleModalProps> = ({ isOpen, onClose }) =>
     };
 
     render();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [isOpen, containerRef, style, rankedItems, rankingName]);
 
   // close on escape
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
     if (isOpen) window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, [isOpen, onClose]);
@@ -96,7 +102,7 @@ const ImageStyleModal: React.FC<ImageStyleModalProps> = ({ isOpen, onClose }) =>
         'flex-1 text-center rounded-xl border px-4 py-3 font-semibold transition-all duration-150',
         style === value
           ? 'border-[var(--er-interactive-primary)] bg-[var(--er-surface-tertiary)] text-white ring-2 ring-[var(--er-interactive-primary)]/40'
-          : 'border-[var(--er-border-subtle)] bg-[var(--er-surface-dark)] text-[var(--er-text-secondary)] hover:border-[var(--er-border-tertiary)]'
+          : 'border-[var(--er-border-subtle)] bg-[var(--er-surface-dark)] text-[var(--er-text-secondary)] hover:border-[var(--er-border-tertiary)]',
       )}
     >
       {label}
@@ -170,7 +176,7 @@ const ImageStyleModal: React.FC<ImageStyleModalProps> = ({ isOpen, onClose }) =>
         </div>
       </div>
     </div>,
-    document.body
+    document.body,
   );
 };
 

@@ -33,11 +33,13 @@ export const tourSteps = [
   },
   {
     target: '.tour-step-9',
-    content: 'Create different rankings by category ("song", "staging") and generate a weighted final ranking',
+    content:
+      'Create different rankings by category ("song", "staging") and generate a weighted final ranking',
   },
   {
     target: '.tour-step-10',
-    content: 'Click over here to use a sorter to rank your countries according to your pairwise preferences',
+    content:
+      'Click over here to use a sorter to rank your countries according to your pairwise preferences',
   },
   {
     target: '.tour-step-11',
@@ -53,7 +55,8 @@ export const tourSteps = [
   },
   {
     target: '.tour-step-14',
-    content: 'In "Rankings" you can select a year and click the links to see the official ranking by voting type (tele, jury, total)',
+    content:
+      'In "Rankings" you can select a year and click the links to see the official ranking by voting type (tele, jury, total)',
   },
   {
     target: '.tour-step-15',
@@ -61,7 +64,8 @@ export const tourSteps = [
   },
   {
     target: '.tour-step-16',
-    content: 'Want to save or share your ranking? Just copy the URL! All of your ranking data is stored there.',
+    content:
+      'Want to save or share your ranking? Just copy the URL! All of your ranking data is stored there.',
   },
   {
     target: '.tour-step-17',
@@ -70,5 +74,5 @@ export const tourSteps = [
   {
     target: '.tour-step-18',
     content: 'Enjoy, friends ❤️',
-  }
-].map(step => ({ ...step, disableBeacon: true }));
+  },
+].map((step) => ({ ...step, disableBeacon: true }));

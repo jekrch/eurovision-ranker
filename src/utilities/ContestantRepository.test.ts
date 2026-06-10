@@ -13,10 +13,7 @@ vi.mock('./VoteProcessor', () => ({
   assignVotesByContestants: (ccs: unknown) => Promise.resolve(ccs),
 }));
 
-import {
-  getContestantsForYear,
-  fetchCountryContestantsByYear,
-} from './ContestantRepository';
+import { getContestantsForYear, fetchCountryContestantsByYear } from './ContestantRepository';
 
 const HEADER =
   'id,year,to_country_id,performer,song,youtube_url,place_contest,place_final,place_sf,points_final,points_tele_final,points_jury_final';
@@ -30,7 +27,7 @@ const row = (
   placeContest = '',
   placeFinal = '',
   placeSf = '',
-  pointsFinal = ''
+  pointsFinal = '',
 ) =>
   `${id},${year},${countryKey},${performer},${song},,${placeContest},${placeFinal},${placeSf},${pointsFinal},,`;
 
@@ -47,7 +44,7 @@ describe('getContestantsForYear', () => {
         row('2023-se', '2023', 'se', 'Loreen', 'Tattoo', '1', '', '', '583'),
         row('2023-fi', '2023', 'fi', 'Käärijä', 'Cha Cha Cha', '2', '', '', '526'),
         row('2019-nl', '2019', 'nl', 'Duncan Laurence', 'Arcade', '1', '', '', '498'),
-      ].join('\n')
+      ].join('\n'),
     );
 
     const contestants = await getContestantsForYear('2023');
@@ -63,7 +60,7 @@ describe('getContestantsForYear', () => {
 
   it('falls back to place_final when place_contest is empty', async () => {
     fetchContestantCsv.mockResolvedValue(
-      [HEADER, row('2018-il', '2018', 'il', 'Netta', 'Toy', '', '1')].join('\n')
+      [HEADER, row('2018-il', '2018', 'il', 'Netta', 'Toy', '', '1')].join('\n'),
     );
 
     const [netta] = await getContestantsForYear('2018');
@@ -72,9 +69,7 @@ describe('getContestantsForYear', () => {
 
   it('leaves numeric fields undefined when the CSV cell is blank', async () => {
     fetchContestantCsv.mockResolvedValue(
-      [HEADER, row('2017-pt', '2017', 'pt', 'Salvador Sobral', 'Amar Pelos Dois')].join(
-        '\n'
-      )
+      [HEADER, row('2017-pt', '2017', 'pt', 'Salvador Sobral', 'Amar Pelos Dois')].join('\n'),
     );
 
     const [pt] = await getContestantsForYear('2017');
@@ -85,8 +80,8 @@ describe('getContestantsForYear', () => {
   it('caches results so a repeated fetch is not re-parsed', async () => {
     fetchContestantCsv.mockResolvedValue(
       [HEADER, row('2014-at', '2014', 'at', 'Conchita Wurst', 'Rise Like a Phoenix', '1')].join(
-        '\n'
-      )
+        '\n',
+      ),
     );
 
     await getContestantsForYear('2014');
@@ -104,17 +99,13 @@ describe('fetchCountryContestantsByYear', () => {
         row('2015-se', '2015', 'se', 'Måns Zelmerlöw', 'Heroes', '1', '', '', '365'),
         row('2015-au', '2015', 'au', 'Guy Sebastian', 'Tonight Again', '5', '', '', '196'),
         row('2015-be', '2015', 'be', 'Loïc Nottet', 'Rhythm Inside', '4', '', '', '217'),
-      ].join('\n')
+      ].join('\n'),
     );
 
     const ccs = await fetchCountryContestantsByYear('2015');
 
     // sorted alphabetically by country name: Australia, Belgium, Sweden
-    expect(ccs.map((cc) => cc.country.name)).toEqual([
-      'Australia',
-      'Belgium',
-      'Sweden',
-    ]);
+    expect(ccs.map((cc) => cc.country.name)).toEqual(['Australia', 'Belgium', 'Sweden']);
     const sweden = ccs.find((cc) => cc.country.key === 'se')!;
     expect(sweden.contestant?.artist).toBe('Måns Zelmerlöw');
     expect(sweden.id).toBe(sweden.country.id);

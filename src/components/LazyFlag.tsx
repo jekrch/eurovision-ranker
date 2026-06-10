@@ -1,6 +1,8 @@
 import { lazy, Suspense, useState, useEffect, CSSProperties } from 'react';
 
-const LazyFlag = lazy(() => import('react-world-flags').then(module => ({ default: module.default })));
+const LazyFlag = lazy(() =>
+  import('react-world-flags').then((module) => ({ default: module.default })),
+);
 
 interface FlagProps {
   code: string;
@@ -10,7 +12,7 @@ interface FlagProps {
 
 export const LazyLoadedFlag: React.FC<FlagProps> = ({ code, className, style }) => {
   const [isClient, setIsClient] = useState(false);
-  
+
   useEffect(() => {
     setIsClient(true);
   }, []);
@@ -22,7 +24,7 @@ export const LazyLoadedFlag: React.FC<FlagProps> = ({ code, className, style }) 
 
   return (
     <Suspense fallback={<div className={`${className} bg-[var(--er-button-neutral-hover)]`}></div>}>
-      <LazyFlag code={code} className={className} style={style}/>
+      <LazyFlag code={code} className={className} style={style} />
     </Suspense>
   );
 };

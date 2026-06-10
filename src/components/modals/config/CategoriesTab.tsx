@@ -1,13 +1,18 @@
-import React, { useState } from 'react';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
-import IconButton from '../../IconButton';
-import { AppDispatch, AppState } from '../../../redux/store';
-import { deleteCategory, isValidCategoryName, saveCategories } from '../../../utilities/CategoryUtil';
-import TooltipHelp from '../../TooltipHelp';
-import Checkbox from '../../Checkbox';
-import { setShowComparison } from '../../../redux/rootSlice';
-import { updateQueryParams } from '../../../utilities/UrlUtil';
+import React, { useState } from 'react';
+
 import { useAppDispatch, useAppSelector } from '../../../hooks/stateHooks';
+import { setShowComparison } from '../../../redux/rootSlice';
+import { AppDispatch, AppState } from '../../../redux/store';
+import {
+  deleteCategory,
+  isValidCategoryName,
+  saveCategories,
+} from '../../../utilities/CategoryUtil';
+import { updateQueryParams } from '../../../utilities/UrlUtil';
+import Checkbox from '../../Checkbox';
+import IconButton from '../../IconButton';
+import TooltipHelp from '../../TooltipHelp';
 
 const CategoriesTab: React.FC = () => {
   const dispatch: AppDispatch = useAppDispatch();
@@ -15,7 +20,6 @@ const CategoriesTab: React.FC = () => {
   const activeCategory = useAppSelector((state: AppState) => state.root.activeCategory);
   const [newCategoryName, setNewCategoryName] = useState('');
   const showComparison = useAppSelector((state: AppState) => state.root.showComparison);
-
 
   const addCategory = () => {
     if (newCategoryName.trim() !== '') {
@@ -32,33 +36,31 @@ const CategoriesTab: React.FC = () => {
     if (!isValidCategoryName(name, categories)) {
       return;
     }
-    let updatedCategories = [...categories];
-    updatedCategories[index] = {...categories[index], name: name};
+    const updatedCategories = [...categories];
+    updatedCategories[index] = { ...categories[index], name: name };
     saveCategories(updatedCategories, dispatch, categories, activeCategory);
   };
 
   const updateCategoryWeight = (index: number, weight: number) => {
-    let updatedCategories = [...categories];
-    updatedCategories[index] = {...updatedCategories[index], weight: weight };
+    const updatedCategories = [...categories];
+    updatedCategories[index] = { ...updatedCategories[index], weight: weight };
     saveCategories(updatedCategories, dispatch, categories, activeCategory);
   };
 
   /**
    * Handle check even on show category comparison checkbox
-   * @param checked 
+   * @param checked
    */
   const onShowComparisonChange = (checked: boolean) => {
-    updateQueryParams({ cm: checked === true ? 't' : 'f' })
-    dispatch(
-      setShowComparison(checked === true)
-    );
+    updateQueryParams({ cm: checked === true ? 't' : 'f' });
+    dispatch(setShowComparison(checked === true));
   };
 
   return (
     <div className="mb-0">
       <p className="relative mb-[1em] mt-2 text-sm">
-        Create categories to build multiple rankings based on different criteria: e.g. <i>Vocals, Dance, Lyrics</i>{' '}
-        etc.
+        Create categories to build multiple rankings based on different criteria: e.g.{' '}
+        <i>Vocals, Dance, Lyrics</i> etc.
       </p>
       <div className="mt-5 mb-[1.5em]">
         <span className="font-bold ml-0 whitespace-nowrap">Categories</span>

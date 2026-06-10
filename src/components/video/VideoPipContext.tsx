@@ -1,14 +1,10 @@
-import React, {
-    createContext,
-    useContext,
-    useLayoutEffect,
-    useRef,
-} from 'react';
+import React, { createContext, useContext, useLayoutEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { CountryContestant } from '../../data/CountryContestant';
-import { VideoInfo, buildSrc, computePipGeom, PLAYER_FRAME_ID } from './videoPipShared';
-import { usePipPlayer } from './usePipPlayer';
+
 import PipControlBar from './PipControlBar';
+import { usePipPlayer } from './usePipPlayer';
+import { VideoInfo, buildSrc, computePipGeom, PLAYER_FRAME_ID } from './videoPipShared';
+import { CountryContestant } from '../../data/CountryContestant';
 
 /**
  * Picture-in-Picture video support.
@@ -45,144 +41,142 @@ import PipControlBar from './PipControlBar';
 export type { VideoInfo } from './videoPipShared';
 
 interface VideoPipContextValue {
-    // called by the modal's video tab when it mounts: the player docks onto `el`
-    registerDock: (el: HTMLElement, info: VideoInfo) => void;
-    // called when that tab unmounts (tab switch / modal close): goes pip if the
-    // video is playing, otherwise stops
-    unregisterDock: (el: HTMLElement) => void;
-    // videoId of the currently loaded video, or null. lets the modal know which
-    // song is "live" in the player.
-    activeVideoId: string | null;
-    // videoId of the video currently loaded in the floating pip, or null when
-    // it's docked / nothing is up. lets the ranked list flag the live card.
-    pipVideoId: string | null;
-    // bumped each time the user expands the pip; the modal watches this to swing
-    // itself back to the video tab
-    expandNonce: number;
-    // pops the docked player out to a floating pip and closes the modal
-    popOut: () => void;
-    // floats a pip starting from the top ranked playable video with
-    // auto-continue on, so it plays straight down the ranked list
-    playList: () => void;
-    // whether the ranked list has at least one playable video
-    hasPlayableVideos: boolean;
+  // called by the modal's video tab when it mounts: the player docks onto `el`
+  registerDock: (el: HTMLElement, info: VideoInfo) => void;
+  // called when that tab unmounts (tab switch / modal close): goes pip if the
+  // video is playing, otherwise stops
+  unregisterDock: (el: HTMLElement) => void;
+  // videoId of the currently loaded video, or null. lets the modal know which
+  // song is "live" in the player.
+  activeVideoId: string | null;
+  // videoId of the video currently loaded in the floating pip, or null when
+  // it's docked / nothing is up. lets the ranked list flag the live card.
+  pipVideoId: string | null;
+  // bumped each time the user expands the pip; the modal watches this to swing
+  // itself back to the video tab
+  expandNonce: number;
+  // pops the docked player out to a floating pip and closes the modal
+  popOut: () => void;
+  // floats a pip starting from the top ranked playable video with
+  // auto-continue on, so it plays straight down the ranked list
+  playList: () => void;
+  // whether the ranked list has at least one playable video
+  hasPlayableVideos: boolean;
 }
 
 const VideoPipContext = createContext<VideoPipContextValue | null>(null);
 
 export const useVideoPip = (): VideoPipContextValue => {
-    const ctx = useContext(VideoPipContext);
-    if (!ctx) {
-        throw new Error('useVideoPip must be used within a VideoPipProvider');
-    }
-    return ctx;
+  const ctx = useContext(VideoPipContext);
+  if (!ctx) {
+    throw new Error('useVideoPip must be used within a VideoPipProvider');
+  }
+  return ctx;
 };
 
 export const VideoPipProvider: React.FC<{
-    // re-opens the song modal for the given contestant when the pip is expanded
-    onExpand: (contestant: CountryContestant) => void;
-    // closes the song modal when the user pops the docked player out to a pip
-    onMinimize: () => void;
-    children: React.ReactNode;
+  // re-opens the song modal for the given contestant when the pip is expanded
+  onExpand: (contestant: CountryContestant) => void;
+  // closes the song modal when the user pops the docked player out to a pip
+  onMinimize: () => void;
+  children: React.ReactNode;
 }> = ({ onExpand, onMinimize, children }) => {
-    const player = usePipPlayer(onExpand, onMinimize);
-    const {
-        video,
-        mode,
-        autoplay,
-        autoContinue,
-        expandNonce,
-        containerRef,
-        iframeRef,
-        getTargetGeom,
-        handleIframeLoad,
-        navigate,
-        toggleAutoContinue,
-        expand,
-        closePip,
-        onBarPointerDown,
-        registerDock,
-        unregisterDock,
-        popOut,
-        playList,
-        hasPlayableVideos,
-        activeVideoId,
-        pipVideoId,
-    } = player;
+  const player = usePipPlayer(onExpand, onMinimize);
+  const {
+    video,
+    mode,
+    autoplay,
+    autoContinue,
+    expandNonce,
+    containerRef,
+    iframeRef,
+    getTargetGeom,
+    handleIframeLoad,
+    navigate,
+    toggleAutoContinue,
+    expand,
+    closePip,
+    onBarPointerDown,
+    registerDock,
+    unregisterDock,
+    popOut,
+    playList,
+    hasPlayableVideos,
+    activeVideoId,
+    pipVideoId,
+  } = player;
 
-    const ctxValue: VideoPipContextValue = {
-        registerDock,
-        unregisterDock,
-        activeVideoId,
-        pipVideoId,
-        expandNonce,
-        popOut,
-        playList,
-        hasPlayableVideos,
-    };
+  const ctxValue: VideoPipContextValue = {
+    registerDock,
+    unregisterDock,
+    activeVideoId,
+    pipVideoId,
+    expandNonce,
+    popOut,
+    playList,
+    hasPlayableVideos,
+  };
 
-    const isPip = mode === 'pip';
-    const initialGeom = video ? getTargetGeom() ?? computePipGeom() : null;
+  const isPip = mode === 'pip';
+  const initialGeom = video ? (getTargetGeom() ?? computePipGeom()) : null;
 
-    return (
-        <VideoPipContext.Provider value={ctxValue}>
-            {children}
-            {video &&
-                createPortal(
-                    <div
-                        ref={containerRef}
-                        className="er-video-player-root group fixed"
-                        style={{
-                            left: initialGeom ? `${initialGeom.left}px` : 0,
-                            top: initialGeom ? `${initialGeom.top}px` : 0,
-                            width: initialGeom ? `${initialGeom.width}px` : 0,
-                            height: initialGeom ? `${initialGeom.height}px` : 0,
-                            zIndex: isPip ? 1000 : 55,
-                        }}
-                    >
-                        {/* control bar — sits just below the floating pip video.
+  return (
+    <VideoPipContext.Provider value={ctxValue}>
+      {children}
+      {video &&
+        createPortal(
+          <div
+            ref={containerRef}
+            className="er-video-player-root group fixed"
+            style={{
+              left: initialGeom ? `${initialGeom.left}px` : 0,
+              top: initialGeom ? `${initialGeom.top}px` : 0,
+              width: initialGeom ? `${initialGeom.width}px` : 0,
+              height: initialGeom ? `${initialGeom.height}px` : 0,
+              zIndex: isPip ? 1000 : 55,
+            }}
+          >
+            {/* control bar — sits just below the floating pip video.
                             lives outside the clipped video box so it can extend
                             past the bottom edge; pip-only, like the float itself */}
-                        {isPip && (
-                            <PipControlBar
-                                autoContinue={autoContinue}
-                                onBarPointerDown={onBarPointerDown}
-                                navigate={navigate}
-                                toggleAutoContinue={toggleAutoContinue}
-                                expand={expand}
-                                closePip={closePip}
-                            />
-                        )}
+            {isPip && (
+              <PipControlBar
+                autoContinue={autoContinue}
+                onBarPointerDown={onBarPointerDown}
+                navigate={navigate}
+                toggleAutoContinue={toggleAutoContinue}
+                expand={expand}
+                closePip={closePip}
+              />
+            )}
 
-                        {/* the video box itself — clipped + framed. fills the
+            {/* the video box itself — clipped + framed. fills the
                             tracked geometry exactly so docked mode is unchanged */}
-                        <div
-                            className="absolute inset-0 overflow-hidden rounded-md bg-black"
-                            style={{
-                                boxShadow: isPip
-                                    ? '0 10px 30px rgba(0,0,0,0.5)'
-                                    : 'none',
-                                // a soft ring matches the modal's video box framing
-                                outline: '1px solid var(--er-border-secondary)',
-                                outlineOffset: '-1px',
-                            }}
-                        >
-                            <iframe
-                                ref={iframeRef}
-                                id={PLAYER_FRAME_ID}
-                                className="absolute inset-0 h-full w-full"
-                                src={buildSrc(video.videoId, autoplay)}
-                                title={video.title}
-                                onLoad={handleIframeLoad}
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                                allowFullScreen
-                            />
-                        </div>
-                    </div>,
-                    document.body
-                )}
-        </VideoPipContext.Provider>
-    );
+            <div
+              className="absolute inset-0 overflow-hidden rounded-md bg-black"
+              style={{
+                boxShadow: isPip ? '0 10px 30px rgba(0,0,0,0.5)' : 'none',
+                // a soft ring matches the modal's video box framing
+                outline: '1px solid var(--er-border-secondary)',
+                outlineOffset: '-1px',
+              }}
+            >
+              <iframe
+                ref={iframeRef}
+                id={PLAYER_FRAME_ID}
+                className="absolute inset-0 h-full w-full"
+                src={buildSrc(video.videoId, autoplay)}
+                title={video.title}
+                onLoad={handleIframeLoad}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowFullScreen
+              />
+            </div>
+          </div>,
+          document.body,
+        )}
+    </VideoPipContext.Provider>
+  );
 };
 
 /**
@@ -192,25 +186,25 @@ export const VideoPipProvider: React.FC<{
  * player off to pip mode (if playing) or stops it.
  */
 export const VideoDock: React.FC<{ info: VideoInfo }> = ({ info }) => {
-    const { registerDock, unregisterDock } = useVideoPip();
-    const ref = useRef<HTMLDivElement>(null);
-    const infoRef = useRef(info);
-    infoRef.current = info;
+  const { registerDock, unregisterDock } = useVideoPip();
+  const ref = useRef<HTMLDivElement>(null);
+  const infoRef = useRef(info);
+  infoRef.current = info;
 
-    useLayoutEffect(() => {
-        const el = ref.current;
-        if (el) registerDock(el, infoRef.current);
-        return () => {
-            if (el) unregisterDock(el);
-        };
-        // re-register only when the song actually changes
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [info.videoId]);
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (el) registerDock(el, infoRef.current);
+    return () => {
+      if (el) unregisterDock(el);
+    };
+    // re-register only when the song actually changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [info.videoId]);
 
-    return (
-        <div
-            ref={ref}
-            className="relative w-full aspect-video rounded-md overflow-hidden bg-black ring-1 ring-[var(--er-border-secondary)]"
-        />
-    );
+  return (
+    <div
+      ref={ref}
+      className="relative w-full aspect-video rounded-md overflow-hidden bg-black ring-1 ring-[var(--er-border-secondary)]"
+    />
+  );
 };

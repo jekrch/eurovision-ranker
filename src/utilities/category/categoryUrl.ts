@@ -1,12 +1,12 @@
-import { convertRankingsStrToArray, updateQueryParams } from "../UrlUtil";
-import { CountryContestant } from "../../data/CountryContestant";
-import { Country } from "../../data/Country";
-import { Category } from "./types";
+import { Country } from '../../data/Country';
+import { CountryContestant } from '../../data/CountryContestant';
+import { convertRankingsStrToArray, updateQueryParams } from '../UrlUtil';
+import { Category } from './types';
 
 export function saveCategoriesToUrl(updatedCategories: Category[]) {
-  const categoriesParam = updatedCategories.map(
-    category => `${category.name}-${category.weight}`
-  ).join('|');
+  const categoriesParam = updatedCategories
+    .map((category) => `${category.name}-${category.weight}`)
+    .join('|');
   updateQueryParams({ c: categoriesParam });
 }
 
@@ -18,7 +18,7 @@ export function saveCategoriesToUrl(updatedCategories: Category[]) {
  */
 export function removeCountryFromUrlCategoryRankings(
   categories: Category[],
-  countryIdToRemove: string
+  countryIdToRemove: string,
 ) {
   const searchParams = new URLSearchParams(window.location.search);
   categories.forEach((_, index) => {
@@ -26,7 +26,9 @@ export function removeCountryFromUrlCategoryRankings(
     const currentRanking = searchParams.get(categoryParam);
     if (currentRanking) {
       const rankingArray = convertRankingsStrToArray(currentRanking);
-      const updatedRankingArray = rankingArray.filter(countryId => countryId !== countryIdToRemove);
+      const updatedRankingArray = rankingArray.filter(
+        (countryId) => countryId !== countryIdToRemove,
+      );
       const updatedRanking = updatedRankingArray.join('');
       if (updatedRanking) {
         searchParams.set(categoryParam, updatedRanking);
@@ -41,7 +43,7 @@ export function removeCountryFromUrlCategoryRankings(
 }
 
 export function parseCategoriesUrlParam(categoriesParam: string) {
-  return categoriesParam.split('|').map(category => {
+  return categoriesParam.split('|').map((category) => {
     const lastDashIndex = category.lastIndexOf('-');
     const name = category.slice(0, lastDashIndex);
     const weight = parseInt(category.slice(lastDashIndex + 1), 10);
@@ -56,7 +58,6 @@ export function parseCategoriesUrlParam(categoriesParam: string) {
  * @returns
  */
 export function categoryRankingsExist(urlParams?: URLSearchParams) {
-
   urlParams = urlParams ?? new URLSearchParams(window.location.search);
 
   // check for the presence of categories in the c parameter
@@ -85,9 +86,9 @@ export function categoryRankingsExist(urlParams?: URLSearchParams) {
  */
 export function getAllCategoryRankingsFromUrl(
   categories: Category[],
-  searchParams: URLSearchParams
+  searchParams: URLSearchParams,
 ) {
-  const categoryRankings: { [key: string]: string[]; } = {};
+  const categoryRankings: { [key: string]: string[] } = {};
 
   // Fetch each category ranking from the URL
   categories.forEach((category, index) => {
@@ -107,15 +108,11 @@ export function getAllCategoryRankingsFromUrl(
  * @param country
  * @returns
  */
-export function getCountryCategoryRankingsFromUrl(
-  categories: Category[],
-  country: Country
-) {
+export function getCountryCategoryRankingsFromUrl(categories: Category[], country: Country) {
   const params = new URLSearchParams(window.location.search);
-  const categoryRankings: { [key: string]: number; } = {};
+  const categoryRankings: { [key: string]: number } = {};
 
   categories.forEach((category, index) => {
-
     const categoryParam = `r${index + 1}`;
     const ranking = params.get(categoryParam);
 
@@ -138,13 +135,12 @@ export function getCountryCategoryRankingsFromUrl(
  */
 export function getContestantCategoryRankingsFromUrl(
   categories: Category[],
-  countryContestant: CountryContestant
+  countryContestant: CountryContestant,
 ) {
   const params = new URLSearchParams(window.location.search);
-  const categoryRankings: { [key: string]: number; } = {};
+  const categoryRankings: { [key: string]: number } = {};
 
   categories.forEach((category, index) => {
-
     const categoryParam = `r${index + 1}`;
     const ranking = params.get(categoryParam);
 

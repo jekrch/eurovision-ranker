@@ -93,8 +93,9 @@ const QuizCelebration: React.FC<QuizCelebrationProps> = ({ pct }) => {
     // primary-themed throughout, with brighter variants, then gold, then white sparkle
     // weighting added at the top tiers. Repeated entries bias the random pick.
     const primary = resolveColor(
-      getComputedStyle(document.documentElement).getPropertyValue('--er-interactive-primary').trim() ||
-        '#c547d1'
+      getComputedStyle(document.documentElement)
+        .getPropertyValue('--er-interactive-primary')
+        .trim() || '#c547d1',
     );
     const light = mix(primary, WHITE, 0.4);
     const dark = mix(primary, [0, 0, 0], 0.25);
@@ -190,9 +191,17 @@ const QuizCelebration: React.FC<QuizCelebrationProps> = ({ pct }) => {
     const encores: number[] = [];
     if (tier >= 3) {
       const count = tier >= 4 ? 4 : 2;
-      for (let i = 1; i <= count; i++) encores.push(window.setTimeout(() => {
-        burst(rand(width * 0.2, width * 0.8), height + 8, 18 + Math.round(24 * intensity), 7 + intensity * 6);
-      }, i * 900));
+      for (let i = 1; i <= count; i++)
+        encores.push(
+          window.setTimeout(() => {
+            burst(
+              rand(width * 0.2, width * 0.8),
+              height + 8,
+              18 + Math.round(24 * intensity),
+              7 + intensity * 6,
+            );
+          }, i * 900),
+        );
     }
 
     let raf = 0;

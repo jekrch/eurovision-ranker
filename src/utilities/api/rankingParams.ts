@@ -11,37 +11,37 @@ const DEDICATED_KEYS = ['n', 'y'];
 const TRANSIENT_KEYS = ['id', 'signup'];
 
 function stripKeys(sp: URLSearchParams, keys: string[]) {
-    for (const k of keys) sp.delete(k);
+  for (const k of keys) sp.delete(k);
 }
 
 // Build the value to store in the `ranking` field from the current URL.
 export function buildRankingParamsFromUrl(search: string = window.location.search): string {
-    const sp = new URLSearchParams(search);
-    stripKeys(sp, DEDICATED_KEYS);
-    stripKeys(sp, TRANSIENT_KEYS);
-    return sp.toString();
+  const sp = new URLSearchParams(search);
+  stripKeys(sp, DEDICATED_KEYS);
+  stripKeys(sp, TRANSIENT_KEYS);
+  return sp.toString();
 }
 
 // Detect the new query-string format. Legacy values are the raw encoded
 // ranking (e.g. `cy.lg.ggbno` or `>cy...`), which never contains `=`.
 function isQueryStringFormat(ranking: string): boolean {
-    return ranking.includes('=');
+  return ranking.includes('=');
 }
 
 // Parse a stored `ranking` value into URLSearchParams, transparently handling
 // the legacy raw-r format.
 export function parseStoredRanking(ranking: string): URLSearchParams {
-    if (!ranking) return new URLSearchParams();
-    if (isQueryStringFormat(ranking)) return new URLSearchParams(ranking);
-    const sp = new URLSearchParams();
-    sp.set('r', ranking);
-    return sp;
+  if (!ranking) return new URLSearchParams();
+  if (isQueryStringFormat(ranking)) return new URLSearchParams(ranking);
+  const sp = new URLSearchParams();
+  sp.set('r', ranking);
+  return sp;
 }
 
 // Normalize a stored `ranking` value into the new query-string form so it
 // compares apples-to-apples against `buildRankingParamsFromUrl()` output.
 export function normalizeStoredRanking(ranking: string): string {
-    if (!ranking) return '';
-    if (isQueryStringFormat(ranking)) return ranking;
-    return parseStoredRanking(ranking).toString();
+  if (!ranking) return '';
+  if (isQueryStringFormat(ranking)) return ranking;
+  return parseStoredRanking(ranking).toString();
 }

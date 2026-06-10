@@ -1,6 +1,6 @@
-import { CountryContestant } from "../../data/CountryContestant";
-import { Category } from "./types";
-import { getAllCategoryRankingsFromUrl } from "./categoryUrl";
+import { getAllCategoryRankingsFromUrl } from './categoryUrl';
+import { Category } from './types';
+import { CountryContestant } from '../../data/CountryContestant';
 
 /**
  * Reorders the provided rankedList according to the rankings for all provided categories.
@@ -18,9 +18,8 @@ import { getAllCategoryRankingsFromUrl } from "./categoryUrl";
 export function reorderByAllWeightedRankings(
   categories: Category[],
   rankedItems: CountryContestant[],
-  searchParams?: URLSearchParams | undefined
+  searchParams?: URLSearchParams | undefined,
 ): CountryContestant[] {
-
   // if there are no competing category ranks to aggregate
   // then just return what we have
   if (categories?.length < 2) {
@@ -29,16 +28,19 @@ export function reorderByAllWeightedRankings(
 
   searchParams = searchParams ?? new URLSearchParams(window.location.search);
 
-  const categoryRankings: { [key: string]: string[]; } = getAllCategoryRankingsFromUrl(categories, searchParams);
-
-  // Calculate the weighted scores for each country
-  const weightedScores: { [key: string]: number; } = calculateTotalRankScoresForWeighedCategories(
-    categoryRankings, categories
+  const categoryRankings: { [key: string]: string[] } = getAllCategoryRankingsFromUrl(
+    categories,
+    searchParams,
   );
 
+  // Calculate the weighted scores for each country
+  const weightedScores: { [key: string]: number } = calculateTotalRankScoresForWeighedCategories(
+    categoryRankings,
+    categories,
+  );
 
   // Create an array of objects containing country IDs and their weighted scores
-  const countriesWithScores = Object.keys(weightedScores).map(countryId => ({
+  const countriesWithScores = Object.keys(weightedScores).map((countryId) => ({
     countryId,
     score: weightedScores[countryId],
   }));
@@ -47,25 +49,21 @@ export function reorderByAllWeightedRankings(
   countriesWithScores.sort((a, b) => b.score - a.score);
 
   // Find the most weighted categories
-  const maxWeight = Math.max(...categories.map(category => category.weight));
-  const mostWeightedCategories = categories.filter(category => category.weight === maxWeight);
+  const maxWeight = Math.max(...categories.map((category) => category.weight));
+  const mostWeightedCategories = categories.filter((category) => category.weight === maxWeight);
 
   // Resolve ties based on the ranking in the most weighted categories
-  resolveWeightedCategoryRankingTies(
-    countriesWithScores,
-    mostWeightedCategories,
-    categoryRankings
-  );
+  resolveWeightedCategoryRankingTies(countriesWithScores, mostWeightedCategories, categoryRankings);
 
   // reorder the rankedItems based on the sorted countriesWithScores. Handle 3 letter global uids
   // differently than the shorter non-global ids
-  const reorderedRankedItems = countriesWithScores.map(({ countryId }) =>
-    rankedItems.find(
-      (item) => countryId.length === 3 ?
-        item.uid === countryId :
-        item.country.id === countryId
+  const reorderedRankedItems = countriesWithScores
+    .map(({ countryId }) =>
+      rankedItems.find((item) =>
+        countryId.length === 3 ? item.uid === countryId : item.country.id === countryId,
+      ),
     )
-  ).filter((item): item is CountryContestant => item !== undefined);
+    .filter((item): item is CountryContestant => item !== undefined);
 
   return reorderedRankedItems;
 }
@@ -84,9 +82,9 @@ export function reorderByAllWeightedRankings(
  * @param categoryRankings
  */
 function resolveWeightedCategoryRankingTies(
-  countriesWithScores: { countryId: string; score: number; }[],
+  countriesWithScores: { countryId: string; score: number }[],
   mostWeightedCategories: Category[],
-  categoryRankings: { [key: string]: string[]; }
+  categoryRankings: { [key: string]: string[] },
 ) {
   let startIndex = 0;
 
@@ -97,8 +95,7 @@ function resolveWeightedCategoryRankingTies(
     // find the range of tied countries with the same score
     while (
       endIndex < countriesWithScores.length &&
-      countriesWithScores[endIndex].score ===
-      countriesWithScores[startIndex].score
+      countriesWithScores[endIndex].score === countriesWithScores[startIndex].score
     ) {
       endIndex++;
     }
@@ -109,20 +106,19 @@ function resolveWeightedCategoryRankingTies(
 
       // Iterate through the most weighted categories to resolve ties
       for (const category of mostWeightedCategories) {
-
         const categoryRanking = categoryRankings[category.name];
 
         if (categoryRanking) {
-
           // Sort the tied countries based on their ranking in the current category
           tiedCountries.sort(
             (countryA, countryB) =>
-              categoryRanking.indexOf(countryA.countryId) - categoryRanking.indexOf(countryB.countryId)
+              categoryRanking.indexOf(countryA.countryId) -
+              categoryRanking.indexOf(countryB.countryId),
           );
 
           // Check if the rankings in the current category are unique for the tied countries
           const uniqueRankings = Array.from(
-            new Set(tiedCountries.map(country => categoryRanking.indexOf(country.countryId)))
+            new Set(tiedCountries.map((country) => categoryRanking.indexOf(country.countryId))),
           );
 
           // if the rankings are unique, the tie is resolved, so break the loop
@@ -133,9 +129,7 @@ function resolveWeightedCategoryRankingTies(
       }
 
       // replace the tied countries in the original array with the sorted order
-      countriesWithScores.splice(
-        startIndex, endIndex - startIndex, ...tiedCountries
-      );
+      countriesWithScores.splice(startIndex, endIndex - startIndex, ...tiedCountries);
     }
 
     // move the startIndex to the next untied country
@@ -144,13 +138,12 @@ function resolveWeightedCategoryRankingTies(
 }
 
 function calculateTotalRankScoresForWeighedCategories(
-  categoryRankings: { [key: string]: string[]; },
-  categories: Category[]
+  categoryRankings: { [key: string]: string[] },
+  categories: Category[],
 ) {
-  const weightedScores: { [key: string]: number; } = {};
+  const weightedScores: { [key: string]: number } = {};
 
   Object.entries(categoryRankings).forEach(([categoryName, ranking]) => {
-
     const category = categories.find((cat) => cat.name === categoryName);
 
     if (category) {

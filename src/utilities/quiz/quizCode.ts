@@ -14,8 +14,13 @@
  * from. If the underlying CSVs change, an old code may yield a different quiz.
  * VERSION is bumped if the code format itself changes (older codes then reject).
  */
-import { QuizConfig, QuizDifficulty, QuizLength, QuizQuestionType } from '../../data/quiz/quizTypes';
 import { QUIZ_YEARS } from './quizGenerator';
+import {
+  QuizConfig,
+  QuizDifficulty,
+  QuizLength,
+  QuizQuestionType,
+} from '../../data/quiz/quizTypes';
 
 /** Code format version. Bump on any breaking layout change. */
 const VERSION = 1n;
@@ -103,9 +108,7 @@ export const encodeQuizCode = (config: QuizConfig, seed: number): string => {
 };
 
 /** Reverse of encodeQuizCode. Returns null for malformed/unsupported codes. */
-export const decodeQuizCode = (
-  code: string
-): { config: QuizConfig; seed: number } | null => {
+export const decodeQuizCode = (code: string): { config: QuizConfig; seed: number } | null => {
   try {
     let bits = fromBase36(code.trim());
     const take = (width: bigint): bigint => {

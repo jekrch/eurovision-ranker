@@ -1,12 +1,24 @@
-import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import classNames from 'classnames';
-import toast from 'react-hot-toast';
+import {
+  faDownload,
+  faLink,
+  faRotateRight,
+  faStopwatch,
+  faTrophy,
+} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faDownload, faLink, faRotateRight, faStopwatch, faTrophy } from '@fortawesome/free-solid-svg-icons';
+import classNames from 'classnames';
+import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import toast from 'react-hot-toast';
+
 import { QuizResult } from '../../../data/quiz/quizTypes';
-import { formatDuration, formatYearRanges, scoreMessage, typeBreakdown } from '../../../utilities/quiz/quizScoring';
-import { downloadQuizResultImage } from '../../../utilities/quiz/quizResultImage';
 import { encodeQuizCode } from '../../../utilities/quiz/quizCode';
+import { downloadQuizResultImage } from '../../../utilities/quiz/quizResultImage';
+import {
+  formatDuration,
+  formatYearRanges,
+  scoreMessage,
+  typeBreakdown,
+} from '../../../utilities/quiz/quizScoring';
 
 interface QuizResultsProps {
   result: QuizResult;
@@ -60,14 +72,24 @@ const QuizResults: React.FC<QuizResultsProps> = ({ result, onPlayAgain, onNewQui
       {/* static header — trophy + score ring stay pinned at the top */}
       <div className="flex flex-col items-center gap-5 flex-shrink-0">
         <div className="text-center">
-          <FontAwesomeIcon icon={faTrophy} className="text-[var(--er-interactive-primary)] text-2xl mb-2" />
+          <FontAwesomeIcon
+            icon={faTrophy}
+            className="text-[var(--er-interactive-primary)] text-2xl mb-2"
+          />
           <h2 className="text-[var(--er-text-secondary)] text-xl font-bold">{scoreMessage(pct)}</h2>
         </div>
 
         {/* score ring */}
         <div className="relative w-32 h-32">
           <svg className="w-full h-full -rotate-90" viewBox="0 0 120 120">
-            <circle cx="60" cy="60" r="52" fill="none" stroke="rgba(255,255,255,0.10)" strokeWidth="12" />
+            <circle
+              cx="60"
+              cy="60"
+              r="52"
+              fill="none"
+              stroke="rgba(255,255,255,0.10)"
+              strokeWidth="12"
+            />
             <circle
               cx="60"
               cy="60"
@@ -98,20 +120,26 @@ const QuizResults: React.FC<QuizResultsProps> = ({ result, onPlayAgain, onNewQui
         {/* stat pills */}
         <div className="flex items-center justify-center gap-3 text-center flex-wrap">
           <div className="bg-[var(--er-surface-tertiary)] rounded-lg px-4 py-2">
-            <div className="text-[var(--er-text-subtle)] text-[0.65rem] font-semibold tracking-wide">TIME</div>
+            <div className="text-[var(--er-text-subtle)] text-[0.65rem] font-semibold tracking-wide">
+              TIME
+            </div>
             <div className="text-[var(--er-text-tertiary)] font-bold flex items-center gap-1.5 justify-center">
               <FontAwesomeIcon icon={faStopwatch} className="text-xs" />
               {formatDuration(result.elapsedMs)}
             </div>
           </div>
           <div className="bg-[var(--er-surface-tertiary)] rounded-lg px-4 py-2">
-            <div className="text-[var(--er-text-subtle)] text-[0.65rem] font-semibold tracking-wide">CORRECT</div>
+            <div className="text-[var(--er-text-subtle)] text-[0.65rem] font-semibold tracking-wide">
+              CORRECT
+            </div>
             <div className="text-[var(--er-text-tertiary)] font-bold">
               {result.score} of {result.total}
             </div>
           </div>
           <div className="bg-[var(--er-surface-tertiary)] rounded-lg px-4 py-2 max-w-[12rem]">
-            <div className="text-[var(--er-text-subtle)] text-[0.65rem] font-semibold tracking-wide">YEARS</div>
+            <div className="text-[var(--er-text-subtle)] text-[0.65rem] font-semibold tracking-wide">
+              YEARS
+            </div>
             <div className="text-[var(--er-text-tertiary)] font-bold truncate" title={yearsLabel}>
               {yearsLabel}
             </div>
@@ -129,7 +157,9 @@ const QuizResults: React.FC<QuizResultsProps> = ({ result, onPlayAgain, onNewQui
                 const rowPct = row.total ? (row.correct / row.total) * 100 : 0;
                 return (
                   <div key={row.label} className="flex items-center gap-2 text-xs">
-                    <span className="text-[var(--er-text-tertiary)] w-28 flex-shrink-0 truncate">{row.label}</span>
+                    <span className="text-[var(--er-text-tertiary)] w-28 flex-shrink-0 truncate">
+                      {row.label}
+                    </span>
                     <div className="flex-grow h-2 rounded-full bg-white/10 overflow-hidden">
                       <div
                         className="h-full bg-[var(--er-interactive-primary)] rounded-full transition-all duration-500"
@@ -188,7 +218,7 @@ const QuizResults: React.FC<QuizResultsProps> = ({ result, onPlayAgain, onNewQui
               onClick={onPlayAgain}
               className={classNames(
                 'flex-1 py-2.5 rounded-lg font-semibold flex items-center justify-center gap-2',
-                'bg-[var(--er-surface-tertiary)] text-[var(--er-text-tertiary)] hover:bg-[var(--er-surface-light)]'
+                'bg-[var(--er-surface-tertiary)] text-[var(--er-text-tertiary)] hover:bg-[var(--er-surface-light)]',
               )}
             >
               <FontAwesomeIcon icon={faRotateRight} />

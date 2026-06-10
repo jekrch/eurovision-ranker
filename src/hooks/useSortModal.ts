@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
-import { CountryContestant } from '../data/CountryContestant';
+
 import { useAppSelector } from './stateHooks';
+import { CountryContestant } from '../data/CountryContestant';
 
 /**
  * Custom hook for managing the sorter modal
@@ -15,7 +16,7 @@ export const useSorterModal = () => {
    * Open the sorter modal
    * @param items Optional items to sort, defaults to current ranked items
    */
-  const openSorterModal = useCallback((items?: CountryContestant[]) => {
+  const openSorterModal = useCallback((_items?: CountryContestant[]) => {
     setIsSorterModalOpen(true);
   }, []);
 
@@ -40,9 +41,7 @@ export const useSorterModal = () => {
     const itemsToSort = [...unrankedItems];
     if (itemsToSort.length > 20) {
       // Take a random subset if there are too many items
-      return itemsToSort
-        .sort(() => 0.5 - Math.random())
-        .slice(0, 20);
+      return itemsToSort.sort(() => 0.5 - Math.random()).slice(0, 20);
     }
     return itemsToSort;
   }, [rankedItems, unrankedItems]);

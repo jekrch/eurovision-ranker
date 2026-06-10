@@ -1,10 +1,16 @@
 import React, { useEffect } from 'react';
+
 import { CountryContestant } from '../data/CountryContestant';
+import {
+  setRankedItems,
+  setActiveCategory,
+  setShowTotalRank,
+  setCategories,
+} from '../redux/rootSlice';
 import { AppDispatch, AppState } from '../redux/store';
-import { setRankedItems, setActiveCategory, setShowTotalRank, setCategories } from '../redux/rootSlice';
-import { loadRankingsFromURL, encodeRankingsToURL, updateQueryParams } from '../utilities/UrlUtil';
 import { parseCategoriesUrlParam, reorderByAllWeightedRankings } from '../utilities/CategoryUtil';
 import { isArrayEqual } from '../utilities/RankAnalyzer';
+import { loadRankingsFromURL, encodeRankingsToURL, updateQueryParams } from '../utilities/UrlUtil';
 
 interface UseUrlSyncArgs {
   activeCategory: number | undefined;
@@ -59,54 +65,41 @@ export function useUrlSync({
       // loadRankingsFromURL would just clear them.
       if (publicViewActiveRef.current) return;
       if (!showTotalRank) {
-        await loadRankingsFromURL(
-          activeCategory,
-          dispatch
-        );
+        await loadRankingsFromURL(activeCategory, dispatch);
       } else if (activeCategory === undefined && categories?.length) {
         // if this is the first page load and we have categories we
         // should load the first so that Total tab has contestants
         // available to populated the total ranking
-        await loadRankingsFromURL(
-          0,
-          dispatch
-        );
+        await loadRankingsFromURL(0, dispatch);
       }
     };
 
     updateRankedItems();
   }, [activeCategory, showTotalRank]);
 
-
   /**
- * Load categories from the url
- */
+   * Load categories from the url
+   */
   useEffect(() => {
     const searchParams = new URLSearchParams(window.location.search);
     const categoriesParam = searchParams.get('c');
     if (categoriesParam) {
       const parsedCategories = parseCategoriesUrlParam(categoriesParam);
-      dispatch(
-        setCategories(parsedCategories)
-      )
+      dispatch(setCategories(parsedCategories));
     }
   }, []);
 
   useEffect(() => {
     const updateRankedItems = async () => {
-
       if (showTotalRank) {
-
-        let totalOrderRankings = reorderByAllWeightedRankings(categories, rankedItems);
+        const totalOrderRankings = reorderByAllWeightedRankings(categories, rankedItems);
 
         // if it's already correctly ordered don't reset rankedItems
         if (isArrayEqual(totalOrderRankings, rankedItems)) {
           return;
         }
 
-        dispatch(
-          setRankedItems(totalOrderRankings)
-        );
+        dispatch(setRankedItems(totalOrderRankings));
       }
     };
 
@@ -130,11 +123,8 @@ export function useUrlSync({
       }
       updateQueryParams({ y: year.slice(-2) });
 
-      await loadRankingsFromURL(
-        activeCategory,
-        dispatch
-      );
-    }
+      await loadRankingsFromURL(activeCategory, dispatch);
+    };
     handleYearUpdate();
   }, [year]);
 
@@ -148,7 +138,6 @@ export function useUrlSync({
   }, [name]);
 
   useEffect(() => {
-
     if (categories.length > 0) {
       // Add new category to the URL with the appropriate rx param
       categories.forEach((_, index) => {
@@ -175,22 +164,15 @@ export function useUrlSync({
       // or
       // 2. if there is only 1 category, just show that category ranking
       if (activeCategory === undefined) {
-
         if (categories?.length > 1) {
-          dispatch(
-            setShowTotalRank(true)
-          );
+          dispatch(setShowTotalRank(true));
         } else {
-          dispatch(
-            setActiveCategory(0)
-          );
+          dispatch(setActiveCategory(0));
         }
       }
     } else {
       // if there are no categories, make sure showTotalRank is false
-      dispatch(
-        setShowTotalRank(false)
-      );
+      dispatch(setShowTotalRank(false));
     }
   }, [categories]);
 }

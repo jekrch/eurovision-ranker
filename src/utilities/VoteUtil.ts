@@ -1,175 +1,162 @@
+import { clone } from './ContestantUtil';
 import { logger } from './logger';
-import { countries } from "../data/Countries";
-import { CountryContestant } from "../data/CountryContestant";
 import { sanitizeYear } from '../data/Contestants';
+import { countries } from '../data/Countries';
+import { CountryContestant } from '../data/CountryContestant';
 import { ContestantVotes, Vote } from '../data/Vote';
-import { clone } from "./ContestantUtil";
 
 export function getSourceCountryKey(voteSource: string) {
+  if (voteSource?.length && voteSource !== 'All') {
+    const sourceCountryKey = countries.find((c) => c.name === voteSource)?.key;
 
-    if (voteSource?.length && voteSource !== 'All') {
-        const sourceCountryKey = countries.find(c => c.name === voteSource)?.key;
-
-        if (!sourceCountryKey?.length) {
-            logger.error('Source country not found for ' + voteSource);
-        }
-
-        return sourceCountryKey;
+    if (!sourceCountryKey?.length) {
+      logger.error('Source country not found for ' + voteSource);
     }
+
+    return sourceCountryKey;
+  }
 }
 
 export function hasAnyJuryVotes(yearContestants: CountryContestant[]) {
-    return yearContestants.some(cc => cc?.contestant?.votes?.juryPoints &&
-        cc?.contestant?.votes?.juryPoints > 0
-    );
+  return yearContestants.some(
+    (cc) => cc?.contestant?.votes?.juryPoints && cc?.contestant?.votes?.juryPoints > 0,
+  );
 }
 
 export function hasAnyTeleVotes(yearContestants: CountryContestant[]) {
-    return yearContestants.some(cc => cc?.contestant?.votes?.telePoints &&
-        cc?.contestant?.votes?.telePoints > 0
-    );
+  return yearContestants.some(
+    (cc) => cc?.contestant?.votes?.telePoints && cc?.contestant?.votes?.telePoints > 0,
+  );
 }
 
 export function getVoteTypeOptionsByYear(year: string): string[] {
-    year = sanitizeYear(year);
-    if (parseInt(year) > 2016)
-        return ['Total', 'Televote', 'Jury'];
-    else
-        return ['Total']
+  year = sanitizeYear(year);
+  if (parseInt(year) > 2016) return ['Total', 'Televote', 'Jury'];
+  else return ['Total'];
 }
 
 export function getVoteTypeOption(voteCode: string) {
-    if (!voteCode?.length || voteCode === 'loading') {
-        return 'None';
-    }
+  if (!voteCode?.length || voteCode === 'loading') {
+    return 'None';
+  }
 
-    let codes = voteCode.split("-");
+  const codes = voteCode.split('-');
 
-    switch (codes[1]) {
-        case 'tv':
-            return 'Tele';
-        case 'j':
-        case 'jury':
-            return 'Jury';
-        default:
-            return 'Total';
-    }
+  switch (codes[1]) {
+    case 'tv':
+      return 'Tele';
+    case 'j':
+    case 'jury':
+      return 'Jury';
+    default:
+      return 'Total';
+  }
 }
 
-export function getVoteTypeCodeFromOption(
-    optionName: string
-) {
-    if (!optionName) {
-        return;
-    }
+export function getVoteTypeCodeFromOption(optionName: string) {
+  if (!optionName) {
+    return;
+  }
 
-    switch (optionName?.toLowerCase()) {
-        case 'jury':
-            return 'j'
-        case 'total':
-            return 't';
-        case 'tele':
-        case 'televote':
-            return 'tv'
-        default:
-            return;
-    }
+  switch (optionName?.toLowerCase()) {
+    case 'jury':
+      return 'j';
+    case 'total':
+      return 't';
+    case 'tele':
+    case 'televote':
+      return 'tv';
+    default:
+      return;
+  }
 }
 
 /**
  * Returns the vote code param for the provided round, type, and source (country)
- * 
- * @param round 
- * @param voteType 
- * @param voteSource 
- * @returns 
+ *
+ * @param round
+ * @param voteType
+ * @param voteSource
+ * @returns
  */
-export function getVoteCode(
-    round: string,
-    voteType: string,
-    voteSource: string
-) {
-    let voteCode = `${round}-${voteType}`;
+export function getVoteCode(round: string, voteType: string, voteSource: string) {
+  let voteCode = `${round}-${voteType}`;
 
-    const countryKey = getSourceCountryKey(voteSource);
+  const countryKey = getSourceCountryKey(voteSource);
 
-    if (countryKey?.length) {
-        voteCode += `-${countryKey}`;
-    }
+  if (countryKey?.length) {
+    voteCode += `-${countryKey}`;
+  }
 
-    return voteCode;
+  return voteCode;
 }
 
-export function assignVotes(
-    contestants: CountryContestant[], 
-    votes: Vote[]
-) {
-    // summing up the votes for each country
-    const voteSums: { [key: string]: ContestantVotes; } = getKeyVoteMap(votes);
+export function assignVotes(contestants: CountryContestant[], votes: Vote[]) {
+  // summing up the votes for each country
+  const voteSums: { [key: string]: ContestantVotes } = getKeyVoteMap(votes);
 
-    contestants = clone(contestants);
-    
-    contestants.forEach((cc: CountryContestant) => {
-        if (cc.contestant) {
-            cc.contestant.votes = voteSums[getVoteKey(cc)] || undefined;
-        }
-    });
-    return contestants;
+  contestants = clone(contestants);
+
+  contestants.forEach((cc: CountryContestant) => {
+    if (cc.contestant) {
+      cc.contestant.votes = voteSums[getVoteKey(cc)] || undefined;
+    }
+  });
+  return contestants;
 }
 
 function getKeyVoteMap(votes: Vote[]) {
-    const voteSums: { [key: string]: ContestantVotes; } = {};
+  const voteSums: { [key: string]: ContestantVotes } = {};
 
-    votes.forEach(vote => {
+  votes.forEach((vote) => {
+    let contestantVotes = voteSums[getKey(vote)];
 
-        let contestantVotes = voteSums[getKey(vote)];
+    if (!contestantVotes) {
+      contestantVotes = {
+        totalPoints: undefined,
+        juryPoints: undefined,
+        telePoints: undefined,
+        year: vote.year,
+        round: vote.round,
+      } as ContestantVotes;
+      voteSums[getKey(vote)] = contestantVotes;
+    }
+    const totalPointsToAdd: number = getVoteFieldValue(vote, 'totalPoints');
+    const juryPointsToAdd: number = getVoteFieldValue(vote, 'juryPoints');
+    const telePointsToAdd: number = getVoteFieldValue(vote, 'telePoints');
 
-        if (!contestantVotes) {
-            contestantVotes = {
-                totalPoints: undefined,
-                juryPoints: undefined,
-                telePoints: undefined,
-                year: vote.year,
-                round: vote.round
-            } as ContestantVotes;
-            voteSums[getKey(vote)] = contestantVotes;
-        }
-        let totalPointsToAdd: number = getVoteFieldValue(vote, 'totalPoints');
-        let juryPointsToAdd: number = getVoteFieldValue(vote, 'juryPoints');
-        let telePointsToAdd: number = getVoteFieldValue(vote, 'telePoints');
+    // Accumulate whenever the column holds a real number (including 0) so that
+    // recipients with 0 points still report 0 rather than undefined. A blank
+    // column (e.g. pre-split years with no tele/jury data) parses to NaN and is
+    // left undefined so it stays hidden.
+    if (!isNaN(totalPointsToAdd)) {
+      contestantVotes.totalPoints = (contestantVotes.totalPoints ?? 0) + totalPointsToAdd;
+    }
 
-        // Accumulate whenever the column holds a real number (including 0) so that
-        // recipients with 0 points still report 0 rather than undefined. A blank
-        // column (e.g. pre-split years with no tele/jury data) parses to NaN and is
-        // left undefined so it stays hidden.
-        if (!isNaN(totalPointsToAdd)) {
-            contestantVotes.totalPoints = (contestantVotes.totalPoints ?? 0) + totalPointsToAdd;
-        }
+    if (!isNaN(juryPointsToAdd)) {
+      contestantVotes.juryPoints = (contestantVotes.juryPoints ?? 0) + juryPointsToAdd;
+    }
 
-        if (!isNaN(juryPointsToAdd)) {
-            contestantVotes.juryPoints = (contestantVotes.juryPoints ?? 0) + juryPointsToAdd;
-        }
+    if (!isNaN(telePointsToAdd)) {
+      contestantVotes.telePoints = (contestantVotes.telePoints ?? 0) + telePointsToAdd;
+    }
 
-        if (!isNaN(telePointsToAdd)) {
-            contestantVotes.telePoints = (contestantVotes.telePoints ?? 0) + telePointsToAdd;
-        }
-
-        // if (voteToAdd) {
-        //     voteSums[vote.toCountryKey] += voteToAdd;
-        // }
-    });
-    return voteSums;
+    // if (voteToAdd) {
+    //     voteSums[vote.toCountryKey] += voteToAdd;
+    // }
+  });
+  return voteSums;
 }
 
 function getKey(vote: Vote) {
-    return `${vote.toCountryKey}-${vote.year}`;
+  return `${vote.toCountryKey}-${vote.year}`;
 }
 
 function getVoteKey(countryContestant: CountryContestant) {
-    return `${countryContestant.country.key}-${countryContestant?.contestant?.year}`;
+  return `${countryContestant.country.key}-${countryContestant?.contestant?.year}`;
 }
 
 function getVoteFieldValue(vote: Vote, fieldName: string): number {
-    let value = vote[fieldName as keyof Vote] as string; 
-    return parseInt(value, 10);
+  const value = vote[fieldName as keyof Vote] as string;
+  return parseInt(value, 10);
 }

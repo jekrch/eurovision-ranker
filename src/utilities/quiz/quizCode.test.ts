@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+
 import { encodeQuizCode, decodeQuizCode, mulberry32, randomSeed } from './quizCode';
 import { QUIZ_YEARS } from './quizGenerator';
 import { QuizConfig } from '../../data/quiz/quizTypes';

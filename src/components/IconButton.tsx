@@ -1,68 +1,80 @@
-import React from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import classNames from 'classnames';
+import React from 'react';
 
 type IconButtonProps = {
-    icon?: IconDefinition;
-    onClick: () => void;
-    className?: string;
-    iconClassName?: string;
-    disabled?: boolean;
-    title?: string;
-    isGrayTheme?: boolean;
+  icon?: IconDefinition;
+  onClick: () => void;
+  className?: string;
+  iconClassName?: string;
+  disabled?: boolean;
+  title?: string;
+  isGrayTheme?: boolean;
 };
 
 function rippleEffect(event: React.MouseEvent<HTMLElement>) {
-    const button = event.currentTarget;
+  const button = event.currentTarget;
 
-    const circle = document.createElement("span");
-    const diameter = Math.max(button.clientWidth, button.clientHeight);
-    const radius = diameter / 2;
+  const circle = document.createElement('span');
+  const diameter = Math.max(button.clientWidth, button.clientHeight);
+  const radius = diameter / 2;
 
-    circle.style.width = circle.style.height = `${diameter}px`;
-    circle.style.left = `${event.clientX - button.getBoundingClientRect().left - radius}px`;
-    circle.style.top = `${event.clientY - button.getBoundingClientRect().top - radius}px`;
-    circle.style.position = 'absolute';
-    circle.style.borderRadius = '50%';
-    circle.style.background = 'rgba(171, 186, 209, 0.7)';
-    circle.style.transform = 'scale(0)';
-    circle.style.animation = 'ripple 600ms linear';
-    circle.style.pointerEvents = 'none';
+  circle.style.width = circle.style.height = `${diameter}px`;
+  circle.style.left = `${event.clientX - button.getBoundingClientRect().left - radius}px`;
+  circle.style.top = `${event.clientY - button.getBoundingClientRect().top - radius}px`;
+  circle.style.position = 'absolute';
+  circle.style.borderRadius = '50%';
+  circle.style.background = 'rgba(171, 186, 209, 0.7)';
+  circle.style.transform = 'scale(0)';
+  circle.style.animation = 'ripple 600ms linear';
+  circle.style.pointerEvents = 'none';
 
-    button.appendChild(circle);
+  button.appendChild(circle);
 
-    setTimeout(() => {
-        circle.remove();
-    }, 600);
+  setTimeout(() => {
+    circle.remove();
+  }, 600);
 }
 
-export const IconButton: React.FC<IconButtonProps> = ({ icon, onClick, className, disabled = false, title, iconClassName, isGrayTheme }) => {
-    const handleClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-        if (!disabled) {
-            rippleEffect(event);
-            onClick();
-        }
-    };
+export const IconButton: React.FC<IconButtonProps> = ({
+  icon,
+  onClick,
+  className,
+  disabled = false,
+  title,
+  iconClassName,
+  isGrayTheme,
+}) => {
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    if (!disabled) {
+      rippleEffect(event);
+      onClick();
+    }
+  };
 
-    return (
-        <button
-            className={classNames(
-                "relative overflow-hidden text-white font-normal py-1 pl-2 pr-3 rounded-md text-xs",
-                disabled ? "bg-[var(--er-surface-medium)]" : "bg-[var(--er-button-primary)] hover:bg-[var(--er-button-primary-hover)]",
-                className,
-                { "text-white bg-[var(--er-button-neutral-hover)] hover:bg-[var(--er-surface-dark)] dark:bg-[var(--er-button-neutral)] dark:hover:bg-[var(--er-button-neutral-hover)] dark:focus:ring-[var(--er-interactive-dark)]": isGrayTheme}
-            )}
-            onClick={handleClick}
-            disabled={disabled}
-        >
-            {icon &&
-                <FontAwesomeIcon
-                    icon={icon}
-                    className={classNames("mr-2 text-xs", iconClassName)}
-                />} {title}
-        </button>
-    );
+  return (
+    <button
+      className={classNames(
+        'relative overflow-hidden text-white font-normal py-1 pl-2 pr-3 rounded-md text-xs',
+        disabled
+          ? 'bg-[var(--er-surface-medium)]'
+          : 'bg-[var(--er-button-primary)] hover:bg-[var(--er-button-primary-hover)]',
+        className,
+        {
+          'text-white bg-[var(--er-button-neutral-hover)] hover:bg-[var(--er-surface-dark)] dark:bg-[var(--er-button-neutral)] dark:hover:bg-[var(--er-button-neutral-hover)] dark:focus:ring-[var(--er-interactive-dark)]':
+            isGrayTheme,
+        },
+      )}
+      onClick={handleClick}
+      disabled={disabled}
+    >
+      {icon && (
+        <FontAwesomeIcon icon={icon} className={classNames('mr-2 text-xs', iconClassName)} />
+      )}{' '}
+      {title}
+    </button>
+  );
 };
 
 export default IconButton;

@@ -1,6 +1,5 @@
-import { CountryContestant } from '../../data/CountryContestant';
-import { fetchCountryContestantsByYear } from '../ContestantRepository';
 import { supportedYears } from '../../data/Contestants';
+import { CountryContestant } from '../../data/CountryContestant';
 import {
   DIFFICULTY_META,
   LENGTH_META,
@@ -10,6 +9,7 @@ import {
   QuizQuestion,
   QuizQuestionType,
 } from '../../data/quiz/quizTypes';
+import { fetchCountryContestantsByYear } from '../ContestantRepository';
 
 /**
  * Years selectable in the quiz: real contests with results (no 2020 cancellation).
@@ -75,7 +75,7 @@ const withDerivedRanks = (entries: Entry[]): Entry[] => {
     .forEach((e, i) => rankByKey.set(e.countryKey, i + 1));
 
   return entries.map((e) =>
-    rankByKey.has(e.countryKey) ? { ...e, rank: rankByKey.get(e.countryKey)! } : e
+    rankByKey.has(e.countryKey) ? { ...e, rank: rankByKey.get(e.countryKey)! } : e,
   );
 };
 
@@ -124,7 +124,7 @@ const buildCountryOptions = (
   pool: Entry[],
   optionCount: number,
   rng: Rng,
-  nearBy?: (e: Entry) => number
+  nearBy?: (e: Entry) => number,
 ): QuizOption[] | null => {
   const others = pool.filter((e) => e.countryKey !== answer.countryKey);
   if (others.length < optionCount - 1) return null;
@@ -152,7 +152,7 @@ const generateForType = (
   optionCount: number,
   near: boolean,
   difficulty: QuizDifficulty,
-  rng: Rng
+  rng: Rng,
 ): QuizQuestion[] => {
   const finalists = entries.filter((e) => e.rank !== null && (e.rank as number) > 0);
   const out: QuizQuestion[] = [];
@@ -163,7 +163,7 @@ const generateForType = (
     promptHighlight: string | undefined,
     options: QuizOption[] | null,
     correct: Entry,
-    explanation: string
+    explanation: string,
   ) => {
     if (!options) return;
     const correctId = `${correct.countryKey}-${correct.artist}`;
@@ -189,7 +189,7 @@ const generateForType = (
         const distractors = shuffle(others, rng).slice(0, optionCount - 1);
         const options = shuffle(
           [e, ...distractors].map((o) => optionFromEntry(o, true)),
-          rng
+          rng,
         );
         make(
           e,
@@ -197,7 +197,7 @@ const generateForType = (
           e.artist,
           options,
           e,
-          `${e.artist} performed "${e.song}" for ${e.countryName} in ${year}.`
+          `${e.artist} performed "${e.song}" for ${e.countryName} in ${year}.`,
         );
       }
       break;
@@ -209,7 +209,7 @@ const generateForType = (
         const distractors = shuffle(others, rng).slice(0, optionCount - 1);
         const options = shuffle(
           [e, ...distractors].map((o) => optionFromEntry(o, false, o.countryName)),
-          rng
+          rng,
         );
         make(
           e,
@@ -217,7 +217,7 @@ const generateForType = (
           e.song,
           options,
           e,
-          `"${e.song}" was performed by ${e.artist} for ${e.countryName} in ${year}.`
+          `"${e.song}" was performed by ${e.artist} for ${e.countryName} in ${year}.`,
         );
       }
       break;
@@ -229,9 +229,15 @@ const generateForType = (
           winner,
           `Which country won Eurovision ${year}?`,
           undefined,
-          buildCountryOptions(winner, finalists, optionCount, rng, near ? (e) => e.rank as number : undefined),
+          buildCountryOptions(
+            winner,
+            finalists,
+            optionCount,
+            rng,
+            near ? (e) => e.rank as number : undefined,
+          ),
           winner,
-          `${winner.countryName} won ${year} with "${winner.song}" by ${winner.artist}.`
+          `${winner.countryName} won ${year} with "${winner.song}" by ${winner.artist}.`,
         );
       }
       break;
@@ -246,9 +252,15 @@ const generateForType = (
           e,
           `Which country finished ${ordinal(place)} in the ${year} final?`,
           undefined,
-          buildCountryOptions(e, finalists, optionCount, rng, near ? (f) => f.rank as number : undefined),
+          buildCountryOptions(
+            e,
+            finalists,
+            optionCount,
+            rng,
+            near ? (f) => f.rank as number : undefined,
+          ),
           e,
-          `${e.countryName} finished ${ordinal(place)} in ${year} with "${e.song}" by ${e.artist}.`
+          `${e.countryName} finished ${ordinal(place)} in ${year} with "${e.song}" by ${e.artist}.`,
         );
       }
 
@@ -262,9 +274,15 @@ const generateForType = (
             e,
             `Which country finished last in the ${year} final?`,
             undefined,
-            buildCountryOptions(e, finalists, optionCount, rng, near ? (f) => f.rank as number : undefined),
+            buildCountryOptions(
+              e,
+              finalists,
+              optionCount,
+              rng,
+              near ? (f) => f.rank as number : undefined,
+            ),
             e,
-            `${e.countryName} finished last (${ordinal(lastRank)}) in ${year} with "${e.song}" by ${e.artist}.`
+            `${e.countryName} finished last (${ordinal(lastRank)}) in ${year} with "${e.song}" by ${e.artist}.`,
           );
         } else {
           // multiple share last place — ask "nul points" instead (the bottom is a tie)
@@ -276,14 +294,17 @@ const generateForType = (
               .sort((a, b) => (a.total as number) - (b.total as number))
               .slice(0, optionCount + 1);
             const picked = shuffle(distractors, rng).slice(0, optionCount - 1);
-            const options = shuffle([e, ...picked].map((o) => optionFromEntry(o, true, o.artist)), rng);
+            const options = shuffle(
+              [e, ...picked].map((o) => optionFromEntry(o, true, o.artist)),
+              rng,
+            );
             make(
               e,
               `Which country scored zero points in the ${year} final?`,
               undefined,
               options,
               e,
-              `${e.countryName} ("${e.song}" by ${e.artist}) scored nul points in the ${year} final.`
+              `${e.countryName} ("${e.song}" by ${e.artist}) scored nul points in the ${year} final.`,
             );
           }
         }
@@ -295,20 +316,23 @@ const generateForType = (
       const nonZero = finalists.filter((e) => e.total !== null && (e.total as number) > 0);
       if (zeros.length && nonZero.length >= optionCount - 1) {
         const e = sample(zeros, rng);
-        const distractors = (
-          near
-            ? [...nonZero].sort((a, b) => (a.total as number) - (b.total as number)).slice(0, optionCount + 1)
-            : nonZero
-        );
+        const distractors = near
+          ? [...nonZero]
+              .sort((a, b) => (a.total as number) - (b.total as number))
+              .slice(0, optionCount + 1)
+          : nonZero;
         const picked = shuffle(distractors, rng).slice(0, optionCount - 1);
-        const options = shuffle([e, ...picked].map((o) => optionFromEntry(o, true, o.artist)), rng);
+        const options = shuffle(
+          [e, ...picked].map((o) => optionFromEntry(o, true, o.artist)),
+          rng,
+        );
         make(
           e,
           `Which country scored zero points in the ${year} final?`,
           undefined,
           options,
           e,
-          `${e.countryName} ("${e.song}" by ${e.artist}) scored nul points in the ${year} final.`
+          `${e.countryName} ("${e.song}" by ${e.artist}) scored nul points in the ${year} final.`,
         );
       }
       break;
@@ -318,7 +342,9 @@ const generateForType = (
       const metric = (e: Entry) => (type === 'televote' ? e.tele : e.jury);
       const scored = finalists.filter((e) => metric(e) !== null);
       if (scored.length >= optionCount) {
-        const winner = scored.reduce((a, b) => ((metric(b) as number) > (metric(a) as number) ? b : a));
+        const winner = scored.reduce((a, b) =>
+          (metric(b) as number) > (metric(a) as number) ? b : a,
+        );
         // avoid ties for the top metric (ambiguous answers)
         const topCount = scored.filter((e) => metric(e) === metric(winner)).length;
         if (topCount === 1) {
@@ -326,10 +352,16 @@ const generateForType = (
             winner,
             `Which country won the ${type === 'televote' ? 'televote' : 'jury vote'} in the ${year} final?`,
             undefined,
-            buildCountryOptions(winner, scored, optionCount, rng, near ? (e) => metric(e) as number : undefined),
+            buildCountryOptions(
+              winner,
+              scored,
+              optionCount,
+              rng,
+              near ? (e) => metric(e) as number : undefined,
+            ),
             winner,
             `${winner.countryName} topped the ${type === 'televote' ? 'televote' : 'jury vote'} in ${year} ` +
-              `with ${metric(winner)} points ("${winner.song}" by ${winner.artist}).`
+              `with ${metric(winner)} points ("${winner.song}" by ${winner.artist}).`,
           );
         }
       }
@@ -346,7 +378,7 @@ const generateForType = (
  */
 export const generateQuiz = async (
   config: QuizConfig,
-  rng: Rng = Math.random
+  rng: Rng = Math.random,
 ): Promise<QuizQuestion[]> => {
   const { optionCount, nearDistractors } = DIFFICULTY_META[config.difficulty];
   const count = LENGTH_META[config.length].count;
@@ -358,14 +390,12 @@ export const generateQuiz = async (
     years.map(async (year) => {
       try {
         const ccs = await fetchCountryContestantsByYear(year);
-        const entries = withDerivedRanks(
-          ccs.map(toEntry).filter((e): e is Entry => e !== null)
-        );
+        const entries = withDerivedRanks(ccs.map(toEntry).filter((e): e is Entry => e !== null));
         return { year, entries };
       } catch {
         return { year, entries: [] as Entry[] };
       }
-    })
+    }),
   );
 
   // candidate questions grouped by type so we can balance across types
@@ -373,7 +403,15 @@ export const generateQuiz = async (
   for (const { year, entries } of perYearEntries) {
     if (entries.length < optionCount) continue;
     for (const type of config.questionTypes) {
-      const qs = generateForType(type, year, entries, optionCount, nearDistractors, config.difficulty, rng);
+      const qs = generateForType(
+        type,
+        year,
+        entries,
+        optionCount,
+        nearDistractors,
+        config.difficulty,
+        rng,
+      );
       if (qs.length) {
         byType[type] = (byType[type] || []).concat(qs);
       }

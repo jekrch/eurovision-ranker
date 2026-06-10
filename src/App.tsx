@@ -1,26 +1,30 @@
-import { logger } from './utilities/logger';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { CountryContestant } from './data/CountryContestant';
-import { AppDispatch, AppState } from './redux/store';
-import { setShowUnranked, setActiveCategory, setShowTotalRank, setGlobalSearch, setTheme, patchUser } from './redux/rootSlice';
-import { updateQueryParams, updateUrlFromRankedItems, urlHasRankings } from './utilities/UrlUtil';
+
+import AppContent from './components/AppContent';
+import AppModals from './components/AppModals';
+import { AuthView } from './components/modals/auth/AuthModal';
 import WelcomeOverlay from './components/modals/WelcomeOverlay';
-import { SKIP_WELCOME_AFTER_TOUR_KEY } from './utilities/JoyrideUtil';
-import { areCategoriesSet } from './utilities/CategoryUtil';
-import { addWindowEventListeners, handlePopState, removeWindowEventListeners, setVh } from './utilities/EventListenerUtil';
+import { VideoPipProvider } from './components/video/VideoPipContext';
+import { CountryContestant } from './data/CountryContestant';
 import { useAppDispatch, useAppSelector } from './hooks/stateHooks';
 import { useModal } from './hooks/useModal';
-import { VideoPipProvider } from './components/video/VideoPipContext';
-import useSorterModal from './hooks/useSortModal';
-import { useThemeEffect } from './hooks/useThemeEffect';
 import { usePublicRankingView } from './hooks/usePublicRankingView';
 import { useRankingDragDrop } from './hooks/useRankingDragDrop';
+import useSorterModal from './hooks/useSortModal';
+import { useThemeEffect } from './hooks/useThemeEffect';
 import { useUrlSync } from './hooks/useUrlSync';
-import { AuthView } from './components/modals/auth/AuthModal';
-import AppModals from './components/AppModals';
-import AppContent from './components/AppContent';
+import {
+  setShowUnranked,
+  setActiveCategory,
+  setShowTotalRank,
+  setGlobalSearch,
+  setTheme,
+  patchUser,
+} from './redux/rootSlice';
+import { AppDispatch, AppState } from './redux/store';
 import { ping } from './utilities/api/health';
 import { getMe } from './utilities/api/me';
+import { areCategoriesSet } from './utilities/CategoryUtil';
 import {
   cameFromTour,
   areRankingsSet,
@@ -29,6 +33,15 @@ import {
   hasQuizCode,
   hasJoinToken,
 } from './utilities/deepLinkUtil';
+import {
+  addWindowEventListeners,
+  handlePopState,
+  removeWindowEventListeners,
+  setVh,
+} from './utilities/EventListenerUtil';
+import { SKIP_WELCOME_AFTER_TOUR_KEY } from './utilities/JoyrideUtil';
+import { logger } from './utilities/logger';
+import { updateQueryParams, updateUrlFromRankedItems, urlHasRankings } from './utilities/UrlUtil';
 
 const App: React.FC = () => {
   const { modalState, openModal, closeModal, setModalTab, currentTab } = useModal('about');
@@ -50,8 +63,17 @@ const App: React.FC = () => {
   const categories = useAppSelector((state: AppState) => state.root.categories);
   const activeCategory = useAppSelector((state: AppState) => state.root.activeCategory);
 
-  const [selectedCountryContestant, setSelectedCountryContestant] = useState<CountryContestant | undefined>(undefined);
-  const [showOverlay, setShowOverlay] = useState(!cameFromTour() && !areRankingsSet() && !isAuthDeepLink() && !hasIdParam() && !hasJoinToken() && !hasQuizCode());
+  const [selectedCountryContestant, setSelectedCountryContestant] = useState<
+    CountryContestant | undefined
+  >(undefined);
+  const [showOverlay, setShowOverlay] = useState(
+    !cameFromTour() &&
+      !areRankingsSet() &&
+      !isAuthDeepLink() &&
+      !hasIdParam() &&
+      !hasJoinToken() &&
+      !hasQuizCode(),
+  );
   const [isOverlayExit, setIsOverlayExit] = useState(false);
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authModalView, setAuthModalView] = useState<AuthView | undefined>(undefined);
@@ -63,14 +85,9 @@ const App: React.FC = () => {
   //const [isDevModalOpen, setIsDevModalOpen] = useState(true);
   const memoizedRankedItems = useMemo(() => rankedItems, [rankedItems]);
   const memoizedUnrankedItems = useMemo(() => unrankedItems, [unrankedItems]);
-  useThemeEffect(); 
+  useThemeEffect();
 
-  const {
-    isSorterModalOpen,
-    openSorterModal,
-    closeSorterModal,
-    getItemsToSort
-  } = useSorterModal();
+  const { isSorterModalOpen, openSorterModal, closeSorterModal, getItemsToSort } = useSorterModal();
 
   // Public-view-by-id mode: when active, the URL is just `?id=<ranking_id>`
   // and we suppress the n/y/r URL-writing effects so the share URL stays
@@ -93,27 +110,21 @@ const App: React.FC = () => {
     if (theme.includes('ab')) {
       loadAuroralCSS();
     } else {
-      setTheme(theme)
+      setTheme(theme);
     }
   }, [theme]);
 
   /**
-   * If we're switching to the unranked selection view from the 
-   * total category ranking view, we should activate the first 
-   * category. This is because the "total" is a pseudo ranking 
-   * and immutable, whereas in the select view we want to 
+   * If we're switching to the unranked selection view from the
+   * total category ranking view, we should activate the first
+   * category. This is because the "total" is a pseudo ranking
+   * and immutable, whereas in the select view we want to
    * add/remove contestants
    */
   useEffect(() => {
     if (showUnranked && categories?.length > 0 && showTotalRank) {
-      dispatch(
-        setShowTotalRank(false)
-      )
-      dispatch(
-        setActiveCategory(
-          0
-        )
-      )
+      dispatch(setShowTotalRank(false));
+      dispatch(setActiveCategory(0));
     }
   }, [showUnranked]);
 
@@ -123,11 +134,9 @@ const App: React.FC = () => {
     overlayDiv.classList.add('slide-left');
 
     setTimeout(() => {
-      setShowOverlay(false)
+      setShowOverlay(false);
     }, 500);
-
   }, []);
-
 
   useEffect(() => {
     if (refreshUrl === 0) return;
@@ -135,9 +144,7 @@ const App: React.FC = () => {
       // First user edit — exit public view and let URL track state normally.
       exitPublicView();
     }
-    updateUrlFromRankedItems(
-      activeCategory, categories, memoizedRankedItems
-    );
+    updateUrlFromRankedItems(activeCategory, categories, memoizedRankedItems);
   }, [refreshUrl]);
 
   // boot: handle email-link deep paths, ?signup=beta gate, API reachability probe
@@ -213,39 +220,36 @@ const App: React.FC = () => {
     if (!token) return;
     getMe()
       .then((me) => dispatch(patchUser({ username: me.username })))
-      .catch(() => { /* ignore */ });
+      .catch(() => {
+        /* ignore */
+      });
   }, [token]);
 
   /**
-    * First determines whether to display the list view on first page load. If there 
-    * are rankings in the URL show the list view, otherwise default to the select view
-    * 
-    * Then, on return, load the url if the user navigates using back/forward. This should 
-    * provide and easier undo/redo workflow. Also make sure the vertical height is correctly 
-    * measured via --vh.
-    */
+   * First determines whether to display the list view on first page load. If there
+   * are rankings in the URL show the list view, otherwise default to the select view
+   *
+   * Then, on return, load the url if the user navigates using back/forward. This should
+   * provide and easier undo/redo workflow. Also make sure the vertical height is correctly
+   * measured via --vh.
+   */
   useEffect(() => {
+    const category = areCategoriesSet() && !activeCategory ? 0 : activeCategory;
 
-    let category = areCategoriesSet() && !activeCategory ? 0 : activeCategory;
-
-    const rankingsExist = urlHasRankings(
-      category
-    );
+    const rankingsExist = urlHasRankings(category);
 
     // If we just returned from a tour, clear the one-shot flag and force the
     // select view rather than deriving it from the restored URL.
     if (cameFromTour()) {
       try {
         sessionStorage.removeItem(SKIP_WELCOME_AFTER_TOUR_KEY);
-      } catch { /* sessionStorage may be unavailable */ }
-      dispatch(
-        setShowUnranked(true)
-      );
+      } catch {
+        /* sessionStorage may be unavailable */
+      }
+      dispatch(setShowUnranked(true));
     } else {
       // Set showUnranked based on whether rankings exist
-      dispatch(
-        setShowUnranked(!rankingsExist)
-      );
+      dispatch(setShowUnranked(!rankingsExist));
     }
 
     // handle pop and vh event listners
@@ -253,28 +257,19 @@ const App: React.FC = () => {
       handlePopState(event, areCategoriesSet, activeCategory, dispatch);
     };
 
-    addWindowEventListeners(
-      setVh,
-      handlePopStateCallback
-    );
+    addWindowEventListeners(setVh, handlePopStateCallback);
 
     setVh();
 
     return () => {
-      removeWindowEventListeners(
-        setVh,
-        handlePopStateCallback
-      );
+      removeWindowEventListeners(setVh, handlePopStateCallback);
     };
-
-  }, [])
+  }, []);
 
   const updateGlobalSearch = (checked: boolean) => {
-    updateQueryParams({ 'g': checked ? 't' : undefined });
-    dispatch(
-      setGlobalSearch(checked)
-    );
-  }
+    updateQueryParams({ g: checked ? 't' : undefined });
+    dispatch(setGlobalSearch(checked));
+  };
 
   // URL <-> state synchronization: reload on category/total-rank change, load
   // categories from the URL, keep the per-category rx (and y/n) params written,
@@ -341,72 +336,70 @@ const App: React.FC = () => {
 
   return (
     <VideoPipProvider onExpand={handleExpandVideo} onMinimize={() => closeModal('song')}>
-    <div className="overflow-hidden">
+      <div className="overflow-hidden">
+        {showOverlay && (
+          <WelcomeOverlay
+            exiting={isOverlayExit}
+            handleGetStarted={handleGetStarted}
+            handleTakeTour={() => {
+              handleGetStarted();
+              openModal('tour');
+            }}
+          />
+        )}
 
-      {showOverlay && (
-        <WelcomeOverlay
-          exiting={isOverlayExit}
-          handleGetStarted={handleGetStarted}
-          handleTakeTour={() => {
-            handleGetStarted();
-            openModal('tour');
-          }}
+        <AppContent
+          theme={theme}
+          showUnranked={showUnranked}
+          globalSearch={globalSearch}
+          showOverlay={showOverlay}
+          isOverlayExit={isOverlayExit}
+          dispatch={dispatch}
+          handleOnDragEnd={handleOnDragEnd}
+          handleAddToRanked={handleAddToRanked}
+          updateGlobalSearch={updateGlobalSearch}
+          openSongModalWithData={openSongModalWithData}
+          openMainModalWithTab={openMainModalWithTab}
+          openConfigModalWithTab={openConfigModalWithTab}
+          openModal={openModal}
+          openSorterModal={openSorterModal}
+          openLoginModal={openLoginModal}
+          setQuizModalOpen={setQuizModalOpen}
         />
-      )}
 
-      <AppContent
-        theme={theme}
-        showUnranked={showUnranked}
-        globalSearch={globalSearch}
-        showOverlay={showOverlay}
-        isOverlayExit={isOverlayExit}
-        dispatch={dispatch}
-        handleOnDragEnd={handleOnDragEnd}
-        handleAddToRanked={handleAddToRanked}
-        updateGlobalSearch={updateGlobalSearch}
-        openSongModalWithData={openSongModalWithData}
-        openMainModalWithTab={openMainModalWithTab}
-        openConfigModalWithTab={openConfigModalWithTab}
-        openModal={openModal}
-        openSorterModal={openSorterModal}
-        openLoginModal={openLoginModal}
-        setQuizModalOpen={setQuizModalOpen}
-      />
+        <AppModals
+          modalState={modalState}
+          currentTab={currentTab}
+          openModal={openModal}
+          closeModal={closeModal}
+          dispatch={dispatch}
+          configModalTab={configModalTab}
+          configTabNonce={configTabNonce}
+          openConfigModalWithTab={openConfigModalWithTab}
+          openLoginModal={openLoginModal}
+          setRefreshUrl={setRefreshUrl}
+          selectedCountryContestant={selectedCountryContestant}
+          isSorterModalOpen={isSorterModalOpen}
+          closeSorterModal={closeSorterModal}
+          openSorterModal={openSorterModal}
+          getItemsToSort={getItemsToSort}
+          authModalOpen={authModalOpen}
+          setAuthModalOpen={setAuthModalOpen}
+          authModalView={authModalView}
+          authModalAllowRegister={authModalAllowRegister}
+          quizModalOpen={quizModalOpen}
+          setQuizModalOpen={setQuizModalOpen}
+          quizCode={quizCode}
+          setQuizCode={setQuizCode}
+          joinGroupToken={joinGroupToken}
+          setJoinGroupToken={setJoinGroupToken}
+        />
 
-      <AppModals
-        modalState={modalState}
-        currentTab={currentTab}
-        openModal={openModal}
-        closeModal={closeModal}
-        dispatch={dispatch}
-        configModalTab={configModalTab}
-        configTabNonce={configTabNonce}
-        openConfigModalWithTab={openConfigModalWithTab}
-        openLoginModal={openLoginModal}
-        setRefreshUrl={setRefreshUrl}
-        selectedCountryContestant={selectedCountryContestant}
-        isSorterModalOpen={isSorterModalOpen}
-        closeSorterModal={closeSorterModal}
-        openSorterModal={openSorterModal}
-        getItemsToSort={getItemsToSort}
-        authModalOpen={authModalOpen}
-        setAuthModalOpen={setAuthModalOpen}
-        authModalView={authModalView}
-        authModalAllowRegister={authModalAllowRegister}
-        quizModalOpen={quizModalOpen}
-        setQuizModalOpen={setQuizModalOpen}
-        quizCode={quizCode}
-        setQuizCode={setQuizCode}
-        joinGroupToken={joinGroupToken}
-        setJoinGroupToken={setJoinGroupToken}
-      />
-
-      {/* <CanvasDevModal
+        {/* <CanvasDevModal
           isOpen={isDevModalOpen}
           onClose={() => setIsDevModalOpen(false)}
         /> */}
-
-    </div>
+      </div>
     </VideoPipProvider>
   );
 };

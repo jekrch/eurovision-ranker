@@ -1,15 +1,16 @@
-import React, { Suspense } from 'react';
 import { DragDropContext, OnDragEndResponder } from '@hello-pangea/dnd';
 import classNames from 'classnames';
-import { CountryContestant } from '../data/CountryContestant';
-import { AppDispatch } from '../redux/store';
-import { setShowUnranked } from '../redux/rootSlice';
+import React, { Suspense } from 'react';
+
 import { Switch } from './Switch';
 import TooltipHelp from './TooltipHelp';
-import ContentPlaceholder from './ranking/ContentPlaceholder';
+import { CountryContestant } from '../data/CountryContestant';
+import { setShowUnranked } from '../redux/rootSlice';
 import EditNav from './nav/EditNav';
+import ContentPlaceholder from './ranking/ContentPlaceholder';
 import { UseModalReturn } from '../hooks/useModal';
 import { useRankingDragDrop } from '../hooks/useRankingDragDrop';
+import { AppDispatch } from '../redux/store';
 
 // lazy load the list views to reduce initial bundle size
 const LazyRankedCountriesList = React.lazy(() => import('./ranking/RankedCountriesList'));
@@ -63,26 +64,23 @@ const AppContent: React.FC<AppContentProps> = ({
   return (
     <div
       className={classNames(
-        "site-content flex flex-col tour-step-16 tour-step-17 tour-step-18 normal-bg",
+        'site-content flex flex-col tour-step-16 tour-step-17 tour-step-18 normal-bg',
         {
           'star-sky': theme.includes('ab'),
           'view-mode': !showUnranked,
           'h-screen': showUnranked,
-        }
-      )}>
-
-      {theme.includes("ab") &&
+        },
+      )}
+    >
+      {theme.includes('ab') && (
         <div className="star-container z-10">
           <div className="star" id="stars"></div>
           <div className="star" id="stars2"></div>
           <div className="star" id="stars3"></div>
         </div>
-      }
+      )}
       <Suspense fallback={<div />}>
-        <LazyNavbar
-          openModal={openMainModalWithTab}
-          openConfigModal={openConfigModalWithTab}
-        />
+        <LazyNavbar openModal={openMainModalWithTab} openConfigModal={openConfigModalWithTab} />
       </Suspense>
 
       <div className="flex-grow overflow-auto overflow-x-hidden bg-[#040241] flex justify-center bg-opacity-0">
@@ -95,15 +93,14 @@ const AppContent: React.FC<AppContentProps> = ({
             }
           }}
         >
-
-          <div className={classNames(
-            "flex flex-row justify-center gap-4 py-2",
-            globalSearch ? "px-1 sm:px-4" : "px-4"
-          )}>
-
+          <div
+            className={classNames(
+              'flex flex-row justify-center gap-4 py-2',
+              globalSearch ? 'px-1 sm:px-4' : 'px-4',
+            )}
+          >
             {/* Unranked Countries List */}
             {showUnranked && !globalSearch && (
-
               <div className="relative flex flex-col">
                 <div className="tour-step-15 sticky top-0 rounded-t-md round-b-sm text-center font-bold bg-[var(--er-surface-bar)] gradient-background-reverse text-[var(--er-text-secondary)] tracking-tighter shadow-md z-50">
                   <div className="flex items-center justify-center gap-1 py-1 px-0">
@@ -132,7 +129,7 @@ const AppContent: React.FC<AppContentProps> = ({
               <Suspense fallback={<ContentPlaceholder />}>
                 <LazyRankedCountriesTable />
               </Suspense>
-            ) :
+            ) : (
               <Suspense fallback={<ContentPlaceholder />}>
                 <LazyRankedCountriesList
                   openSongModal={openSongModalWithData}
@@ -147,34 +144,30 @@ const AppContent: React.FC<AppContentProps> = ({
                   openQuizModal={() => setQuizModalOpen(true)}
                 />
               </Suspense>
-            }
+            )}
           </div>
         </DragDropContext>
       </div>
 
       <div className="hidden fixed bottom-[3em] left-[1em] z-50">
-        <div className='p-2 bg-slate-300 bg-opacity-40 rounded-lg'>
+        <div className="p-2 bg-slate-300 bg-opacity-40 rounded-lg">
           <button
             onClick={() => {
-              dispatch(
-                setShowUnranked(!showUnranked)
-              );
+              dispatch(setShowUnranked(!showUnranked));
             }}
             className={
-              "w-[4em] py-3 bg-[var(--er-surface-bar)] hover:bg-[var(--er-interactive-dark)] z-50 relative" +
-              "overflow-hidden text-[var(--er-text-primary)] font-normal py-1 px-3 " +
-              "rounded-full border-[var(--er-border-tertiary)] border-[0.1em] text-base shadow-lg " +
-              "bg-opacity-80"
+              'w-[4em] py-3 bg-[var(--er-surface-bar)] hover:bg-[var(--er-interactive-dark)] z-50 relative' +
+              'overflow-hidden text-[var(--er-text-primary)] font-normal py-1 px-3 ' +
+              'rounded-full border-[var(--er-border-tertiary)] border-[0.1em] text-base shadow-lg ' +
+              'bg-opacity-80'
             }
           >
-            <div className="text-[var(--er-text-primary)]">
-              {showUnranked ? 'VIEW' : 'EDIT'}
-            </div>
+            <div className="text-[var(--er-text-primary)]">{showUnranked ? 'VIEW' : 'EDIT'}</div>
           </button>
         </div>
       </div>
 
-      {(showUnranked && (!showOverlay || isOverlayExit)) &&
+      {showUnranked && (!showOverlay || isOverlayExit) && (
         /* `key` is derived from the theme so a theme switch REMOUNTS just this
            EditNav (the bar whose dark fill the iOS Safari bottom toolbar
            samples). Replacing this exact node forces iOS to re-sample its tint
@@ -183,12 +176,11 @@ const AppContent: React.FC<AppContentProps> = ({
            which is the accepted trade-off. */
         <div
           key={`edit-nav-${theme}`}
-          className={`edit-nav-container ${(!showOverlay || isOverlayExit) && 'slide-up-animation'}`}>
-          <EditNav
-            setNameModalShow={() => openModal('name')}
-          />
+          className={`edit-nav-container ${(!showOverlay || isOverlayExit) && 'slide-up-animation'}`}
+        >
+          <EditNav setNameModalShow={() => openModal('name')} />
         </div>
-      }
+      )}
     </div>
   );
 };

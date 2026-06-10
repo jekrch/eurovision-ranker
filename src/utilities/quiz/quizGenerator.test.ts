@@ -1,7 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+
 import { Contestant } from '../../data/Contestant';
-import { CountryContestant } from '../../data/CountryContestant';
 import { Country } from '../../data/Country';
+import { CountryContestant } from '../../data/CountryContestant';
 import { QuizConfig } from '../../data/quiz/quizTypes';
 
 // The generator loads contestant data per year through the repository, which
@@ -29,7 +30,7 @@ const cc = (
   finalsRank: number,
   totalPoints: number,
   telePoints?: number,
-  juryPoints?: number
+  juryPoints?: number,
 ): CountryContestant => ({
   id: key,
   uid: `2023-${key}`,
@@ -104,7 +105,7 @@ describe('generateQuiz', () => {
     expect(a.map((q) => q.id)).toEqual(b.map((q) => q.id));
     // option ordering is part of the seeded output too
     expect(a.map((q) => q.options.map((o) => o.id))).toEqual(
-      b.map((q) => q.options.map((o) => o.id))
+      b.map((q) => q.options.map((o) => o.id)),
     );
   });
 
@@ -138,19 +139,13 @@ describe('generateQuiz', () => {
   });
 
   it('only emits the requested question types', async () => {
-    const quiz = await generateQuiz(
-      config({ questionTypes: ['winner'] }),
-      mulberry32(7)
-    );
+    const quiz = await generateQuiz(config({ questionTypes: ['winner'] }), mulberry32(7));
     expect(quiz.length).toBeGreaterThan(0);
     for (const q of quiz) expect(q.type).toBe('winner');
   });
 
   it('builds a correct "winner" question', async () => {
-    const quiz = await generateQuiz(
-      config({ questionTypes: ['winner'] }),
-      mulberry32(3)
-    );
+    const quiz = await generateQuiz(config({ questionTypes: ['winner'] }), mulberry32(3));
     const winnerQ = quiz.find((q) => q.type === 'winner');
     expect(winnerQ).toBeDefined();
     const correct = winnerQ!.options.find((o) => o.id === winnerQ!.correctOptionId);

@@ -1,8 +1,9 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
-import rootReducer from './rootSlice';
+
 import authReducer from './authSlice';
-import tableReducer from './tableSlice';
 import groupsReducer from './groupsSlice';
+import rootReducer from './rootSlice';
+import tableReducer from './tableSlice';
 
 const reducer = combineReducers({
   root: rootReducer,

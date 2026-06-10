@@ -1,6 +1,13 @@
-import React, { useMemo } from 'react';
+import {
+  faPlay,
+  faCircleQuestion,
+  faCalendar,
+  faGaugeHigh,
+  faListOl,
+} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlay, faCircleQuestion, faCalendar, faGaugeHigh, faListOl } from '@fortawesome/free-solid-svg-icons';
+import React, { useMemo } from 'react';
+
 import {
   DIFFICULTY_META,
   LENGTH_META,
@@ -75,8 +82,13 @@ const QuizPreview: React.FC<QuizPreviewProps> = ({ config, onBegin }) => {
             key={row.label}
             className="flex items-center gap-3 rounded-lg bg-black/20 px-3 py-2.5 ring-1 ring-white/5"
           >
-            <FontAwesomeIcon icon={row.icon} className="text-[var(--er-text-subtle)] w-4 flex-shrink-0" />
-            <span className="text-[var(--er-text-subtle)] text-xs font-semibold w-20 flex-shrink-0">{row.label}</span>
+            <FontAwesomeIcon
+              icon={row.icon}
+              className="text-[var(--er-text-subtle)] w-4 flex-shrink-0"
+            />
+            <span className="text-[var(--er-text-subtle)] text-xs font-semibold w-20 flex-shrink-0">
+              {row.label}
+            </span>
             <span className="text-[var(--er-text-tertiary)] text-sm font-medium">{row.value}</span>
           </div>
         ))}

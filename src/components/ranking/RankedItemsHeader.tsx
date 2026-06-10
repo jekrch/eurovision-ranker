@@ -1,196 +1,213 @@
-import React, { useEffect, useState } from 'react';
-import Dropdown from '../Dropdown';
-import { CountryContestant } from '../../data/CountryContestant';
-import { AppDispatch, AppState } from '../../redux/store';
-import { setActiveCategory, setShowTotalRank, setYear } from '../../redux/rootSlice';
-import RankedHeaderMenu from './RankedHeaderMenu';
-import classNames from 'classnames';
-import Ripples from 'react-ripples';
-import { useAppDispatch, useAppSelector } from '../../hooks/stateHooks';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSort, faShareNodes } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import classNames from 'classnames';
+import React, { useEffect, useState } from 'react';
+import Ripples from 'react-ripples';
+
+import RankedHeaderMenu from './RankedHeaderMenu';
+import { CountryContestant } from '../../data/CountryContestant';
+import { useAppDispatch, useAppSelector } from '../../hooks/stateHooks';
 import { useRankingDirty } from '../../hooks/useRankingDirty';
+import { setActiveCategory, setShowTotalRank, setYear } from '../../redux/rootSlice';
+import { AppDispatch, AppState } from '../../redux/store';
+import Dropdown from '../Dropdown';
 
 interface IRankedItemsHeaderProps {
-    setMapModalShow: () => void;
-    openNameModal: () => void;
-    openConfig: (tab: string) => void;
-    generateYoutubePlaylistUrl: (rankedItems: CountryContestant[]) => string;
-    supportedYears: string[];
-    className: string;
-    downloadButton?: React.ReactNode;
-    openSorterModal: () => void;
-    openQuizModal: () => void;
+  setMapModalShow: () => void;
+  openNameModal: () => void;
+  openConfig: (tab: string) => void;
+  generateYoutubePlaylistUrl: (rankedItems: CountryContestant[]) => string;
+  supportedYears: string[];
+  className: string;
+  openSorterModal: () => void;
+  openQuizModal: () => void;
 }
 
 const RankedItemsHeader: React.FC<IRankedItemsHeaderProps> = ({
-    setMapModalShow,
-    generateYoutubePlaylistUrl,
-    openNameModal,
-    openConfig,
-    supportedYears,
-    className,
-    downloadButton,
-    openSorterModal,
-    openQuizModal
+  setMapModalShow,
+  generateYoutubePlaylistUrl,
+  openNameModal,
+  openConfig,
+  supportedYears,
+  className,
+  openSorterModal,
+  openQuizModal,
 }) => {
-    const dispatch: AppDispatch = useAppDispatch();
-    const year = useAppSelector((state: AppState) => state.root.year);
-    const name = useAppSelector((state: AppState) => state.root.name);
-    const globalSearch = useAppSelector((state: AppState) => state.root.globalSearch);
-    const rankedItems = useAppSelector((state: AppState) => state.root.rankedItems);
-    const showTotalRank = useAppSelector((state: AppState) => state.root.showTotalRank);
-    const categories = useAppSelector((state: AppState) => state.root.categories);
-    const showUnranked = useAppSelector((state: AppState) => state.root.showUnranked);
-    const activeCategory = useAppSelector((state: AppState) => state.root.activeCategory);
-    const loadedAuthor = useAppSelector((state: AppState) => state.auth.loadedAuthor);
-    const currentRankingId = useAppSelector((state: AppState) => state.auth.currentRankingId);
-    const user = useAppSelector((state: AppState) => state.auth.user);
-    const { isDirty } = useRankingDirty();
-    const [activeTab, setActiveTab] = useState(0);
+  const dispatch: AppDispatch = useAppDispatch();
+  const year = useAppSelector((state: AppState) => state.root.year);
+  const name = useAppSelector((state: AppState) => state.root.name);
+  const globalSearch = useAppSelector((state: AppState) => state.root.globalSearch);
+  const rankedItems = useAppSelector((state: AppState) => state.root.rankedItems);
+  const showTotalRank = useAppSelector((state: AppState) => state.root.showTotalRank);
+  const categories = useAppSelector((state: AppState) => state.root.categories);
+  const showUnranked = useAppSelector((state: AppState) => state.root.showUnranked);
+  const activeCategory = useAppSelector((state: AppState) => state.root.activeCategory);
+  const loadedAuthor = useAppSelector((state: AppState) => state.auth.loadedAuthor);
+  const currentRankingId = useAppSelector((state: AppState) => state.auth.currentRankingId);
+  const user = useAppSelector((state: AppState) => state.auth.user);
+  const { isDirty } = useRankingDirty();
+  const [activeTab, setActiveTab] = useState(0);
 
-    // Show a subtle attribution while a ranking loaded by id is still pristine.
-    // It disappears on the first edit (dirty), signalling the viewer has taken
-    // it over as their own working copy.
-    const isPristineLoaded = !!(loadedAuthor && currentRankingId && !isDirty);
-    const isOwnLoaded = !!(loadedAuthor && user && loadedAuthor.userId === user.id);
-    const authorLabel = loadedAuthor?.username || loadedAuthor?.email;
+  // Show a subtle attribution while a ranking loaded by id is still pristine.
+  // It disappears on the first edit (dirty), signalling the viewer has taken
+  // it over as their own working copy.
+  const isPristineLoaded = !!(loadedAuthor && currentRankingId && !isDirty);
+  const isOwnLoaded = !!(loadedAuthor && user && loadedAuthor.userId === user.id);
+  const authorLabel = loadedAuthor?.username || loadedAuthor?.email;
 
-    useEffect(() => {
-        if (activeTab === 0) {
-            if (!showTotalRank && categories?.length) {
-                dispatch(setShowTotalRank(true));
-            }
-            return;
-        } else if (showTotalRank) {
-            dispatch(setShowTotalRank(false));
-        }
-        dispatch(setActiveCategory(activeTab - 1));
-    }, [activeTab]);
+  useEffect(() => {
+    if (activeTab === 0) {
+      if (!showTotalRank && categories?.length) {
+        dispatch(setShowTotalRank(true));
+      }
+      return;
+    } else if (showTotalRank) {
+      dispatch(setShowTotalRank(false));
+    }
+    dispatch(setActiveCategory(activeTab - 1));
+  }, [activeTab]);
 
-    useEffect(() => {
-        setActiveTab(activeCategory !== undefined ? activeCategory + 1 : 0);
-    }, [activeCategory]);
+  useEffect(() => {
+    setActiveTab(activeCategory !== undefined ? activeCategory + 1 : 0);
+  }, [activeCategory]);
 
-    // condition for disabling the sorter button
-    const isSorterDisabled = rankedItems.length < 2 || showTotalRank;
+  // condition for disabling the sorter button
+  const isSorterDisabled = rankedItems.length < 2 || showTotalRank;
 
-    return (
-        <div className={classNames(
-            "z-40 rounded-t-md round-b-sm w-full text-center font-bold bg-[var(--er-surface-bar)] gradient-background text-[var(--er-text-secondary)] py-1 text-md tracking-tighter shadow-md ranked-bar-background",
-            className
-        )}
-        >
-            {showUnranked ? (
-                <div className="w-full m-auto flex items-center justify-center">
-                    <Dropdown
-                        className="tour-step-1 min-w-[5em] w-auto"
-                        buttonClassName='!h-[1.8em]'
-                        value={year}
-                        onChange={y => { dispatch(setYear(y)); }}
-                        options={supportedYears}
-                        showSearch={true}
-                    />
-                </div>
-            ) : (
-                // ---- main container for header content ----
-                <div className="mx-2 flex justify-between items-center">
-
-                    <div className="w-6 h-6 tour-step-10"> {/* Container to maintain layout space even if button isn't rendered, or helps with alignment */}
-                        {rankedItems?.length > 0 && ( // Only show if there are items
-                            <button
-                                title={isSorterDisabled ? "Sorter unavailable (need >1 item and not on Total Rank tab)" : "Open Sorter"}
-                                aria-label="Open Sorter"
-                                data-umami-event="Sorter Button (header)"
-                                className={classNames(
-                                    "w-6 h-6 bg-[var(--er-surface-muted-accent)] rounded-full flex justify-center items-center text-[var(--er-text-tertiary)] hover:text-[var(--er-text-muted)]",
-                                    {
-                                        "hover:bg-[var(--er-surface-light)] hover:cursor-pointer": !isSorterDisabled,
-                                        "opacity-50 cursor-not-allowed": isSorterDisabled
-                                    }
-                                )}
-                                onClick={openSorterModal}
-                                disabled={isSorterDisabled}
-                            >
-                                <FontAwesomeIcon
-                                    className=""
-                                    icon={faSort}
-                                />
-                            </button>
-                        )}
-                    </div>
-
-
-                    {/* ---- Center Content (Title) ---- */}
-                    <div className="justify-center text-center flex-grow mx-2"> {/* Use flex-grow to take available space, mx-2 for spacing */}
-                        <div>
-                            {!globalSearch ? year : null}
-                            {name && (
-                                <span className="font-bold text-[var(--er-text-tertiary)] text-md">
-                                    {!globalSearch ? ` - ` : ``}{name}
-                                </span>
-                            )}
-                        </div>
-                        {isPristineLoaded && (isOwnLoaded || authorLabel) && (
-                            <div
-                                className="mt-0.5 flex items-center justify-center gap-1 text-[0.65rem] font-medium tracking-normal text-[var(--er-text-subtle)] opacity-80"
-                                title={isOwnLoaded ? 'You opened your own shared ranking' : `Shared ranking by ${authorLabel}`}
-                            >
-                                <FontAwesomeIcon icon={faShareNodes} className="text-[0.6rem]" />
-                                <span className="truncate max-w-[14em]">
-                                    {isOwnLoaded ? 'shared ranking · by you' : <>shared ranking · by {authorLabel}</>}
-                                </span>
-                            </div>
-                        )}
-                    </div>
-                    {/* ---- End Center Content ---- */}
-
-                    {/* ---- Right Side Menu Button ---- */}
-                    <RankedHeaderMenu
-                        openNameModal={openNameModal}
-                        openConfig={openConfig}
-                        onMapClick={setMapModalShow}
-                        openSorterModal={openSorterModal} // This is still needed for the menu item
-                        openQuizModal={openQuizModal}
-                        generateYoutubePlaylistUrl={() => generateYoutubePlaylistUrl(rankedItems)}
-                    />
-                    {/* ---- End Right Side Menu Button ---- */}
-                </div>
+  return (
+    <div
+      className={classNames(
+        'z-40 rounded-t-md round-b-sm w-full text-center font-bold bg-[var(--er-surface-bar)] gradient-background text-[var(--er-text-secondary)] py-1 text-md tracking-tighter shadow-md ranked-bar-background',
+        className,
+      )}
+    >
+      {showUnranked ? (
+        <div className="w-full m-auto flex items-center justify-center">
+          <Dropdown
+            className="tour-step-1 min-w-[5em] w-auto"
+            buttonClassName="!h-[1.8em]"
+            value={year}
+            onChange={(y) => {
+              dispatch(setYear(y));
+            }}
+            options={supportedYears}
+            showSearch={true}
+          />
+        </div>
+      ) : (
+        // ---- main container for header content ----
+        <div className="mx-2 flex justify-between items-center">
+          <div className="w-6 h-6 tour-step-10">
+            {' '}
+            {/* Container to maintain layout space even if button isn't rendered, or helps with alignment */}
+            {rankedItems?.length > 0 && ( // Only show if there are items
+              <button
+                title={
+                  isSorterDisabled
+                    ? 'Sorter unavailable (need >1 item and not on Total Rank tab)'
+                    : 'Open Sorter'
+                }
+                aria-label="Open Sorter"
+                data-umami-event="Sorter Button (header)"
+                className={classNames(
+                  'w-6 h-6 bg-[var(--er-surface-muted-accent)] rounded-full flex justify-center items-center text-[var(--er-text-tertiary)] hover:text-[var(--er-text-muted)]',
+                  {
+                    'hover:bg-[var(--er-surface-light)] hover:cursor-pointer': !isSorterDisabled,
+                    'opacity-50 cursor-not-allowed': isSorterDisabled,
+                  },
+                )}
+                onClick={openSorterModal}
+                disabled={isSorterDisabled}
+              >
+                <FontAwesomeIcon className="" icon={faSort} />
+              </button>
             )}
+          </div>
 
-            {/* ... rest of the component (tabs) ... */}
-             {(!showUnranked && categories.length > 0) && (
-                <div key={`total-tab-container`} className="flex bg-gray-800 bg-opacity-40 border-[var(--er-border-lightest)] mt-1 -mb-[0.2em] overflow-x-auto">
-                <Ripples key="total-ripple" placeholder={<></>}>
-                  <button
-                    key="total-tab"
-                    className={classNames(
-                      "px-4 py-[0.2em] text-sm font-strong flex-shrink-0",
-                      activeTab === 0 ? "text-[var(--r-accent-blue)] border-b-0 border-[var(--r-accent-ring)]" : "text-[var(--er-text-subtle)] hover:text-[var(--er-interactive-primary)]"
-                    )}
-                    onClick={() => setActiveTab(0)}
-                  >
-                    Total
-                  </button>
-                </Ripples>
-                {categories.map((category, index) => (
-                  <Ripples key={`ripple-${index + 1}`} placeholder={<></>}>
-                    <button
-                      key={`cat-btn-${index + 1}`}
-                      className={classNames(
-                        "px-4 py-[0.2em] text-sm font-medium flex-shrink-0",
-                        activeTab === index + 1 ? "text-[var(--r-accent-blue)] border-b-0 border-[var(--r-accent-ring)]" : "text-[var(--er-text-muted)] hover:text-[var(--er-interactive-primary)]"
-                      )}
-                      onClick={() => setActiveTab(index + 1)}
-                    >
-                      {category.name}
-                    </button>
-                  </Ripples>
-                ))}
+          {/* ---- Center Content (Title) ---- */}
+          <div className="justify-center text-center flex-grow mx-2">
+            {' '}
+            {/* Use flex-grow to take available space, mx-2 for spacing */}
+            <div>
+              {!globalSearch ? year : null}
+              {name && (
+                <span className="font-bold text-[var(--er-text-tertiary)] text-md">
+                  {!globalSearch ? ` - ` : ``}
+                  {name}
+                </span>
+              )}
+            </div>
+            {isPristineLoaded && (isOwnLoaded || authorLabel) && (
+              <div
+                className="mt-0.5 flex items-center justify-center gap-1 text-[0.65rem] font-medium tracking-normal text-[var(--er-text-subtle)] opacity-80"
+                title={
+                  isOwnLoaded
+                    ? 'You opened your own shared ranking'
+                    : `Shared ranking by ${authorLabel}`
+                }
+              >
+                <FontAwesomeIcon icon={faShareNodes} className="text-[0.6rem]" />
+                <span className="truncate max-w-[14em]">
+                  {isOwnLoaded ? 'shared ranking · by you' : <>shared ranking · by {authorLabel}</>}
+                </span>
               </div>
             )}
+          </div>
+          {/* ---- End Center Content ---- */}
+
+          {/* ---- Right Side Menu Button ---- */}
+          <RankedHeaderMenu
+            openNameModal={openNameModal}
+            openConfig={openConfig}
+            onMapClick={setMapModalShow}
+            openSorterModal={openSorterModal} // This is still needed for the menu item
+            openQuizModal={openQuizModal}
+            generateYoutubePlaylistUrl={() => generateYoutubePlaylistUrl(rankedItems)}
+          />
+          {/* ---- End Right Side Menu Button ---- */}
         </div>
-    );
+      )}
+
+      {/* ... rest of the component (tabs) ... */}
+      {!showUnranked && categories.length > 0 && (
+        <div
+          key={`total-tab-container`}
+          className="flex bg-gray-800 bg-opacity-40 border-[var(--er-border-lightest)] mt-1 -mb-[0.2em] overflow-x-auto"
+        >
+          <Ripples key="total-ripple" placeholder={<></>}>
+            <button
+              key="total-tab"
+              className={classNames(
+                'px-4 py-[0.2em] text-sm font-strong flex-shrink-0',
+                activeTab === 0
+                  ? 'text-[var(--r-accent-blue)] border-b-0 border-[var(--r-accent-ring)]'
+                  : 'text-[var(--er-text-subtle)] hover:text-[var(--er-interactive-primary)]',
+              )}
+              onClick={() => setActiveTab(0)}
+            >
+              Total
+            </button>
+          </Ripples>
+          {categories.map((category, index) => (
+            <Ripples key={`ripple-${index + 1}`} placeholder={<></>}>
+              <button
+                key={`cat-btn-${index + 1}`}
+                className={classNames(
+                  'px-4 py-[0.2em] text-sm font-medium flex-shrink-0',
+                  activeTab === index + 1
+                    ? 'text-[var(--r-accent-blue)] border-b-0 border-[var(--r-accent-ring)]'
+                    : 'text-[var(--er-text-muted)] hover:text-[var(--er-interactive-primary)]',
+                )}
+                onClick={() => setActiveTab(index + 1)}
+              >
+                {category.name}
+              </button>
+            </Ripples>
+          ))}
+        </div>
+      )}
+    </div>
+  );
 };
 
 export default RankedItemsHeader;

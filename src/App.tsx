@@ -1,32 +1,24 @@
 import { logger } from './utilities/logger';
-import React, { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
-import { DragDropContext } from '@hello-pangea/dnd';
-import classNames from 'classnames';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { CountryContestant } from './data/CountryContestant';
 import { AppDispatch, AppState } from './redux/store';
-import { setRankedItems, setShowUnranked, setActiveCategory, setShowTotalRank, setCategories, setGlobalSearch, setTheme, patchUser } from './redux/rootSlice';
-import { loadRankingsFromURL, encodeRankingsToURL, updateQueryParams, updateUrlFromRankedItems, urlHasRankings } from './utilities/UrlUtil';
+import { setShowUnranked, setActiveCategory, setShowTotalRank, setGlobalSearch, setTheme, patchUser } from './redux/rootSlice';
+import { updateQueryParams, updateUrlFromRankedItems, urlHasRankings } from './utilities/UrlUtil';
 import WelcomeOverlay from './components/modals/WelcomeOverlay';
-import { Toaster } from 'react-hot-toast';
-import { toastOptions } from './utilities/ToasterUtil';
 import { SKIP_WELCOME_AFTER_TOUR_KEY } from './utilities/JoyrideUtil';
-import { areCategoriesSet, parseCategoriesUrlParam, reorderByAllWeightedRankings } from './utilities/CategoryUtil';
-import { isArrayEqual } from './utilities/RankAnalyzer';
+import { areCategoriesSet } from './utilities/CategoryUtil';
 import { addWindowEventListeners, handlePopState, removeWindowEventListeners, setVh } from './utilities/EventListenerUtil';
 import { useAppDispatch, useAppSelector } from './hooks/stateHooks';
-import { Switch } from './components/Switch';
-import TooltipHelp from './components/TooltipHelp';
-import ContentPlaceholder from './components/ranking/ContentPlaceholder';
-import EditNav from './components/nav/EditNav';
 import { useModal } from './hooks/useModal';
 import { VideoPipProvider } from './components/video/VideoPipContext';
-import SorterModal from './components/ranking/SorterModal';
 import useSorterModal from './hooks/useSortModal';
 import { useThemeEffect } from './hooks/useThemeEffect';
 import { usePublicRankingView } from './hooks/usePublicRankingView';
 import { useRankingDragDrop } from './hooks/useRankingDragDrop';
-import AuthModal, { AuthView } from './components/modals/auth/AuthModal';
-import JoinGroupModal from './components/modals/groups/JoinGroupModal';
+import { useUrlSync } from './hooks/useUrlSync';
+import { AuthView } from './components/modals/auth/AuthModal';
+import AppModals from './components/AppModals';
+import AppContent from './components/AppContent';
 import { ping } from './utilities/api/health';
 import { getMe } from './utilities/api/me';
 import {
@@ -37,20 +29,6 @@ import {
   hasQuizCode,
   hasJoinToken,
 } from './utilities/deepLinkUtil';
-
-// lazy load components to reduce initial bundle size
-const LazyRankedCountriesList = React.lazy(() => import('./components/ranking/RankedCountriesList'));
-const LazyUnrankedCountriesList = React.lazy(() => import('./components/ranking/UnrankedCountriesList'));
-const LazyRankedCountriesTable = React.lazy(() => import('./components/ranking/RankedCountriesTable'));
-const LazyMainModal = React.lazy(() => import('./components/modals/MainModal'));
-const LazyNameModal = React.lazy(() => import('./components/modals/NameModal'));
-const LazyNavbar = React.lazy(() => import('./components/nav/NavBar'));
-const LazyMapModal = React.lazy(() => import('./components/modals/MapModal'));
-const LazyConfigModal = React.lazy(() => import('./components/modals/config/ConfigModal'));
-const LazySongModal = React.lazy(() => import('./components/modals/LyricsModal'));
-const LazyQuizModal = React.lazy(() => import('./components/modals/quiz/QuizModal'));
-const LazyJoyrideTour = React.lazy(() => import('./tour/JoyrideTour'));
-const LazyJoyrideTourSort = React.lazy(() => import('./tour/JoyrideTourSort'));
 
 const App: React.FC = () => {
   const { modalState, openModal, closeModal, setModalTab, currentTab } = useModal('about');
@@ -298,150 +276,25 @@ const App: React.FC = () => {
     );
   }
 
-  /**
-   * Reload the rankings from the URL if the activeCategory changes or 
-   * if the user either displays or exits the totalRank tab
-   */
-  useEffect(() => {
-    const updateRankedItems = async () => {
-      // Public-view-by-id loads rankings directly; the URL has no r= so
-      // loadRankingsFromURL would just clear them.
-      if (publicViewActiveRef.current) return;
-      if (!showTotalRank) {
-        await loadRankingsFromURL(
-          activeCategory,
-          dispatch
-        );
-      } else if (activeCategory === undefined && categories?.length) {
-        // if this is the first page load and we have categories we
-        // should load the first so that Total tab has contestants
-        // available to populated the total ranking
-        await loadRankingsFromURL(
-          0,
-          dispatch
-        );
-      }
-    };
-
-    updateRankedItems();
-  }, [activeCategory, showTotalRank]);
-
-
-  /**
- * Load categories from the url
- */
-  useEffect(() => {
-    const searchParams = new URLSearchParams(window.location.search);
-    const categoriesParam = searchParams.get('c');
-    if (categoriesParam) {
-      const parsedCategories = parseCategoriesUrlParam(categoriesParam);
-      dispatch(
-        setCategories(parsedCategories)
-      )
-    }
-  }, []);
-
-  useEffect(() => {
-    const updateRankedItems = async () => {
-
-      if (showTotalRank) {
-
-        let totalOrderRankings = reorderByAllWeightedRankings(categories, memoizedRankedItems);
-
-        // if it's already correctly ordered don't reset rankedItems
-        if (isArrayEqual(totalOrderRankings, memoizedRankedItems)) {
-          return;
-        }
-
-        dispatch(
-          setRankedItems(totalOrderRankings)
-        );
-      }
-    };
-
-    updateRankedItems();
-  }, [showTotalRank, memoizedRankedItems, categories]);
-
-  useEffect(() => {
-    const handleYearUpdate = async () => {
-      if (!year?.length) {
-        return;
-      }
-      // In public-view mode, the dispatched year matches the loaded value —
-      // skip URL write and the redundant reload. If the user later picks a
-      // different year, exit public view and behave normally.
-      if (publicViewActiveRef.current) {
-        // Fetch in flight: refs aren't populated yet, so any compare would
-        // be bogus. Suppress until loadPublicRankingById finishes.
-        if (!publicViewLoadedRef.current) return;
-        if (year === loadedYearRef.current) return;
-        exitPublicView();
-      }
-      updateQueryParams({ y: year.slice(-2) });
-
-      await loadRankingsFromURL(
-        activeCategory,
-        dispatch
-      );
-    }
-    handleYearUpdate();
-  }, [year]);
-
-  useEffect(() => {
-    if (publicViewActiveRef.current) {
-      if (!publicViewLoadedRef.current) return;
-      if (name === loadedNameRef.current) return;
-      exitPublicView();
-    }
-    updateQueryParams({ n: name });
-  }, [name]);
-
-  useEffect(() => {
-
-    if (categories.length > 0) {
-      // Add new category to the URL with the appropriate rx param
-      categories.forEach((_, index) => {
-        const categoryParam = `r${index + 1}`;
-        const currentRanking = new URLSearchParams(window.location.search).get(categoryParam);
-
-        if (!currentRanking) {
-          const updatedRanking = encodeRankingsToURL(memoizedRankedItems);
-          updateQueryParams({ [categoryParam]: updatedRanking });
-        }
-      });
-
-      // Remove the r= ranking URL param if it exists
-      const searchParams = new URLSearchParams(window.location.search);
-      if (searchParams.has('r')) {
-        searchParams.delete('r');
-        const newUrl = `${window.location.pathname}?${searchParams.toString()}`;
-        window.history.replaceState(null, '', newUrl);
-      }
-
-      // If active category is undefined, then this is the 
-      // first page load. In that case either
-      // 1. if there are more than 1 categories, show the total view 
-      // or 
-      // 2. if there is only 1 category, just show that category ranking
-      if (activeCategory === undefined) {
-
-        if (categories?.length > 1) {
-          dispatch(
-            setShowTotalRank(true)
-          );
-        } else {
-          dispatch(
-            setActiveCategory(0)
-          );
-        }
-      }
-    } else {
-      // if there are no categories, make sure showTotalRank is false
-      dispatch(
-        setShowTotalRank(false)
-      );
-    }
-  }, [categories]);
+  // URL <-> state synchronization: reload on category/total-rank change, load
+  // categories from the URL, keep the per-category rx (and y/n) params written,
+  // and the first-load category/total-rank bootstrap. Declared here because its
+  // effects are ordering-sensitive (they must run after the boot/deep-link
+  // effects above) — see useUrlSync.
+  useUrlSync({
+    activeCategory,
+    showTotalRank,
+    categories,
+    year,
+    name,
+    rankedItems: memoizedRankedItems,
+    dispatch,
+    publicViewActiveRef,
+    publicViewLoadedRef,
+    loadedNameRef,
+    loadedYearRef,
+    exitPublicView,
+  });
 
   // Drag-and-drop + add-to-ranked handlers, including keeping every category
   // ranking in the URL in sync. Extracted to keep App focused on composition.
@@ -501,274 +354,57 @@ const App: React.FC = () => {
         />
       )}
 
-      <div
-        className={classNames(
-          "site-content flex flex-col tour-step-16 tour-step-17 tour-step-18 normal-bg",
-          {
-            'star-sky': theme.includes('ab'),
-            'view-mode': !showUnranked,
-            'h-screen': showUnranked,
-          }
-        )}>
-
-        {theme.includes("ab") &&
-          <div className="star-container z-10">
-            <div className="star" id="stars"></div>
-            <div className="star" id="stars2"></div>
-            <div className="star" id="stars3"></div>
-          </div>
-        }
-        <Suspense fallback={<div />}>
-          <LazyNavbar
-            openModal={openMainModalWithTab}
-            openConfigModal={openConfigModalWithTab}
-          />
-        </Suspense>
-
-        <div className="flex-grow overflow-auto overflow-x-hidden bg-[#040241] flex justify-center bg-opacity-0">
-          <DragDropContext
-            onDragEnd={handleOnDragEnd}
-            key={`drag-drop-context`}
-            onDragStart={() => {
-              if (window.navigator.vibrate) {
-                window.navigator.vibrate(100);
-              }
-            }}
-          >
-
-            <div className={classNames(
-              "flex flex-row justify-center gap-4 py-2",
-              globalSearch ? "px-1 sm:px-4" : "px-4"
-            )}>
-
-              {/* Unranked Countries List */}
-              {showUnranked && !globalSearch && (
-
-                <div className="relative flex flex-col">
-                  <div className="tour-step-15 sticky top-0 rounded-t-md round-b-sm text-center font-bold bg-[var(--er-surface-bar)] gradient-background-reverse text-[var(--er-text-secondary)] tracking-tighter shadow-md z-50">
-                    <div className="flex items-center justify-center gap-1 py-1 px-0">
-                      <TooltipHelp
-                        content="Select countries across all contest years"
-                        className="text-[var(--er-text-secondary)] align-middle mb-1 mr-1 -ml-1"
-                      />
-                      <Switch
-                        label="adv"
-                        className="items-center align-middle font-normal"
-                        labelClassName="text-sm text-[var(--er-text-tertiary)]"
-                        checked={globalSearch}
-                        setChecked={updateGlobalSearch}
-                      />
-                    </div>
-                  </div>
-                  <Suspense fallback={<ContentPlaceholder />}>
-                    <LazyUnrankedCountriesList onAddToRanked={handleAddToRanked} />
-                  </Suspense>
-                </div>
-              )}
-
-              {/* Ranked Countries List */}
-
-              {globalSearch && showUnranked ? (
-                <Suspense fallback={<ContentPlaceholder />}>
-                  <LazyRankedCountriesTable />
-                </Suspense>
-              ) :
-                <Suspense fallback={<ContentPlaceholder />}>
-                  <LazyRankedCountriesList
-                    openSongModal={openSongModalWithData}
-                    openModal={openMainModalWithTab}
-                    openConfigModal={openConfigModalWithTab}
-                    setRunTour={() => openModal('tour')}
-                    setRunSortTour={() => openModal('sortTour')}
-                    openNameModal={() => openModal('name')}
-                    openMapModal={() => openModal('map')}
-                    openSorterModal={openSorterModal}
-                    openAuthModal={openLoginModal}
-                    openQuizModal={() => setQuizModalOpen(true)}
-                  />
-                </Suspense>
-              }
-            </div>
-          </DragDropContext>
-        </div>
-
-        <div className="hidden fixed bottom-[3em] left-[1em] z-50">
-          <div className='p-2 bg-slate-300 bg-opacity-40 rounded-lg'>
-            <button
-              onClick={() => {
-                dispatch(
-                  setShowUnranked(!showUnranked)
-                );
-              }}
-              className={
-                "w-[4em] py-3 bg-[var(--er-surface-bar)] hover:bg-[var(--er-interactive-dark)] z-50 relative" +
-                "overflow-hidden text-[var(--er-text-primary)] font-normal py-1 px-3 " +
-                "rounded-full border-[var(--er-border-tertiary)] border-[0.1em] text-base shadow-lg " +
-                "bg-opacity-80"
-              }
-            >
-              <div className="text-[var(--er-text-primary)]">
-                {showUnranked ? 'VIEW' : 'EDIT'}
-              </div>
-            </button>
-          </div>
-        </div>
-
-        {(showUnranked && (!showOverlay || isOverlayExit)) &&
-          /* `key` is derived from the theme so a theme switch REMOUNTS just this
-             EditNav (the bar whose dark fill the iOS Safari bottom toolbar
-             samples). Replacing this exact node forces iOS to re-sample its tint
-             to the new theme color, while the main list above is left untouched
-             (no glitchy reload). The bar's slide-up animation replays on remount,
-             which is the accepted trade-off. */
-          <div
-            key={`edit-nav-${theme}`}
-            className={`edit-nav-container ${(!showOverlay || isOverlayExit) && 'slide-up-animation'}`}>
-            <EditNav
-              setNameModalShow={() => openModal('name')}
-            />
-          </div>
-        }
-      </div>
-
-      {/* Render all modals conditionally */}
-      <Suspense fallback={<div />}>
-        {(modalState.main.isOpen || modalState.main.hasRendered) && (
-          <LazyMainModal
-            tab={currentTab}
-            isOpen={modalState.main.isOpen}
-            onClose={() => closeModal('main')}
-            startTour={() => {
-              dispatch(setShowUnranked(true));
-              openModal('tour');
-            }}
-          />
-        )}
-
-        {(modalState.name.isOpen || modalState.name.hasRendered) && (
-          <LazyNameModal
-            isOpen={modalState.name.isOpen}
-            onClose={() => closeModal('name')}
-          />
-        )}
-
-        {(modalState.song.isOpen || modalState.song.hasRendered) && (
-          <LazySongModal
-            isOpen={modalState.song.isOpen}
-            countryContestant={selectedCountryContestant}
-            onClose={() => closeModal('song')}
-          />
-        )}
-      </Suspense>
-
-      <div className="tour-step-14 sort-tour-step-modal">
-        {(modalState.config.isOpen || modalState.config.hasRendered) && (
-          <Suspense fallback={<div />}>
-            <LazyConfigModal
-              tab={configModalTab}
-              tabRequestNonce={configTabNonce}
-              isOpen={modalState.config.isOpen}
-              onClose={() => closeModal('config')}
-              startTour={() => {
-                dispatch(setShowUnranked(true));
-                openModal('tour');
-              }}
-              openAuthModal={openLoginModal}
-            />
-          </Suspense>
-        )}
-      </div>
-
-      {(modalState.map.isOpen || modalState.map.hasRendered) && (
-        <Suspense fallback={<div />}>
-          <LazyMapModal
-            isOpen={modalState.map.isOpen}
-            onClose={() => closeModal('map')}
-          />
-        </Suspense>
-      )}
-
-      {(modalState.tour.isOpen || modalState.tour.hasRendered) && (
-        <Suspense fallback={<div />}>
-          <LazyJoyrideTour
-            setRefreshUrl={setRefreshUrl}
-            openConfigModal={openConfigModalWithTab}
-            setConfigModalShow={(show) => show ? openModal('config') : closeModal('config')}
-            setRunTour={(run) => run ? openModal('tour') : closeModal('tour')}
-            runTour={modalState.tour.isOpen}
-          />
-        </Suspense>
-      )}
-
-      {(modalState.sortTour.isOpen || modalState.sortTour.hasRendered) && (
-        <Suspense fallback={<div />}>
-          <LazyJoyrideTourSort
-            openSortModal={openSorterModal}
-            setRefreshUrl={setRefreshUrl}
-            openConfigModal={openConfigModalWithTab}
-            setConfigModalShow={(show) => show ? openModal('config') : closeModal('config')}
-            setRunTour={(run) => run ? openModal('sortTour') : closeModal('sortTour')}
-            runTour={modalState.sortTour.isOpen}
-            closeSortModal={closeSorterModal}
-          />
-        </Suspense>
-      )}
-
-      {/* Include the sorter modal */}
-      <SorterModal
-        isOpen={isSorterModalOpen}
-        onClose={closeSorterModal}
-        initialItems={getItemsToSort()}
+      <AppContent
+        theme={theme}
+        showUnranked={showUnranked}
+        globalSearch={globalSearch}
+        showOverlay={showOverlay}
+        isOverlayExit={isOverlayExit}
+        dispatch={dispatch}
+        handleOnDragEnd={handleOnDragEnd}
+        handleAddToRanked={handleAddToRanked}
+        updateGlobalSearch={updateGlobalSearch}
+        openSongModalWithData={openSongModalWithData}
+        openMainModalWithTab={openMainModalWithTab}
+        openConfigModalWithTab={openConfigModalWithTab}
+        openModal={openModal}
+        openSorterModal={openSorterModal}
+        openLoginModal={openLoginModal}
+        setQuizModalOpen={setQuizModalOpen}
       />
 
-      <AuthModal
-        isOpen={authModalOpen}
-        onClose={() => setAuthModalOpen(false)}
-        initialView={authModalView}
-        allowRegister={authModalAllowRegister}
-        onAuthSuccess={() => {
-          // Pre-seed the ConfigModal's sticky-tab storage so a first-mount
-          // (modal never opened this session) still lands on Account.
-          try { localStorage.setItem('configModalActiveTab', 'account'); } catch { /* ignore */ }
-          openConfigModalWithTab('account');
-        }}
-      />
-
-      {quizModalOpen && (
-        <Suspense fallback={<div />}>
-          <LazyQuizModal
-            isOpen={quizModalOpen}
-            initialCode={quizCode}
-            onClose={() => {
-              setQuizModalOpen(false);
-              setQuizCode(null);
-            }}
-          />
-        </Suspense>
-      )}
-
-      <JoinGroupModal
-        isOpen={!!joinGroupToken}
-        token={joinGroupToken}
-        onClose={() => setJoinGroupToken(null)}
-        onSignInRequired={openLoginModal}
-        onJoined={() => {
-          // Sticky-tab so the Groups tab is what they see when the
-          // config modal opens.
-          try { localStorage.setItem('configModalActiveTab', 'groups'); } catch { /* ignore */ }
-          openConfigModalWithTab('groups');
-        }}
+      <AppModals
+        modalState={modalState}
+        currentTab={currentTab}
+        openModal={openModal}
+        closeModal={closeModal}
+        dispatch={dispatch}
+        configModalTab={configModalTab}
+        configTabNonce={configTabNonce}
+        openConfigModalWithTab={openConfigModalWithTab}
+        openLoginModal={openLoginModal}
+        setRefreshUrl={setRefreshUrl}
+        selectedCountryContestant={selectedCountryContestant}
+        isSorterModalOpen={isSorterModalOpen}
+        closeSorterModal={closeSorterModal}
+        openSorterModal={openSorterModal}
+        getItemsToSort={getItemsToSort}
+        authModalOpen={authModalOpen}
+        setAuthModalOpen={setAuthModalOpen}
+        authModalView={authModalView}
+        authModalAllowRegister={authModalAllowRegister}
+        quizModalOpen={quizModalOpen}
+        setQuizModalOpen={setQuizModalOpen}
+        quizCode={quizCode}
+        setQuizCode={setQuizCode}
+        joinGroupToken={joinGroupToken}
+        setJoinGroupToken={setJoinGroupToken}
       />
 
       {/* <CanvasDevModal
           isOpen={isDevModalOpen}
           onClose={() => setIsDevModalOpen(false)}
         /> */}
-
-      <Toaster
-        toastOptions={toastOptions}
-        position="top-center"
-      />
 
     </div>
     </VideoPipProvider>

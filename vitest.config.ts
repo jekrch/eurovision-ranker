@@ -21,15 +21,12 @@ export default defineConfig({
         'src/setupTests.ts',
         'src/data/**',
       ],
-      // Baseline floor (measured 2026-06-09 under vitest v4 / coverage-v8's
-      // ast-v8-to-istanbul remapper, which counts branches more strictly than
-      // the v2 provider these were first set against). Never let coverage
-      // regress below where it is now; raise these as more tests land.
       thresholds: {
-        lines: 48,
-        functions: 40,
-        branches: 33,
-        statements: 47,
+        // Baseline floor: measured 2026-06-10
+        lines: 50,
+        functions: 46,
+        branches: 34,
+        statements: 50,
       },
     },
   },

@@ -105,7 +105,7 @@ export function useRankingDragDrop({
       dispatch(setActiveList(items));
       setRefreshUrl(Math.random());
     },
-    [unrankedItems, rankedItems, categories, dispatch],
+    [unrankedItems, rankedItems, globalSearch, dispatch, addNewItemToAllCategoryRankings, setRefreshUrl],
   );
 
   const handleAddToRanked = useCallback(
@@ -127,7 +127,7 @@ export function useRankingDragDrop({
       dispatch(setUnrankedItems(newUnranked));
       setRefreshUrl(Math.random());
     },
-    [unrankedItems, rankedItems, globalSearch, categories, dispatch],
+    [unrankedItems, rankedItems, globalSearch, dispatch, addNewItemToAllCategoryRankings, setRefreshUrl],
   );
 
   return { handleOnDragEnd, handleAddToRanked };

@@ -36,6 +36,7 @@ export function useRankingDirty(): RankingDirtyState {
   // `rankingParams` reflects everything in the URL except n/y/id/signup.
   // It's recomputed whenever `rankedItems` changes (a proxy for "the URL
   // has been re-synced") so dirty-detection stays live.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const rankingParams = useMemo(() => buildRankingParamsFromUrl(), [rankedItems]);
 
   const currentSignature = useMemo(

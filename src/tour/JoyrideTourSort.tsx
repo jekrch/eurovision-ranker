@@ -139,6 +139,7 @@ const JoyrideTourSort: React.FC<JoyrideTourSortProps> = (props: JoyrideTourSortP
 
       setStartTour(props.runTour);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.runTour]);
 
   // clear theme and ranking for the tour
@@ -172,6 +173,7 @@ const JoyrideTourSort: React.FC<JoyrideTourSortProps> = (props: JoyrideTourSortP
     // execute step actions
     logger.log(`[JoyrideTourSort] Executing actions for step ${currentStep}`);
     executeTourStepActions(currentStep);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [joyrideStepIndex, startTour]);
 
   // handle joyride events

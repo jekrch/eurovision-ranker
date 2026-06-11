@@ -65,6 +65,7 @@ const RankedItemsHeader: React.FC<IRankedItemsHeaderProps> = ({
       dispatch(setShowTotalRank(false));
     }
     dispatch(setActiveCategory(activeTab - 1));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab]);
 
   useEffect(() => {

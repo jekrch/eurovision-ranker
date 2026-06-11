@@ -78,6 +78,7 @@ const JoyrideTour: React.FC<JoyrideTourProps> = (props: JoyrideTourProps) => {
         goToUrl(originalUrlQuery, undefined);
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.runTour]);
 
   /**
@@ -103,6 +104,7 @@ const JoyrideTour: React.FC<JoyrideTourProps> = (props: JoyrideTourProps) => {
       await executeTourStepActions(joyrideStepIndex);
     };
     executeJoyRideStep();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [joyrideStepIndex]);
 
   const handleJoyrideCallback = useCallback((data: CallBackProps) => {
@@ -121,6 +123,7 @@ const JoyrideTour: React.FC<JoyrideTourProps> = (props: JoyrideTourProps) => {
     } else if (type === EVENTS.STEP_AFTER || type === EVENTS.TARGET_NOT_FOUND) {
       setJoyrideStepIndex(index + (action === ACTIONS.PREV ? -1 : 1));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   async function clearRanking(year: string) {

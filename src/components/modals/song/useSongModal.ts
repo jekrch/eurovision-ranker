@@ -148,6 +148,7 @@ export function useSongModal(props: UseSongModalArgs) {
       setHasLyrics(false);
       setDetailsLoaded(true);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.countryContestant]);
 
   // load voting results for the song
@@ -207,6 +208,7 @@ export function useSongModal(props: UseSongModalArgs) {
     return () => {
       cancelled = true;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.countryContestant, props.isOpen]);
 
   // once details and votes have settled, show the user's last-viewed (sticky)
@@ -240,7 +242,10 @@ export function useSongModal(props: UseSongModalArgs) {
   // sticky preference is on (a song may have no English lyrics)
   const showEng = showEngLyrics && !!engLyrics;
 
-  const activeRoundVotes = roundVotes.find((r) => r.round === selectedRound)?.votes ?? [];
+  const activeRoundVotes = useMemo(
+    () => roundVotes.find((r) => r.round === selectedRound)?.votes ?? [],
+    [roundVotes, selectedRound],
+  );
   // jury/televote split only exists for recent years; show those columns only
   // when the data is actually present
   const hasJuryTeleSplit = activeRoundVotes.some(

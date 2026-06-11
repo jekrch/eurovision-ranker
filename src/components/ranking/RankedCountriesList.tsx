@@ -78,6 +78,7 @@ const RankedCountriesList: React.FC<RankedCountriesListProps> = ({
   useEffect(() => {
     if (refreshUrl === 0) return;
     updateUrlFromRankedItems(activeCategory, categories, rankedItems);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [refreshUrl]);
 
   /**

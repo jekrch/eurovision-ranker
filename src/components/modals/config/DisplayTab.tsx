@@ -135,6 +135,7 @@ const DisplayTab: React.FC = () => {
     if (voteSourceOption !== displayVoteSource) {
       setDisplayVoteSource(voteSourceOption);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [vote]);
 
   // Handle theme input change
@@ -192,6 +193,7 @@ const DisplayTab: React.FC = () => {
       }
     };
     handleVoteCountryUpdate();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [displayVoteSource]);
 
   async function resetRankedItemVotes(rankedItems: CountryContestant[], newVoteCode: string) {

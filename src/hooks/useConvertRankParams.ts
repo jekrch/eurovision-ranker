@@ -19,7 +19,7 @@ export const useConvertRankParams = () => {
 
       convertRankingUrlParamsByMode(categories, isGlobalSearchMode, rankedItems);
     },
-    [globalSearch, rankedItems],
+    [globalSearch, rankedItems, categories],
   );
 
   return convertRankingURLParams;

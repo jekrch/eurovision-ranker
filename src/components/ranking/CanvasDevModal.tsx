@@ -72,6 +72,7 @@ const CanvasDevModal: React.FC<{
     if (isOpen && canvasUtils) {
       renderPreview();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [canvasUtils, containerRef, rankedItems, rankingName, refreshKey, isOpen]);
 
   // Handle escape key to close modal

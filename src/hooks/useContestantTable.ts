@@ -73,6 +73,7 @@ export const useContestantTable = () => {
     };
 
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [globalSearch, entries.length, rankedItems, dispatch]);
 
   const updateRankingURLParams = useCallback(() => {
@@ -85,7 +86,7 @@ export const useContestantTable = () => {
     });
 
     updateQueryParams(params);
-  }, [rankedItems, categories]);
+  }, [categories]);
 
   const convertRankingURLParams = useCallback(() => {
     convertRankingUrlParamsByMode(categories, globalSearch, rankedItems);
@@ -312,7 +313,6 @@ export const useContestantTable = () => {
       updateCategoryRankings,
       globalSearch,
       updateRankingURLParams,
-      convertRankingURLParams,
     ],
   );
 
@@ -331,6 +331,7 @@ export const useContestantTable = () => {
     if (!areContestantRowsEqual(tableState.paginatedContestants, paginatedContestants)) {
       dispatch(setPaginatedContestants(paginatedContestants));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     tableState.currentPage,
     tableState.filters,

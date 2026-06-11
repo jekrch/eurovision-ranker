@@ -75,6 +75,7 @@ export function useUrlSync({
     };
 
     updateRankedItems();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeCategory, showTotalRank]);
 
   /**
@@ -87,6 +88,7 @@ export function useUrlSync({
       const parsedCategories = parseCategoriesUrlParam(categoriesParam);
       dispatch(setCategories(parsedCategories));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -104,6 +106,7 @@ export function useUrlSync({
     };
 
     updateRankedItems();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [showTotalRank, rankedItems, categories]);
 
   useEffect(() => {
@@ -126,6 +129,7 @@ export function useUrlSync({
       await loadRankingsFromURL(activeCategory, dispatch);
     };
     handleYearUpdate();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [year]);
 
   useEffect(() => {
@@ -135,6 +139,7 @@ export function useUrlSync({
       exitPublicView();
     }
     updateQueryParams({ n: name });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [name]);
 
   useEffect(() => {
@@ -174,5 +179,6 @@ export function useUrlSync({
       // if there are no categories, make sure showTotalRank is false
       dispatch(setShowTotalRank(false));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [categories]);
 }

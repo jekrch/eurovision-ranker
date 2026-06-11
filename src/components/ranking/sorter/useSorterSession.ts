@@ -267,7 +267,9 @@ export const useSorterSession = (
     }
 
     return computedState;
-  }, [isSessionLoaded, currentHistoryIndex, cacheVersion, computeStateAtIndex, isComputing]); // dependencies
+    // cacheVersion is intentional: bump it to force a recompute when the cache changes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isSessionLoaded, currentHistoryIndex, cacheVersion, computeStateAtIndex, isComputing]);
 
   // derived state for UI interaction checks
   const canInteract = isOpen && isSessionLoaded && !isComputing;

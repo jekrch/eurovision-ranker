@@ -126,6 +126,7 @@ const App: React.FC = () => {
       dispatch(setShowTotalRank(false));
       dispatch(setActiveCategory(0));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [showUnranked]);
 
   const handleGetStarted = useCallback(() => {
@@ -145,6 +146,7 @@ const App: React.FC = () => {
       exitPublicView();
     }
     updateUrlFromRankedItems(activeCategory, categories, memoizedRankedItems);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [refreshUrl]);
 
   // boot: handle email-link deep paths, ?signup=beta gate, API reachability probe
@@ -209,6 +211,7 @@ const App: React.FC = () => {
     ping().catch((e) => {
       if (import.meta.env.DEV) logger.warn('API healthz failed', e);
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Hydrate the signed-in user's username from /api/me whenever the auth token
@@ -223,6 +226,7 @@ const App: React.FC = () => {
       .catch(() => {
         /* ignore */
       });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token]);
 
   /**
@@ -264,6 +268,7 @@ const App: React.FC = () => {
     return () => {
       removeWindowEventListeners(setVh, handlePopStateCallback);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const updateGlobalSearch = (checked: boolean) => {
@@ -326,6 +331,7 @@ const App: React.FC = () => {
   const handleExpandVideo = useCallback((countryContestant: CountryContestant) => {
     setSelectedCountryContestant(countryContestant);
     openModal('song');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const openLoginModal = useCallback(() => {

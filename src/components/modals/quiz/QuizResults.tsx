@@ -51,6 +51,8 @@ const QuizResults: React.FC<QuizResultsProps> = ({ result, onPlayAgain, onNewQui
 
   // Hide the breakdown the moment its presence would overflow the scroll area.
   // (When `showBreakdown` is false the content no longer overflows, so this no-ops.)
+  // Intentionally runs every render to catch any layout change that introduces overflow.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useLayoutEffect(() => {
     const el = scrollRef.current;
     if (!el) return;

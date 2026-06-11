@@ -18,10 +18,6 @@ export const useResetRanking = () => {
   const categories = useAppSelector((state: AppState) => state.root.categories);
   const activeCategory = useAppSelector((state: AppState) => state.root.activeCategory);
 
-  const refreshUrl = () => {
-    updateUrlFromRankedItems(activeCategory, categories, []);
-  };
-
   const resetRanking = useCallback(async () => {
     const yearContestants: CountryContestant[] = await fetchCountryContestantsByYear(year, '');
 
@@ -31,8 +27,8 @@ export const useResetRanking = () => {
     dispatch(setSelectedContestants([]));
 
     clearAllRankingParams(categories);
-    refreshUrl();
-  }, [dispatch, year, categories]);
+    updateUrlFromRankedItems(activeCategory, categories, []);
+  }, [dispatch, year, categories, activeCategory]);
 
   return resetRanking;
 };

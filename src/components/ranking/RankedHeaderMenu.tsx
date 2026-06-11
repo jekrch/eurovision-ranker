@@ -106,6 +106,7 @@ const RankedHeaderMenu: React.FC<RankedHeaderMenuProps> = (props: RankedHeaderMe
         document.body.classList.remove('no-scroll');
       }, CLOSING_DURATION);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [globalMenuOpenTrigger]);
 
   function close() {

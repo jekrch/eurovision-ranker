@@ -61,7 +61,7 @@ export default tseslint.config(
       '@typescript-eslint/no-explicit-any': 'error',
       'no-console': ['error', { allow: ['warn', 'error'] }],
 
-      // --- Unused vars: allow the `_`-prefix escape hatch (see Phase 2 notes) ---
+      // --- Unused vars: allow the `_`-prefix escape hatch ---
       '@typescript-eslint/no-unused-vars': [
         'error',
         {

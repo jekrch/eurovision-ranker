@@ -3,7 +3,11 @@ import { useCallback } from 'react';
 
 import { CountryContestant } from '../data/CountryContestant';
 import { deleteRankedCountry } from '../redux/rankingActions';
-import { setRankedItems, setUnrankedItems } from '../redux/rootSlice';
+import {
+  setRankedItems,
+  setUnrankedItems,
+  addCountryToOtherCategories,
+} from '../redux/rootSlice';
 import { AppDispatch } from '../redux/store';
 import { Category } from '../utilities/CategoryUtil';
 import { logger } from '../utilities/logger';
@@ -90,6 +94,9 @@ export function useRankingDragDrop({
           const id = globalSearch ? reorderedItem.uid : reorderedItem.country.id;
           if (id) {
             addNewItemToAllCategoryRankings(id);
+            // mirror the add into the inactive category store slots; the active
+            // slot receives it positionally via setOtherList below
+            dispatch(addCountryToOtherCategories(reorderedItem));
           } else {
             logger.error('Contestant lacks valid ID:');
             logger.error(reorderedItem);
@@ -121,6 +128,7 @@ export function useRankingDragDrop({
       const id = globalSearch ? item.uid : item.country.id;
       if (id) {
         addNewItemToAllCategoryRankings(id);
+        dispatch(addCountryToOtherCategories(item));
       }
 
       dispatch(setRankedItems(newRanked));

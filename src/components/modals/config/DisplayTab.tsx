@@ -18,6 +18,7 @@ import { countries } from '../../../data/Countries';
 import { CountryContestant } from '../../../data/CountryContestant';
 import { Vote } from '../../../data/Vote';
 import { useAppDispatch, useAppSelector } from '../../../hooks/stateHooks';
+import { selectActiveRankedItems } from '../../../redux/rankingSelectors';
 import {
   setTheme,
   setVote,
@@ -79,7 +80,7 @@ const DisplayTab: React.FC = () => {
   const showComparison = useAppSelector((state: AppState) => state.root.showComparison);
   const showThumbnail = useAppSelector((state: AppState) => state.root.showThumbnail);
   const showPlace = useAppSelector((state: AppState) => state.root.showPlace);
-  const rankedItems = useAppSelector((state: AppState) => state.root.rankedItems);
+  const rankedItems = useAppSelector(selectActiveRankedItems);
   const year = useAppSelector((state: AppState) => state.root.year);
   const globalSearch = useAppSelector((state: AppState) => state.root.globalSearch);
 

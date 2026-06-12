@@ -11,6 +11,7 @@ vi.mock('../utilities/UrlUtil', () => ({
 import { useRefreshUrl } from './useRefreshUrl';
 import { Category } from '../utilities/CategoryUtil';
 import { CountryContestant } from '../data/CountryContestant';
+import { selectActiveRankedItems } from '../redux/rankingSelectors';
 import { updateUrlFromRankedItems } from '../utilities/UrlUtil';
 import { makeTestStore, storeWrapper } from '../test/storeHarness';
 
@@ -29,7 +30,9 @@ describe('useRefreshUrl', () => {
   it('refreshUrl forwards the active category, categories, and ranked items', () => {
     const rankedItems = [cc('a')];
     const categories = [cat('c1')];
-    const store = makeTestStore({ root: { rankedItems, categories, activeCategory: 1 } });
+    const store = makeTestStore({
+      root: { categoryRankings: [[], rankedItems], categories, activeCategory: 1 },
+    });
 
     const { result } = renderHook(() => useRefreshUrl(), { wrapper: storeWrapper(store) });
     act(() => result.current.refreshUrl());
@@ -39,7 +42,11 @@ describe('useRefreshUrl', () => {
 
   it('handleAddAllUnranked merges unranked into ranked and clears unranked', async () => {
     const store = makeTestStore({
-      root: { rankedItems: [cc('a')], unrankedItems: [cc('b'), cc('c')], categories: [cat('c1')] },
+      root: {
+        categoryRankings: [[cc('a')]],
+        unrankedItems: [cc('b'), cc('c')],
+        categories: [cat('c1')],
+      },
     });
 
     const { result } = renderHook(() => useRefreshUrl(), { wrapper: storeWrapper(store) });
@@ -50,7 +57,7 @@ describe('useRefreshUrl', () => {
     });
 
     const state = store.getState().root;
-    expect(state.rankedItems.map((i) => i.uid)).toEqual(['a', 'b', 'c']);
+    expect(selectActiveRankedItems(store.getState()).map((i) => i.uid)).toEqual(['a', 'b', 'c']);
     expect(state.unrankedItems).toHaveLength(0);
 
     // it writes the category ranking params into the URL...

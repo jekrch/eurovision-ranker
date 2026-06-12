@@ -4,6 +4,7 @@ import { CallBackProps, EVENTS, ACTIONS, STATUS } from 'react-joyride';
 import { CountryContestant } from '../data/CountryContestant';
 import { useAppDispatch, useAppSelector } from '../hooks/stateHooks';
 import { useResetRanking } from '../hooks/useResetRanking';
+import { selectActiveRankedItems } from '../redux/rankingSelectors';
 import {
   setYear,
   setName,
@@ -83,7 +84,7 @@ const JoyrideTourSort: React.FC<JoyrideTourSortProps> = (props: JoyrideTourSortP
   const dispatch: AppDispatch = useAppDispatch();
   const year = useAppSelector((state: AppState) => state.root.year);
   const categories = useAppSelector((state: AppState) => state.root.categories);
-  const rankedItems = useAppSelector((state: AppState) => state.root.rankedItems);
+  const rankedItems = useAppSelector(selectActiveRankedItems);
   const unrankedItems = useAppSelector((state: AppState) => state.root.unrankedItems);
 
   const [startTour, setStartTour] = useState<boolean>(false);

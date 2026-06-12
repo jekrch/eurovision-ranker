@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 
 import { useAppSelector } from './stateHooks';
 import { CountryContestant } from '../data/CountryContestant';
+import { selectActiveRankedItems } from '../redux/rankingSelectors';
 
 /**
  * Custom hook for managing the sorter modal
@@ -9,7 +10,7 @@ import { CountryContestant } from '../data/CountryContestant';
  */
 export const useSorterModal = () => {
   const [isSorterModalOpen, setIsSorterModalOpen] = useState(false);
-  const rankedItems = useAppSelector((state) => state.root.rankedItems);
+  const rankedItems = useAppSelector(selectActiveRankedItems);
   const unrankedItems = useAppSelector((state) => state.root.unrankedItems);
 
   /**

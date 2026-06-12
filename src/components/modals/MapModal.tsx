@@ -3,7 +3,7 @@ import { Tooltip as ReactTooltip } from 'react-tooltip';
 
 import Modal from './Modal';
 import { useAppSelector } from '../../hooks/stateHooks';
-import { AppState } from '../../redux/store';
+import { selectActiveRankedItems } from '../../redux/rankingSelectors';
 
 const LazyMapContent = React.lazy(() => import('./MapContent'));
 
@@ -22,7 +22,7 @@ interface TooltipData {
  * Opened from the ranked items header menu
  */
 const MapModal: React.FC<MapModalProps> = ({ isOpen, onClose }) => {
-  const rankedItems = useAppSelector((state: AppState) => state.root.rankedItems);
+  const rankedItems = useAppSelector(selectActiveRankedItems);
   const [tooltipData, setTooltipData] = useState<TooltipData | null>(null);
 
   const countryCodes = rankedItems.map((i) => i.country.key.toUpperCase());

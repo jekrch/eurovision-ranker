@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useAppDispatch, useAppSelector } from './stateHooks';
 import { ContestantRow } from '../components/table/tableTypes';
 import { CountryContestant } from '../data/CountryContestant';
+import { selectActiveRankedItems } from '../redux/rankingSelectors';
 import {
   setEntries,
   setGlobalSearch,
@@ -23,7 +24,7 @@ import { getUrlParam, updateQueryParams, updateUrlFromRankedItems } from '../uti
 export const useContestantTable = () => {
   const dispatch = useAppDispatch();
   const tableState = useAppSelector((state: AppState) => state.table.tableState);
-  const rankedItems = useAppSelector((state: AppState) => state.root.rankedItems);
+  const rankedItems = useAppSelector(selectActiveRankedItems);
   const globalSearch = useAppSelector((state: AppState) => state.root.globalSearch);
   const categories = useAppSelector((state: AppState) => state.root.categories);
   const activeCategory = useAppSelector((state: AppState) => state.root.activeCategory);

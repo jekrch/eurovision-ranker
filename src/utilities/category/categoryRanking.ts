@@ -33,6 +33,55 @@ export function reorderByAllWeightedRankings(
     searchParams,
   );
 
+  return reorderByWeightedCategoryMap(categories, rankedItems, categoryRankings);
+}
+
+/**
+ * Reorders the provided pool by the weighted aggregation of per-category orders
+ * held in the store, instead of reading them from the URL. This is the engine
+ * behind the Total tab under the store-as-source-of-truth model.
+ *
+ * @param categories category definitions (name + weight), index-aligned with categoryRankings
+ * @param categoryRankings each category's ranked contestants, indexed by category
+ * @param isGlobalMode whether ids are global 3-char uids
+ */
+export function reorderByStoreCategoryRankings(
+  categories: Category[],
+  categoryRankings: CountryContestant[][],
+  isGlobalMode: boolean,
+): CountryContestant[] {
+  // the pool to reorder is any category's membership (all categories share the
+  // same contestants, only the order differs)
+  const pool = categoryRankings.find((ranking) => ranking.length) ?? [];
+
+  if (categories?.length < 2) {
+    return pool;
+  }
+
+  const idOf = (item: CountryContestant): string =>
+    (isGlobalMode ? item.uid : item.country.id) ?? '';
+
+  const rankingMap: { [key: string]: string[] } = {};
+  categories.forEach((category, index) => {
+    const ranking = categoryRankings[index];
+    if (ranking?.length) {
+      rankingMap[category.name] = ranking.map(idOf).filter((id) => id !== '');
+    }
+  });
+
+  return reorderByWeightedCategoryMap(categories, pool, rankingMap);
+}
+
+/**
+ * Shared engine: given each category's ranked id list (keyed by category name)
+ * and a pool of contestants, produce the weighted total order. Sourcing the id
+ * lists (URL vs store) is the caller's concern.
+ */
+function reorderByWeightedCategoryMap(
+  categories: Category[],
+  rankedItems: CountryContestant[],
+  categoryRankings: { [key: string]: string[] },
+): CountryContestant[] {
   // Calculate the weighted scores for each country
   const weightedScores: { [key: string]: number } = calculateTotalRankScoresForWeighedCategories(
     categoryRankings,

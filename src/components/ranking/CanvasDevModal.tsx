@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useEffect } from 'react';
 
 import { useAppSelector } from '../../hooks/stateHooks';
+import { selectActiveRankedItems } from '../../redux/rankingSelectors';
 import { AppState } from '../../redux/store';
 import { RankingCanvasConfig } from '../../utilities/CanvasGeneratorUtil';
 import { logger } from '../../utilities/logger';
@@ -20,7 +21,7 @@ const CanvasDevModal: React.FC<{
   const [error, setError] = useState<string | null>(null);
 
   // Get existing data from Redux store
-  const rankedItems = useAppSelector((state: AppState) => state.root.rankedItems);
+  const rankedItems = useAppSelector(selectActiveRankedItems);
   const rankingName = useAppSelector((state: AppState) => state.root.name);
 
   const customConfig: Partial<RankingCanvasConfig> = {};

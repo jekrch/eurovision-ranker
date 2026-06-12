@@ -16,6 +16,7 @@ import {
 } from './videoPipShared';
 import { CountryContestant } from '../../data/CountryContestant';
 import { useAppSelector } from '../../hooks/stateHooks';
+import { selectActiveRankedItems } from '../../redux/rankingSelectors';
 import { getYouTubeVideoId } from '../../utilities/YoutubeUtil';
 
 /**
@@ -48,7 +49,7 @@ export const usePipPlayer = (
   });
 
   // the ranked list drives left/right navigation between adjacent videos
-  const rankedItems = useAppSelector((state) => state.root.rankedItems);
+  const rankedItems = useAppSelector(selectActiveRankedItems);
   const rankedItemsRef = useRef(rankedItems);
   rankedItemsRef.current = rankedItems;
   const autoContinueRef = useRef(autoContinue);

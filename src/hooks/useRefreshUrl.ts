@@ -1,7 +1,12 @@
 import { useCallback, useEffect, useState } from 'react';
 
 import { useAppDispatch, useAppSelector } from './stateHooks';
-import { setRankedItems, setUnrankedItems } from '../redux/rootSlice';
+import { selectActiveRankedItems } from '../redux/rankingSelectors';
+import {
+  setRankedItems,
+  setUnrankedItems,
+  appendCountriesToOtherCategories,
+} from '../redux/rootSlice';
 import { AppState } from '../redux/store';
 import { updateUrlFromRankedItems } from '../utilities/UrlUtil';
 
@@ -9,7 +14,7 @@ export const useRefreshUrl = () => {
   const dispatch = useAppDispatch();
   const categories = useAppSelector((state: AppState) => state.root.categories);
   const activeCategory = useAppSelector((state: AppState) => state.root.activeCategory);
-  const rankedItems = useAppSelector((state: AppState) => state.root.rankedItems);
+  const rankedItems = useAppSelector(selectActiveRankedItems);
   const unrankedItems = useAppSelector((state: AppState) => state.root.unrankedItems);
   const [shouldRefresh, setShouldRefresh] = useState(false);
 
@@ -27,6 +32,7 @@ export const useRefreshUrl = () => {
   const handleAddAllUnranked = useCallback(() => {
     const newRankedItems = [...rankedItems, ...unrankedItems];
     dispatch(setRankedItems(newRankedItems));
+    dispatch(appendCountriesToOtherCategories(unrankedItems));
     dispatch(setUnrankedItems([]));
 
     // Update URL parameters

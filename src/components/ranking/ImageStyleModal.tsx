@@ -6,6 +6,7 @@ import { createPortal } from 'react-dom';
 import { toast } from 'react-hot-toast';
 
 import { useAppSelector } from '../../hooks/stateHooks';
+import { selectActiveRankedItems } from '../../redux/rankingSelectors';
 import { AppState } from '../../redux/store';
 import {
   createModernRankingCanvas,
@@ -31,7 +32,7 @@ const ImageStyleModal: React.FC<ImageStyleModalProps> = ({ isOpen, onClose }) =>
   const [isRendering, setIsRendering] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
 
-  const rankedItems = useAppSelector((state: AppState) => state.root.rankedItems);
+  const rankedItems = useAppSelector(selectActiveRankedItems);
   const rankingName = useAppSelector((state: AppState) => state.root.name);
 
   // render a live preview of the currently selected style

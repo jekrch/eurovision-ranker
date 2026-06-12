@@ -2,6 +2,7 @@ import classNames from 'classnames';
 import React, { useEffect, useState } from 'react';
 
 import { useAppSelector } from '../../hooks/stateHooks';
+import { selectActiveRankedItems } from '../../redux/rankingSelectors';
 import { AppState } from '../../redux/store';
 import { updateUrlFromRankedItems } from '../../utilities/UrlUtil';
 import ContestantTable from '../table/ContestantTable';
@@ -15,7 +16,7 @@ import ContestantTable from '../table/ContestantTable';
  */
 const RankedCountriesTable: React.FC = () => {
   const [refreshUrl, _setRefreshUrl] = useState(0);
-  const rankedItems = useAppSelector((state: AppState) => state.root.rankedItems);
+  const rankedItems = useAppSelector(selectActiveRankedItems);
   const categories = useAppSelector((state: AppState) => state.root.categories);
   const activeCategory = useAppSelector((state: AppState) => state.root.activeCategory);
 

@@ -27,7 +27,7 @@ const render = (preloaded: Parameters<typeof makeTestStore>[0]) =>
 
 describe('useRankingDirty', () => {
   it('treats state as dirty when no ranking id is associated', () => {
-    const { result } = render({ root: { name: 'Mine', year: '2024', rankedItems: [cc('a')] } });
+    const { result } = render({ root: { name: 'Mine', year: '2024', categoryRankings: [[cc('a')]] } });
 
     expect(result.current.currentRankingId).toBeNull();
     expect(result.current.isDirty).toBe(true);
@@ -36,7 +36,7 @@ describe('useRankingDirty', () => {
 
   it('is not dirty when the live signature matches the last saved signature', () => {
     const { result } = render({
-      root: { name: 'Mine', year: '2024', rankedItems: [cc('a')] },
+      root: { name: 'Mine', year: '2024', categoryRankings: [[cc('a')]] },
       auth: { currentRankingId: 'r1', lastSavedSignature: signatureFor('Mine', '2024') },
     });
 
@@ -46,7 +46,7 @@ describe('useRankingDirty', () => {
 
   it('is dirty when the saved signature no longer matches the live state', () => {
     const { result } = render({
-      root: { name: 'Renamed', year: '2024', rankedItems: [cc('a')] },
+      root: { name: 'Renamed', year: '2024', categoryRankings: [[cc('a')]] },
       auth: { currentRankingId: 'r1', lastSavedSignature: signatureFor('Mine', '2024') },
     });
 
@@ -54,7 +54,7 @@ describe('useRankingDirty', () => {
   });
 
   it('reports isEmpty when there are no ranked items', () => {
-    const { result } = render({ root: { rankedItems: [] } });
+    const { result } = render({ root: { categoryRankings: [[]] } });
 
     expect(result.current.isEmpty).toBe(true);
   });

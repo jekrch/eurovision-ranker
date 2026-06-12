@@ -1,6 +1,10 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { setRankedItems, setUnrankedItems } from './rootSlice';
+import {
+  setRankedItems,
+  setUnrankedItems,
+  appendCountriesToOtherCategories,
+} from './rootSlice';
 import { AppState } from './store';
 import { ContestantRow, TableState } from '../components/table/tableTypes';
 
@@ -57,13 +61,15 @@ export const addAllUnranked = createAsyncThunk(
   'items/addAllUnranked',
   async (_, { dispatch, getState }) => {
     const state = getState() as AppState;
-    const { rankedItems, unrankedItems, categories } = state.root;
+    const { categoryRankings, activeCategory, unrankedItems, categories } = state.root;
+    const rankedItems = categoryRankings[activeCategory ?? 0] ?? [];
 
     // Clear unranked items
     dispatch(setUnrankedItems([]));
 
-    // Update ranked items
+    // Update ranked items (active category) and append to the inactive ones
     dispatch(setRankedItems(rankedItems.concat(unrankedItems)));
+    dispatch(appendCountriesToOtherCategories(unrankedItems));
 
     // Update URL parameters
     if (categories.length > 0) {

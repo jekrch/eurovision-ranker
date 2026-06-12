@@ -1,20 +1,17 @@
 import React, { useEffect } from 'react';
 
 import { CountryContestant } from '../data/CountryContestant';
-import {
-  setRankedItems,
-  setActiveCategory,
-  setShowTotalRank,
-  setCategories,
-} from '../redux/rootSlice';
+import { setActiveCategory, setShowTotalRank, setCategories } from '../redux/rootSlice';
 import { AppDispatch, AppState } from '../redux/store';
-import { parseCategoriesUrlParam, reorderByAllWeightedRankings } from '../utilities/CategoryUtil';
-import { isArrayEqual } from '../utilities/RankAnalyzer';
-import { loadRankingsFromURL, encodeRankingsToURL, updateQueryParams } from '../utilities/UrlUtil';
+import { parseCategoriesUrlParam } from '../utilities/CategoryUtil';
+import {
+  loadAllCategoryRankingsFromURL,
+  encodeRankingsToURL,
+  updateQueryParams,
+} from '../utilities/UrlUtil';
 
 interface UseUrlSyncArgs {
   activeCategory: number | undefined;
-  showTotalRank: boolean;
   categories: AppState['root']['categories'];
   year: string;
   name: string;
@@ -30,20 +27,18 @@ interface UseUrlSyncArgs {
 }
 
 /**
- * Owns App's URL <-> state synchronization effects: reloading rankings when the
- * active category / total-rank tab changes, loading categories from the URL,
- * keeping the per-category `rx` params (and `y`/`n`) written, and the
- * first-load category/total-rank bootstrapping.
+ * Owns App's URL <-> state synchronization effects: seeding every category's
+ * ranking into the store on boot, loading categories from the URL, keeping the
+ * per-category `rx` params (and `y`/`n`) written, and the first-load
+ * category/total-rank bootstrapping.
  *
- * IMPORTANT: these effects are ordering-sensitive. React runs effects in
- * declaration order, so this hook must be called at the same position App
- * previously declared this block (after the boot/deep-link effects), and the
- * effects below must stay in this exact order. Behavior must match the original
- * in-component effects 1:1.
+ * Switching the active category or the Total tab no longer reads the URL — the
+ * store holds all per-category rankings and the displayed list is derived via
+ * selectActiveRankedItems. The URL is read here only at boot (and on popstate,
+ * elsewhere).
  */
 export function useUrlSync({
   activeCategory,
-  showTotalRank,
   categories,
   year,
   name,
@@ -56,27 +51,17 @@ export function useUrlSync({
   exitPublicView,
 }: UseUrlSyncArgs) {
   /**
-   * Reload the rankings from the URL if the activeCategory changes or
-   * if the user either displays or exits the totalRank tab
+   * Boot: seed the store with every category's ranking from the URL. After this
+   * the store is self-sufficient, so switching the active category or the Total
+   * tab is a pure dispatch with no URL read and no reload — the old
+   * reload-on-tab-change effect that lived here is gone.
    */
   useEffect(() => {
-    const updateRankedItems = async () => {
-      // Public-view-by-id loads rankings directly; the URL has no r= so
-      // loadRankingsFromURL would just clear them.
-      if (publicViewActiveRef.current) return;
-      if (!showTotalRank) {
-        await loadRankingsFromURL(activeCategory, dispatch);
-      } else if (activeCategory === undefined && categories?.length) {
-        // if this is the first page load and we have categories we
-        // should load the first so that Total tab has contestants
-        // available to populated the total ranking
-        await loadRankingsFromURL(0, dispatch);
-      }
-    };
-
-    updateRankedItems();
+    // Public-view-by-id loads its ranking directly; the URL has no r= to read.
+    if (publicViewActiveRef.current) return;
+    loadAllCategoryRankingsFromURL(activeCategory, dispatch);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeCategory, showTotalRank]);
+  }, []);
 
   /**
    * Load categories from the url
@@ -90,24 +75,6 @@ export function useUrlSync({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  useEffect(() => {
-    const updateRankedItems = async () => {
-      if (showTotalRank) {
-        const totalOrderRankings = reorderByAllWeightedRankings(categories, rankedItems);
-
-        // if it's already correctly ordered don't reset rankedItems
-        if (isArrayEqual(totalOrderRankings, rankedItems)) {
-          return;
-        }
-
-        dispatch(setRankedItems(totalOrderRankings));
-      }
-    };
-
-    updateRankedItems();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [showTotalRank, rankedItems, categories]);
 
   useEffect(() => {
     const handleYearUpdate = async () => {
@@ -126,7 +93,7 @@ export function useUrlSync({
       }
       updateQueryParams({ y: year.slice(-2) });
 
-      await loadRankingsFromURL(activeCategory, dispatch);
+      await loadAllCategoryRankingsFromURL(activeCategory, dispatch);
     };
     handleYearUpdate();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -178,6 +145,15 @@ export function useUrlSync({
     } else {
       // if there are no categories, make sure showTotalRank is false
       dispatch(setShowTotalRank(false));
+    }
+
+    // Re-seed every category's store slot from the URL after a category
+    // structure change (add / delete / clear) so the store stays the source of
+    // truth for tab switching. The category actions have already written the
+    // canonical rx params synchronously above; this just mirrors them back in.
+    // Skipped in public-view mode, whose ranking is loaded by id, not the URL.
+    if (!publicViewActiveRef.current) {
+      loadAllCategoryRankingsFromURL(activeCategory, dispatch);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [categories]);

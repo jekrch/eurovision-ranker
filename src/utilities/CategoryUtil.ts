@@ -13,5 +13,8 @@ export {
   getContestantCategoryRankingsFromUrl,
   areCategoriesSet,
 } from './category/categoryUrl';
-export { reorderByAllWeightedRankings } from './category/categoryRanking';
+export {
+  reorderByAllWeightedRankings,
+  reorderByStoreCategoryRankings,
+} from './category/categoryRanking';
 export { clearCategories, saveCategories, deleteCategory } from './category/categoryActions';

@@ -3,6 +3,7 @@ import toast from 'react-hot-toast';
 
 import { useAppDispatch, useAppSelector } from '../../../../hooks/stateHooks';
 import { useRankingDirty } from '../../../../hooks/useRankingDirty';
+import { selectActiveRankedItems } from '../../../../redux/rankingSelectors';
 import {
   setCurrentRankingId,
   setLastSavedSignature,
@@ -44,7 +45,7 @@ export function useSavedRankings() {
   const user = useAppSelector((s: AppState) => s.auth.user);
   const name = useAppSelector((s: AppState) => s.root.name);
   const year = useAppSelector((s: AppState) => s.root.year);
-  const rankedItems = useAppSelector((s: AppState) => s.root.rankedItems);
+  const rankedItems = useAppSelector(selectActiveRankedItems);
   const currentRankingId = useAppSelector((s: AppState) => s.auth.currentRankingId);
 
   const rankings = useAppSelector((s: AppState) => s.auth.savedRankings);

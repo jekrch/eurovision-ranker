@@ -7,6 +7,7 @@ import {
   setRankedItems,
   setUnrankedItems,
   setSelectedContestants,
+  clearAllCategoryRankings,
 } from '../redux/rootSlice';
 import { AppState } from '../redux/store';
 import { fetchCountryContestantsByYear } from '../utilities/ContestantRepository';
@@ -24,6 +25,7 @@ export const useResetRanking = () => {
     dispatch(setContestants(yearContestants));
     dispatch(setUnrankedItems(yearContestants));
     dispatch(setRankedItems([]));
+    dispatch(clearAllCategoryRankings());
     dispatch(setSelectedContestants([]));
 
     clearAllRankingParams(categories);

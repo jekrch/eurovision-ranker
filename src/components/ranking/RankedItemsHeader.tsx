@@ -8,6 +8,7 @@ import RankedHeaderMenu from './RankedHeaderMenu';
 import { CountryContestant } from '../../data/CountryContestant';
 import { useAppDispatch, useAppSelector } from '../../hooks/stateHooks';
 import { useRankingDirty } from '../../hooks/useRankingDirty';
+import { selectActiveRankedItems } from '../../redux/rankingSelectors';
 import { setActiveCategory, setShowTotalRank, setYear } from '../../redux/rootSlice';
 import { AppDispatch, AppState } from '../../redux/store';
 import Dropdown from '../Dropdown';
@@ -37,7 +38,7 @@ const RankedItemsHeader: React.FC<IRankedItemsHeaderProps> = ({
   const year = useAppSelector((state: AppState) => state.root.year);
   const name = useAppSelector((state: AppState) => state.root.name);
   const globalSearch = useAppSelector((state: AppState) => state.root.globalSearch);
-  const rankedItems = useAppSelector((state: AppState) => state.root.rankedItems);
+  const rankedItems = useAppSelector(selectActiveRankedItems);
   const showTotalRank = useAppSelector((state: AppState) => state.root.showTotalRank);
   const categories = useAppSelector((state: AppState) => state.root.categories);
   const showUnranked = useAppSelector((state: AppState) => state.root.showUnranked);

@@ -17,6 +17,7 @@ import { supportedYears } from '../../data/Contestants';
 import { CountryContestant } from '../../data/CountryContestant';
 import { useAppDispatch, useAppSelector } from '../../hooks/stateHooks';
 import { deleteRankedCountry } from '../../redux/rankingActions';
+import { selectActiveRankedItems } from '../../redux/rankingSelectors';
 import { setShowUnranked } from '../../redux/rootSlice';
 import { AppDispatch, AppState } from '../../redux/store';
 import { updateUrlFromRankedItems } from '../../utilities/UrlUtil';
@@ -62,7 +63,7 @@ const RankedCountriesList: React.FC<RankedCountriesListProps> = ({
   const theme = useAppSelector((state: AppState) => state.root.theme);
   const showTotalRank = useAppSelector((state: AppState) => state.root.showTotalRank);
   const isDeleteMode = useAppSelector((state: AppState) => state.root.isDeleteMode);
-  const rankedItems = useAppSelector((state: AppState) => state.root.rankedItems);
+  const rankedItems = useAppSelector(selectActiveRankedItems);
   const categories = useAppSelector((state: AppState) => state.root.categories);
   const activeCategory = useAppSelector((state: AppState) => state.root.activeCategory);
 

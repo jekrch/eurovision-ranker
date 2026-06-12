@@ -53,14 +53,14 @@ const renderList = (preloaded: Parameters<typeof makeTestStore>[0]) =>
 // so the droppable content appears asynchronously — wait for it.
 describe('RankedCountriesList (smoke)', () => {
   it('shows the empty-state prompt when there are no ranked items', async () => {
-    renderList({ root: { rankedItems: [], showUnranked: false } });
+    renderList({ root: { categoryRankings: [[]], showUnranked: false } });
 
     expect(await screen.findByText(/countries to rank/i)).toBeTruthy();
   });
 
   it('renders a draggable row per ranked item', async () => {
     const { container } = renderList({
-      root: { rankedItems: [cc('a'), cc('b'), cc('c')], showUnranked: false },
+      root: { categoryRankings: [[cc('a'), cc('b'), cc('c')]], showUnranked: false },
     });
 
     await waitFor(() => expect(container.querySelectorAll('li')).toHaveLength(3));

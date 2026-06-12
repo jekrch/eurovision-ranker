@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 
 import { useAppSelector } from './stateHooks';
+import { selectActiveRankedItems } from '../redux/rankingSelectors';
 import { AppState } from '../redux/store';
 import { buildRankingParamsFromUrl } from '../utilities/api/rankingParams';
 import { buildSignature } from '../utilities/api/rankingSignature';
@@ -29,7 +30,7 @@ export interface RankingDirtyState {
 export function useRankingDirty(): RankingDirtyState {
   const name = useAppSelector((s: AppState) => s.root.name);
   const year = useAppSelector((s: AppState) => s.root.year);
-  const rankedItems = useAppSelector((s: AppState) => s.root.rankedItems);
+  const rankedItems = useAppSelector(selectActiveRankedItems);
   const currentRankingId = useAppSelector((s: AppState) => s.auth.currentRankingId);
   const lastSavedSignature = useAppSelector((s: AppState) => s.auth.lastSavedSignature);
 

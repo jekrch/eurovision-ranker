@@ -1,11 +1,12 @@
 import { useCallback } from 'react';
 
 import { useAppSelector } from './stateHooks';
+import { selectActiveRankedItems } from '../redux/rankingSelectors';
 import { AppState } from '../redux/store';
 import { convertRankingUrlParamsByMode } from '../utilities/ContestantUtil';
 
 export const useConvertRankParams = () => {
-  const rankedItems = useAppSelector((state: AppState) => state.root.rankedItems);
+  const rankedItems = useAppSelector(selectActiveRankedItems);
   const globalSearch = useAppSelector((state: AppState) => state.root.globalSearch);
   const categories = useAppSelector((state: AppState) => state.root.categories);
 

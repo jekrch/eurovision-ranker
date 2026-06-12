@@ -7,6 +7,7 @@ import PhantomArrow from './PhantomArrow';
 import { StrictModeDroppable } from './StrictModeDroppable';
 import { CountryContestant } from '../../data/CountryContestant';
 import { useAppSelector } from '../../hooks/stateHooks';
+import { selectActiveRankedItems } from '../../redux/rankingSelectors';
 import { AppState } from '../../redux/store';
 
 interface UnrankedCountriesListProps {
@@ -18,7 +19,7 @@ interface UnrankedCountriesListProps {
  */
 const UnrankedCountriesList: React.FC<UnrankedCountriesListProps> = ({ onAddToRanked }) => {
   const unrankedItems = useAppSelector((state: AppState) => state.root.unrankedItems);
-  const rankedItems = useAppSelector((state: AppState) => state.root.rankedItems);
+  const rankedItems = useAppSelector(selectActiveRankedItems);
   const welcomeOverlayIsOpen = useAppSelector((state: AppState) => state.root.welcomeOverlayIsOpen);
 
   return (

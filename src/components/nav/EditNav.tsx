@@ -11,6 +11,7 @@ import React, { SetStateAction } from 'react';
 import { useAppDispatch, useAppSelector } from '../../hooks/stateHooks';
 import { useRefreshUrl } from '../../hooks/useRefreshUrl';
 import { useResetRanking } from '../../hooks/useResetRanking';
+import { selectActiveRankedItems } from '../../redux/rankingSelectors';
 import { addAllPaginatedContestants, setIsDeleteMode } from '../../redux/rootSlice';
 import { AppDispatch, AppState } from '../../redux/store';
 import IconButton from '../IconButton';
@@ -28,7 +29,7 @@ type EditNavProps = {
  */
 const EditNav: React.FC<EditNavProps> = ({ setNameModalShow }) => {
   const dispatch: AppDispatch = useAppDispatch();
-  const rankedItems = useAppSelector((state: AppState) => state.root.rankedItems);
+  const rankedItems = useAppSelector(selectActiveRankedItems);
   const selectedContestants = useAppSelector(
     (state: AppState) => state.table.tableState.selectedContestants,
   );

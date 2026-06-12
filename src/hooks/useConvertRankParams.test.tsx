@@ -23,7 +23,7 @@ describe('useConvertRankParams', () => {
 
   it('forwards the current categories, globalSearch flag, and rankedItems', () => {
     const rankedItems = [cc('a'), cc('b')];
-    const store = makeTestStore({ root: { rankedItems, globalSearch: true } });
+    const store = makeTestStore({ root: { categoryRankings: [rankedItems], globalSearch: true } });
 
     const { result } = renderHook(() => useConvertRankParams(), { wrapper: storeWrapper(store) });
     result.current();

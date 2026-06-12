@@ -22,6 +22,7 @@ import { CSSTransition } from 'react-transition-group';
 import ImageCaptureMenuItem from './ImageCaptureMenuItem';
 import ImageStyleModal from './ImageStyleModal';
 import { useAppDispatch, useAppSelector } from '../../hooks/stateHooks';
+import { selectActiveRankedItems } from '../../redux/rankingSelectors';
 import { setHeaderMenuOpen } from '../../redux/rootSlice';
 import { AppDispatch, AppState } from '../../redux/store';
 import { EXPORT_TYPE } from '../../utilities/export/ExportType';
@@ -44,7 +45,7 @@ const RankedHeaderMenu: React.FC<RankedHeaderMenuProps> = (props: RankedHeaderMe
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isImageStyleModalOpen, setIsImageStyleModalOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
-  const rankedItems = useAppSelector((state: AppState) => state.root.rankedItems);
+  const rankedItems = useAppSelector(selectActiveRankedItems);
   const globalMenuOpenTrigger = useAppSelector((state: AppState) => state.root.headerMenuOpen);
   const dispatch: AppDispatch = useAppDispatch();
   const { playList, hasPlayableVideos } = useVideoPip();

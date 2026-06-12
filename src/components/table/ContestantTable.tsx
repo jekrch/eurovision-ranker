@@ -10,6 +10,7 @@ import { useContestantTable } from '../../hooks/useContestantTable';
 import { useConvertRankParams } from '../../hooks/useConvertRankParams';
 import { useRefreshUrl } from '../../hooks/useRefreshUrl';
 import { useResetRanking } from '../../hooks/useResetRanking';
+import { selectActiveRankedItems } from '../../redux/rankingSelectors';
 import { setShowUnranked, setYear } from '../../redux/rootSlice';
 import { AppState } from '../../redux/store';
 import { getDistinctRankedYears } from '../../utilities/ContestantUtil';
@@ -22,7 +23,7 @@ import TooltipHelp from '../TooltipHelp';
 const ContestantTable: React.FC = () => {
   const dispatch = useAppDispatch();
   const showUnranked = useAppSelector((state: AppState) => state.root.showUnranked);
-  const rankedItems = useAppSelector((state: AppState) => state.root.rankedItems);
+  const rankedItems = useAppSelector(selectActiveRankedItems);
   const tableState = useAppSelector((state: AppState) => state.table.tableState);
   const { sortColumn, sortDirection } = tableState;
   const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);

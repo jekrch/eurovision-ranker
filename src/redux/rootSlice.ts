@@ -19,7 +19,11 @@ interface AppState {
   isDeleteMode: boolean;
   headerMenuOpen: boolean;
   contestants: CountryContestant[];
-  rankedItems: CountryContestant[];
+  // Per-category rankings; index aligns with `categories` (slot 0 is also the
+  // single ranking when no categories are defined). The displayed list is
+  // derived from this via selectActiveRankedItems — the store, not the URL, is
+  // the source of truth for every category's order.
+  categoryRankings: CountryContestant[][];
   unrankedItems: CountryContestant[];
   categories: Category[];
   activeCategory: number | undefined;
@@ -40,7 +44,7 @@ const initialState: AppState = {
   isDeleteMode: false,
   headerMenuOpen: false,
   contestants: [],
-  rankedItems: [],
+  categoryRankings: [[]],
   unrankedItems: [],
   categories: [],
   activeCategory: undefined,
@@ -50,6 +54,10 @@ const initialState: AppState = {
   showPlace: false,
   welcomeOverlayIsOpen: false,
 };
+
+// The categoryRankings slot backing the currently displayed list. When no
+// category is active (undefined) the single ranking lives in slot 0.
+const activeIndex = (state: AppState): number => state.activeCategory ?? 0;
 
 const rootSlice = createSlice({
   name: 'root',
@@ -93,8 +101,53 @@ const rootSlice = createSlice({
     setWelcomeOverlayIsOpen: (state, action: PayloadAction<boolean>) => {
       state.welcomeOverlayIsOpen = action.payload;
     },
+    // Replace the active category's ranking. Components dispatch this exactly as
+    // before; it now writes the active slot of categoryRankings rather than a
+    // standalone array. The active slot is activeCategory (or 0 when no category
+    // is selected / none are defined).
     setRankedItems: (state, action: PayloadAction<CountryContestant[]>) => {
-      state.rankedItems = action.payload;
+      state.categoryRankings[activeIndex(state)] = action.payload;
+    },
+    // Replace every category's ranking at once — used by the boot parse to seed
+    // the store with all per-category orders from the URL.
+    setCategoryRankings: (state, action: PayloadAction<CountryContestant[][]>) => {
+      state.categoryRankings = action.payload.length ? action.payload : [[]];
+    },
+    // Append a newly-ranked country to the inactive categories. The active
+    // category receives the country (possibly at a chosen position) via
+    // setRankedItems; the others just gain it at the end, mirroring the
+    // historical per-category URL behavior.
+    addCountryToOtherCategories: (state, action: PayloadAction<CountryContestant>) => {
+      const active = activeIndex(state);
+      const slotCount = Math.max(state.categories.length, state.categoryRankings.length);
+      for (let i = 0; i < slotCount; i++) {
+        if (i === active) continue;
+        if (!state.categoryRankings[i]) state.categoryRankings[i] = [];
+        state.categoryRankings[i].push(action.payload);
+      }
+    },
+    // Append multiple countries to the inactive categories (add-all-unranked).
+    appendCountriesToOtherCategories: (state, action: PayloadAction<CountryContestant[]>) => {
+      const active = activeIndex(state);
+      const slotCount = Math.max(state.categories.length, state.categoryRankings.length);
+      for (let i = 0; i < slotCount; i++) {
+        if (i === active) continue;
+        if (!state.categoryRankings[i]) state.categoryRankings[i] = [];
+        state.categoryRankings[i].push(...action.payload);
+      }
+    },
+    // Remove a country from every category ranking (delete from the ranking).
+    removeCountryFromCategories: (state, action: PayloadAction<string>) => {
+      const id = action.payload;
+      state.categoryRankings = state.categoryRankings.map((ranking) =>
+        ranking.filter((item) => item.id !== id && item.uid !== id),
+      );
+    },
+    // Clear every category ranking (reset).
+    clearAllCategoryRankings: (state) => {
+      state.categoryRankings = state.categoryRankings.length
+        ? state.categoryRankings.map(() => [])
+        : [[]];
     },
     setUnrankedItems: (state, action: PayloadAction<CountryContestant[]>) => {
       state.unrankedItems = action.payload;
@@ -128,7 +181,9 @@ const rootSlice = createSlice({
 
       state.contestants = assignVotes(clone(state.contestants), votes);
 
-      state.rankedItems = assignVotes(clone(state.rankedItems), votes);
+      state.categoryRankings = state.categoryRankings.map((ranking) =>
+        assignVotes(clone(ranking), votes),
+      );
 
       state.unrankedItems = assignVotes(clone(state.unrankedItems), votes);
     },
@@ -144,6 +199,11 @@ export const {
   setIsDeleteMode,
   setHeaderMenuOpen,
   setRankedItems,
+  setCategoryRankings,
+  addCountryToOtherCategories,
+  appendCountriesToOtherCategories,
+  removeCountryFromCategories,
+  clearAllCategoryRankings,
   setUnrankedItems,
   setContestants,
   setCategories,

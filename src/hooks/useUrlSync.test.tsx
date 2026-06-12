@@ -8,6 +8,7 @@ import { useAppDispatch, useAppSelector } from './stateHooks';
 import { usePublicRankingView } from './usePublicRankingView';
 import { useUrlSync } from './useUrlSync';
 import { CountryContestant } from '../data/CountryContestant';
+import { selectActiveRankedItems } from '../redux/rankingSelectors';
 import { setActiveCategory, setShowTotalRank, setRankedItems } from '../redux/rootSlice';
 import { makeTestStore, TestStore } from '../test/storeHarness';
 import { handlePopState } from '../utilities/EventListenerUtil';
@@ -73,8 +74,7 @@ function SyncHarness({ apiRef }: { apiRef?: React.MutableRefObject<HarnessApi | 
   const dispatch = useAppDispatch();
   const name = useAppSelector((s) => s.root.name);
   const year = useAppSelector((s) => s.root.year);
-  const showTotalRank = useAppSelector((s) => s.root.showTotalRank);
-  const rankedItems = useAppSelector((s) => s.root.rankedItems);
+  const rankedItems = useAppSelector(selectActiveRankedItems);
   const categories = useAppSelector((s) => s.root.categories);
   const activeCategory = useAppSelector((s) => s.root.activeCategory);
   const memoizedRankedItems = useMemo(() => rankedItems, [rankedItems]);
@@ -102,7 +102,6 @@ function SyncHarness({ apiRef }: { apiRef?: React.MutableRefObject<HarnessApi | 
 
   useUrlSync({
     activeCategory,
-    showTotalRank,
     categories,
     year,
     name,
@@ -149,7 +148,7 @@ describe('URL <-> state sync', () => {
 
     mount(store);
 
-    await waitFor(() => expect(ids(store.getState().root.rankedItems)).toEqual(['a', 'b']));
+    await waitFor(() => expect(ids(selectActiveRankedItems(store.getState()))).toEqual(['a', 'b']));
     expect(ids(store.getState().root.unrankedItems).sort()).toEqual(['c', 'd']);
   });
 
@@ -169,13 +168,13 @@ describe('URL <-> state sync', () => {
       store.dispatch(setShowTotalRank(false));
       store.dispatch(setActiveCategory(0));
     });
-    await waitFor(() => expect(ids(store.getState().root.rankedItems)).toEqual(['a', 'b']));
+    await waitFor(() => expect(ids(selectActiveRankedItems(store.getState()))).toEqual(['a', 'b']));
 
     // Category 1 shows the r2 order.
     act(() => {
       store.dispatch(setActiveCategory(1));
     });
-    await waitFor(() => expect(ids(store.getState().root.rankedItems)).toEqual(['d', 'c']));
+    await waitFor(() => expect(ids(selectActiveRankedItems(store.getState()))).toEqual(['d', 'c']));
   });
 
   it('editing the ranking writes the URL, pushes history, and back restores the prior order', async () => {
@@ -185,7 +184,7 @@ describe('URL <-> state sync', () => {
       React.createRef<HarnessApi | null>() as React.MutableRefObject<HarnessApi | null>;
 
     mount(store, apiRef);
-    await waitFor(() => expect(ids(store.getState().root.rankedItems)).toEqual(['a', 'b']));
+    await waitFor(() => expect(ids(selectActiveRankedItems(store.getState()))).toEqual(['a', 'b']));
 
     const pushSpy = vi.spyOn(window.history, 'pushState');
 
@@ -200,7 +199,7 @@ describe('URL <-> state sync', () => {
     await act(async () => {
       handlePopState({} as PopStateEvent, () => false, undefined, store.dispatch);
     });
-    await waitFor(() => expect(ids(store.getState().root.rankedItems)).toEqual(['a', 'b']));
+    await waitFor(() => expect(ids(selectActiveRankedItems(store.getState()))).toEqual(['a', 'b']));
 
     pushSpy.mockRestore();
   });
@@ -223,7 +222,7 @@ describe('URL <-> state sync', () => {
     mount(store, apiRef);
 
     // Public ranking loads into the store...
-    await waitFor(() => expect(ids(store.getState().root.rankedItems)).toEqual(['a', 'b']));
+    await waitFor(() => expect(ids(selectActiveRankedItems(store.getState()))).toEqual(['a', 'b']));
     // ...and the share URL stays tidy as just ?id=xyz.
     expect(window.location.search).toBe('?id=xyz');
 

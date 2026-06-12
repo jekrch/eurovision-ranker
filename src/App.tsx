@@ -13,6 +13,7 @@ import { useRankingDragDrop } from './hooks/useRankingDragDrop';
 import useSorterModal from './hooks/useSortModal';
 import { useThemeEffect } from './hooks/useThemeEffect';
 import { useUrlSync } from './hooks/useUrlSync';
+import { selectActiveRankedItems } from './redux/rankingSelectors';
 import {
   setShowUnranked,
   setActiveCategory,
@@ -56,7 +57,7 @@ const App: React.FC = () => {
   const theme = useAppSelector((state: AppState) => state.root.theme);
   const name = useAppSelector((state: AppState) => state.root.name);
   const showTotalRank = useAppSelector((state: AppState) => state.root.showTotalRank);
-  const rankedItems = useAppSelector((state: AppState) => state.root.rankedItems);
+  const rankedItems = useAppSelector(selectActiveRankedItems);
   const unrankedItems = useAppSelector((state: AppState) => state.root.unrankedItems);
   const year = useAppSelector((state: AppState) => state.root.year);
   const globalSearch = useAppSelector((state: AppState) => state.root.globalSearch);
@@ -283,7 +284,6 @@ const App: React.FC = () => {
   // effects above) — see useUrlSync.
   useUrlSync({
     activeCategory,
-    showTotalRank,
     categories,
     year,
     name,

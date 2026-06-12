@@ -3,10 +3,12 @@ import { fetchCountryContestantsByYear, getCountryContestantsByUids } from './Co
 import { defaultYear, sanitizeYear } from '../data/Contestants';
 import { countries } from '../data/Countries';
 import { CountryContestant, createCountryContestant } from '../data/CountryContestant';
+import { parseCategoriesUrlParam } from './category/categoryUrl';
 import {
   setName,
   setYear,
   setRankedItems,
+  setCategoryRankings,
   setUnrankedItems,
   setContestants,
   setTheme,
@@ -186,6 +188,75 @@ export async function loadRankingsFromURL(
     extractedParams.globalMode,
     dispatch,
   );
+}
+
+/**
+ * Decodes *every* category's ranking from the URL into the store at once. This
+ * is a URL -> store input used at the two legitimate entry points (boot and
+ * back/forward navigation): it seeds categoryRankings for all categories so the
+ * store is self-sufficient and switching tabs never needs to re-read the URL.
+ *
+ * Categories are read straight from the URL (`c`) rather than the store so a
+ * back/forward navigation to a different category configuration still resolves
+ * the correct per-category params.
+ */
+export async function loadAllCategoryRankingsFromURL(
+  activeCategory: number | undefined,
+  dispatch: AppDispatch,
+): Promise<string[] | undefined> {
+  const params = new URLSearchParams(window.location.search);
+  const categoriesParam = params.get('c');
+  const categories = categoriesParam ? parseCategoriesUrlParam(categoriesParam) : [];
+
+  const baseParams = extractParams(params, activeCategory);
+  updateStates(baseParams, dispatch);
+
+  const isGlobalMode = baseParams.globalMode === 't';
+
+  let yearContestants: CountryContestant[] | undefined;
+  if (!isGlobalMode) {
+    yearContestants = await fetchCountryContestantsByYear(
+      baseParams.contestYear || defaultYear,
+      baseParams.voteCode ?? '',
+    );
+    dispatch(setContestants(yearContestants));
+  }
+
+  // One slot per category; with no categories there is a single ranking in the
+  // `r` param (slot 0).
+  const slotCount = categories.length || 1;
+  const activeSlot = categories.length ? (activeCategory ?? 0) : 0;
+
+  const categoryRankings: CountryContestant[][] = [];
+  let activeRankedIds: string[] = [];
+
+  for (let i = 0; i < slotCount; i++) {
+    const paramCategory = categories.length ? i : undefined;
+    const slotParams = extractParams(params, paramCategory);
+    const { rankedIds, rankedCountries } = await orderContestantsByRankingStr(
+      slotParams.rankings ?? '',
+      yearContestants,
+      isGlobalMode,
+      slotParams.voteCode ?? '',
+    );
+    categoryRankings[i] = rankedCountries;
+    if (i === activeSlot) {
+      activeRankedIds = rankedIds;
+    }
+  }
+
+  dispatch(setCategoryRankings(categoryRankings));
+
+  if (isGlobalMode) {
+    dispatch(setUnrankedItems([]));
+  } else {
+    const unrankedCountries = yearContestants?.filter(
+      (countryContestant) => !activeRankedIds.includes(countryContestant.id),
+    );
+    dispatch(setUnrankedItems(unrankedCountries ?? []));
+  }
+
+  return activeRankedIds.length ? activeRankedIds : undefined;
 }
 
 export function getUrlParams(activeCategory: number | undefined): UrlParams {

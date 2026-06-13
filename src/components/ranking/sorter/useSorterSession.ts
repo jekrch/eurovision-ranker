@@ -20,7 +20,6 @@ import {
   SortState,
   getCurrentComparison,
 } from '../../../utilities/SorterUtils';
-import { updateUrlFromRankedItems } from '../../../utilities/UrlUtil';
 
 /*
  * encapsulates the pairwise-comparison sorter's state machine: initialization,
@@ -446,8 +445,8 @@ export const useSorterSession = (
         uid: item.uid || `generated-uid-${index}-${Date.now()}`,
       }));
 
+      // The store update is projected to the URL by the single URL writer.
       dispatch(setRankedItems(validItems));
-      updateUrlFromRankedItems(activeCategory, categories, validItems);
       onClose(); // close modal after applying
     } else {
       logger.error(
@@ -456,7 +455,7 @@ export const useSorterSession = (
       );
       onClose(); // close modal even on error
     }
-  }, [canInteract, currentSortState, dispatch, onClose, activeCategory, categories]);
+  }, [canInteract, currentSortState, dispatch, onClose]);
 
   // derived state used for rendering the UI
   const progress = useMemo(() => {

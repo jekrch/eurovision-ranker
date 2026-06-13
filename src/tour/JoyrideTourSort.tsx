@@ -307,7 +307,7 @@ const JoyrideTourSort: React.FC<JoyrideTourSortProps> = (props: JoyrideTourSortP
           await clearRanking(year);
           dispatch(setName(''));
           dispatch(setShowUnranked(true));
-          clearCategories('', categories, dispatch);
+          clearCategories(0, dispatch);
           dispatch(setShowTotalRank(false));
 
           // critical: add a delay then move countries to ranked to prepare for next step

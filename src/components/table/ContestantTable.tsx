@@ -7,14 +7,12 @@ import TableBody from './TableBody';
 import TableHeader from './TableHeader';
 import { useAppDispatch, useAppSelector } from '../../hooks/stateHooks';
 import { useContestantTable } from '../../hooks/useContestantTable';
-import { useConvertRankParams } from '../../hooks/useConvertRankParams';
-import { useRefreshUrl } from '../../hooks/useRefreshUrl';
 import { useResetRanking } from '../../hooks/useResetRanking';
+import { reloadRankingsForYear } from '../../redux/rankingActions';
 import { selectActiveRankedItems } from '../../redux/rankingSelectors';
 import { setShowUnranked, setYear } from '../../redux/rootSlice';
 import { AppState } from '../../redux/store';
 import { getDistinctRankedYears } from '../../utilities/ContestantUtil';
-import { loadRankingsFromURL, urlHasRankings } from '../../utilities/UrlUtil';
 import IconButton from '../IconButton';
 import GlobalConfirmationModal from '../modals/GlobalConfirmationModal';
 import { Switch } from '../Switch';
@@ -27,10 +25,7 @@ const ContestantTable: React.FC = () => {
   const tableState = useAppSelector((state: AppState) => state.table.tableState);
   const { sortColumn, sortDirection } = tableState;
   const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
-  const activeCategory = useAppSelector((state: AppState) => state.root.activeCategory);
   const resetRanking = useResetRanking();
-  const { refreshUrl } = useRefreshUrl();
-  const convertRankParams = useConvertRankParams();
 
   const {
     paginatedContestants,
@@ -52,37 +47,34 @@ const ContestantTable: React.FC = () => {
   } = useContestantTable();
 
   const switchAdvancedMode = async (checked: boolean) => {
-    if (!checked) {
-      if (urlHasRankings(activeCategory)) {
-        const rankedYears = getDistinctRankedYears(rankedItems);
-        if (rankedYears?.length === 1) {
-          // set the year as the first year
-          dispatch(setYear(rankedYears[0]));
+    if (checked) {
+      updateGlobalSearch(checked);
+      return;
+    }
 
-          exitAdvancedMode();
-          refreshUrl();
-
-          await loadRankingsFromURL(activeCategory, dispatch);
-        } else {
-          setIsConfirmationOpen(true);
-        }
+    if (rankedItems.length > 0) {
+      const rankedYears = getDistinctRankedYears(rankedItems);
+      if (rankedYears?.length === 1) {
+        // Leaving global mode for the single year the ranking spans: drop global
+        // mode and re-resolve every category's ranking against that year. The
+        // store carries both ids, so this needs no URL round-trip and the single
+        // writer projects the (now country-id) rankings back out.
+        const year = rankedYears[0];
+        updateGlobalSearch(false);
+        dispatch(setYear(year));
+        await dispatch(reloadRankingsForYear(year));
       } else {
-        resetRanking();
-        exitAdvancedMode();
+        setIsConfirmationOpen(true);
       }
     } else {
-      updateGlobalSearch(checked);
+      resetRanking();
+      updateGlobalSearch(false);
     }
-  };
-
-  const exitAdvancedMode = () => {
-    updateGlobalSearch(false);
-    convertRankParams(false);
   };
 
   const handleDisableGlobalConfirm = () => {
     resetRanking();
-    exitAdvancedMode();
+    updateGlobalSearch(false);
   };
 
   return (

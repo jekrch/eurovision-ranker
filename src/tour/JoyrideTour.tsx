@@ -158,7 +158,7 @@ const JoyrideTour: React.FC<JoyrideTourProps> = (props: JoyrideTourProps) => {
 
         dispatch(setShowUnranked(true));
 
-        clearCategories('', categories, dispatch);
+        clearCategories(0, dispatch);
 
         dispatch(setShowTotalRank(false));
 

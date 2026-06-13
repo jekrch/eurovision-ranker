@@ -6,10 +6,10 @@ import { ContestantRow } from '../components/table/tableTypes';
 import { CountryContestant } from '../data/CountryContestant';
 import { selectActiveRankedItems } from '../redux/rankingSelectors';
 import {
+  setActiveRankingAndSyncCategoryMembership,
   setEntries,
   setGlobalSearch,
   setPaginatedContestants,
-  setRankedItems,
   setSelectedContestants,
   setTableCurrentPage,
 } from '../redux/rootSlice';
@@ -19,7 +19,7 @@ import { getCountryContestantsByUids } from '../utilities/ContestantRepository';
 import { convertRankingUrlParamsByMode } from '../utilities/ContestantUtil';
 import { fetchContestantCsv } from '../utilities/CsvCache';
 import { logger } from '../utilities/logger';
-import { getUrlParam, updateQueryParams, updateUrlFromRankedItems } from '../utilities/UrlUtil';
+import { getUrlParam, updateQueryParams } from '../utilities/UrlUtil';
 
 export const useContestantTable = () => {
   const dispatch = useAppDispatch();
@@ -65,9 +65,6 @@ export const useContestantTable = () => {
             dispatch(setSelectedContestants(initialSelectedContestants));
           }
         }
-
-        // update URL parameters for main ranking and category rankings
-        convertRankingURLParams();
       } catch (error) {
         logger.error('Error fetching data:', error);
       }
@@ -76,22 +73,6 @@ export const useContestantTable = () => {
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [globalSearch, entries.length, rankedItems, dispatch]);
-
-  const updateRankingURLParams = useCallback(() => {
-    const params: { [key: string]: string } = {};
-
-    categories.forEach((_, index) => {
-      const categoryParam = `r${index + 1}`;
-      const categoryRanking = getUrlParam(categoryParam) || '';
-      params[categoryParam] = categoryRanking;
-    });
-
-    updateQueryParams(params);
-  }, [categories]);
-
-  const convertRankingURLParams = useCallback(() => {
-    convertRankingUrlParamsByMode(categories, globalSearch, rankedItems);
-  }, [globalSearch, rankedItems, categories]);
 
   // helper function to parse CSV
   const parseCSV = (csv: string): ContestantRow[] => {
@@ -168,9 +149,12 @@ export const useContestantTable = () => {
         ];
 
         if (!areRankedItemsEqual(newRankedItems, prevRankedItemsRef.current)) {
-          dispatch(setRankedItems(newRankedItems));
-
-          updateUrlFromRankedItems(activeCategory, categories, newRankedItems);
+          // One idempotent dispatch sets the active order and brings every other
+          // category to the same membership. Doing this as separate append/remove
+          // dispatches inside this re-running async effect could not converge —
+          // it duplicated entries and looped, storming the URL writer. The URL is
+          // projected from the store by the single writer (useUrlWriter).
+          dispatch(setActiveRankingAndSyncCategoryMembership(newRankedItems));
 
           prevRankedItemsRef.current = newRankedItems;
         }
@@ -240,29 +224,6 @@ export const useContestantTable = () => {
     currentPage * pageSize,
   );
 
-  const updateCategoryRankings = useCallback(
-    (contestantId: string, isAdding: boolean) => {
-      categories.forEach((_, index) => {
-        const categoryParam = `r${index + 1}`;
-        let currentRanking = new URLSearchParams(window.location.search).get(categoryParam) || '';
-        if (!currentRanking.startsWith('>')) {
-          currentRanking = `>${currentRanking}`;
-        }
-
-        let updatedRanking: string;
-
-        if (isAdding) {
-          updatedRanking = currentRanking + contestantId;
-        } else {
-          updatedRanking = currentRanking.replace(contestantId, '');
-        }
-
-        updateQueryParams({ [categoryParam]: updatedRanking });
-      });
-    },
-    [categories],
-  );
-
   const handleSort = (column: string) => {
     if (column === 'country') {
       column = 'to_country';
@@ -290,32 +251,28 @@ export const useContestantTable = () => {
 
       if (isSelected) {
         newSelectedContestants = selectedContestants.filter((contestant) => contestant.id !== id);
-        updateCategoryRankings(id, false); // Remove from category rankings
       } else {
         const contestantToAdd = tableState.entries.find((contestant) => contestant.id === id);
-        if (contestantToAdd) {
-          newSelectedContestants = [...selectedContestants, contestantToAdd];
-          updateCategoryRankings(id, true); // Add to category rankings
-        } else {
+        if (!contestantToAdd) {
           return; // Contestant not found, do nothing
         }
+        newSelectedContestants = [...selectedContestants, contestantToAdd];
       }
 
+      // The selection is the only thing toggled here; the updateRankedItems
+      // effect reconciles it into the per-category store rankings and the single
+      // URL writer projects those to the URL.
       dispatch(setSelectedContestants(newSelectedContestants));
-
-      if (globalSearch) {
-        updateRankingURLParams();
-      }
     },
-    [
-      selectedContestants,
-      tableState.entries,
-      dispatch,
-      updateCategoryRankings,
-      globalSearch,
-      updateRankingURLParams,
-    ],
+    [selectedContestants, tableState.entries, dispatch],
   );
+
+  // Re-encode the per-category ranking params between id and global-uid form
+  // when the user flips advanced (global) mode. This is a one-shot conversion on
+  // an explicit mode switch — not part of the per-toggle path.
+  const convertRankingURLParams = useCallback(() => {
+    convertRankingUrlParamsByMode(categories, globalSearch, rankedItems);
+  }, [globalSearch, rankedItems, categories]);
 
   const updateGlobalSearch = (checked: boolean) => {
     updateQueryParams({ g: checked ? 't' : undefined });

@@ -1,46 +1,24 @@
 // @vitest-environment jsdom
-import { renderHook, act, waitFor } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-
-// The hook delegates the actual URL rewrite to UrlUtil; stub it so we can
-// assert it's invoked with the post-merge state without touching the real URL.
-vi.mock('../utilities/UrlUtil', () => ({
-  updateUrlFromRankedItems: vi.fn(),
-}));
+import { renderHook, act } from '@testing-library/react';
+import { describe, it, expect, beforeEach } from 'vitest';
 
 import { useRefreshUrl } from './useRefreshUrl';
 import { Category } from '../utilities/CategoryUtil';
 import { CountryContestant } from '../data/CountryContestant';
 import { selectActiveRankedItems } from '../redux/rankingSelectors';
-import { updateUrlFromRankedItems } from '../utilities/UrlUtil';
 import { makeTestStore, storeWrapper } from '../test/storeHarness';
 
 const cc = (id: string): CountryContestant =>
   ({ id, uid: id, country: { id, key: id, name: id }, contestant: null }) as CountryContestant;
 
 const cat = (name: string) => ({ name }) as Category;
-const mocked = vi.mocked(updateUrlFromRankedItems);
 
 describe('useRefreshUrl', () => {
   beforeEach(() => {
-    mocked.mockClear();
     window.history.replaceState(null, '', '/');
   });
 
-  it('refreshUrl forwards the active category, categories, and ranked items', () => {
-    const rankedItems = [cc('a')];
-    const categories = [cat('c1')];
-    const store = makeTestStore({
-      root: { categoryRankings: [[], rankedItems], categories, activeCategory: 1 },
-    });
-
-    const { result } = renderHook(() => useRefreshUrl(), { wrapper: storeWrapper(store) });
-    act(() => result.current.refreshUrl());
-
-    expect(mocked).toHaveBeenCalledWith(1, categories, rankedItems);
-  });
-
-  it('handleAddAllUnranked merges unranked into ranked and clears unranked', async () => {
+  it('appends every unranked contestant to the ranking and empties the unranked list', () => {
     const store = makeTestStore({
       root: {
         categoryRankings: [[cc('a')]],
@@ -50,22 +28,33 @@ describe('useRefreshUrl', () => {
     });
 
     const { result } = renderHook(() => useRefreshUrl(), { wrapper: storeWrapper(store) });
-    mocked.mockClear();
 
-    await act(async () => {
+    act(() => {
       result.current.handleAddAllUnranked();
     });
 
-    const state = store.getState().root;
     expect(selectActiveRankedItems(store.getState()).map((i) => i.uid)).toEqual(['a', 'b', 'c']);
-    expect(state.unrankedItems).toHaveLength(0);
+    expect(store.getState().root.unrankedItems).toHaveLength(0);
+  });
 
-    // it writes the category ranking params into the URL...
-    expect(new URLSearchParams(window.location.search).get('r1')).toContain('bc');
+  it('adds the unranked contestants to every category ranking, not just the active one', () => {
+    const store = makeTestStore({
+      root: {
+        categoryRankings: [[cc('a')], [cc('a')]],
+        unrankedItems: [cc('b')],
+        categories: [cat('c1'), cat('c2')],
+        activeCategory: 0,
+      },
+    });
 
-    // ...and the shouldRefresh effect re-syncs the URL from the merged list
-    await waitFor(() => expect(mocked).toHaveBeenCalled());
-    const lastCall = mocked.mock.calls.at(-1);
-    expect(lastCall?.[2].map((i: CountryContestant) => i.uid)).toEqual(['a', 'b', 'c']);
+    const { result } = renderHook(() => useRefreshUrl(), { wrapper: storeWrapper(store) });
+
+    act(() => {
+      result.current.handleAddAllUnranked();
+    });
+
+    const rankings = store.getState().root.categoryRankings;
+    expect(rankings[0].map((i) => i.uid)).toEqual(['a', 'b']);
+    expect(rankings[1].map((i) => i.uid)).toEqual(['a', 'b']);
   });
 });

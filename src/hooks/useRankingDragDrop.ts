@@ -9,44 +9,28 @@ import {
   addCountryToOtherCategories,
 } from '../redux/rootSlice';
 import { AppDispatch } from '../redux/store';
-import { Category } from '../utilities/CategoryUtil';
 import { logger } from '../utilities/logger';
-import { updateQueryParams } from '../utilities/UrlUtil';
 
 interface RankingDragDropArgs {
   rankedItems: CountryContestant[];
   unrankedItems: CountryContestant[];
   globalSearch: boolean;
-  categories: Category[];
   dispatch: AppDispatch;
   setRefreshUrl: (n: number) => void;
 }
 
 /**
  * Drag-and-drop and add-to-ranked handlers extracted from App. Owns moving
- * items within/between the ranked and unranked lists and keeping every category
- * ranking in the URL in sync.
+ * items within/between the ranked and unranked lists; the store is updated for
+ * every category and the single URL writer projects the result.
  */
 export function useRankingDragDrop({
   rankedItems,
   unrankedItems,
   globalSearch,
-  categories,
   dispatch,
   setRefreshUrl,
 }: RankingDragDropArgs) {
-  const addNewItemToAllCategoryRankings = useCallback(
-    (newContestantId: string) => {
-      categories.forEach((_, index) => {
-        const categoryParam = `r${index + 1}`;
-        const currentRanking = new URLSearchParams(window.location.search).get(categoryParam) || '';
-        const updatedRanking = `${currentRanking}${newContestantId}`;
-        updateQueryParams({ [categoryParam]: updatedRanking });
-      });
-    },
-    [categories],
-  );
-
   /**
    * Handler for the drop event. Either reposition an item within
    * its source array or move it to the other array
@@ -89,11 +73,8 @@ export function useRankingDragDrop({
           dispatch(deleteRankedCountry(reorderedItem.id));
           setRefreshUrl(Math.random());
         } else {
-          // Update the URL parameters for all categories
-          // (this adds the new item to all category rankings)
           const id = globalSearch ? reorderedItem.uid : reorderedItem.country.id;
           if (id) {
-            addNewItemToAllCategoryRankings(id);
             // mirror the add into the inactive category store slots; the active
             // slot receives it positionally via setOtherList below
             dispatch(addCountryToOtherCategories(reorderedItem));
@@ -112,7 +93,7 @@ export function useRankingDragDrop({
       dispatch(setActiveList(items));
       setRefreshUrl(Math.random());
     },
-    [unrankedItems, rankedItems, globalSearch, dispatch, addNewItemToAllCategoryRankings, setRefreshUrl],
+    [unrankedItems, rankedItems, globalSearch, dispatch, setRefreshUrl],
   );
 
   const handleAddToRanked = useCallback(
@@ -127,7 +108,6 @@ export function useRankingDragDrop({
 
       const id = globalSearch ? item.uid : item.country.id;
       if (id) {
-        addNewItemToAllCategoryRankings(id);
         dispatch(addCountryToOtherCategories(item));
       }
 
@@ -135,7 +115,7 @@ export function useRankingDragDrop({
       dispatch(setUnrankedItems(newUnranked));
       setRefreshUrl(Math.random());
     },
-    [unrankedItems, rankedItems, globalSearch, dispatch, addNewItemToAllCategoryRankings, setRefreshUrl],
+    [unrankedItems, rankedItems, globalSearch, dispatch, setRefreshUrl],
   );
 
   return { handleOnDragEnd, handleAddToRanked };

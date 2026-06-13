@@ -1,31 +1,18 @@
 import classNames from 'classnames';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 
-import { useAppSelector } from '../../hooks/stateHooks';
-import { selectActiveRankedItems } from '../../redux/rankingSelectors';
-import { AppState } from '../../redux/store';
-import { updateUrlFromRankedItems } from '../../utilities/UrlUtil';
 import ContestantTable from '../table/ContestantTable';
 
 /**
  * The list of ranked country contestants that appears on the right side column
- * of the select view and as the central column on the details/list view
+ * of the select view and as the central column on the details/list view.
+ * Ranking edits flow into the store and are projected to the URL by the single
+ * URL writer.
  *
  * @param
  * @returns
  */
 const RankedCountriesTable: React.FC = () => {
-  const [refreshUrl, _setRefreshUrl] = useState(0);
-  const rankedItems = useAppSelector(selectActiveRankedItems);
-  const categories = useAppSelector((state: AppState) => state.root.categories);
-  const activeCategory = useAppSelector((state: AppState) => state.root.activeCategory);
-
-  useEffect(() => {
-    if (refreshUrl === 0) return;
-    updateUrlFromRankedItems(activeCategory, categories, rankedItems);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [refreshUrl]);
-
   return (
     <div className="z-20">
       <div className={classNames('grid h-full max-h-full min-h-full grid-rows-[auto_1fr]')}>

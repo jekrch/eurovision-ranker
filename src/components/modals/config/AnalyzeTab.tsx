@@ -4,7 +4,8 @@ import { countries } from '../../../data/Countries';
 import { Country } from '../../../data/Country';
 import { CountryContestant } from '../../../data/CountryContestant';
 import { useAppDispatch, useAppSelector } from '../../../hooks/stateHooks';
-import { setShowComparison } from '../../../redux/rootSlice';
+import { selectActiveRankedItems } from '../../../redux/rankingSelectors';
+import { setShowComparison, setCategoryRankingAtSlot } from '../../../redux/rootSlice';
 import { AppState } from '../../../redux/store';
 import { saveCategories } from '../../../utilities/CategoryUtil';
 import { fetchCountryContestantsByYear } from '../../../utilities/ContestantRepository';
@@ -13,7 +14,7 @@ import {
   findMostDissimilarLists,
   findMostSimilarLists,
 } from '../../../utilities/RankAnalyzer';
-import { getUrlParam, getUrlParams, updateQueryParams } from '../../../utilities/UrlUtil';
+import { getUrlParams, orderContestantsByRankingStr, updateQueryParams } from '../../../utilities/UrlUtil';
 import { sortByVotes } from '../../../utilities/VoteProcessor';
 import {
   getSourceCountryKey,
@@ -42,6 +43,8 @@ const AnalyzeTab: React.FC = () => {
   const [codeCountryNameMap, setCodeCountryNameMap] = useState<Map<string, Country[]>>(new Map());
   const showComparison = useAppSelector((state: AppState) => state.root.showComparison);
   const globalSearch = useAppSelector((state: AppState) => state.root.globalSearch);
+  const contestants = useAppSelector((state: AppState) => state.root.contestants);
+  const rankedItems = useAppSelector(selectActiveRankedItems);
 
   /**
    * Get all country rank codes for the selected year and vote type
@@ -171,16 +174,16 @@ const AnalyzeTab: React.FC = () => {
     return roundedPercent % 1 === 0 ? roundedPercent.toFixed(0) : roundedPercent.toFixed(1);
   };
 
-  const addRankingAsCategory = (rankingCode: string, rankingTitle: string) => {
-    const currentNonCatRanking = getUrlParam('r');
+  const addRankingAsCategory = async (rankingCode: string, rankingTitle: string) => {
+    // An uncategorized ranking (no categories defined yet, but a ranking exists)
+    // is preserved as its own "Original" category.
+    const hasUncategorizedRanking = categories.length === 0 && rankedItems.length > 0;
 
     let updatedCategories = [...categories];
 
-    // if there's an uncategorized ranking create a cat for it
-    if (currentNonCatRanking) {
-      const currentRankingTitle = 'Original';
+    if (hasUncategorizedRanking) {
       const originalRanking = {
-        name: currentRankingTitle,
+        name: 'Original',
         weight: 5,
       };
       updatedCategories = [...updatedCategories, originalRanking];
@@ -194,13 +197,19 @@ const AnalyzeTab: React.FC = () => {
     };
 
     const categoriesWithNewRanking = [...updatedCategories, newCategory];
+    // Seeds every new category slot from the active ranking; the comparison slot
+    // is then overwritten with the analyzed ranking below.
     saveCategories(categoriesWithNewRanking, dispatch, updatedCategories, activeCategory);
 
-    // add param for new ranking based on the category index
-    const categoryIndex = categoriesWithNewRanking.length;
-    updateQueryParams({
-      [`r${categoryIndex}`]: rankingCode,
-    });
+    // Resolve the comparison ranking string into contestants and store it in the
+    // new category's slot; the single URL writer projects it to `rN`.
+    const newSlot = categoriesWithNewRanking.length - 1;
+    const { rankedCountries } = await orderContestantsByRankingStr(
+      rankingCode,
+      contestants,
+      globalSearch,
+    );
+    dispatch(setCategoryRankingAtSlot({ index: newSlot, ranking: rankedCountries }));
   };
 
   /**

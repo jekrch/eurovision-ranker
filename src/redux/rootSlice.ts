@@ -113,6 +113,35 @@ const rootSlice = createSlice({
     setCategoryRankings: (state, action: PayloadAction<CountryContestant[][]>) => {
       state.categoryRankings = action.payload.length ? action.payload : [[]];
     },
+    // Set the active category's order AND bring every other category to the same
+    // membership in one atomic, idempotent step: each other slot keeps its own
+    // order for contestants still present, drops any no longer in the ranking,
+    // and gains (at the end) any it was missing. Used by the advanced view, where
+    // selecting/deselecting changes which contestants are ranked across all
+    // categories. Idempotent so it can be re-applied by a re-running effect
+    // without drifting (the non-idempotent append/remove pair it replaced could
+    // duplicate entries and never settle, storming the URL writer).
+    setActiveRankingAndSyncCategoryMembership: (
+      state,
+      action: PayloadAction<CountryContestant[]>,
+    ) => {
+      const membership = action.payload;
+      const active = activeIndex(state);
+      state.categoryRankings[active] = membership;
+
+      const keyOf = (item: CountryContestant) => (state.globalSearch ? item.uid : item.id);
+      const membershipKeys = new Set(membership.map(keyOf));
+
+      const slotCount = Math.max(state.categories.length, state.categoryRankings.length);
+      for (let i = 0; i < slotCount; i++) {
+        if (i === active) continue;
+        const slot = state.categoryRankings[i] ?? [];
+        const kept = slot.filter((item) => membershipKeys.has(keyOf(item)));
+        const keptKeys = new Set(kept.map(keyOf));
+        const additions = membership.filter((item) => !keptKeys.has(keyOf(item)));
+        state.categoryRankings[i] = [...kept, ...additions];
+      }
+    },
     // Append a newly-ranked country to the inactive categories. The active
     // category receives the country (possibly at a chosen position) via
     // setRankedItems; the others just gain it at the end, mirroring the
@@ -148,6 +177,46 @@ const rootSlice = createSlice({
       state.categoryRankings = state.categoryRankings.length
         ? state.categoryRankings.map(() => [])
         : [[]];
+    },
+    // Ensure a ranking slot exists for each of `count` categories. Newly created
+    // slots inherit the currently active ranking, mirroring how defining a
+    // category historically started it from the current order. Existing slots
+    // keep their order.
+    seedCategoryRankingSlots: (state, action: PayloadAction<number>) => {
+      const count = action.payload;
+      const source = state.categoryRankings[activeIndex(state)] ?? [];
+      for (let i = 0; i < count; i++) {
+        if (!state.categoryRankings[i]) {
+          state.categoryRankings[i] = clone(source);
+        }
+      }
+    },
+    // Remove a single category's ranking slot (category delete). Remaining slots
+    // shift down to stay index-aligned with `categories`.
+    removeCategoryRankingSlot: (state, action: PayloadAction<number>) => {
+      state.categoryRankings.splice(action.payload, 1);
+      if (!state.categoryRankings.length) {
+        state.categoryRankings = [[]];
+      }
+    },
+    // Collapse every category's ranking down to the single ranking held in the
+    // given slot (category clear): the chosen order becomes the sole, category-
+    // less ranking.
+    collapseCategoryRankingsToSlot: (state, action: PayloadAction<number>) => {
+      const keep =
+        state.categoryRankings[action.payload] ??
+        state.categoryRankings.find((ranking) => ranking.length) ??
+        [];
+      state.categoryRankings = [clone(keep)];
+    },
+    // Replace one category's ranking slot (used when importing a specific order
+    // into a freshly added category, e.g. the analyze comparison).
+    setCategoryRankingAtSlot: (
+      state,
+      action: PayloadAction<{ index: number; ranking: CountryContestant[] }>,
+    ) => {
+      const { index, ranking } = action.payload;
+      state.categoryRankings[index] = ranking;
     },
     setUnrankedItems: (state, action: PayloadAction<CountryContestant[]>) => {
       state.unrankedItems = action.payload;
@@ -200,10 +269,15 @@ export const {
   setHeaderMenuOpen,
   setRankedItems,
   setCategoryRankings,
+  setActiveRankingAndSyncCategoryMembership,
   addCountryToOtherCategories,
   appendCountriesToOtherCategories,
   removeCountryFromCategories,
   clearAllCategoryRankings,
+  seedCategoryRankingSlots,
+  removeCategoryRankingSlot,
+  collapseCategoryRankingsToSlot,
+  setCategoryRankingAtSlot,
   setUnrankedItems,
   setContestants,
   setCategories,

@@ -17,7 +17,14 @@ import authReducer, {
   removeGroupIdFromRanking,
 } from './authSlice';
 import groupsReducer, { setGroups, setGroupInvites, removeGroup } from './groupsSlice';
-import rootReducer, { setName } from './rootSlice';
+import rootReducer, {
+  setName,
+  setCategories,
+  setActiveCategory,
+  setGlobalSearch,
+  setCategoryRankings,
+  setActiveRankingAndSyncCategoryMembership,
+} from './rootSlice';
 import tableReducer, { toggleSelectedContestant, setEntries } from './tableSlice';
 import { ContestantRow } from '../components/table/tableTypes';
 import { Group, GroupInvite, UserRanking } from '../utilities/api/types';
@@ -118,6 +125,74 @@ describe('tableSlice — toggleSelectedContestant', () => {
 
     store.dispatch(toggleSelectedContestant('c1'));
     expect(store.getState().table.tableState.selectedContestants).toEqual([]);
+  });
+});
+
+describe('rootSlice — setActiveRankingAndSyncCategoryMembership', () => {
+  // minimal CountryContestant identified by uid (global mode keys by uid)
+  const c = (uid: string) => ({ id: uid, uid, country: { id: uid }, contestant: null }) as never;
+  const uids = (slot: { uid?: string }[]) => slot.map((i) => i.uid);
+
+  function setup() {
+    const store = makeStore();
+    store.dispatch(setGlobalSearch(true));
+    store.dispatch(
+      setCategories([
+        { name: 'Original', weight: 5 },
+        { name: 'Televote', weight: 0 },
+        { name: 'Jury', weight: 0 },
+      ]),
+    );
+    store.dispatch(setActiveCategory(0));
+    store.dispatch(
+      setCategoryRankings([
+        [c('a'), c('b'), c('c')],
+        [c('b'), c('a')],
+        [c('b'), c('a'), c('c'), c('d')],
+      ]),
+    );
+    return store;
+  }
+
+  it('brings every category to the same membership, preserving each order', () => {
+    const store = setup();
+
+    // membership drops c and d; each other slot keeps its own order for a/b
+    store.dispatch(setActiveRankingAndSyncCategoryMembership([c('a'), c('b')]));
+
+    const slots = store.getState().root.categoryRankings;
+    expect(uids(slots[0])).toEqual(['a', 'b']);
+    expect(uids(slots[1])).toEqual(['b', 'a']);
+    expect(uids(slots[2])).toEqual(['b', 'a']);
+  });
+
+  it('appends a newly added contestant to every category once', () => {
+    const store = setup();
+
+    store.dispatch(setActiveRankingAndSyncCategoryMembership([c('a'), c('b'), c('c'), c('e')]));
+
+    const slots = store.getState().root.categoryRankings;
+    expect(uids(slots[0])).toEqual(['a', 'b', 'c', 'e']);
+    // slot 1 kept b,a then gains the missing c,e; slot 2 kept b,a,c then gains e
+    expect(uids(slots[1])).toEqual(['b', 'a', 'c', 'e']);
+    expect(uids(slots[2])).toEqual(['b', 'a', 'c', 'e']);
+  });
+
+  it('is idempotent — re-applying the same membership never duplicates entries', () => {
+    const store = setup();
+    const membership = [c('a'), c('b'), c('e')];
+
+    store.dispatch(setActiveRankingAndSyncCategoryMembership(membership));
+    const once = store.getState().root.categoryRankings.map(uids);
+
+    // a re-running effect can dispatch the same thing again; state must not drift
+    store.dispatch(setActiveRankingAndSyncCategoryMembership(membership));
+    store.dispatch(setActiveRankingAndSyncCategoryMembership(membership));
+    const thrice = store.getState().root.categoryRankings.map(uids);
+
+    expect(thrice).toEqual(once);
+    // no slot has a duplicated uid
+    thrice.forEach((slot) => expect(slot.length).toBe(new Set(slot).size));
   });
 });
 

@@ -1,32 +1,26 @@
 import { saveCategoriesToUrl } from './categoryUrl';
 import { Category } from './types';
-import { setActiveCategory, setCategories, setShowTotalRank } from '../../redux/rootSlice';
+import {
+  setActiveCategory,
+  setCategories,
+  setShowTotalRank,
+  seedCategoryRankingSlots,
+  removeCategoryRankingSlot,
+  collapseCategoryRankingsToSlot,
+} from '../../redux/rootSlice';
 import { AppDispatch } from '../../redux/store';
 
 /**
- * Clear all categories and category rankings, and then make rankingsToSet
- * the new main ranking
+ * Clear all categories: collapse the per-category rankings down to the kept
+ * slot's order, which becomes the sole, category-less ranking. The single URL
+ * writer projects the collapsed `r` (and drops the now-stale `rN`); the `c`
+ * param is removed here.
  *
- * @param rankingToSet
- * @param categories
+ * @param keepSlot the category slot whose ranking survives as the main ranking
  * @param dispatch
  */
-export function clearCategories(
-  rankingToSet: string,
-  categories: Category[],
-  dispatch: AppDispatch,
-) {
-  const searchParams = new URLSearchParams(window.location.search);
-  searchParams.set('r', rankingToSet);
-
-  searchParams.delete('c');
-
-  for (let i = 1; i <= categories.length; i++) {
-    searchParams.delete(`r${i}`);
-  }
-
-  const newUrl = `${window.location.pathname}?${searchParams.toString()}`;
-  window.history.replaceState(null, '', newUrl);
+export function clearCategories(keepSlot: number, dispatch: AppDispatch) {
+  dispatch(collapseCategoryRankingsToSlot(keepSlot));
 
   dispatch(setActiveCategory(undefined));
 
@@ -34,55 +28,36 @@ export function clearCategories(
   dispatch(setShowTotalRank(false));
 
   dispatch(setCategories([]));
+
+  // remove the c param (an empty list deletes it)
+  saveCategoriesToUrl([]);
 }
 
 export function saveCategories(
   updatedCategories: Category[],
   dispatch: AppDispatch,
-  currentCategories: Category[],
+  _currentCategories: Category[],
   activeCategory: number | undefined,
 ) {
-  setCategories(updatedCategories);
-
   if (updatedCategories.length === 0) {
-    // if we're clearing categories, set the currently selected or first
-    // available category ranking to r=
-    const searchParams = new URLSearchParams(window.location.search);
-    let rankingToSet = '';
-
-    if (activeCategory !== undefined) {
-      // if there is a currently selected category, use its ranking
-      const categoryParam = `r${activeCategory + 1}`;
-      rankingToSet = searchParams.get(categoryParam) || '';
-    } else {
-      // If no active category, use the first available category ranking
-      for (let i = 1; i <= currentCategories.length; i++) {
-        const categoryParam = `r${i}`;
-        const ranking = searchParams.get(categoryParam);
-        if (ranking) {
-          rankingToSet = ranking;
-          break;
-        }
-      }
-    }
-
-    // Set the current ranking to r= and remove all rx params
-    clearCategories(rankingToSet, currentCategories, dispatch);
+    // Clearing categories: keep the active ranking (or the first non-empty one)
+    // as the single category-less ranking.
+    clearCategories(activeCategory ?? 0, dispatch);
   } else {
     dispatch(setCategories(updatedCategories));
+    // Ensure a store slot per category; newly added ones inherit the active
+    // ranking, matching how defining a category historically started it from the
+    // current order.
+    dispatch(seedCategoryRankingSlots(updatedCategories.length));
     saveCategoriesToUrl(updatedCategories);
   }
 }
 
 /**
- * Delete category with the provided index, updating categories state, url, and
- * the activeCategory state if necessary
- *
- * @param indexToDelete
- * @param dispatch
- * @param categories
- * @param activeCategory
- * @returns
+ * Delete the category at the provided index, updating the categories, the
+ * per-category ranking slots in the store, and the activeCategory as needed. The
+ * single URL writer reprojects the remaining `rN` (the deleted slot's param
+ * disappears and the rest renumber automatically).
  */
 export const deleteCategory = (
   indexToDelete: number,
@@ -93,47 +68,23 @@ export const deleteCategory = (
   if (categories?.length === 1) {
     return saveCategories([], dispatch, categories, activeCategory);
   }
+
   const updatedCategories = [...categories];
   updatedCategories.splice(indexToDelete, 1);
 
-  const searchParams = new URLSearchParams(window.location.search);
-
-  // Remove the corresponding rx URL param
-  const categoryParam = `r${indexToDelete + 1}`;
-  const ranking = searchParams.get(categoryParam);
-  searchParams.delete(categoryParam);
-
-  if (updatedCategories.length === 0) {
-    // If no categories left, convert the current rx param to an r param
-    if (ranking) {
-      searchParams.set('r', ranking);
-    }
-  } else {
-    // Renumber the remaining rx URL params to ensure they are sequential
-    for (let i = indexToDelete + 1; i < categories.length; i++) {
-      const oldCategoryParam = `r${i + 1}`;
-      const newCategoryParam = `r${i}`;
-      const ranking = searchParams.get(oldCategoryParam);
-      if (ranking) {
-        searchParams.set(newCategoryParam, ranking);
-        searchParams.delete(oldCategoryParam);
-      }
-    }
-  }
-
-  const newUrl = `${window.location.pathname}?${searchParams.toString()}`;
-  window.history.replaceState(null, '', newUrl);
+  // Drop the deleted category's ranking slot; remaining slots shift down to stay
+  // index-aligned with the categories.
+  dispatch(removeCategoryRankingSlot(indexToDelete));
 
   // Update the activeCategory if necessary
   if (activeCategory === indexToDelete) {
-    if (updatedCategories.length > 0) {
-      dispatch(setActiveCategory(0)); // Set to the next available index
-    } else {
-      dispatch(setActiveCategory(undefined)); // Set to undefined if no categories left
-    }
+    // deleted the active one — fall back to the first remaining category
+    dispatch(setActiveCategory(0));
   } else if (activeCategory !== undefined && activeCategory > indexToDelete) {
-    dispatch(setActiveCategory(activeCategory - 1)); // Adjust the activeCategory to match the renumbered category
+    // a category before the active one was removed — shift the index down
+    dispatch(setActiveCategory(activeCategory - 1));
   }
 
-  saveCategories(updatedCategories, dispatch, categories, activeCategory);
+  dispatch(setCategories(updatedCategories));
+  saveCategoriesToUrl(updatedCategories);
 };

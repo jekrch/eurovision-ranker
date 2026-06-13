@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import AppContent from './components/AppContent';
 import AppModals from './components/AppModals';
@@ -13,6 +13,7 @@ import { useRankingDragDrop } from './hooks/useRankingDragDrop';
 import useSorterModal from './hooks/useSortModal';
 import { useThemeEffect } from './hooks/useThemeEffect';
 import { useUrlSync } from './hooks/useUrlSync';
+import { useUrlWriter } from './hooks/useUrlWriter';
 import { selectActiveRankedItems } from './redux/rankingSelectors';
 import {
   setShowUnranked,
@@ -42,7 +43,7 @@ import {
 } from './utilities/EventListenerUtil';
 import { SKIP_WELCOME_AFTER_TOUR_KEY } from './utilities/JoyrideUtil';
 import { logger } from './utilities/logger';
-import { updateQueryParams, updateUrlFromRankedItems, urlHasRankings } from './utilities/UrlUtil';
+import { urlHasRankings } from './utilities/UrlUtil';
 
 const App: React.FC = () => {
   const { modalState, openModal, closeModal, setModalTab, currentTab } = useModal('about');
@@ -51,6 +52,9 @@ const App: React.FC = () => {
   // even when the tab string is unchanged (overriding its sticky-tab memory).
   const [configTabNonce, setConfigTabNonce] = useState(0);
   const [refreshUrl, setRefreshUrl] = useState(0);
+  // Armed after the boot hydration so the single URL writer (useUrlWriter) only
+  // starts projecting the store back to the URL once the store reflects it.
+  const writerReadyRef = useRef(false);
   const dispatch: AppDispatch = useAppDispatch();
 
   const showUnranked = useAppSelector((state: AppState) => state.root.showUnranked);
@@ -146,7 +150,11 @@ const App: React.FC = () => {
       // First user edit — exit public view and let URL track state normally.
       exitPublicView();
     }
-    updateUrlFromRankedItems(activeCategory, categories, memoizedRankedItems);
+    // The edited ranking's r/rN params are written by the ranking list/table
+    // (and reset/sorter) effects; this App-level effect no longer duplicates
+    // that write. Arm the URL writer so it projects n/y/g once public view has
+    // been exited, even when the first edit precedes boot hydration.
+    writerReadyRef.current = true;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [refreshUrl]);
 
@@ -273,7 +281,8 @@ const App: React.FC = () => {
   }, []);
 
   const updateGlobalSearch = (checked: boolean) => {
-    updateQueryParams({ g: checked ? 't' : undefined });
+    // The `g` param is projected from the store by the single URL writer
+    // (useUrlWriter); just update the store here.
     dispatch(setGlobalSearch(checked));
   };
 
@@ -287,14 +296,20 @@ const App: React.FC = () => {
     categories,
     year,
     name,
-    rankedItems: memoizedRankedItems,
     dispatch,
     publicViewActiveRef,
     publicViewLoadedRef,
     loadedNameRef,
     loadedYearRef,
     exitPublicView,
+    writerReadyRef,
   });
+
+  // The single store -> URL writer: projects the store's canonical params to the
+  // URL, replacing the scattered updateQueryParams calls. Declared after
+  // useUrlSync so its effect runs after the boot/public-view effects in the same
+  // commit (e.g. it observes an exitPublicView before projecting).
+  useUrlWriter({ readyRef: writerReadyRef, publicViewActiveRef, editNonce: refreshUrl });
 
   // Drag-and-drop + add-to-ranked handlers, including keeping every category
   // ranking in the URL in sync. Extracted to keep App focused on composition.
@@ -302,7 +317,6 @@ const App: React.FC = () => {
     rankedItems: memoizedRankedItems,
     unrankedItems: memoizedUnrankedItems,
     globalSearch,
-    categories,
     dispatch,
     setRefreshUrl,
   });

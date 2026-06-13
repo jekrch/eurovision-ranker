@@ -5,7 +5,7 @@ import {
   DroppableProvided,
 } from '@hello-pangea/dnd';
 import classNames from 'classnames';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { FaChevronRight } from 'react-icons/fa';
 
 import { Card } from './Card';
@@ -20,7 +20,6 @@ import { deleteRankedCountry } from '../../redux/rankingActions';
 import { selectActiveRankedItems } from '../../redux/rankingSelectors';
 import { setShowUnranked } from '../../redux/rootSlice';
 import { AppDispatch, AppState } from '../../redux/store';
-import { updateUrlFromRankedItems } from '../../utilities/UrlUtil';
 import { generateYoutubePlaylistUrl } from '../../utilities/YoutubeUtil';
 import { HeartIcon } from '../HeartIcon';
 import IconButton from '../IconButton';
@@ -58,14 +57,11 @@ const RankedCountriesList: React.FC<RankedCountriesListProps> = ({
   openQuizModal,
 }) => {
   const dispatch: AppDispatch = useAppDispatch();
-  const [refreshUrl, setRefreshUrl] = useState(0);
   const showUnranked = useAppSelector((state: AppState) => state.root.showUnranked);
   const theme = useAppSelector((state: AppState) => state.root.theme);
   const showTotalRank = useAppSelector((state: AppState) => state.root.showTotalRank);
   const isDeleteMode = useAppSelector((state: AppState) => state.root.isDeleteMode);
   const rankedItems = useAppSelector(selectActiveRankedItems);
-  const categories = useAppSelector((state: AppState) => state.root.categories);
-  const activeCategory = useAppSelector((state: AppState) => state.root.activeCategory);
 
   /**
    * used to synchronize the horizontal scrollbar on detail cards across all ranked items
@@ -76,22 +72,16 @@ const RankedCountriesList: React.FC<RankedCountriesListProps> = ({
     setCategoryScrollPosition(event.currentTarget.scrollLeft);
   };
 
-  useEffect(() => {
-    if (refreshUrl === 0) return;
-    updateUrlFromRankedItems(activeCategory, categories, rankedItems);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [refreshUrl]);
-
   /**
    * Identify country with the provided Id in the rankedItems array, and
-   * move them back into the unrankedItems array, alphabetically
+   * move them back into the unrankedItems array, alphabetically. The store
+   * update is projected to the URL by the single URL writer.
    *
    * @param countryId
    */
   const handleDeleteRankedCountry = useCallback(
     (id: string) => {
       dispatch(deleteRankedCountry(id));
-      setRefreshUrl(Math.random());
     },
     [dispatch],
   );

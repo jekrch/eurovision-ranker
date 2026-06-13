@@ -1,21 +1,16 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 
-import { CountryContestant } from '../data/CountryContestant';
+import { reloadRankingsForYear } from '../redux/rankingActions';
 import { setActiveCategory, setShowTotalRank, setCategories } from '../redux/rootSlice';
 import { AppDispatch, AppState } from '../redux/store';
 import { parseCategoriesUrlParam } from '../utilities/CategoryUtil';
-import {
-  loadAllCategoryRankingsFromURL,
-  encodeRankingsToURL,
-  updateQueryParams,
-} from '../utilities/UrlUtil';
+import { loadAllCategoryRankingsFromURL } from '../utilities/UrlUtil';
 
 interface UseUrlSyncArgs {
   activeCategory: number | undefined;
   categories: AppState['root']['categories'];
   year: string;
   name: string;
-  rankedItems: CountryContestant[];
   dispatch: AppDispatch;
   // public-view-by-id refs/action (owned by usePublicRankingView). While public
   // view is active we suppress the n/y URL writes and redundant reloads.
@@ -24,6 +19,10 @@ interface UseUrlSyncArgs {
   loadedNameRef: React.MutableRefObject<string>;
   loadedYearRef: React.MutableRefObject<string>;
   exitPublicView: () => void;
+  // Armed once the store has been hydrated from the URL on boot, so the single
+  // URL writer (useUrlWriter) knows it is safe to start projecting the store
+  // back to the URL without clobbering the share link we booted from.
+  writerReadyRef: React.MutableRefObject<boolean>;
 }
 
 /**
@@ -42,14 +41,17 @@ export function useUrlSync({
   categories,
   year,
   name,
-  rankedItems,
   dispatch,
   publicViewActiveRef,
   publicViewLoadedRef,
   loadedNameRef,
   loadedYearRef,
   exitPublicView,
+  writerReadyRef,
 }: UseUrlSyncArgs) {
+  // Boot seeds the store (and `year`) from the URL; the year effect below must
+  // not re-resolve on that initial population — only on a later user year change.
+  const yearResolvedRef = useRef(false);
   /**
    * Boot: seed the store with every category's ranking from the URL. After this
    * the store is self-sufficient, so switching the active category or the Total
@@ -58,8 +60,18 @@ export function useUrlSync({
    */
   useEffect(() => {
     // Public-view-by-id loads its ranking directly; the URL has no r= to read.
-    if (publicViewActiveRef.current) return;
-    loadAllCategoryRankingsFromURL(activeCategory, dispatch);
+    // The URL writer is suppressed via publicViewActiveRef while public view is
+    // active, so it is safe to arm it now for when the view later exits.
+    if (publicViewActiveRef.current) {
+      writerReadyRef.current = true;
+      return;
+    }
+    // Arm the single URL writer only after the store has been hydrated from the
+    // URL — projecting the (empty) store before this resolves would wipe the
+    // share link we are booting from.
+    loadAllCategoryRankingsFromURL(activeCategory, dispatch).finally(() => {
+      writerReadyRef.current = true;
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -82,8 +94,8 @@ export function useUrlSync({
         return;
       }
       // In public-view mode, the dispatched year matches the loaded value —
-      // skip URL write and the redundant reload. If the user later picks a
-      // different year, exit public view and behave normally.
+      // skip the redundant reload. If the user later picks a different year,
+      // exit public view and behave normally.
       if (publicViewActiveRef.current) {
         // Fetch in flight: refs aren't populated yet, so any compare would
         // be bogus. Suppress until loadPublicRankingById finishes.
@@ -91,69 +103,53 @@ export function useUrlSync({
         if (year === loadedYearRef.current) return;
         exitPublicView();
       }
-      updateQueryParams({ y: year.slice(-2) });
 
-      await loadAllCategoryRankingsFromURL(activeCategory, dispatch);
+      // Skip the first non-empty year, which is the value boot just loaded from
+      // the URL — re-resolving it would redo work boot already did.
+      if (!yearResolvedRef.current) {
+        yearResolvedRef.current = true;
+        return;
+      }
+
+      // User picked a new year: re-resolve every category's ranking against it
+      // from the store (no URL read). The single URL writer projects `y` and the
+      // refreshed rankings back out.
+      await dispatch(reloadRankingsForYear(year));
     };
     handleYearUpdate();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [year]);
 
   useEffect(() => {
+    // A rename during public view is a user edit: exit the mode so the URL
+    // tracks state normally again. The `n` param itself is now written by the
+    // single URL writer (useUrlWriter), not here.
     if (publicViewActiveRef.current) {
       if (!publicViewLoadedRef.current) return;
       if (name === loadedNameRef.current) return;
       exitPublicView();
     }
-    updateQueryParams({ n: name });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [name]);
 
+  // First-load category bootstrap. The category structure's store slots are
+  // reshaped by the category actions (a reducer), not here, and the per-category
+  // rankings are projected to the URL by the single writer — this effect only
+  // settles which tab is shown when no active category has been chosen yet.
   useEffect(() => {
     if (categories.length > 0) {
-      // Add new category to the URL with the appropriate rx param
-      categories.forEach((_, index) => {
-        const categoryParam = `r${index + 1}`;
-        const currentRanking = new URLSearchParams(window.location.search).get(categoryParam);
-
-        if (!currentRanking) {
-          const updatedRanking = encodeRankingsToURL(rankedItems);
-          updateQueryParams({ [categoryParam]: updatedRanking });
-        }
-      });
-
-      // Remove the r= ranking URL param if it exists
-      const searchParams = new URLSearchParams(window.location.search);
-      if (searchParams.has('r')) {
-        searchParams.delete('r');
-        const newUrl = `${window.location.pathname}?${searchParams.toString()}`;
-        window.history.replaceState(null, '', newUrl);
-      }
-
-      // If active category is undefined, then this is the
-      // first page load. In that case either
-      // 1. if there are more than 1 categories, show the total view
-      // or
-      // 2. if there is only 1 category, just show that category ranking
+      // activeCategory is undefined on first page load: show the total view when
+      // there are competing categories, otherwise the sole category's ranking.
       if (activeCategory === undefined) {
-        if (categories?.length > 1) {
+        if (categories.length > 1) {
           dispatch(setShowTotalRank(true));
         } else {
           dispatch(setActiveCategory(0));
         }
       }
     } else {
-      // if there are no categories, make sure showTotalRank is false
+      // with no categories there is nothing to total
       dispatch(setShowTotalRank(false));
-    }
-
-    // Re-seed every category's store slot from the URL after a category
-    // structure change (add / delete / clear) so the store stays the source of
-    // truth for tab switching. The category actions have already written the
-    // canonical rx params synchronously above; this just mirrors them back in.
-    // Skipped in public-view mode, whose ranking is loaded by id, not the URL.
-    if (!publicViewActiveRef.current) {
-      loadAllCategoryRankingsFromURL(activeCategory, dispatch);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [categories]);

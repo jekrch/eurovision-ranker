@@ -5,6 +5,10 @@ import { Provider } from 'react-redux';
 import { logout } from './redux/rootSlice';
 import store from './redux/store';
 import { registerUnauthorizedHandler } from './utilities/api/client';
+import { installHistoryLoopGuard } from './utilities/historyLoopGuard';
+
+// dev-only: catch and break URL-write storms before Chrome throttles navigation
+installHistoryLoopGuard();
 
 // import global styles
 import './index.css';

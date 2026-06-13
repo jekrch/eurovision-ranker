@@ -1,18 +1,18 @@
 // @vitest-environment jsdom
 import { render, act, waitFor } from '@testing-library/react';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Provider } from 'react-redux';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 import { useAppDispatch, useAppSelector } from './stateHooks';
 import { usePublicRankingView } from './usePublicRankingView';
 import { useUrlSync } from './useUrlSync';
+import { useUrlWriter } from './useUrlWriter';
 import { CountryContestant } from '../data/CountryContestant';
 import { selectActiveRankedItems } from '../redux/rankingSelectors';
 import { setActiveCategory, setShowTotalRank, setRankedItems } from '../redux/rootSlice';
 import { makeTestStore, TestStore } from '../test/storeHarness';
 import { handlePopState } from '../utilities/EventListenerUtil';
-import { updateUrlFromRankedItems } from '../utilities/UrlUtil';
 
 /**
  * End-to-end tests for the URL <-> Redux sync contract. The URL is the
@@ -74,11 +74,10 @@ function SyncHarness({ apiRef }: { apiRef?: React.MutableRefObject<HarnessApi | 
   const dispatch = useAppDispatch();
   const name = useAppSelector((s) => s.root.name);
   const year = useAppSelector((s) => s.root.year);
-  const rankedItems = useAppSelector(selectActiveRankedItems);
   const categories = useAppSelector((s) => s.root.categories);
   const activeCategory = useAppSelector((s) => s.root.activeCategory);
-  const memoizedRankedItems = useMemo(() => rankedItems, [rankedItems]);
   const [refreshUrl, setRefreshUrl] = useState(0);
+  const writerReadyRef = useRef(false);
 
   const pub = usePublicRankingView({ activeCategory, name, year, dispatch });
 
@@ -92,11 +91,13 @@ function SyncHarness({ apiRef }: { apiRef?: React.MutableRefObject<HarnessApi | 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // On an edit: leave public view if active, then write the URL.
+  // On an edit: leave public view if active, then arm the writer so it projects
+  // the edited store back to the URL — exactly as App's refresh effect does. The
+  // store edit itself is the source of the URL write; the writer does the rest.
   useEffect(() => {
     if (refreshUrl === 0) return;
     if (pub.publicViewActiveRef.current) pub.exitPublicView();
-    updateUrlFromRankedItems(activeCategory, categories, memoizedRankedItems);
+    writerReadyRef.current = true;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [refreshUrl]);
 
@@ -105,13 +106,20 @@ function SyncHarness({ apiRef }: { apiRef?: React.MutableRefObject<HarnessApi | 
     categories,
     year,
     name,
-    rankedItems: memoizedRankedItems,
     dispatch,
     publicViewActiveRef: pub.publicViewActiveRef,
     publicViewLoadedRef: pub.publicViewLoadedRef,
     loadedNameRef: pub.loadedNameRef,
     loadedYearRef: pub.loadedYearRef,
     exitPublicView: pub.exitPublicView,
+    writerReadyRef,
+  });
+
+  // The single store -> URL writer, wired after useUrlSync as App wires it.
+  useUrlWriter({
+    readyRef: writerReadyRef,
+    publicViewActiveRef: pub.publicViewActiveRef,
+    editNonce: refreshUrl,
   });
 
   if (apiRef) {

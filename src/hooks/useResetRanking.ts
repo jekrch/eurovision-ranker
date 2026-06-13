@@ -11,13 +11,10 @@ import {
 } from '../redux/rootSlice';
 import { AppState } from '../redux/store';
 import { fetchCountryContestantsByYear } from '../utilities/ContestantRepository';
-import { clearAllRankingParams, updateUrlFromRankedItems } from '../utilities/UrlUtil';
 
 export const useResetRanking = () => {
   const dispatch = useAppDispatch();
   const year = useAppSelector((state: AppState) => state.root.year);
-  const categories = useAppSelector((state: AppState) => state.root.categories);
-  const activeCategory = useAppSelector((state: AppState) => state.root.activeCategory);
 
   const resetRanking = useCallback(async () => {
     const yearContestants: CountryContestant[] = await fetchCountryContestantsByYear(year, '');
@@ -27,10 +24,8 @@ export const useResetRanking = () => {
     dispatch(setRankedItems([]));
     dispatch(clearAllCategoryRankings());
     dispatch(setSelectedContestants([]));
-
-    clearAllRankingParams(categories);
-    updateUrlFromRankedItems(activeCategory, categories, []);
-  }, [dispatch, year, categories, activeCategory]);
+    // The cleared rankings are projected to the URL by the single URL writer.
+  }, [dispatch, year]);
 
   return resetRanking;
 };

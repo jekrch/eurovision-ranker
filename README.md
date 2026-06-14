@@ -49,12 +49,12 @@ Every quiz is reproducible: the config and a seed are encoded into a short share
 
 <img width="300" alt="Sorter" src="https://github.com/user-attachments/assets/3dd55f26-cbcb-4df4-a7b9-710822f6b57d" />
 
-Eurovision Ranker includes a sorter, which generates a ranking from a user's pairwise preferences. Other sorters exist, but this one allows expanded flexibility:
+Eurovision Ranker includes a sorter that builds a ranking from a user's pairwise preferences. Other sorters exist, but this one adds extra flexibility:
 
-*   **Pick Any Mix:** Select any group of contestants you want to compare, regardless of the year they competed.
-*   **Review and Undo:** Use back button to review your previous choices and fix any mistakes!
+- **Pick any mix:** Select any group of contestants to compare, regardless of the year they competed.
+- **Review and undo:** Step back through your previous choices to review and fix any mistakes.
 
-This lets you create rankings that accurately reflect your preferences in a quick and simple way.
+This makes it quick to produce a ranking that reflects your actual preferences.
 
 ## Ranking Analysis
 
@@ -73,8 +73,8 @@ There's also an analysis view (currently in beta) for putting a ranking in conte
 
 ### Prerequisites
 
-- Node.js (version 14 or later)
-- npm
+- [Bun](https://bun.sh/) (used as both the package manager and script runner)
+- Node.js 18 or later (required by Vite 6)
 
 ### Installation
 
@@ -95,13 +95,15 @@ There's also an analysis view (currently in beta) for putting a ranking in conte
 bun run start
 ```
 
-The application will be available at `http://localhost:3000`
+The application will be available at `http://localhost:3000`.
 
 ### Running Tests
 
 ```
 bun run test
 ```
+
+Additional useful scripts: `bun run build` (production build), `bun run typecheck`, and `bun run lint`.
 
 ## Continuous Integration
 

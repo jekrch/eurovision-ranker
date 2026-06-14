@@ -14,12 +14,17 @@ Users can also view a geographical heat map of their ranking, implemented with [
 
 Rankings can be split into multiple categories, each given its own weight to reflect what the user actually cares about (song, performance, staging, whatever). A weighted total is then calculated across categories, so the final order reflects the competing priorities behind the judgment rather than a single gut call.
 
-<img width="300" alt="image" src="https://github.com/user-attachments/assets/46bce748-9fb5-404f-8325-544a396adbf8">
-<img width="300" alt="image" src="https://github.com/user-attachments/assets/bd0525c2-50ef-49ff-87b0-efa8b6adc50b">
-<br/><br/>
-<img width="300" alt="image" src="https://github.com/user-attachments/assets/fd1c1f2b-e0fa-4bf9-ac23-41de32e70de0">
-<img width="300" alt="image" src="https://github.com/user-attachments/assets/755c132a-5c51-41cd-94c6-35d8baf8d3db">
+<img width="300" alt="Select View" src="https://github.com/user-attachments/assets/ce2a2d7c-275b-4d71-9c8f-f1ba460fc6d0" />
 
+<img width="300" alt="Details View" src="https://github.com/user-attachments/assets/2178b6e0-970e-49ca-b652-fbf507cc30f0" />
+
+<img width="300" alt="Advanced Select Mode" src="https://github.com/user-attachments/assets/0b508c95-369c-4e9f-95b7-014a0d8ffcfe" />
+
+<img width="300" alt="Category Settings" src="https://github.com/user-attachments/assets/9f3d73f1-b68b-459d-9a84-37181a702261" />
+
+<img width="300" alt="Voting Records" src="https://github.com/user-attachments/assets/4d8bc5ac-bb98-4b1c-9b0d-ffe17f7de399" />
+
+<img width="300" alt="Category Ranking with PIP" src="https://github.com/user-attachments/assets/b0af2b70-4e7f-4e30-afa7-0cc6b48c6340" />
 
 ## Features
 
@@ -42,7 +47,7 @@ Every quiz is reproducible: the config and a seed are encoded into a short share
 
 ## Pairwise Comparison Sorter
 
-<img width="300" alt="image" src="https://github.com/user-attachments/assets/5cf4e450-4534-4725-92a2-329d1181b149">
+<img width="300" alt="Sorter" src="https://github.com/user-attachments/assets/3dd55f26-cbcb-4df4-a7b9-710822f6b57d" />
 
 Eurovision Ranker includes a sorter, which generates a ranking from a user's pairwise preferences. Other sorters exist, but this one allows expanded flexibility:
 

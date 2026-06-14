@@ -9,8 +9,11 @@ import { selectUrlParams } from '../redux/urlSelectors';
  * since their key count tracks the categories. The remaining canonical params
  * (t/v/cm/p/pl/c) are still written by their own components and will fold into
  * this writer as those ad-hoc callers are removed.
+ *
+ * `id` is managed too: in public-view mode the projection is just `{ id }`, so
+ * the writer sets it; on exit the projection drops it, so the writer deletes it.
  */
-const MANAGED_KEYS = ['n', 'y', 'g'] as const;
+const MANAGED_KEYS = ['n', 'y', 'g', 'id'] as const;
 
 // Matches the per-category ranking params: the bare `r` and the indexed
 // `r1`, `r2`, … The writer owns all of them, projecting them from the store's
@@ -22,16 +25,6 @@ interface UseUrlWriterArgs {
   // store is empty, so projecting it would clobber the share link we are booting
   // from — the writer stays idle until hydration completes.
   readyRef: React.MutableRefObject<boolean>;
-  // While public-view-by-id is active the URL is just `?id=…`; suppress writes so
-  // the share URL stays tidy. (A `viewMode` store field will eventually replace
-  // this ref, which the writer would then read instead.)
-  publicViewActiveRef: React.MutableRefObject<boolean>;
-  // Bumped by the app whenever a manual ranking edit occurs. Public view exits on
-  // the first edit, but the exit and the store edit land in separate commits, so
-  // the store change alone can fire the writer while it is still suppressed. This
-  // signal re-runs the writer on the edit commit — after the suppression clears —
-  // so the freshly edited ranking is projected.
-  editNonce?: number;
 }
 
 /**
@@ -41,11 +34,16 @@ interface UseUrlWriterArgs {
  * replaces the scattered `updateQueryParams` calls that previously wrote these
  * params from useUrlSync, App's refresh effect, and the global-search toggle.
  *
+ * Public-view-by-id needs no special-casing here: `selectUrlParams` collapses to
+ * just `{ id }` while `viewMode` is 'public' and projects the full set (without
+ * `id`) once an edit flips it back to 'normal', so the writer re-runs reactively
+ * on that flip and tidies/expands the URL accordingly.
+ *
  * Only the managed keys are touched, so unrelated params the store does not own
- * (`id`, `quiz`, deep-link tokens, and params still owned by other components)
- * are preserved untouched.
+ * (`quiz`, deep-link tokens, and params still owned by other components) are
+ * preserved untouched.
  */
-export function useUrlWriter({ readyRef, publicViewActiveRef, editNonce = 0 }: UseUrlWriterArgs) {
+export function useUrlWriter({ readyRef }: UseUrlWriterArgs) {
   const urlParams = useAppSelector(selectUrlParams);
 
   // The ranking keys present in the projection (`r` or `r1`..`rN`); their count
@@ -59,7 +57,6 @@ export function useUrlWriter({ readyRef, publicViewActiveRef, editNonce = 0 }: U
 
   useEffect(() => {
     if (!readyRef.current) return;
-    if (publicViewActiveRef.current) return;
 
     const searchParams = new URLSearchParams(window.location.search);
 
@@ -85,5 +82,5 @@ export function useUrlWriter({ readyRef, publicViewActiveRef, editNonce = 0 }: U
       window.history.pushState(null, '', newUrl);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [signature, editNonce]);
+  }, [signature]);
 }

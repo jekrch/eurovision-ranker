@@ -59,7 +59,6 @@ const App: React.FC = () => {
 
   const showUnranked = useAppSelector((state: AppState) => state.root.showUnranked);
   const theme = useAppSelector((state: AppState) => state.root.theme);
-  const name = useAppSelector((state: AppState) => state.root.name);
   const showTotalRank = useAppSelector((state: AppState) => state.root.showTotalRank);
   const rankedItems = useAppSelector(selectActiveRankedItems);
   const unrankedItems = useAppSelector((state: AppState) => state.root.unrankedItems);
@@ -94,18 +93,15 @@ const App: React.FC = () => {
 
   const { isSorterModalOpen, openSorterModal, closeSorterModal, getItemsToSort } = useSorterModal();
 
-  // Public-view-by-id mode: when active, the URL is just `?id=<ranking_id>`
-  // and we suppress the n/y/r URL-writing effects so the share URL stays
-  // tidy. The first user-initiated change (drag/drop, year change, rename)
-  // exits the mode and re-syncs the URL.
-  const {
-    publicViewActiveRef,
-    publicViewLoadedRef,
-    loadedNameRef,
-    loadedYearRef,
-    loadPublicRankingById,
-    exitPublicView,
-  } = usePublicRankingView({ activeCategory, name, year, dispatch });
+  // Public-view-by-id mode: when the URL is just `?id=<ranking_id>` the shared
+  // ranking is loaded into the store and `viewMode` is set to 'public', so the
+  // single URL writer projects just `?id=`. The first user edit flips `viewMode`
+  // back to 'normal' (a reducer concern) and the writer expands the URL.
+  const { loadPublicRankingById } = usePublicRankingView({
+    activeCategory,
+    dispatch,
+    writerReadyRef,
+  });
 
   const loadAuroralCSS = () => {
     return import('./auroral.css');
@@ -146,16 +142,11 @@ const App: React.FC = () => {
 
   useEffect(() => {
     if (refreshUrl === 0) return;
-    if (publicViewActiveRef.current) {
-      // First user edit — exit public view and let URL track state normally.
-      exitPublicView();
-    }
-    // The edited ranking's r/rN params are written by the ranking list/table
-    // (and reset/sorter) effects; this App-level effect no longer duplicates
-    // that write. Arm the URL writer so it projects n/y/g once public view has
-    // been exited, even when the first edit precedes boot hydration.
+    // The edit itself is a store dispatch the single URL writer projects; public
+    // view (if active) exits via the editing reducer flipping `viewMode`. This
+    // only needs to arm the writer for the rare case where the first edit beats
+    // boot hydration.
     writerReadyRef.current = true;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [refreshUrl]);
 
   // boot: handle email-link deep paths, ?signup=beta gate, API reachability probe
@@ -212,7 +203,6 @@ const App: React.FC = () => {
     // anything stale before the fetch resolves.
     const idParam = params.get('id');
     if (idParam) {
-      publicViewActiveRef.current = true;
       loadPublicRankingById(idParam);
     }
 
@@ -286,30 +276,23 @@ const App: React.FC = () => {
     dispatch(setGlobalSearch(checked));
   };
 
-  // URL <-> state synchronization: reload on category/total-rank change, load
-  // categories from the URL, keep the per-category rx (and y/n) params written,
-  // and the first-load category/total-rank bootstrap. Declared here because its
-  // effects are ordering-sensitive (they must run after the boot/deep-link
-  // effects above) — see useUrlSync.
+  // URL <-> state synchronization: seed every category's ranking on boot, load
+  // categories from the URL, re-resolve rankings on a year change, and the
+  // first-load category/total-rank bootstrap. Declared here because its boot
+  // read must run after the deep-link effects above — see useUrlSync.
   useUrlSync({
     activeCategory,
     categories,
     year,
-    name,
     dispatch,
-    publicViewActiveRef,
-    publicViewLoadedRef,
-    loadedNameRef,
-    loadedYearRef,
-    exitPublicView,
     writerReadyRef,
   });
 
   // The single store -> URL writer: projects the store's canonical params to the
-  // URL, replacing the scattered updateQueryParams calls. Declared after
-  // useUrlSync so its effect runs after the boot/public-view effects in the same
-  // commit (e.g. it observes an exitPublicView before projecting).
-  useUrlWriter({ readyRef: writerReadyRef, publicViewActiveRef, editNonce: refreshUrl });
+  // URL, replacing the scattered updateQueryParams calls. Public view needs no
+  // ordering coordination here — it is store state (`viewMode`) the writer reads
+  // through selectUrlParams.
+  useUrlWriter({ readyRef: writerReadyRef });
 
   // Drag-and-drop + add-to-ranked handlers, including keeping every category
   // ranking in the URL in sync. Extracted to keep App focused on composition.

@@ -5,7 +5,7 @@ import { describe, it, expect, beforeEach } from 'vitest';
 
 import { useUrlWriter } from './useUrlWriter';
 import { CountryContestant } from '../data/CountryContestant';
-import { setName, setYear, setGlobalSearch } from '../redux/rootSlice';
+import { setName, setYear, setGlobalSearch, setRankedItems } from '../redux/rootSlice';
 import { makeTestStore, TestStore, storeWrapper } from '../test/storeHarness';
 import { Category } from '../utilities/CategoryUtil';
 
@@ -16,8 +16,9 @@ const cat = (name: string) => ({ name, weight: 5 }) as Category;
 /**
  * The single store -> URL writer projects the store's canonical params onto the
  * URL. It is the only thing that writes those params, and it leaves params the
- * store does not own (share-id, deep-link tokens) untouched. It does nothing
- * until armed (boot hydration complete) and while a `?id=` public view is shown.
+ * store does not own (deep-link tokens) untouched. It does nothing until armed
+ * (boot hydration complete). In public-view mode the projection collapses to
+ * just `?id=`; the store's `viewMode`, not a ref, drives that.
  */
 
 const ref = (value: boolean): React.MutableRefObject<boolean> => ({ current: value });
@@ -25,13 +26,9 @@ const ref = (value: boolean): React.MutableRefObject<boolean> => ({ current: val
 const setUrl = (search: string) => window.history.replaceState(null, '', search);
 const search = () => new URLSearchParams(window.location.search);
 
-function mountWriter(
-  store: TestStore,
-  opts: { ready?: boolean; publicView?: boolean } = {},
-) {
+function mountWriter(store: TestStore, opts: { ready?: boolean } = {}) {
   const readyRef = ref(opts.ready ?? true);
-  const publicViewActiveRef = ref(opts.publicView ?? false);
-  return renderHook(() => useUrlWriter({ readyRef, publicViewActiveRef }), {
+  return renderHook(() => useUrlWriter({ readyRef }), {
     wrapper: storeWrapper(store),
   });
 }
@@ -52,12 +49,12 @@ describe('store -> URL writer', () => {
   });
 
   it('leaves params it does not own untouched', () => {
-    setUrl('/?id=xyz');
+    setUrl('/?quiz=abc');
     const store = makeTestStore({ root: { name: 'Bob' } });
 
     mountWriter(store);
 
-    expect(search().get('id')).toBe('xyz');
+    expect(search().get('quiz')).toBe('abc');
     expect(search().get('n')).toBe('Bob');
   });
 
@@ -99,13 +96,49 @@ describe('store -> URL writer', () => {
     expect(search().has('n')).toBe(false);
   });
 
-  it('stays idle while a public-view share URL is shown', () => {
+  it('projects only ?id= in public-view mode, hiding the rest of the state', () => {
     setUrl('/?id=xyz');
-    const store = makeTestStore({ root: { name: 'Bob', year: '2023' } });
+    const store = makeTestStore({
+      root: {
+        viewMode: 'public',
+        publicViewId: 'xyz',
+        name: 'Bob',
+        year: '2023',
+        categoryRankings: [[cc('a'), cc('b')]],
+      },
+    });
 
-    mountWriter(store, { publicView: true });
+    mountWriter(store);
 
-    expect(window.location.search).toBe('?id=xyz');
+    expect(search().get('id')).toBe('xyz');
+    expect(search().has('n')).toBe(false);
+    expect(search().has('y')).toBe(false);
+    expect(search().has('r')).toBe(false);
+  });
+
+  it('drops id and projects the full set once an edit leaves public view', () => {
+    setUrl('/?id=xyz');
+    const store = makeTestStore({
+      root: {
+        viewMode: 'public',
+        publicViewId: 'xyz',
+        name: 'Bob',
+        categoryRankings: [[cc('a'), cc('b')]],
+      },
+    });
+
+    mountWriter(store);
+    expect(search().get('id')).toBe('xyz');
+
+    // A ranking edit flips viewMode back to 'normal' (a reducer concern); the
+    // writer re-runs, drops the share id, and expands to the full param set.
+    act(() => {
+      store.dispatch(setRankedItems([cc('b'), cc('a')]));
+    });
+
+    expect(search().has('id')).toBe(false);
+    expect(search().get('n')).toBe('Bob');
+    expect(search().get('r')).toBe('ba');
   });
 
   it('projects the single ranking as `r` when no categories are defined', () => {

@@ -63,9 +63,8 @@ function Harness() {
   }, [showUnranked]);
 
   const readyRef = React.useRef(true);
-  const publicViewActiveRef = React.useRef(false);
   void activeCategory;
-  useUrlWriter({ readyRef, publicViewActiveRef });
+  useUrlWriter({ readyRef });
   useContestantTable();
   return null;
 }

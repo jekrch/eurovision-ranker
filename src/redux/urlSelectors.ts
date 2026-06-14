@@ -16,9 +16,15 @@ import { encodeRankingsToURL } from '../utilities/UrlUtil';
  *
  * Per-category rankings live in `r1`/`r2`/… when categories are defined, or a
  * single `r` otherwise — mirroring how `extractParams` reads them back.
+ *
+ * In public-view mode the projection collapses to just `id`: a shared ranking
+ * loaded from `?id=…` keeps that tidy URL until the first edit flips `viewMode`
+ * back to 'normal', at which point the full set (without `id`) is projected.
  */
 export const selectUrlParams = createSelector(
   [
+    (state: AppState) => state.root.viewMode,
+    (state: AppState) => state.root.publicViewId,
     (state: AppState) => state.root.name,
     (state: AppState) => state.root.year,
     (state: AppState) => state.root.theme,
@@ -31,6 +37,8 @@ export const selectUrlParams = createSelector(
     (state: AppState) => state.root.categoryRankings,
   ],
   (
+    viewMode,
+    publicViewId,
     name,
     year,
     theme,
@@ -42,6 +50,12 @@ export const selectUrlParams = createSelector(
     categories,
     categoryRankings,
   ): Record<string, string | undefined> => {
+    // Public view hides everything but the share id; the id is dropped (and the
+    // full set projected) once an edit returns viewMode to 'normal'.
+    if (viewMode === 'public') {
+      return { id: publicViewId };
+    }
+
     const encodeSlot = (slot: number): string | undefined => {
       const encoded = encodeRankingsToURL(categoryRankings[slot] ?? [], globalSearch);
       // encodeRankingsToURL prefixes global rankings with '>'; an empty ranking

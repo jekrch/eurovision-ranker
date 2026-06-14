@@ -72,31 +72,29 @@ interface HarnessApi {
  */
 function SyncHarness({ apiRef }: { apiRef?: React.MutableRefObject<HarnessApi | null> }) {
   const dispatch = useAppDispatch();
-  const name = useAppSelector((s) => s.root.name);
   const year = useAppSelector((s) => s.root.year);
   const categories = useAppSelector((s) => s.root.categories);
   const activeCategory = useAppSelector((s) => s.root.activeCategory);
   const [refreshUrl, setRefreshUrl] = useState(0);
   const writerReadyRef = useRef(false);
 
-  const pub = usePublicRankingView({ activeCategory, name, year, dispatch });
+  const pub = usePublicRankingView({ activeCategory, dispatch, writerReadyRef });
 
-  // A `?id=` share link enters public view before the sync hook reads it.
+  // A `?id=` share link loads the public ranking; the load sets viewMode and arms
+  // the writer when it completes.
   useEffect(() => {
     const idParam = new URLSearchParams(window.location.search).get('id');
     if (idParam) {
-      pub.publicViewActiveRef.current = true;
       pub.loadPublicRankingById(idParam);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // On an edit: leave public view if active, then arm the writer so it projects
-  // the edited store back to the URL — exactly as App's refresh effect does. The
-  // store edit itself is the source of the URL write; the writer does the rest.
+  // On an edit: arm the writer (defensive, for an edit that beats boot) — exactly
+  // as App's refresh effect does. The store edit itself is the source of the URL
+  // write and flips viewMode out of public view; the writer does the rest.
   useEffect(() => {
     if (refreshUrl === 0) return;
-    if (pub.publicViewActiveRef.current) pub.exitPublicView();
     writerReadyRef.current = true;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [refreshUrl]);
@@ -105,22 +103,12 @@ function SyncHarness({ apiRef }: { apiRef?: React.MutableRefObject<HarnessApi | 
     activeCategory,
     categories,
     year,
-    name,
     dispatch,
-    publicViewActiveRef: pub.publicViewActiveRef,
-    publicViewLoadedRef: pub.publicViewLoadedRef,
-    loadedNameRef: pub.loadedNameRef,
-    loadedYearRef: pub.loadedYearRef,
-    exitPublicView: pub.exitPublicView,
     writerReadyRef,
   });
 
   // The single store -> URL writer, wired after useUrlSync as App wires it.
-  useUrlWriter({
-    readyRef: writerReadyRef,
-    publicViewActiveRef: pub.publicViewActiveRef,
-    editNonce: refreshUrl,
-  });
+  useUrlWriter({ readyRef: writerReadyRef });
 
   if (apiRef) {
     apiRef.current = {

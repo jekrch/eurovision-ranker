@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import React from 'react';
 import toast from 'react-hot-toast';
 
 import {
@@ -8,6 +8,8 @@ import {
   setCurrentRankingId,
   setLastSavedSignature,
   setLoadedAuthor,
+  enterPublicView,
+  exitPublicView,
 } from '../redux/rootSlice';
 import { AppDispatch } from '../redux/store';
 import { getToken } from '../utilities/api/client';
@@ -15,35 +17,30 @@ import { parseStoredRanking } from '../utilities/api/rankingParams';
 import { getPublicRanking, getRanking } from '../utilities/api/rankings';
 import { signatureFromRanking } from '../utilities/api/rankingSignature';
 import { ApiError } from '../utilities/api/types';
-import { loadRankingsFromURL, updateQueryParams } from '../utilities/UrlUtil';
+import { loadRankingsFromURL } from '../utilities/UrlUtil';
 
 interface PublicRankingViewArgs {
   activeCategory: number | undefined;
-  name: string;
-  year: string;
   dispatch: AppDispatch;
+  // Armed once hydration completes so the single URL writer may begin projecting
+  // the store. For a `?id=` boot the writer must stay idle until the shared
+  // ranking is loaded and `viewMode` is set to 'public'; arming here at the end
+  // of the load avoids the writer clobbering the share link mid-fetch.
+  writerReadyRef: React.MutableRefObject<boolean>;
 }
 
 /**
  * Owns the "public-view-by-id" mode used when the URL is just `?id=<ranking_id>`.
- * While active, App suppresses its n/y/r URL-writing effects so the share URL
- * stays tidy; the first user-initiated change exits the mode and re-syncs.
- *
- * Returns the mode refs (read by App's n/y/refreshUrl effects) plus the
- * load/exit actions. The functions are recreated each render so they close over
- * the latest name/year/activeCategory, matching the original in-component logic.
+ * The ranking is loaded into the store and `viewMode` is flipped to 'public' as
+ * the final step, so the single URL writer projects just `?id=`; the first user
+ * edit flips `viewMode` back to 'normal' (a reducer concern — see leavePublicView
+ * in rootSlice), and the writer then expands the URL to the full param set.
  */
 export function usePublicRankingView({
   activeCategory,
-  name,
-  year,
   dispatch,
+  writerReadyRef,
 }: PublicRankingViewArgs) {
-  const publicViewActiveRef = useRef(false);
-  const publicViewLoadedRef = useRef(false);
-  const loadedNameRef = useRef<string>('');
-  const loadedYearRef = useRef<string>('');
-
   async function loadPublicRankingById(id: string) {
     try {
       // When signed in, use the authenticated endpoint: it returns the
@@ -54,15 +51,9 @@ export function usePublicRankingView({
       const loadedYear = full.year != null ? String(full.year) : '';
       const yearShort = full.year != null ? String(full.year).slice(-2) : undefined;
 
-      loadedNameRef.current = loadedName;
-      loadedYearRef.current = loadedYear;
-      // Mark loaded *before* dispatching so the n/y useEffects, which fire
-      // after the dispatches, can compare against the loaded values rather
-      // than treating themselves as user actions.
-      publicViewLoadedRef.current = true;
-
       // Temporarily replace the URL search with the saved params + n/y so
-      // loadRankingsFromURL can read them, then strip back to ?id=<id> below.
+      // loadRankingsFromURL can read them; the URL writer projects the tidy
+      // `?id=…` once viewMode flips to 'public' below.
       // `full.ranking` may be the new query-string format (e.g. r=…&r1=…&v=…)
       // or the legacy raw r-value — parseStoredRanking handles both.
       const sp = parseStoredRanking(full.ranking ?? '');
@@ -75,10 +66,6 @@ export function usePublicRankingView({
       if (loadedYear) dispatch(setYear(loadedYear));
 
       await loadRankingsFromURL(activeCategory, dispatch);
-
-      // Keep the URL tidy: just ?id=<id>. The n/y/refreshUrl effects below
-      // check publicViewActiveRef and won't write back.
-      window.history.pushState(null, '', '?id=' + encodeURIComponent(id));
 
       dispatch(setShowUnranked(false));
 
@@ -94,10 +81,19 @@ export function usePublicRankingView({
           userId: full.user_id,
         }),
       );
+
+      // Final step: enter public view so the writer projects just `?id=`. All the
+      // hydrating dispatches above ran while viewMode was still 'normal', so they
+      // didn't trip leavePublicView — only a later user edit will.
+      dispatch(enterPublicView(id));
+      // The store now reflects the share link; safe to let the writer project it.
+      writerReadyRef.current = true;
     } catch (e) {
-      publicViewActiveRef.current = false;
-      publicViewLoadedRef.current = false;
+      // Never entered public view, so just clear any loaded author and let the
+      // (now-armed) writer drop the stray `id` by projecting the normal state.
+      dispatch(exitPublicView());
       dispatch(setLoadedAuthor(null));
+      writerReadyRef.current = true;
       if (e instanceof ApiError && e.status === 404) {
         toast.error('That ranking is not available.');
       } else if (e instanceof ApiError) {
@@ -105,26 +101,8 @@ export function usePublicRankingView({
       } else {
         toast.error('Failed to load ranking.');
       }
-      updateQueryParams({ id: undefined });
     }
   }
 
-  function exitPublicView() {
-    publicViewActiveRef.current = false;
-    // Restore n/y in URL since we suppressed those writes while in public view.
-    updateQueryParams({
-      id: undefined,
-      n: name || undefined,
-      y: year ? year.slice(-2) : undefined,
-    });
-  }
-
-  return {
-    publicViewActiveRef,
-    publicViewLoadedRef,
-    loadedNameRef,
-    loadedYearRef,
-    loadPublicRankingById,
-    exitPublicView,
-  };
+  return { loadPublicRankingById };
 }

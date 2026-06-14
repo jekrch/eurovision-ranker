@@ -32,6 +32,14 @@ interface AppState {
   showPlace: boolean;
   showThumbnail: boolean;
   welcomeOverlayIsOpen: boolean;
+  // Public-view-by-id mode. While 'public' the app is showing a ranking loaded
+  // from a `?id=<publicViewId>` share link, and the single URL writer projects
+  // just that id (the rest of the state is hidden from the URL). The first
+  // genuine user edit flips this back to 'normal' — a reducer concern, not an
+  // effect comparing the loaded value to the current one — after which the writer
+  // projects the full param set and drops the id.
+  viewMode: 'normal' | 'public';
+  publicViewId: string | undefined;
 }
 
 const initialState: AppState = {
@@ -53,11 +61,25 @@ const initialState: AppState = {
   showThumbnail: true,
   showPlace: false,
   welcomeOverlayIsOpen: false,
+  viewMode: 'normal',
+  publicViewId: undefined,
 };
 
 // The categoryRankings slot backing the currently displayed list. When no
 // category is active (undefined) the single ranking lives in slot 0.
 const activeIndex = (state: AppState): number => state.activeCategory ?? 0;
+
+// A genuine user edit leaves public-view mode, so the tidy `?id=` share URL
+// gives way to the full projected state. The boot/load sequence dispatches these
+// same reducers to hydrate the shared ranking, but it does so *before*
+// enterPublicView runs (mode is still 'normal' then), so this is a no-op for it
+// and only fires on a real post-load edit.
+const leavePublicView = (state: AppState): void => {
+  if (state.viewMode === 'public') {
+    state.viewMode = 'normal';
+    state.publicViewId = undefined;
+  }
+};
 
 const rootSlice = createSlice({
   name: 'root',
@@ -65,9 +87,11 @@ const rootSlice = createSlice({
   reducers: {
     setName: (state, action: PayloadAction<string>) => {
       state.name = action.payload;
+      leavePublicView(state);
     },
     setYear: (state, action: PayloadAction<string>) => {
       state.year = action.payload;
+      leavePublicView(state);
     },
     setTheme: (state, action: PayloadAction<string>) => {
       state.theme = action.payload;
@@ -107,6 +131,7 @@ const rootSlice = createSlice({
     // is selected / none are defined).
     setRankedItems: (state, action: PayloadAction<CountryContestant[]>) => {
       state.categoryRankings[activeIndex(state)] = action.payload;
+      leavePublicView(state);
     },
     // Replace every category's ranking at once — used by the boot parse to seed
     // the store with all per-category orders from the URL.
@@ -128,6 +153,7 @@ const rootSlice = createSlice({
       const membership = action.payload;
       const active = activeIndex(state);
       state.categoryRankings[active] = membership;
+      leavePublicView(state);
 
       const keyOf = (item: CountryContestant) => (state.globalSearch ? item.uid : item.id);
       const membershipKeys = new Set(membership.map(keyOf));
@@ -154,6 +180,7 @@ const rootSlice = createSlice({
         if (!state.categoryRankings[i]) state.categoryRankings[i] = [];
         state.categoryRankings[i].push(action.payload);
       }
+      leavePublicView(state);
     },
     // Append multiple countries to the inactive categories (add-all-unranked).
     appendCountriesToOtherCategories: (state, action: PayloadAction<CountryContestant[]>) => {
@@ -164,6 +191,7 @@ const rootSlice = createSlice({
         if (!state.categoryRankings[i]) state.categoryRankings[i] = [];
         state.categoryRankings[i].push(...action.payload);
       }
+      leavePublicView(state);
     },
     // Remove a country from every category ranking (delete from the ranking).
     removeCountryFromCategories: (state, action: PayloadAction<string>) => {
@@ -171,12 +199,14 @@ const rootSlice = createSlice({
       state.categoryRankings = state.categoryRankings.map((ranking) =>
         ranking.filter((item) => item.id !== id && item.uid !== id),
       );
+      leavePublicView(state);
     },
     // Clear every category ranking (reset).
     clearAllCategoryRankings: (state) => {
       state.categoryRankings = state.categoryRankings.length
         ? state.categoryRankings.map(() => [])
         : [[]];
+      leavePublicView(state);
     },
     // Ensure a ranking slot exists for each of `count` categories. Newly created
     // slots inherit the currently active ranking, mirroring how defining a
@@ -245,6 +275,20 @@ const rootSlice = createSlice({
     setGlobalSearch: (state, action: PayloadAction<boolean>) => {
       state.globalSearch = action.payload;
     },
+    // Enter public-view-by-id mode. Dispatched as the last step of loading a
+    // shared ranking, after the name/year/ranking have been hydrated, so those
+    // hydrating dispatches don't trip leavePublicView. The single URL writer then
+    // projects just `?id=<id>`.
+    enterPublicView: (state, action: PayloadAction<string>) => {
+      state.viewMode = 'public';
+      state.publicViewId = action.payload;
+    },
+    // Leave public-view mode explicitly (e.g. a failed load). User edits leave it
+    // implicitly via leavePublicView; this is for the non-edit exits.
+    exitPublicView: (state) => {
+      state.viewMode = 'normal';
+      state.publicViewId = undefined;
+    },
     assignVotesToContestants: (state, action: PayloadAction<Vote[]>) => {
       const votes: Vote[] = action.payload;
 
@@ -289,6 +333,8 @@ export const {
   assignVotesToContestants,
   setGlobalSearch,
   setWelcomeOverlayIsOpen,
+  enterPublicView,
+  exitPublicView,
 } = rootSlice.actions;
 
 // Re-export domain-slice actions and types so existing imports from

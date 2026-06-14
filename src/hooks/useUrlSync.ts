@@ -10,15 +10,7 @@ interface UseUrlSyncArgs {
   activeCategory: number | undefined;
   categories: AppState['root']['categories'];
   year: string;
-  name: string;
   dispatch: AppDispatch;
-  // public-view-by-id refs/action (owned by usePublicRankingView). While public
-  // view is active we suppress the n/y URL writes and redundant reloads.
-  publicViewActiveRef: React.MutableRefObject<boolean>;
-  publicViewLoadedRef: React.MutableRefObject<boolean>;
-  loadedNameRef: React.MutableRefObject<string>;
-  loadedYearRef: React.MutableRefObject<string>;
-  exitPublicView: () => void;
   // Armed once the store has been hydrated from the URL on boot, so the single
   // URL writer (useUrlWriter) knows it is safe to start projecting the store
   // back to the URL without clobbering the share link we booted from.
@@ -27,26 +19,21 @@ interface UseUrlSyncArgs {
 
 /**
  * Owns App's URL <-> state synchronization effects: seeding every category's
- * ranking into the store on boot, loading categories from the URL, keeping the
- * per-category `rx` params (and `y`/`n`) written, and the first-load
- * category/total-rank bootstrapping.
+ * ranking into the store on boot, loading categories from the URL, re-resolving
+ * rankings on a year change, and the first-load category/total-rank bootstrap.
  *
  * Switching the active category or the Total tab no longer reads the URL — the
  * store holds all per-category rankings and the displayed list is derived via
  * selectActiveRankedItems. The URL is read here only at boot (and on popstate,
- * elsewhere).
+ * elsewhere). Public-view-by-id is now plain store state (`viewMode`): the load
+ * lives in usePublicRankingView and the exit is a reducer concern, so none of
+ * these effects need the old public-view refs.
  */
 export function useUrlSync({
   activeCategory,
   categories,
   year,
-  name,
   dispatch,
-  publicViewActiveRef,
-  publicViewLoadedRef,
-  loadedNameRef,
-  loadedYearRef,
-  exitPublicView,
   writerReadyRef,
 }: UseUrlSyncArgs) {
   // Boot seeds the store (and `year`) from the URL; the year effect below must
@@ -59,11 +46,10 @@ export function useUrlSync({
    * reload-on-tab-change effect that lived here is gone.
    */
   useEffect(() => {
-    // Public-view-by-id loads its ranking directly; the URL has no r= to read.
-    // The URL writer is suppressed via publicViewActiveRef while public view is
-    // active, so it is safe to arm it now for when the view later exits.
-    if (publicViewActiveRef.current) {
-      writerReadyRef.current = true;
+    // A `?id=` share link is hydrated by usePublicRankingView (loadPublicRankingById),
+    // which arms the URL writer once the shared ranking is loaded. There is no
+    // r= to read here, so skip the normal boot read entirely.
+    if (new URLSearchParams(window.location.search).has('id')) {
       return;
     }
     // Arm the single URL writer only after the store has been hydrated from the
@@ -93,19 +79,11 @@ export function useUrlSync({
       if (!year?.length) {
         return;
       }
-      // In public-view mode, the dispatched year matches the loaded value —
-      // skip the redundant reload. If the user later picks a different year,
-      // exit public view and behave normally.
-      if (publicViewActiveRef.current) {
-        // Fetch in flight: refs aren't populated yet, so any compare would
-        // be bogus. Suppress until loadPublicRankingById finishes.
-        if (!publicViewLoadedRef.current) return;
-        if (year === loadedYearRef.current) return;
-        exitPublicView();
-      }
 
       // Skip the first non-empty year, which is the value boot just loaded from
-      // the URL — re-resolving it would redo work boot already did.
+      // the URL — re-resolving it would redo work boot already did. (A public-view
+      // boot's loaded year is skipped here too; a later user year change has
+      // already flipped viewMode to 'normal' via setYear by the time we reload.)
       if (!yearResolvedRef.current) {
         yearResolvedRef.current = true;
         return;
@@ -119,18 +97,6 @@ export function useUrlSync({
     handleYearUpdate();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [year]);
-
-  useEffect(() => {
-    // A rename during public view is a user edit: exit the mode so the URL
-    // tracks state normally again. The `n` param itself is now written by the
-    // single URL writer (useUrlWriter), not here.
-    if (publicViewActiveRef.current) {
-      if (!publicViewLoadedRef.current) return;
-      if (name === loadedNameRef.current) return;
-      exitPublicView();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [name]);
 
   // First-load category bootstrap. The category structure's store slots are
   // reshaped by the category actions (a reducer), not here, and the per-category

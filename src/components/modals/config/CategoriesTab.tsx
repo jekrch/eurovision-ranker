@@ -9,7 +9,6 @@ import {
   isValidCategoryName,
   saveCategories,
 } from '../../../utilities/CategoryUtil';
-import { updateQueryParams } from '../../../utilities/UrlUtil';
 import Checkbox from '../../Checkbox';
 import IconButton from '../../IconButton';
 import TooltipHelp from '../../TooltipHelp';
@@ -52,7 +51,6 @@ const CategoriesTab: React.FC = () => {
    * @param checked
    */
   const onShowComparisonChange = (checked: boolean) => {
-    updateQueryParams({ cm: checked === true ? 't' : 'f' });
     dispatch(setShowComparison(checked === true));
   };
 

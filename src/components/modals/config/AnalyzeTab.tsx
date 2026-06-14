@@ -14,7 +14,7 @@ import {
   findMostDissimilarLists,
   findMostSimilarLists,
 } from '../../../utilities/RankAnalyzer';
-import { getUrlParams, orderContestantsByRankingStr, updateQueryParams } from '../../../utilities/UrlUtil';
+import { getUrlParams, orderContestantsByRankingStr } from '../../../utilities/UrlUtil';
 import { sortByVotes } from '../../../utilities/VoteProcessor';
 import {
   getSourceCountryKey,
@@ -217,7 +217,6 @@ const AnalyzeTab: React.FC = () => {
    * @param checked
    */
   const onShowComparisonChange = (checked: boolean) => {
-    updateQueryParams({ cm: checked === true ? 't' : 'f' });
     dispatch(setShowComparison(checked === true));
   };
 

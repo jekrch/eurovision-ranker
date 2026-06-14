@@ -1,4 +1,3 @@
-import { Category } from './CategoryUtil';
 import { fetchCountryContestantsByYear, getCountryContestantsByUids } from './ContestantRepository';
 import { defaultYear, sanitizeYear } from '../data/Contestants';
 import { countries } from '../data/Countries';
@@ -276,7 +275,11 @@ export const encodeRankingsToURL = (
   rankedCountries: CountryContestant[],
   isGlobalMode: boolean = urlParamHasValue('g', 't'),
 ): string => {
-  const ids = rankedCountries.map((item) => (isGlobalMode ? item.uid : item.id));
+  // Drop items missing the id this mode encodes (e.g. a country resolved without
+  // a `uid` re-encoded into global mode) rather than emitting an undefined gap.
+  const ids = rankedCountries
+    .map((item) => (isGlobalMode ? item.uid : item.id))
+    .filter(Boolean);
   return isGlobalMode ? `>${ids.join('')}` : ids.join('');
 };
 
@@ -323,30 +326,6 @@ export function urlParamHasValue(key: string, value: string) {
   return rParam !== null && rParam === value;
 }
 
-/**
- * Clear all the category rankings (rx parameters) from the URL
- * @param categories
- */
-export function clearAllRankingParams(categories: Category[]): void {
-  const url = new URL(window.location.href);
-  const searchParams = url.searchParams;
-
-  // clear category-specific parameters
-  categories.forEach((_, index) => {
-    const categoryParam = `r${index + 1}`;
-    searchParams.delete(categoryParam);
-  });
-
-  // clear the main ranking parameter
-  searchParams.delete('r');
-
-  // update the URL without changing the origin
-  url.search = searchParams.toString();
-
-  // use pushState instead of replaceState to avoid potential issues
-  window.history.pushState(null, '', url.toString());
-}
-
 export const extractParams = (
   params: URLSearchParams,
   activeCategory: number | undefined,
@@ -362,20 +341,6 @@ export const extractParams = (
     showThumbnail: params.get('p'), // e.g. t/f/null
     showPlace: params.get('pl'), // e.g. t/f/null
   } as UrlParams;
-};
-
-export const updateUrlFromRankedItems = async (
-  activeCategory: number | undefined,
-  categories: Category[],
-  rankedItems: CountryContestant[],
-  isGlobalMode: boolean = urlParamHasValue('g', 't'),
-) => {
-  const encodedRankings = encodeRankingsToURL(rankedItems, isGlobalMode);
-  if (categories?.length > 0 && activeCategory !== undefined) {
-    updateQueryParams({ [`r${activeCategory + 1}`]: encodedRankings });
-  } else {
-    updateQueryParams({ r: encodedRankings });
-  }
 };
 
 /**

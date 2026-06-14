@@ -8,14 +8,9 @@ vi.mock('../../utilities/CsvCache', () => ({ fetchContestantCsv: vi.fn() }));
 vi.mock('../../utilities/ContestantRepository', () => ({
   getCountryContestantsByUids: vi.fn().mockResolvedValue([]),
 }));
-vi.mock('../../utilities/ContestantUtil', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('../../utilities/ContestantUtil')>()),
-  convertRankingUrlParamsByMode: vi.fn(),
-}));
 vi.mock('../../utilities/UrlUtil', () => ({
   getUrlParam: vi.fn().mockReturnValue(null),
   updateQueryParams: vi.fn(),
-  updateUrlFromRankedItems: vi.fn(),
   loadRankingsFromURL: vi.fn(),
   urlHasRankings: vi.fn().mockReturnValue(false),
 }));

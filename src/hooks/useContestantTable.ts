@@ -16,10 +16,9 @@ import {
 import { AppState } from '../redux/store';
 import { changePageSize, filterTable, sortTable } from '../redux/tableSlice';
 import { getCountryContestantsByUids } from '../utilities/ContestantRepository';
-import { convertRankingUrlParamsByMode } from '../utilities/ContestantUtil';
 import { fetchContestantCsv } from '../utilities/CsvCache';
 import { logger } from '../utilities/logger';
-import { getUrlParam, updateQueryParams } from '../utilities/UrlUtil';
+import { getUrlParam } from '../utilities/UrlUtil';
 
 export const useContestantTable = () => {
   const dispatch = useAppDispatch();
@@ -267,18 +266,12 @@ export const useContestantTable = () => {
     [selectedContestants, tableState.entries, dispatch],
   );
 
-  // Re-encode the per-category ranking params between id and global-uid form
-  // when the user flips advanced (global) mode. This is a one-shot conversion on
-  // an explicit mode switch — not part of the per-toggle path.
-  const convertRankingURLParams = useCallback(() => {
-    convertRankingUrlParamsByMode(categories, globalSearch, rankedItems);
-  }, [globalSearch, rankedItems, categories]);
-
+  // Flipping advanced (global) mode is a plain store dispatch. Store items carry
+  // both the country `id` and the global `uid`, so `selectUrlParams` re-encodes
+  // each category's ranking in the new mode and the single URL writer projects
+  // it (along with `g`) — no URL round-trip needed.
   const updateGlobalSearch = (checked: boolean) => {
-    updateQueryParams({ g: checked ? 't' : undefined });
     dispatch(setGlobalSearch(checked));
-
-    convertRankingURLParams();
   };
 
   /**
@@ -316,6 +309,5 @@ export const useContestantTable = () => {
     totalPages,
     displayedContestants,
     selectedContestants,
-    convertRankingURLParams,
   };
 };

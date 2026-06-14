@@ -15,13 +15,14 @@ import {
   setContestants,
   setGlobalSearch,
   setTheme,
+  clearAllCategoryRankings,
 } from '../redux/rootSlice';
 import { AppDispatch, AppState } from '../redux/store';
 import { clearCategories } from '../utilities/CategoryUtil';
 import { fetchCountryContestantsByYear } from '../utilities/ContestantRepository';
 import { joyrideOptions, SKIP_WELCOME_AFTER_TOUR_KEY } from '../utilities/JoyrideUtil';
 import { logger } from '../utilities/logger';
-import { clearAllRankingParams, goToUrl, updateQueryParams } from '../utilities/UrlUtil';
+import { goToUrl } from '../utilities/UrlUtil';
 
 import type Joyride from 'react-joyride';
 
@@ -83,7 +84,6 @@ const joyRideTourSteps = [
 const JoyrideTourSort: React.FC<JoyrideTourSortProps> = (props: JoyrideTourSortProps) => {
   const dispatch: AppDispatch = useAppDispatch();
   const year = useAppSelector((state: AppState) => state.root.year);
-  const categories = useAppSelector((state: AppState) => state.root.categories);
   const rankedItems = useAppSelector(selectActiveRankedItems);
   const unrankedItems = useAppSelector((state: AppState) => state.root.unrankedItems);
 
@@ -145,11 +145,8 @@ const JoyrideTourSort: React.FC<JoyrideTourSortProps> = (props: JoyrideTourSortP
 
   // clear theme and ranking for the tour
   function clearRankingForTour() {
-    updateQueryParams({
-      g: undefined,
-      t: '',
-    });
-
+    // The single URL writer projects `g` and `t` from the store, so just reset
+    // them here; resetRanking clears the rankings and the writer reprojects.
     dispatch(setGlobalSearch(false));
     dispatch(setTheme(''));
     resetRanking();
@@ -233,7 +230,7 @@ const JoyrideTourSort: React.FC<JoyrideTourSortProps> = (props: JoyrideTourSortP
       dispatch(setContestants(yearContestants));
       dispatch(setUnrankedItems(yearContestants));
       dispatch(setRankedItems([]));
-      clearAllRankingParams(categories);
+      dispatch(clearAllCategoryRankings());
       props.setRefreshUrl(Math.random());
 
       logger.log('[JoyrideTourSort] Ranking cleared successfully');

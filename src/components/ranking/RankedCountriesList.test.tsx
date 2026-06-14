@@ -4,8 +4,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import React from 'react';
 import { describe, it, expect, vi } from 'vitest';
 
-// URL/YouTube side effects aren't relevant to a render smoke test.
-vi.mock('../../utilities/UrlUtil', () => ({ updateUrlFromRankedItems: vi.fn() }));
+// YouTube side effects aren't relevant to a render smoke test.
 vi.mock('../../utilities/YoutubeUtil', () => ({ generateYoutubePlaylistUrl: vi.fn(() => '') }));
 
 // Stub the child subtrees so this test stays focused on RankedCountriesList's

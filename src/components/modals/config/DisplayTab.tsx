@@ -36,7 +36,6 @@ import {
   downloadFile,
   getExportDataString,
 } from '../../../utilities/export/ExportUtil';
-import { updateQueryParams } from '../../../utilities/UrlUtil';
 import {
   assignVotesByContestants,
   fetchVotesByCode,
@@ -145,7 +144,6 @@ const DisplayTab: React.FC = () => {
     const themeCode = themeOption?.code || '';
 
     dispatch(setTheme(themeCode));
-    updateQueryParams({ t: themeCode });
   };
 
   // Handle vote type input change
@@ -153,22 +151,18 @@ const DisplayTab: React.FC = () => {
     const newVote = updateVoteTypeCode(vote, voteType, checked);
     if (newVote !== vote) {
       dispatch(setVote(newVote));
-      updateQueryParams({ v: newVote });
     }
   };
 
   const onShowComparisonChange = (checked: boolean) => {
-    updateQueryParams({ cm: checked === true ? 't' : 'f' });
     dispatch(setShowComparison(checked === true));
   };
 
   const onShowThumbnailsChange = (checked: boolean) => {
-    updateQueryParams({ p: checked === true ? 't' : 'f' });
     dispatch(setShowThumbnail(checked === true));
   };
 
   const onShowPlaceChange = (checked: boolean) => {
-    updateQueryParams({ pl: checked === true ? 't' : 'f' });
     dispatch(setShowPlace(checked === true));
   };
 
@@ -189,7 +183,6 @@ const DisplayTab: React.FC = () => {
       await resetRankedItemVotes(rankedItems, newVoteCode);
 
       if (newVoteCode !== vote) {
-        updateQueryParams({ v: newVoteCode });
         dispatch(setVote(newVoteCode));
       }
     };

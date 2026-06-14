@@ -5,8 +5,6 @@
 export type { Category } from './category/types';
 export { isValidCategoryName } from './category/categoryValidation';
 export {
-  saveCategoriesToUrl,
-  removeCountryFromUrlCategoryRankings,
   parseCategoriesUrlParam,
   categoryRankingsExist,
   getCountryCategoryRankingsFromUrl,

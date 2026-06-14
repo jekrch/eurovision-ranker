@@ -171,6 +171,31 @@ describe('store -> URL writer', () => {
     expect(search().has('r')).toBe(false);
   });
 
+  it('re-encodes the ranking from country-id to global-uid form when global mode flips', () => {
+    // Store items carry both the country id and the global uid, so flipping
+    // global mode re-projects the ranking in the new mode with no URL round-trip
+    // — this is what lets the writer own the advanced-mode toggle outright.
+    const item = (id: string, uid: string): CountryContestant =>
+      ({ id, uid, country: { id, key: id, name: id }, contestant: null }) as CountryContestant;
+    const store = makeTestStore({
+      root: {
+        categoryRankings: [[item('a', 'a01'), item('b', 'b02')]],
+        categories: [],
+        globalSearch: false,
+      },
+    });
+
+    mountWriter(store);
+    expect(search().get('r')).toBe('ab');
+
+    act(() => {
+      store.dispatch(setGlobalSearch(true));
+    });
+
+    expect(search().get('r')).toBe('>a01b02');
+    expect(search().get('g')).toBe('t');
+  });
+
   it('drops ranking params that the store no longer projects', () => {
     // URL carries a stale third category ranking; the store has only two.
     setUrl('/?r1=ab&r2=ba&r3=ab');

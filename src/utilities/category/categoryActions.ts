@@ -1,4 +1,3 @@
-import { saveCategoriesToUrl } from './categoryUrl';
 import { Category } from './types';
 import {
   setActiveCategory,
@@ -13,8 +12,8 @@ import { AppDispatch } from '../../redux/store';
 /**
  * Clear all categories: collapse the per-category rankings down to the kept
  * slot's order, which becomes the sole, category-less ranking. The single URL
- * writer projects the collapsed `r` (and drops the now-stale `rN`); the `c`
- * param is removed here.
+ * writer projects the collapsed `r` (and drops the now-stale `rN`) and removes
+ * the `c` param once the store's categories are emptied.
  *
  * @param keepSlot the category slot whose ranking survives as the main ranking
  * @param dispatch
@@ -28,9 +27,6 @@ export function clearCategories(keepSlot: number, dispatch: AppDispatch) {
   dispatch(setShowTotalRank(false));
 
   dispatch(setCategories([]));
-
-  // remove the c param (an empty list deletes it)
-  saveCategoriesToUrl([]);
 }
 
 export function saveCategories(
@@ -49,7 +45,6 @@ export function saveCategories(
     // ranking, matching how defining a category historically started it from the
     // current order.
     dispatch(seedCategoryRankingSlots(updatedCategories.length));
-    saveCategoriesToUrl(updatedCategories);
   }
 }
 
@@ -86,5 +81,4 @@ export const deleteCategory = (
   }
 
   dispatch(setCategories(updatedCategories));
-  saveCategoriesToUrl(updatedCategories);
 };

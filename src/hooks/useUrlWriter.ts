@@ -4,16 +4,14 @@ import { useAppSelector } from './stateHooks';
 import { selectUrlParams } from '../redux/urlSelectors';
 
 /**
- * Static params this writer authors, projected from the store. The per-category
- * rankings (`r` / `r1`..`rN`) are also authored here but handled dynamically
- * since their key count tracks the categories. The remaining canonical params
- * (t/v/cm/p/pl/c) are still written by their own components and will fold into
- * this writer as those ad-hoc callers are removed.
+ * Static params this writer authors, projected from the store — the entire
+ * canonical set. The per-category rankings (`r` / `r1`..`rN`) are also authored
+ * here but handled dynamically since their key count tracks the categories.
  *
  * `id` is managed too: in public-view mode the projection is just `{ id }`, so
  * the writer sets it; on exit the projection drops it, so the writer deletes it.
  */
-const MANAGED_KEYS = ['n', 'y', 'g', 'id'] as const;
+const MANAGED_KEYS = ['n', 'y', 'g', 'id', 't', 'v', 'cm', 'p', 'pl', 'c'] as const;
 
 // Matches the per-category ranking params: the bare `r` and the indexed
 // `r1`, `r2`, … The writer owns all of them, projecting them from the store's

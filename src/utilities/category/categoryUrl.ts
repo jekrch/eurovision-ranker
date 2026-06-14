@@ -1,46 +1,7 @@
 import { Country } from '../../data/Country';
 import { CountryContestant } from '../../data/CountryContestant';
-import { convertRankingsStrToArray, updateQueryParams } from '../UrlUtil';
+import { convertRankingsStrToArray } from '../UrlUtil';
 import { Category } from './types';
-
-export function saveCategoriesToUrl(updatedCategories: Category[]) {
-  const categoriesParam = updatedCategories
-    .map((category) => `${category.name}-${category.weight}`)
-    .join('|');
-  updateQueryParams({ c: categoriesParam });
-}
-
-/**
- * Remove the provided countryId from all category rankings
- *
- * @param categories
- * @param countryIdToRemove
- */
-export function removeCountryFromUrlCategoryRankings(
-  categories: Category[],
-  countryIdToRemove: string,
-) {
-  const searchParams = new URLSearchParams(window.location.search);
-  categories.forEach((_, index) => {
-    const categoryParam = `r${index + 1}`;
-    const currentRanking = searchParams.get(categoryParam);
-    if (currentRanking) {
-      const rankingArray = convertRankingsStrToArray(currentRanking);
-      const updatedRankingArray = rankingArray.filter(
-        (countryId) => countryId !== countryIdToRemove,
-      );
-      const updatedRanking = updatedRankingArray.join('');
-      if (updatedRanking) {
-        searchParams.set(categoryParam, updatedRanking);
-      } else {
-        searchParams.delete(categoryParam);
-      }
-    }
-  });
-
-  const newUrl = `${window.location.pathname}?${searchParams.toString()}`;
-  window.history.replaceState(null, '', newUrl);
-}
 
 export function parseCategoriesUrlParam(categoriesParam: string) {
   return categoriesParam.split('|').map((category) => {

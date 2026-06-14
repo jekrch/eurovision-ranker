@@ -14,7 +14,6 @@ import React from 'react';
 import { useAppDispatch, useAppSelector } from '../../hooks/stateHooks';
 import { setTheme } from '../../redux/rootSlice';
 import { AppState } from '../../redux/store';
-import { updateQueryParams } from '../../utilities/UrlUtil';
 import ThemeSwitcher from '../ThemeSwitcher';
 
 export type IntroColumnProps = {
@@ -71,7 +70,6 @@ const IntroColumn: React.FC<IntroColumnProps> = ({
 
   const handleThemeChange = (themeCode: string) => {
     dispatch(setTheme(themeCode));
-    updateQueryParams({ t: themeCode });
   };
 
   return (

@@ -16,6 +16,7 @@ import {
   setContestants,
   setGlobalSearch,
   setTheme,
+  clearAllCategoryRankings,
 } from '../redux/rootSlice';
 import { AppDispatch, AppState } from '../redux/store';
 import { tourSteps } from '../tour/steps';
@@ -23,7 +24,7 @@ import { clearCategories } from '../utilities/CategoryUtil';
 import { fetchCountryContestantsByYear } from '../utilities/ContestantRepository';
 import { clone } from '../utilities/ContestantUtil';
 import { joyrideOptions, SKIP_WELCOME_AFTER_TOUR_KEY } from '../utilities/JoyrideUtil';
-import { clearAllRankingParams, goToUrl, updateQueryParams } from '../utilities/UrlUtil';
+import { goToUrl } from '../utilities/UrlUtil';
 
 import type Joyride from 'react-joyride';
 
@@ -38,7 +39,6 @@ interface JoyrideTourProps {
 const JoyrideTour: React.FC<JoyrideTourProps> = (props: JoyrideTourProps) => {
   const dispatch: AppDispatch = useAppDispatch();
   const year = useAppSelector((state: AppState) => state.root.year);
-  const categories = useAppSelector((state: AppState) => state.root.categories);
   const rankedItems = useAppSelector(selectActiveRankedItems);
   const unrankedItems = useAppSelector((state: AppState) => state.root.unrankedItems);
   const [startTour, setStartTour] = useState<boolean>(false);
@@ -88,11 +88,8 @@ const JoyrideTour: React.FC<JoyrideTourProps> = (props: JoyrideTourProps) => {
    * Note that the original ranking will be restored when the tour ends.
    */
   function clearRankingForTour() {
-    updateQueryParams({
-      g: undefined,
-      t: '',
-    });
-
+    // The single URL writer projects `g` and `t` from the store, so just reset
+    // them here; resetRanking clears the rankings and the writer reprojects.
     dispatch(setGlobalSearch(false));
 
     dispatch(setTheme(''));
@@ -134,8 +131,7 @@ const JoyrideTour: React.FC<JoyrideTourProps> = (props: JoyrideTourProps) => {
     dispatch(setUnrankedItems(yearContestants));
 
     dispatch(setRankedItems([]));
-
-    clearAllRankingParams(categories);
+    dispatch(clearAllCategoryRankings());
 
     props.setRefreshUrl(Math.random());
   }

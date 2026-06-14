@@ -1,16 +1,13 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import AppContent from './components/AppContent';
 import AppModals from './components/AppModals';
-import { AuthView } from './components/modals/auth/AuthModal';
+import { useModalController } from './components/modals/ModalControllerContext';
 import WelcomeOverlay from './components/modals/WelcomeOverlay';
-import { VideoPipProvider } from './components/video/VideoPipContext';
-import { CountryContestant } from './data/CountryContestant';
 import { useAppDispatch, useAppSelector } from './hooks/stateHooks';
-import { useModal } from './hooks/useModal';
+import { useDeepLinkBoot } from './hooks/useDeepLinkBoot';
 import { usePublicRankingView } from './hooks/usePublicRankingView';
 import { useRankingDragDrop } from './hooks/useRankingDragDrop';
-import useSorterModal from './hooks/useSortModal';
 import { useThemeEffect } from './hooks/useThemeEffect';
 import { useUrlSync } from './hooks/useUrlSync';
 import { useUrlWriter } from './hooks/useUrlWriter';
@@ -20,11 +17,9 @@ import {
   setActiveCategory,
   setShowTotalRank,
   setGlobalSearch,
-  setTheme,
   patchUser,
 } from './redux/rootSlice';
 import { AppDispatch, AppState } from './redux/store';
-import { ping } from './utilities/api/health';
 import { getMe } from './utilities/api/me';
 import { areCategoriesSet } from './utilities/CategoryUtil';
 import {
@@ -42,15 +37,10 @@ import {
   setVh,
 } from './utilities/EventListenerUtil';
 import { SKIP_WELCOME_AFTER_TOUR_KEY } from './utilities/JoyrideUtil';
-import { logger } from './utilities/logger';
 import { urlHasRankings } from './utilities/UrlUtil';
 
 const App: React.FC = () => {
-  const { modalState, openModal, closeModal, setModalTab, currentTab } = useModal('about');
-  const [configModalTab, setConfigModalTab] = useState('display');
-  // Incremented on forced opens so the ConfigModal jumps to the requested tab
-  // even when the tab string is unchanged (overriding its sticky-tab memory).
-  const [configTabNonce, setConfigTabNonce] = useState(0);
+  const { openModal } = useModalController();
   const [refreshUrl, setRefreshUrl] = useState(0);
   // Armed after the boot hydration so the single URL writer (useUrlWriter) only
   // starts projecting the store back to the URL once the store reflects it.
@@ -67,9 +57,6 @@ const App: React.FC = () => {
   const categories = useAppSelector((state: AppState) => state.root.categories);
   const activeCategory = useAppSelector((state: AppState) => state.root.activeCategory);
 
-  const [selectedCountryContestant, setSelectedCountryContestant] = useState<
-    CountryContestant | undefined
-  >(undefined);
   const [showOverlay, setShowOverlay] = useState(
     !cameFromTour() &&
       !areRankingsSet() &&
@@ -79,19 +66,7 @@ const App: React.FC = () => {
       !hasQuizCode(),
   );
   const [isOverlayExit, setIsOverlayExit] = useState(false);
-  const [authModalOpen, setAuthModalOpen] = useState(false);
-  const [authModalView, setAuthModalView] = useState<AuthView | undefined>(undefined);
-  const [authModalAllowRegister, setAuthModalAllowRegister] = useState(false);
-  const [joinGroupToken, setJoinGroupToken] = useState<string | null>(null);
-  const [quizModalOpen, setQuizModalOpen] = useState(false);
-  // a ?quiz=<code> deep link replays the exact same quiz; null = normal setup
-  const [quizCode, setQuizCode] = useState<string | null>(null);
-  //const [isDevModalOpen, setIsDevModalOpen] = useState(true);
-  const memoizedRankedItems = useMemo(() => rankedItems, [rankedItems]);
-  const memoizedUnrankedItems = useMemo(() => unrankedItems, [unrankedItems]);
   useThemeEffect();
-
-  const { isSorterModalOpen, openSorterModal, closeSorterModal, getItemsToSort } = useSorterModal();
 
   // Public-view-by-id mode: when the URL is just `?id=<ranking_id>` the shared
   // ranking is loaded into the store and `viewMode` is set to 'public', so the
@@ -102,18 +77,6 @@ const App: React.FC = () => {
     dispatch,
     writerReadyRef,
   });
-
-  const loadAuroralCSS = () => {
-    return import('./auroral.css');
-  };
-
-  useEffect(() => {
-    if (theme.includes('ab')) {
-      loadAuroralCSS();
-    } else {
-      setTheme(theme);
-    }
-  }, [theme]);
 
   /**
    * If we're switching to the unranked selection view from the
@@ -149,69 +112,9 @@ const App: React.FC = () => {
     writerReadyRef.current = true;
   }, [refreshUrl]);
 
-  // boot: handle email-link deep paths, ?signup=beta gate, API reachability probe
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const path = window.location.pathname;
-
-    const stripParamsAndPath = (paramKeys: string[]) => {
-      const sp = new URLSearchParams(window.location.search);
-      paramKeys.forEach((k) => sp.delete(k));
-      // Reset path to the SPA root for gh-pages-friendly deep links.
-      const newPath = window.location.origin + '/';
-      const newSearch = sp.toString();
-      window.history.replaceState(null, '', newPath + (newSearch ? `?${newSearch}` : ''));
-    };
-
-    if (path.endsWith('/complete-registration')) {
-      const token = params.get('token') || '';
-      setAuthModalView({ tab: 'register', step: 2, token });
-      setAuthModalAllowRegister(true);
-      setAuthModalOpen(true);
-      stripParamsAndPath(['token']);
-    } else if (path.endsWith('/reset-password')) {
-      const token = params.get('token') || '';
-      setAuthModalView({ tab: 'reset', step: 2, token });
-      setAuthModalAllowRegister(false);
-      setAuthModalOpen(true);
-      stripParamsAndPath(['token']);
-    } else if (params.get('signup') === 'beta') {
-      setAuthModalView({ tab: 'register', step: 1 });
-      setAuthModalAllowRegister(true);
-      setAuthModalOpen(true);
-      stripParamsAndPath(['signup']);
-    } else if (path.endsWith('/join-group') && params.get('token')) {
-      // Canonical invite link: /join-group?token=…
-      setJoinGroupToken(params.get('token'));
-      stripParamsAndPath(['token']);
-    } else if (params.get('join')) {
-      // Query-only fallback for static hosts that can't route /join-group.
-      setJoinGroupToken(params.get('join'));
-      stripParamsAndPath(['join']);
-    }
-
-    // ?quiz=<code> — open the quiz modal and replay the exact same quiz.
-    const quizParam = params.get('quiz');
-    if (quizParam) {
-      setQuizCode(quizParam);
-      setQuizModalOpen(true);
-      stripParamsAndPath(['quiz']);
-    }
-
-    // ?id=<ranking_id> — fetch a public ranking and load it. Set the flag
-    // synchronously so the other on-mount effects don't write n/y/load
-    // anything stale before the fetch resolves.
-    const idParam = params.get('id');
-    if (idParam) {
-      loadPublicRankingById(idParam);
-    }
-
-    // Fire-and-forget reachability check; surface only on dev console.
-    ping().catch((e) => {
-      if (import.meta.env.DEV) logger.warn('API healthz failed', e);
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  // boot: handle email-link deep paths, ?signup=beta gate, ?id= shared rankings,
+  // and the API reachability probe. Opens the matching modals via the controller.
+  useDeepLinkBoot({ loadPublicRankingById });
 
   // Hydrate the signed-in user's username from /api/me whenever the auth token
   // appears (page load with a stored token, or a fresh in-session login). JWTs
@@ -297,113 +200,39 @@ const App: React.FC = () => {
   // Drag-and-drop + add-to-ranked handlers, including keeping every category
   // ranking in the URL in sync. Extracted to keep App focused on composition.
   const { handleOnDragEnd, handleAddToRanked } = useRankingDragDrop({
-    rankedItems: memoizedRankedItems,
-    unrankedItems: memoizedUnrankedItems,
+    rankedItems,
+    unrankedItems,
     globalSearch,
     dispatch,
     setRefreshUrl,
   });
 
-  // Helper functions to handle modal operations with selected tab
-  function openMainModalWithTab(tabName: string): void {
-    setModalTab(tabName);
-    openModal('main');
-  }
-
-  function openConfigModalWithTab(tabName: string, force = false): void {
-    setConfigModalTab(tabName);
-    if (force) {
-      setConfigTabNonce((n) => n + 1);
-    }
-    openModal('config');
-  }
-
-  function openSongModalWithData(countryContestant: CountryContestant) {
-    setSelectedCountryContestant(countryContestant);
-    openModal('song');
-  }
-
-  // re-open the song modal when the user expands a floating (pip) video; the
-  // modal's video tab then re-docks the still-playing player
-  const handleExpandVideo = useCallback((countryContestant: CountryContestant) => {
-    setSelectedCountryContestant(countryContestant);
-    openModal('song');
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const openLoginModal = useCallback(() => {
-    setAuthModalView({ tab: 'login' });
-    setAuthModalAllowRegister(false);
-    setAuthModalOpen(true);
-  }, []);
-
   return (
-    <VideoPipProvider onExpand={handleExpandVideo} onMinimize={() => closeModal('song')}>
-      <div className="overflow-hidden">
-        {showOverlay && (
-          <WelcomeOverlay
-            exiting={isOverlayExit}
-            handleGetStarted={handleGetStarted}
-            handleTakeTour={() => {
-              handleGetStarted();
-              openModal('tour');
-            }}
-          />
-        )}
-
-        <AppContent
-          theme={theme}
-          showUnranked={showUnranked}
-          globalSearch={globalSearch}
-          showOverlay={showOverlay}
-          isOverlayExit={isOverlayExit}
-          dispatch={dispatch}
-          handleOnDragEnd={handleOnDragEnd}
-          handleAddToRanked={handleAddToRanked}
-          updateGlobalSearch={updateGlobalSearch}
-          openSongModalWithData={openSongModalWithData}
-          openMainModalWithTab={openMainModalWithTab}
-          openConfigModalWithTab={openConfigModalWithTab}
-          openModal={openModal}
-          openSorterModal={openSorterModal}
-          openLoginModal={openLoginModal}
-          setQuizModalOpen={setQuizModalOpen}
+    <div className="overflow-hidden">
+      {showOverlay && (
+        <WelcomeOverlay
+          exiting={isOverlayExit}
+          handleGetStarted={handleGetStarted}
+          handleTakeTour={() => {
+            handleGetStarted();
+            openModal('tour');
+          }}
         />
+      )}
 
-        <AppModals
-          modalState={modalState}
-          currentTab={currentTab}
-          openModal={openModal}
-          closeModal={closeModal}
-          dispatch={dispatch}
-          configModalTab={configModalTab}
-          configTabNonce={configTabNonce}
-          openConfigModalWithTab={openConfigModalWithTab}
-          openLoginModal={openLoginModal}
-          setRefreshUrl={setRefreshUrl}
-          selectedCountryContestant={selectedCountryContestant}
-          isSorterModalOpen={isSorterModalOpen}
-          closeSorterModal={closeSorterModal}
-          openSorterModal={openSorterModal}
-          getItemsToSort={getItemsToSort}
-          authModalOpen={authModalOpen}
-          setAuthModalOpen={setAuthModalOpen}
-          authModalView={authModalView}
-          authModalAllowRegister={authModalAllowRegister}
-          quizModalOpen={quizModalOpen}
-          setQuizModalOpen={setQuizModalOpen}
-          quizCode={quizCode}
-          setQuizCode={setQuizCode}
-          joinGroupToken={joinGroupToken}
-          setJoinGroupToken={setJoinGroupToken}
-        />
+      <AppContent
+        theme={theme}
+        showUnranked={showUnranked}
+        globalSearch={globalSearch}
+        showOverlay={showOverlay}
+        isOverlayExit={isOverlayExit}
+        handleOnDragEnd={handleOnDragEnd}
+        handleAddToRanked={handleAddToRanked}
+        updateGlobalSearch={updateGlobalSearch}
+      />
 
-        {/* <CanvasDevModal
-          isOpen={isDevModalOpen}
-          onClose={() => setIsDevModalOpen(false)}
-        /> */}
-      </div>
-    </VideoPipProvider>
+      <AppModals setRefreshUrl={setRefreshUrl} />
+    </div>
   );
 };
 

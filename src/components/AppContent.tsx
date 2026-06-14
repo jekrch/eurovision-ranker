@@ -2,15 +2,14 @@ import { DragDropContext, OnDragEndResponder } from '@hello-pangea/dnd';
 import classNames from 'classnames';
 import React, { Suspense } from 'react';
 
-import { Switch } from './Switch';
-import TooltipHelp from './TooltipHelp';
-import { CountryContestant } from '../data/CountryContestant';
+import { useModalController } from './modals/ModalControllerContext';
 import { setShowUnranked } from '../redux/rootSlice';
 import EditNav from './nav/EditNav';
 import ContentPlaceholder from './ranking/ContentPlaceholder';
-import { UseModalReturn } from '../hooks/useModal';
+import { Switch } from './Switch';
+import TooltipHelp from './TooltipHelp';
+import { useAppDispatch } from '../hooks/stateHooks';
 import { useRankingDragDrop } from '../hooks/useRankingDragDrop';
-import { AppDispatch } from '../redux/store';
 
 // lazy load the list views to reduce initial bundle size
 const LazyRankedCountriesList = React.lazy(() => import('./ranking/RankedCountriesList'));
@@ -24,17 +23,9 @@ interface AppContentProps {
   globalSearch: boolean;
   showOverlay: boolean;
   isOverlayExit: boolean;
-  dispatch: AppDispatch;
   handleOnDragEnd: ReturnType<typeof useRankingDragDrop>['handleOnDragEnd'];
   handleAddToRanked: ReturnType<typeof useRankingDragDrop>['handleAddToRanked'];
   updateGlobalSearch: (checked: boolean) => void;
-  openSongModalWithData: (countryContestant: CountryContestant) => void;
-  openMainModalWithTab: (tabName: string) => void;
-  openConfigModalWithTab: (tabName: string, force?: boolean) => void;
-  openModal: UseModalReturn['openModal'];
-  openSorterModal: (items?: CountryContestant[]) => void;
-  openLoginModal: () => void;
-  setQuizModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 /**
@@ -49,18 +40,21 @@ const AppContent: React.FC<AppContentProps> = ({
   globalSearch,
   showOverlay,
   isOverlayExit,
-  dispatch,
   handleOnDragEnd,
   handleAddToRanked,
   updateGlobalSearch,
-  openSongModalWithData,
-  openMainModalWithTab,
-  openConfigModalWithTab,
-  openModal,
-  openSorterModal,
-  openLoginModal,
-  setQuizModalOpen,
 }) => {
+  const dispatch = useAppDispatch();
+  const {
+    openSongModalWithData,
+    openMainModalWithTab,
+    openConfigModalWithTab,
+    openModal,
+    openSorterModal,
+    openLoginModal,
+    setQuizModalOpen,
+  } = useModalController();
+
   return (
     <div
       className={classNames(

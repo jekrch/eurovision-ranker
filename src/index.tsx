@@ -2,6 +2,7 @@ import { lazy, Suspense } from 'react';
 import ReactDOM from 'react-dom/client';
 import { Provider } from 'react-redux';
 
+import { ModalControllerProvider } from './components/modals/ModalControllerContext';
 import { logout } from './redux/rootSlice';
 import store from './redux/store';
 import { registerUnauthorizedHandler } from './utilities/api/client';
@@ -29,7 +30,9 @@ const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 root.render(
   <Provider store={store}>
     <Suspense fallback={<LoadingFallback />}>
-      <App />
+      <ModalControllerProvider>
+        <App />
+      </ModalControllerProvider>
     </Suspense>
   </Provider>,
 );

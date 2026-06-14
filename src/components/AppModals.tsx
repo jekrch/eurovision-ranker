@@ -1,13 +1,12 @@
 import React, { Suspense } from 'react';
 import { Toaster } from 'react-hot-toast';
 
-import { CountryContestant } from '../data/CountryContestant';
-import { UseModalReturn } from '../hooks/useModal';
+import { useAppDispatch } from '../hooks/stateHooks';
 import { setShowUnranked } from '../redux/rootSlice';
-import { AppDispatch } from '../redux/store';
 import { toastOptions } from '../utilities/ToasterUtil';
-import AuthModal, { AuthView } from './modals/auth/AuthModal';
+import AuthModal from './modals/auth/AuthModal';
 import JoinGroupModal from './modals/groups/JoinGroupModal';
+import { useModalController } from './modals/ModalControllerContext';
 import SorterModal from './ranking/SorterModal';
 
 // lazy load the modal components to reduce initial bundle size
@@ -21,31 +20,8 @@ const LazyJoyrideTour = React.lazy(() => import('../tour/JoyrideTour'));
 const LazyJoyrideTourSort = React.lazy(() => import('../tour/JoyrideTourSort'));
 
 interface AppModalsProps {
-  modalState: UseModalReturn['modalState'];
-  currentTab: string;
-  openModal: UseModalReturn['openModal'];
-  closeModal: UseModalReturn['closeModal'];
-  dispatch: AppDispatch;
-  configModalTab: string;
-  configTabNonce: number;
-  openConfigModalWithTab: (tabName: string, force?: boolean) => void;
-  openLoginModal: () => void;
+  // App-owned URL-writer arming counter, bumped by the tour modals on edits.
   setRefreshUrl: React.Dispatch<React.SetStateAction<number>>;
-  selectedCountryContestant: CountryContestant | undefined;
-  isSorterModalOpen: boolean;
-  closeSorterModal: () => void;
-  openSorterModal: (items?: CountryContestant[]) => void;
-  getItemsToSort: () => CountryContestant[];
-  authModalOpen: boolean;
-  setAuthModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  authModalView: AuthView | undefined;
-  authModalAllowRegister: boolean;
-  quizModalOpen: boolean;
-  setQuizModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  quizCode: string | null;
-  setQuizCode: React.Dispatch<React.SetStateAction<string | null>>;
-  joinGroupToken: string | null;
-  setJoinGroupToken: React.Dispatch<React.SetStateAction<string | null>>;
 }
 
 /**
@@ -54,33 +30,34 @@ interface AppModalsProps {
  * toast host. Extracted from App so the root component stays focused on layout +
  * state wiring; behavior is unchanged (same conditional render tree).
  */
-const AppModals: React.FC<AppModalsProps> = ({
-  modalState,
-  currentTab,
-  openModal,
-  closeModal,
-  dispatch,
-  configModalTab,
-  configTabNonce,
-  openConfigModalWithTab,
-  openLoginModal,
-  setRefreshUrl,
-  selectedCountryContestant,
-  isSorterModalOpen,
-  closeSorterModal,
-  openSorterModal,
-  getItemsToSort,
-  authModalOpen,
-  setAuthModalOpen,
-  authModalView,
-  authModalAllowRegister,
-  quizModalOpen,
-  setQuizModalOpen,
-  quizCode,
-  setQuizCode,
-  joinGroupToken,
-  setJoinGroupToken,
-}) => {
+const AppModals: React.FC<AppModalsProps> = ({ setRefreshUrl }) => {
+  const dispatch = useAppDispatch();
+  const {
+    modalState,
+    currentTab,
+    openModal,
+    closeModal,
+    configModalTab,
+    configTabNonce,
+    openConfigModalWithTab,
+    openLoginModal,
+    selectedCountryContestant,
+    isSorterModalOpen,
+    closeSorterModal,
+    openSorterModal,
+    getItemsToSort,
+    authModalOpen,
+    setAuthModalOpen,
+    authModalView,
+    authModalAllowRegister,
+    quizModalOpen,
+    setQuizModalOpen,
+    quizCode,
+    setQuizCode,
+    joinGroupToken,
+    setJoinGroupToken,
+  } = useModalController();
+
   return (
     <>
       {/* Render all modals conditionally */}

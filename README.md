@@ -24,6 +24,7 @@ Rankings can be split into multiple categories, each given its own weight to ref
 
 <img width="300" alt="Voting Records" src="https://github.com/user-attachments/assets/4d8bc5ac-bb98-4b1c-9b0d-ffe17f7de399" />
 
+<img width="300" alt="Category Ranking with PIP" src="https://github.com/user-attachments/assets/b0af2b70-4e7f-4e30-afa7-0cc6b48c6340" />
 
 ## Features
 

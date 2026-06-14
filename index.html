@@ -5,11 +5,29 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1" />
   <meta name="theme-color" content="#241a20" />
-  <meta name="description" content="Create, share, and analyze your Eurovision Song Contest rankings. Drag and drop contestants to create your perfect ranking for any Eurovision year." />
+  <meta name="description" content="Create, share, and analyze your Eurovision Song Contest rankings. Drag and drop contestants to build your perfect ranking for any Eurovision year." />
   <meta name="keywords" content="Eurovision, Eurovision Song Contest, Eurovision ranking, ESC, song contest, music ranking, Eurovision ranker, Eurovision rank, Eurovision fan app" />
   <meta name="author" content="Eurovision Ranker" />
-  
+  <meta name="robots" content="index, follow" />
+
   <link rel="canonical" href="https://www.eurovision-ranker.com/" />
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Eurovision Ranker" />
+  <meta property="og:url" content="https://www.eurovision-ranker.com/" />
+  <meta property="og:title" content="Eurovision Ranker — Create & Share Your Eurovision Rankings" />
+  <meta property="og:description" content="Drag and drop to rank Eurovision Song Contest entries, then share and analyze your perfect ranking for any year." />
+  <meta property="og:image" content="https://www.eurovision-ranker.com/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Eurovision Ranker — rank and share Eurovision Song Contest entries" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Eurovision Ranker — Create & Share Your Eurovision Rankings" />
+  <meta name="twitter:description" content="Drag and drop to rank Eurovision Song Contest entries, then share and analyze your perfect ranking for any year." />
+  <meta name="twitter:image" content="https://www.eurovision-ranker.com/og-image.png" />
   
   <meta 
   http-equiv="Content-Security-Policy" 
@@ -48,7 +66,26 @@
 
   <link rel="manifest" href="/manifest.json" />
 
-  <title>Eurovision Ranker</title>
+  <title>Eurovision Ranker — Create & Share Your Eurovision Rankings</title>
+
+  <!-- Structured data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Eurovision Ranker",
+    "url": "https://www.eurovision-ranker.com/",
+    "description": "Create, share, and analyze your Eurovision Song Contest rankings. Drag and drop contestants to build your perfect ranking for any Eurovision year.",
+    "applicationCategory": "EntertainmentApplication",
+    "operatingSystem": "Any",
+    "browserRequirements": "Requires JavaScript",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    }
+  }
+  </script>
 
   <!-- gh-pages SPA decoder: pairs with public/404.html to restore deep-link URLs
        before the React bundle reads window.location. -->
@@ -68,7 +105,12 @@
 </head>
 
 <body >
-  <noscript>You need to enable JavaScript to run this app.</noscript>
+  <noscript>
+    <h1>Eurovision Ranker</h1>
+    <p>Create, share, and analyze your Eurovision Song Contest rankings. Drag and
+    drop contestants to build your perfect ranking for any Eurovision year.</p>
+    <p>You need to enable JavaScript to run this app.</p>
+  </noscript>
   <div id="root"></div>
   <script type="module" src="/src/index.tsx"></script>
 </body>

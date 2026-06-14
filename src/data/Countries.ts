@@ -1,5 +1,7 @@
 import { Country } from "./Country";
 
+// Each country's `key` is a lowercase alpha-2 code that must have a matching
+// SVG in src/assets/flags/ — adding a country requires dropping its flag there.
 export const countries: Country[] = [
   { id: 'a', name: 'Albania', key: 'al', icon: 'flag-icon-al' },
   { id: '.p', name: 'Andorra', key: 'ad', icon: 'flag-icon-ad' },

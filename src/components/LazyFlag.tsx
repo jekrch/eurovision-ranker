@@ -1,8 +1,6 @@
 import { lazy, Suspense, useState, useEffect, CSSProperties } from 'react';
 
-const LazyFlag = lazy(() =>
-  import('react-world-flags').then((module) => ({ default: module.default })),
-);
+const LazyFlag = lazy(() => import('./Flag'));
 
 interface FlagProps {
   code: string;

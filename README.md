@@ -22,8 +22,6 @@ Rankings can be split into multiple categories, each given its own weight to ref
 
 <img width="300" alt="Category Settings" src="https://github.com/user-attachments/assets/9f3d73f1-b68b-459d-9a84-37181a702261" />
 
-<img width="300" alt="Sorter" src="https://github.com/user-attachments/assets/3dd55f26-cbcb-4df4-a7b9-710822f6b57d" />
-
 <img width="300" alt="Voting Records" src="https://github.com/user-attachments/assets/4d8bc5ac-bb98-4b1c-9b0d-ffe17f7de399" />
 
 
@@ -48,7 +46,7 @@ Every quiz is reproducible: the config and a seed are encoded into a short share
 
 ## Pairwise Comparison Sorter
 
-<img width="300" alt="image" src="https://github.com/user-attachments/assets/5cf4e450-4534-4725-92a2-329d1181b149">
+<img width="300" alt="Sorter" src="https://github.com/user-attachments/assets/3dd55f26-cbcb-4df4-a7b9-710822f6b57d" />
 
 Eurovision Ranker includes a sorter, which generates a ranking from a user's pairwise preferences. Other sorters exist, but this one allows expanded flexibility:
 

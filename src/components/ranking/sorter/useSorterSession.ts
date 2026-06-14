@@ -48,6 +48,12 @@ export const useSorterSession = (
   const prevIsOpen = useRef(isOpen);
   const activeInitialItemsRef = useRef<CountryContestant[] | null>(null);
 
+  // holds the live, uncompressed sort state for the current history index so the
+  // current-state memo can return it directly instead of compressing a state and
+  // immediately decompressing the same bytes back. only valid when its index matches.
+  const liveStateRef = useRef<SortState | null>(null);
+  const liveStateIndexRef = useRef<number>(-1);
+
   /*
    * updates the state cache ref and increments cacheVersion to trigger hooks relying on it.
    */
@@ -81,12 +87,16 @@ export const useSorterSession = (
           setLastNavigationAction(null);
           initialSortStateRef.current = null;
           activeInitialItemsRef.current = null;
+          liveStateRef.current = null;
+          liveStateIndexRef.current = -1;
           setIsComputing(false);
           return;
         }
 
         initialSortStateRef.current = fullInitialState; // store state after 0 choices
         activeInitialItemsRef.current = initialItems;
+        liveStateRef.current = fullInitialState; // index-0 state is already in hand
+        liveStateIndexRef.current = 0;
         const compressedInitial = compressFullState(fullInitialState);
 
         setChoiceLog([]); // reset history
@@ -107,6 +117,8 @@ export const useSorterSession = (
       setLastNavigationAction(null);
       initialSortStateRef.current = null;
       activeInitialItemsRef.current = null;
+      liveStateRef.current = null;
+      liveStateIndexRef.current = -1;
       setIsComputing(false);
     } else if (!isOpen && prevIsOpen.current) {
       // closing modal, state persists silently until next open or item change
@@ -225,6 +237,18 @@ export const useSorterSession = (
     if (!isSessionLoaded) {
       return null;
     }
+
+    // fast path: the live state for this index is already in hand uncompressed,
+    // so avoid decompressing the bytes we just produced for the cache.
+    if (
+      liveStateIndexRef.current === currentHistoryIndex &&
+      liveStateRef.current &&
+      liveStateRef.current.totalComparisons === currentHistoryIndex
+    ) {
+      if (isComputing) setIsComputing(false);
+      return liveStateRef.current;
+    }
+
     const compressedData = stateCacheRef.current[currentHistoryIndex];
     if (compressedData) {
       //setIsComputing(false); // ensure computing flag is off if cache hit
@@ -232,6 +256,8 @@ export const useSorterSession = (
       // validate decompressed state consistency
       if (decompressed && decompressed.totalComparisons === currentHistoryIndex) {
         if (isComputing) setIsComputing(false); // turn off if it was on
+        liveStateRef.current = decompressed; // keep uncompressed for subsequent renders
+        liveStateIndexRef.current = currentHistoryIndex;
         return decompressed; // return valid cached state
       } else {
         logger.error(
@@ -245,6 +271,12 @@ export const useSorterSession = (
     if (!isComputing) setIsComputing(true); // indicate computation start
     const computedState = computeStateAtIndex(currentHistoryIndex);
     if (isComputing) setIsComputing(false); // indicate computation end
+
+    // cache the computed state uncompressed so re-renders at this index reuse it
+    if (computedState && computedState.totalComparisons === currentHistoryIndex) {
+      liveStateRef.current = computedState;
+      liveStateIndexRef.current = currentHistoryIndex;
+    }
 
     // validate computed state consistency (allow mismatch only if complete)
     if (
@@ -334,6 +366,12 @@ export const useSorterSession = (
 
       // history index moves to the new total comparison count
       const nextHistoryIndex = nextFullState.totalComparisons;
+
+      // keep the freshly computed state live so the memo returns it directly
+      // rather than decompressing the cache entry we're about to write
+      liveStateRef.current = nextFullState;
+      liveStateIndexRef.current = nextHistoryIndex;
+
       const newLogEntry: ChoiceLogEntry = { comparisonIndex: comparisonIndexForLog, choice };
 
       // prune future log entries if history branched

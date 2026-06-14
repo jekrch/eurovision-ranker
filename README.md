@@ -81,13 +81,13 @@ There's also an analysis view (currently in beta) for putting a ranking in conte
 
 2. Install dependencies:
    ```
-   npm install
+   bun install
    ```
 
 ### Running the Application
 
 ```
-npm run start
+bun run start
 ```
 
 The application will be available at `http://localhost:3000`
@@ -95,7 +95,7 @@ The application will be available at `http://localhost:3000`
 ### Running Tests
 
 ```
-npm run test
+bun run test
 ```
 
 ## Continuous Integration

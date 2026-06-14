@@ -165,3 +165,117 @@ describe('generateQuiz', () => {
     expect(quiz).toEqual([]);
   });
 });
+
+describe('generateQuiz — vote-based question types', () => {
+  it('names the televote leader as the answer', async () => {
+    const quiz = await generateQuiz(
+      config({ questionTypes: ['televote'], length: 'long' }),
+      mulberry32(11),
+    );
+    const q = quiz.find((q) => q.type === 'televote');
+    expect(q).toBeDefined();
+    const correct = q!.options.find((o) => o.id === q!.correctOptionId);
+    // Finland leads the televote in the dataset (376).
+    expect(correct!.countryName).toBe('Finland');
+  });
+
+  it('names the jury leader as the answer', async () => {
+    const quiz = await generateQuiz(
+      config({ questionTypes: ['jury'], length: 'long' }),
+      mulberry32(13),
+    );
+    const q = quiz.find((q) => q.type === 'jury');
+    expect(q).toBeDefined();
+    const correct = q!.options.find((o) => o.id === q!.correctOptionId);
+    // Sweden leads the jury vote in the dataset (340).
+    expect(correct!.countryName).toBe('Sweden');
+  });
+
+  it('names the nul-points country in a zero-points question', async () => {
+    const quiz = await generateQuiz(
+      config({ questionTypes: ['zeroPoints'], length: 'long' }),
+      mulberry32(17),
+    );
+    const q = quiz.find((q) => q.type === 'zeroPoints');
+    expect(q).toBeDefined();
+    const correct = q!.options.find((o) => o.id === q!.correctOptionId);
+    expect(correct!.countryName).toBe('Nowhere');
+  });
+
+  it('skips a vote type with too few scored finalists to fill the options', async () => {
+    // Only Sweden carries a jury score, so a 4-option jury question is impossible.
+    const oneScored = DATASET.map((c, i) =>
+      i === 0
+        ? c
+        : ({
+            ...c,
+            contestant: new Contestant({
+              ...c.contestant!.toJSON(),
+              votes: { ...c.contestant!.votes!, juryPoints: undefined },
+            }),
+          } as CountryContestant),
+    );
+    fetchCountryContestantsByYear.mockResolvedValue(oneScored);
+    const quiz = await generateQuiz(config({ questionTypes: ['jury'] }), mulberry32(1));
+    expect(quiz).toEqual([]);
+  });
+});
+
+describe('generateQuiz — hard difficulty', () => {
+  it('asks four-option questions with near distractors', async () => {
+    const quiz = await generateQuiz(
+      config({ difficulty: 'hard', questionTypes: ['winner', 'placement', 'televote'] }),
+      mulberry32(21),
+    );
+    expect(quiz.length).toBeGreaterThan(0);
+    for (const q of quiz) expect(q.options.length).toBe(4);
+  });
+
+  it('adds a last-place question on hard', async () => {
+    const quiz = await generateQuiz(
+      config({ difficulty: 'hard', questionTypes: ['placement'], length: 'long' }),
+      mulberry32(23),
+    );
+    // Germany is unambiguously last (rank 26) in the dataset.
+    const last = quiz.find((q) => q.prompt.includes('finished last'));
+    expect(last).toBeDefined();
+    const correct = last!.options.find((o) => o.id === last!.correctOptionId);
+    expect(correct!.countryName).toBe('Germany');
+  });
+});
+
+describe('generateQuiz — rank handling and year selection', () => {
+  it('derives ranks from total points when the data carries none', async () => {
+    const noRanks = DATASET.map(
+      (c) =>
+        ({
+          ...c,
+          contestant: new Contestant({ ...c.contestant!.toJSON(), finalsRank: undefined }),
+        }) as CountryContestant,
+    );
+    fetchCountryContestantsByYear.mockResolvedValue(noRanks);
+
+    const quiz = await generateQuiz(config({ questionTypes: ['winner'] }), mulberry32(2));
+    const winnerQ = quiz.find((q) => q.type === 'winner');
+    expect(winnerQ).toBeDefined();
+    const correct = winnerQ!.options.find((o) => o.id === winnerQ!.correctOptionId);
+    // Sweden has the highest total (583), so it derives to rank 1.
+    expect(correct!.countryName).toBe('Sweden');
+  });
+
+  it('falls back to all quiz years when none are selected', async () => {
+    await generateQuiz(config({ years: [] }), mulberry32(1));
+    const requested = fetchCountryContestantsByYear.mock.calls.map((c) => c[0]).sort();
+    expect(requested).toEqual([...QUIZ_YEARS].sort());
+  });
+
+  it('aggregates candidate questions across multiple years', async () => {
+    const quiz = await generateQuiz(
+      config({ years: ['2023', '2022'], length: 'long' }),
+      mulberry32(31),
+    );
+    const years = new Set(quiz.map((q) => q.year));
+    expect(years).toContain('2023');
+    expect(years).toContain('2022');
+  });
+});

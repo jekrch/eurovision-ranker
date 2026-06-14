@@ -1,7 +1,7 @@
-// Barrel for the category utilities. The implementation was decomposed into
-// focused modules under ./category (validation, URL read/write, weighted
-// ranking aggregation, and dispatch-based mutations); this file preserves the
-// original public surface so existing `from './CategoryUtil'` imports keep working.
+// Barrel for the category utilities. The implementation lives in focused
+// modules under ./category (validation, URL read/write, weighted ranking
+// aggregation, and dispatch-based mutations); this file re-exports their public
+// surface so they can be imported from './CategoryUtil'.
 export type { Category } from './category/types';
 export { isValidCategoryName } from './category/categoryValidation';
 export {

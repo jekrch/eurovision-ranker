@@ -42,8 +42,7 @@ export function saveCategories(
   } else {
     dispatch(setCategories(updatedCategories));
     // Ensure a store slot per category; newly added ones inherit the active
-    // ranking, matching how defining a category historically started it from the
-    // current order.
+    // ranking, so a newly defined category starts from the current order.
     dispatch(seedCategoryRankingSlots(updatedCategories.length));
   }
 }

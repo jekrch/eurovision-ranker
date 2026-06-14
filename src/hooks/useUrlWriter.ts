@@ -28,9 +28,8 @@ interface UseUrlWriterArgs {
 /**
  * The single store -> URL writer. The store is the source of truth and the URL
  * is a pure projection of it: one subscriber diffs the projected params against
- * the current URL and pushes a single history entry when they differ. This
- * replaces the scattered `updateQueryParams` calls that previously wrote these
- * params from useUrlSync, App's refresh effect, and the global-search toggle.
+ * the current URL and pushes a single history entry when they differ. All
+ * managed params are written here rather than from scattered callers.
  *
  * Public-view-by-id needs no special-casing here: `selectUrlParams` collapses to
  * just `{ id }` while `viewMode` is 'public' and projects the full set (without

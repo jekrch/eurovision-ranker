@@ -6,9 +6,9 @@ import { Category } from '../utilities/CategoryUtil';
 import { clone } from '../utilities/ContestantUtil';
 import { assignVotes } from '../utilities/VoteUtil';
 
-// Core ranking/display state. Auth, table, and groups state now live in their
-// own slices (authSlice/tableSlice/groupsSlice); their action creators are
-// re-exported below so existing imports from './rootSlice' keep working.
+// Core ranking/display state. Auth, table, and groups state live in their own
+// slices (authSlice/tableSlice/groupsSlice); their action creators are
+// re-exported below so they can be imported from './rootSlice'.
 interface AppState {
   name: string;
   year: string;
@@ -125,9 +125,8 @@ const rootSlice = createSlice({
     setWelcomeOverlayIsOpen: (state, action: PayloadAction<boolean>) => {
       state.welcomeOverlayIsOpen = action.payload;
     },
-    // Replace the active category's ranking. Components dispatch this exactly as
-    // before; it now writes the active slot of categoryRankings rather than a
-    // standalone array. The active slot is activeCategory (or 0 when no category
+    // Replace the active category's ranking, writing the active slot of
+    // categoryRankings. The active slot is activeCategory (or 0 when no category
     // is selected / none are defined).
     setRankedItems: (state, action: PayloadAction<CountryContestant[]>) => {
       state.categoryRankings[activeIndex(state)] = action.payload;
@@ -144,8 +143,7 @@ const rootSlice = createSlice({
     // and gains (at the end) any it was missing. Used by the advanced view, where
     // selecting/deselecting changes which contestants are ranked across all
     // categories. Idempotent so it can be re-applied by a re-running effect
-    // without drifting (the non-idempotent append/remove pair it replaced could
-    // duplicate entries and never settle, storming the URL writer).
+    // without drifting or storming the URL writer.
     setActiveRankingAndSyncCategoryMembership: (
       state,
       action: PayloadAction<CountryContestant[]>,
@@ -170,8 +168,7 @@ const rootSlice = createSlice({
     },
     // Append a newly-ranked country to the inactive categories. The active
     // category receives the country (possibly at a chosen position) via
-    // setRankedItems; the others just gain it at the end, mirroring the
-    // historical per-category URL behavior.
+    // setRankedItems; the others just gain it at the end.
     addCountryToOtherCategories: (state, action: PayloadAction<CountryContestant>) => {
       const active = activeIndex(state);
       const slotCount = Math.max(state.categories.length, state.categoryRankings.length);
@@ -209,9 +206,8 @@ const rootSlice = createSlice({
       leavePublicView(state);
     },
     // Ensure a ranking slot exists for each of `count` categories. Newly created
-    // slots inherit the currently active ranking, mirroring how defining a
-    // category historically started it from the current order. Existing slots
-    // keep their order.
+    // slots inherit the currently active ranking, so a newly defined category
+    // starts from the current order. Existing slots keep their order.
     seedCategoryRankingSlots: (state, action: PayloadAction<number>) => {
       const count = action.payload;
       const source = state.categoryRankings[activeIndex(state)] ?? [];
@@ -337,8 +333,8 @@ export const {
   exitPublicView,
 } = rootSlice.actions;
 
-// Re-export domain-slice actions and types so existing imports from
-// './rootSlice' continue to resolve after the store decomposition.
+// Re-export domain-slice actions and types so they can be imported from
+// './rootSlice' alongside the root actions.
 export {
   setAuthStatus,
   setAuthError,

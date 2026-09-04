@@ -6,7 +6,10 @@ export interface ContestantData {
   artist: string;
   song: string;
   youtube?: string;
+  /** Placement in the grand final. Undefined for entries that never reached it. */
   finalsRank?: number;
+  /** Placement across the whole contest, counting semi-final eliminations. */
+  contestRank?: number;
   semiFinalsRank?: number;
   votes?: ContestantVotes;
   year?: string;
@@ -19,6 +22,7 @@ export class Contestant implements ContestantData {
   song: string;
   private _youtube?: string;
   finalsRank?: number;
+  contestRank?: number;
   semiFinalsRank?: number;
   votes?: ContestantVotes;
   year?: string;
@@ -30,6 +34,7 @@ export class Contestant implements ContestantData {
       this.song = data.song;
       this._youtube = data.youtube;
       this.finalsRank = data.finalsRank;
+      this.contestRank = data.contestRank;
       this.semiFinalsRank = data.semiFinalsRank;
       this.votes = data.votes;
       this.year = data.year;
@@ -59,6 +64,7 @@ export class Contestant implements ContestantData {
       song: this.song,
       youtube: this.youtube, 
       finalsRank: this.finalsRank,
+      contestRank: this.contestRank,
       semiFinalsRank: this.semiFinalsRank,
       votes: this.votes,
       year: this.year

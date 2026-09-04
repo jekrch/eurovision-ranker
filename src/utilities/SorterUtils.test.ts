@@ -25,6 +25,7 @@ const createMockContestant = (id: string, name: string): CountryContestant => ({
         song: this.song,
         youtube: this.youtube,
         finalsRank: this.finalsRank,
+        contestRank: this.contestRank,
         semiFinalsRank: this.semiFinalsRank,
         votes: this.votes,
         year: this.year,

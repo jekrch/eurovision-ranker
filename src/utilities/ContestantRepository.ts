@@ -159,6 +159,10 @@ function processContestants(
   filterFn: (row: ContestantCsvRow) => boolean,
 ): Contestant[] {
   const tempStorage = new Map<string, Contestant>();
+  // scan every row, not just the filtered ones: whether a year carries finals
+  // placements is a property of the year, and callers may filter down to a
+  // single country or a handful of ids.
+  const yearsWithFinalsPlacements = collectYearsWithFinalsPlacements(results.data);
 
   results.data.filter(filterFn).forEach((row: ContestantCsvRow) => {
     const year = row.year;
@@ -167,13 +171,45 @@ function processContestants(
     row.yearCountry = id;
     if (!tempStorage.has(id)) {
       // create a new entry
-      tempStorage.set(id, createContestant(row));
+      tempStorage.set(id, createContestant(row, yearsWithFinalsPlacements));
     } else {
-      handleDuplicateEntry(tempStorage, id, row);
+      handleDuplicateEntry(tempStorage, id, row, yearsWithFinalsPlacements);
     }
   });
 
   return Array.from(tempStorage.values());
+}
+
+/**
+ * Years whose rows populate `place_final`. Some years supply only
+ * `place_contest`, and for those it holds the finals placement (blank for
+ * eliminated entries) rather than a whole-contest ordering, so it stands in as
+ * the finals placement. See `resolveFinalsRank`.
+ */
+function collectYearsWithFinalsPlacements(rows: ContestantCsvRow[]): Set<string> {
+  const years = new Set<string>();
+  rows.forEach((row) => {
+    if (row.place_final?.length) {
+      years.add(row.year);
+    }
+  });
+  return years;
+}
+
+/**
+ * Placement in the grand final, left undefined for entries that never reached
+ * it. `place_contest` orders the whole field — an entry knocked out in a semi
+ * still gets one — so it can only stand in for a year that supplies no
+ * `place_final` at all.
+ */
+function resolveFinalsRank(
+  row: ContestantCsvRow,
+  yearsWithFinalsPlacements: Set<string>,
+): number | undefined {
+  if (yearsWithFinalsPlacements.has(row.year)) {
+    return parseOptionalInt(row.place_final);
+  }
+  return parseOptionalInt(row.place_contest);
 }
 
 /**
@@ -182,14 +218,18 @@ function processContestants(
  * @param row - CSV row data
  * @returns contestant object
  */
-function createContestant(row: ContestantCsvRow): Contestant {
+function createContestant(
+  row: ContestantCsvRow,
+  yearsWithFinalsPlacements: Set<string>,
+): Contestant {
   const contestantData: ContestantData = {
     id: row.id,
     countryKey: row.to_country_id,
     artist: row.performer,
     song: row.song,
     youtube: row.youtube_url,
-    finalsRank: parseOptionalInt(row.place_contest?.length ? row.place_contest : row.place_final),
+    finalsRank: resolveFinalsRank(row, yearsWithFinalsPlacements),
+    contestRank: parseOptionalInt(row.place_contest),
     semiFinalsRank: parseOptionalInt(row.place_sf),
     year: row.year,
     votes: {
@@ -215,6 +255,7 @@ function handleDuplicateEntry(
   tempStorage: Map<string, Contestant>,
   id: string,
   row: ContestantCsvRow,
+  yearsWithFinalsPlacements: Set<string>,
 ): void {
   const [year, countryKey] = id.split('-');
   if (year !== '1956') {
@@ -222,7 +263,11 @@ function handleDuplicateEntry(
     // update the existing entry
     const existingEntry = tempStorage.get(id)!;
     if (row.place_contest) {
-      existingEntry.finalsRank = parseOptionalInt(row.place_contest);
+      existingEntry.contestRank = parseOptionalInt(row.place_contest);
+    }
+    const finalsRank = resolveFinalsRank(row, yearsWithFinalsPlacements);
+    if (finalsRank !== undefined) {
+      existingEntry.finalsRank = finalsRank;
     }
     if (row.place_sf) {
       existingEntry.semiFinalsRank = parseOptionalInt(row.place_sf);
@@ -233,7 +278,7 @@ function handleDuplicateEntry(
     //   ...createContestant(row),
     //   countryKey: `${countryKey}-2`,
     // });
-    const contestant = createContestant(row);
+    const contestant = createContestant(row, yearsWithFinalsPlacements);
     contestant.countryKey = `${countryKey}-2`;
     tempStorage.set(`${id}-2`, contestant);
   }

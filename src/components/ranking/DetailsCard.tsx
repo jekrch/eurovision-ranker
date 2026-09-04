@@ -244,10 +244,10 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
                             </div>
                           )}
                       </div>
-                      {contestant?.finalsRank && showPlace && (
+                      {(contestant?.finalsRank ?? contestant?.contestRank) && showPlace && (
                         <div className="mt-1 font-xs text-xs text-[var(--er-text-subtle)] mb-0 flex flex-wrap items-center mr-2">
                           <span className="text-[var(--er-text-muted)]">place:&nbsp;</span>
-                          <span>{`${contestant?.finalsRank}`}</span>
+                          <span>{`${contestant?.finalsRank ?? contestant?.contestRank}`}</span>
                         </div>
                       )}
                     </>

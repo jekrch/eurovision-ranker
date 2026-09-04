@@ -48,7 +48,7 @@ const toEntry = (cc: CountryContestant): Entry | null => {
     artist: c.artist.trim(),
     song: c.song.trim(),
     youtube: c.youtube,
-    rank: toNum(c.finalsRank),
+    rank: toNum(c.finalsRank), // grand final placement; absent for semi-final exits
     total: toNum(c.votes?.totalPoints),
     tele: toNum(c.votes?.telePoints),
     jury: toNum(c.votes?.juryPoints),
@@ -154,6 +154,8 @@ const generateForType = (
   difficulty: QuizDifficulty,
   rng: Rng,
 ): QuizQuestion[] => {
+  // result-based questions all say "in the <year> final", so they must draw
+  // from grand finalists only — both for the answer and for the distractors.
   const finalists = entries.filter((e) => e.rank !== null && (e.rank as number) > 0);
   const out: QuizQuestion[] = [];
 

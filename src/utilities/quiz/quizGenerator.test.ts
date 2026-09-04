@@ -64,6 +64,34 @@ const DATASET: CountryContestant[] = [
   cc('xx', 'Nowhere', 'Nul Artist', 'Zero Song', 24, 0, 0, 0),
 ];
 
+// Entries knocked out in a semi-final: they placed in the contest as a whole
+// but never took part in the final, so they carry no finals rank or points.
+const semiFinalExit = (
+  key: string,
+  name: string,
+  artist: string,
+  song: string,
+  contestRank: number,
+): CountryContestant => ({
+  id: key,
+  uid: `2023-${key}`,
+  country: { key, name, id: key } as Country,
+  contestant: new Contestant({
+    id: `2023-${key}`,
+    countryKey: key,
+    artist,
+    song,
+    contestRank,
+    year: '2023',
+  }),
+});
+
+const SEMI_FINAL_EXITS: CountryContestant[] = [
+  semiFinalExit('ie', 'Ireland', 'Wild Youth', "We Are One", 30),
+  semiFinalExit('mt', 'Malta', 'The Busker', 'Dance (Our Own Party)', 35),
+  semiFinalExit('nl', 'Netherlands', 'Mia Nicolai & Dion Cooper', 'Burning Daylight', 37),
+];
+
 const config = (overrides: Partial<QuizConfig> = {}): QuizConfig => ({
   years: ['2023'],
   difficulty: 'medium',
@@ -241,6 +269,37 @@ describe('generateQuiz — hard difficulty', () => {
     expect(last).toBeDefined();
     const correct = last!.options.find((o) => o.id === last!.correctOptionId);
     expect(correct!.countryName).toBe('Germany');
+  });
+
+  it('names the last finalist, not the last of the whole field', async () => {
+    fetchCountryContestantsByYear.mockResolvedValue([...DATASET, ...SEMI_FINAL_EXITS]);
+
+    const quiz = await generateQuiz(
+      config({ difficulty: 'hard', questionTypes: ['placement'], length: 'long' }),
+      mulberry32(23),
+    );
+
+    const last = quiz.find((q) => q.prompt.includes('finished last'));
+    expect(last).toBeDefined();
+    const correct = last!.options.find((o) => o.id === last!.correctOptionId);
+    expect(correct!.countryName).toBe('Germany');
+  });
+
+  it('offers only grand finalists as answers to questions about the final', async () => {
+    fetchCountryContestantsByYear.mockResolvedValue([...DATASET, ...SEMI_FINAL_EXITS]);
+
+    const quiz = await generateQuiz(
+      config({ difficulty: 'hard', questionTypes: ['placement', 'winner'], length: 'long' }),
+      mulberry32(7),
+    );
+
+    expect(quiz.length).toBeGreaterThan(0);
+    const eliminated = SEMI_FINAL_EXITS.map((c) => c.country.name);
+    for (const q of quiz) {
+      for (const option of q.options) {
+        expect(eliminated).not.toContain(option.countryName);
+      }
+    }
   });
 });
 

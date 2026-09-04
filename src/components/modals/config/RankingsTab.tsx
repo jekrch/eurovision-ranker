@@ -104,7 +104,7 @@ const RankingsTab: React.FC = () => {
 
     if (sanitizeYear(year) === '1956') {
       return countryContestants
-        .filter((cc) => cc.contestant?.finalsRank!.toString() === '1')
+        .filter((cc) => cc.contestant?.finalsRank === 1)
         .map((cc) => cc.id)
         .join('');
     }
@@ -131,13 +131,17 @@ const RankingsTab: React.FC = () => {
         break;
       case 'Rank':
         contestants = contestants.sort((cc1, cc2) => {
+          // rank across the whole contest, so semi-final exits still order
+          const rank1 = cc1.contestRank ?? cc1.finalsRank;
+          const rank2 = cc2.contestRank ?? cc2.finalsRank;
+
           // no rank should be last
-          if (!cc1.finalsRank && !cc2.finalsRank) return 0;
-          if (!cc1.finalsRank) return 1;
-          if (!cc2.finalsRank) return -1;
+          if (!rank1 && !rank2) return 0;
+          if (!rank1) return 1;
+          if (!rank2) return -1;
 
           // lower rank first
-          return Number(cc1.finalsRank) - Number(cc2.finalsRank);
+          return rank1 - rank2;
         });
         break;
     }

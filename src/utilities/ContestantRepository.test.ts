@@ -58,15 +58,6 @@ describe('getContestantsForYear', () => {
     expect(se.year).toBe('2023');
   });
 
-  it('falls back to place_final when place_contest is empty', async () => {
-    fetchContestantCsv.mockResolvedValue(
-      [HEADER, row('2018-il', '2018', 'il', 'Netta', 'Toy', '', '1')].join('\n'),
-    );
-
-    const [netta] = await getContestantsForYear('2018');
-    expect(netta.finalsRank).toBe(1);
-  });
-
   it('leaves numeric fields undefined when the CSV cell is blank', async () => {
     fetchContestantCsv.mockResolvedValue(
       [HEADER, row('2017-pt', '2017', 'pt', 'Salvador Sobral', 'Amar Pelos Dois')].join('\n'),
@@ -74,6 +65,7 @@ describe('getContestantsForYear', () => {
 
     const [pt] = await getContestantsForYear('2017');
     expect(pt.finalsRank).toBeUndefined();
+    expect(pt.contestRank).toBeUndefined();
     expect(pt.votes?.totalPoints).toBeUndefined();
   });
 
@@ -88,6 +80,69 @@ describe('getContestantsForYear', () => {
     await getContestantsForYear('2014');
     // second call served from the year cache
     expect(fetchContestantCsv).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('getContestantsForYear — placements', () => {
+  // Parsed contestants are cached by year for the life of the module, so each
+  // case takes a fresh copy of the repository to parse its own CSV.
+  const freshContestantsForYear = async (csv: string, year: string) => {
+    fetchContestantCsv.mockResolvedValue(csv);
+    vi.resetModules();
+    const { getContestantsForYear: fresh } = await import('./ContestantRepository');
+    return fresh(year);
+  };
+
+  // A year with semi-finals: place_contest orders the whole field, place_final
+  // only the countries that reached the grand final.
+  const SEMI_FINAL_YEAR = [
+    HEADER,
+    row('2009-fi', '2009', 'fi', "Waldo's People", 'Lose Control', '25', '25', '12', '22'),
+    row('2009-no', '2009', 'no', 'Alexander Rybak', 'Fairytale', '1', '1', '1', '387'),
+    row('2009-cz', '2009', 'cz', 'Gipsy.cz', 'Aven Romale', '42', '', '18'),
+  ];
+
+  it('reads the finals placement from place_final, not the whole-contest order', async () => {
+    const contestants = await freshContestantsForYear(SEMI_FINAL_YEAR.join('\n'), '2009');
+    const fi = contestants.find((c) => c.countryKey === 'fi')!;
+    expect(fi.finalsRank).toBe(25);
+    expect(fi.contestRank).toBe(25);
+  });
+
+  it('gives no finals placement to an entry eliminated in a semi-final', async () => {
+    const contestants = await freshContestantsForYear(SEMI_FINAL_YEAR.join('\n'), '2009');
+    const cz = contestants.find((c) => c.countryKey === 'cz')!;
+    expect(cz.finalsRank).toBeUndefined();
+    // still placed 42nd across the contest as a whole
+    expect(cz.contestRank).toBe(42);
+    expect(cz.semiFinalsRank).toBe(18);
+  });
+
+  it('treats place_contest as the finals placement when a year supplies no place_final', async () => {
+    const contestants = await freshContestantsForYear(
+      [
+        HEADER,
+        row('2024-ch', '2024', 'ch', 'Nemo', 'The Code', '1'),
+        row('2024-no', '2024', 'no', 'Gåte', 'Ulveham', '25'),
+        row('2024-cz', '2024', 'cz', 'Aiko', 'Pedestal'),
+      ].join('\n'),
+      '2024',
+    );
+    expect(contestants.find((c) => c.countryKey === 'ch')!.finalsRank).toBe(1);
+    expect(contestants.find((c) => c.countryKey === 'no')!.finalsRank).toBe(25);
+    expect(contestants.find((c) => c.countryKey === 'cz')!.finalsRank).toBeUndefined();
+  });
+
+  it('resolves placements per year when rows from several years are parsed together', async () => {
+    // getContestantsByCountry and friends parse the whole CSV at once, so the
+    // no-place_final fallback must not leak from one year into another.
+    const contestants = await freshContestantsForYear(
+      [...SEMI_FINAL_YEAR, row('2024-ch', '2024', 'ch', 'Nemo', 'The Code', '1')].join('\n'),
+      '2009',
+    );
+
+    const cz = contestants.find((c) => c.countryKey === 'cz')!;
+    expect(cz.finalsRank).toBeUndefined();
   });
 });
 

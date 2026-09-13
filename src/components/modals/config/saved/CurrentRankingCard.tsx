@@ -46,7 +46,7 @@ const CurrentRankingCard: React.FC<{
             <>
               <span className="opacity-40">·</span>
               <span className="inline-flex items-center gap-1 text-[var(--er-text-tertiary)]">
-                <FontAwesomeIcon icon={faCheck} className="text-[10px]" />
+                <FontAwesomeIcon icon={faCheck} className="text-micro" />
                 Saved
               </span>
             </>

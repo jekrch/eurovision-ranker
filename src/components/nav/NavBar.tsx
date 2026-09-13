@@ -41,25 +41,27 @@ const Navbar: React.FC<NavbarProps> = ({ openModal, openConfigModal }) => {
           <li>
             <div className="flex items-center">
               <IconButton
-                className={classNames(
-                  'tour-step-11 py-1 pl-[0.7em] pr-[0.9em] rounded-full text-xs mr-0 w-[5em]',
-                )}
+                className={classNames('tour-step-11 rounded-full mr-0 w-[5em]')}
                 onClick={() => dispatch(setShowUnranked(!showUnranked))}
                 title={showUnranked ? 'Details' : 'Select'}
               />
-              <FontAwesomeIcon
-                className="tour-step-12 houseUser mr-1 mb-1 ml-3 text-xl"
-                icon={faHouseUser}
+              <button
+                type="button"
+                className="tour-step-12 houseUser mr-1 ml-3 text-xl"
+                aria-label="About Eurovision Ranker"
                 onClick={() => openModal('about')}
-              />
+              >
+                <FontAwesomeIcon icon={faHouseUser} />
+              </button>
 
-              <div className="tour-step-13">
-                <FontAwesomeIcon
-                  className="configCog ml-2 mr-1 mb-0 text-xl float-right"
-                  icon={faCog}
-                  onClick={() => openConfigModal('rankings')}
-                />
-              </div>
+              <button
+                type="button"
+                className="tour-step-13 configCog ml-2 mr-1 text-xl"
+                aria-label="Settings"
+                onClick={() => openConfigModal('rankings')}
+              >
+                <FontAwesomeIcon icon={faCog} />
+              </button>
             </div>
           </li>
         </ul>

@@ -25,12 +25,12 @@ const SorterCompletionList: React.FC<SorterCompletionListProps> = ({
       <div className="flex-shrink-0 w-full flex flex-col items-center px-4">
         <FontAwesomeIcon
           icon={faCheckCircle}
-          className="text-4xl text-[#119822]x text-[var(--er-accent-success)] mb-3"
+          className="text-4xl text-accent-success mb-3"
         />
         <p className="mb-2 text-[var(--er-text-secondary)] text-sm">
           Your ranking is ready based on {totalComparisons} choices!
         </p>
-        <h4 className="text-md font-semibold text-[var(--er-text-secondary)] mb-3">
+        <h4 className="font-semibold text-[var(--er-text-secondary)] mb-3">
           Your Complete Ranking:
         </h4>
       </div>

@@ -96,7 +96,7 @@ const AppContent: React.FC<AppContentProps> = ({
             {/* Unranked Countries List */}
             {showUnranked && !globalSearch && (
               <div className="relative flex flex-col">
-                <div className="tour-step-15 sticky top-0 rounded-t-md round-b-sm text-center font-bold bg-[var(--er-surface-bar)] gradient-background-reverse text-[var(--er-text-secondary)] tracking-tighter shadow-md z-50">
+                <div className="tour-step-15 sticky top-0 rounded-t-md text-center font-bold bg-[var(--er-surface-bar)] text-[var(--er-text-secondary)] tracking-tighter shadow-md z-50">
                   <div className="flex items-center justify-center gap-1 py-1 px-0">
                     <TooltipHelp
                       content="Select countries across all contest years"

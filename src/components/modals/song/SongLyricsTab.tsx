@@ -64,7 +64,7 @@ const SongLyricsTab: React.FC<SongLyricsTabProps> = ({
               />
               <div className="relative w-7 h-4 bg-[var(--er-surface-tertiary-70)] peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-[var(--er-interactive-secondary)] dark:peer-focus:ring-[var(--er-interactive-dark)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-[var(--er-border-default)] after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-[var(--er-border-lighter)] after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-[var(--er-interactive-secondary)]"></div>
               <span className="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">
-                <LazyLoadedFlag code={'gb'} className="w-6 opacity-60 text-md flag-icon" />{' '}
+                <LazyLoadedFlag code={'gb'} className="w-6 opacity-60 flag-icon" />{' '}
               </span>
             </label>
           )}

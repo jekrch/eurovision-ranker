@@ -169,7 +169,7 @@ const GroupsTab: React.FC<GroupsTabProps> = ({ openAuthModal }) => {
                     {g.role === 'owner' && (
                       <FontAwesomeIcon
                         icon={faCrown}
-                        className="text-[10px] text-amber-400 shrink-0"
+                        className="text-micro text-amber-400 shrink-0"
                         title="You own this group"
                       />
                     )}

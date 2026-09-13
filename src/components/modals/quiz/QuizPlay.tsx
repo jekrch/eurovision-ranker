@@ -134,7 +134,7 @@ const QuizPlay: React.FC<QuizPlayProps> = ({ questions, onFinish }) => {
     return (
       <>
         {before}
-        <span className="text-[var(--r-accent-blue)] font-bold">{promptHighlight}</span>
+        <span className="text-[var(--er-accent-blue)] font-bold">{promptHighlight}</span>
         {after}
       </>
     );

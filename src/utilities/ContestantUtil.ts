@@ -28,4 +28,3 @@ export const getDistinctRankedYears = (rankedItems: CountryContestant[]): string
   // create a Set to remove duplicates, then convert back to array
   return Array.from(new Set(years));
 };
-

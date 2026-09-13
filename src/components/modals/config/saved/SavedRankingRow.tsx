@@ -74,7 +74,7 @@ const SavedRankingRow: React.FC<{
               {r.name || <i className="text-[var(--er-text-subtle)]">Untitled</i>}
             </span>
             {r.public && (
-              <span className="inline-flex items-center gap-1 text-[10px] uppercase tracking-wide font-semibold text-[var(--er-text-tertiary)] bg-[var(--er-button-neutral)]/40 px-1.5 py-0.5 rounded shrink-0">
+              <span className="inline-flex items-center gap-1 text-micro uppercase tracking-wide font-semibold text-[var(--er-text-tertiary)] bg-[var(--er-button-neutral)]/40 px-1.5 py-0.5 rounded shrink-0">
                 <FontAwesomeIcon icon={faGlobe} className="text-[9px]" />
                 Public
               </span>

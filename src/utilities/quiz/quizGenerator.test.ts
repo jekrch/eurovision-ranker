@@ -87,7 +87,7 @@ const semiFinalExit = (
 });
 
 const SEMI_FINAL_EXITS: CountryContestant[] = [
-  semiFinalExit('ie', 'Ireland', 'Wild Youth', "We Are One", 30),
+  semiFinalExit('ie', 'Ireland', 'Wild Youth', 'We Are One', 30),
   semiFinalExit('mt', 'Malta', 'The Busker', 'Dance (Our Own Party)', 35),
   semiFinalExit('nl', 'Netherlands', 'Mia Nicolai & Dion Cooper', 'Burning Daylight', 37),
 ];

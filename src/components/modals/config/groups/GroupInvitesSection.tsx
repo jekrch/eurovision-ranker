@@ -46,13 +46,13 @@ const GroupInvitesSection: React.FC<{
             <div className="flex items-center gap-2 min-w-0">
               <FontAwesomeIcon
                 icon={faLink}
-                className="text-[10px] text-[var(--er-text-subtle)] shrink-0"
+                className="text-micro text-[var(--er-text-subtle)] shrink-0"
               />
               <div className="min-w-0">
                 <div className="truncate text-xs text-[var(--er-text-tertiary)]">
                   …{inv.token.slice(-12)}
                 </div>
-                <div className="text-[10px] text-[var(--er-text-subtle)]">
+                <div className="text-micro text-[var(--er-text-subtle)]">
                   expires in {timeUntil(inv.expires_at)}
                 </div>
               </div>

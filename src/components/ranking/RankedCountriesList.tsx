@@ -187,7 +187,7 @@ const RankedCountriesList: React.FC<RankedCountriesListProps> = ({
               </ul>
             </div>
             {showUnranked && rankedItems?.length > 0 && (
-              <div className="pl-2 rounded-b-md h-8 !bg-[var(--er-surface-bar)] ranked-bar-background text-[var(--er-text-secondary)] items-center flex shadow-md gradient-background">
+              <div className="pl-2 rounded-b-md h-8 !bg-[var(--er-surface-bar)] ranked-bar-background text-[var(--er-text-secondary)] items-center flex shadow-md">
                 <IconButton
                   className={classNames(
                     'tour-step-4 ml-auto py-1 pl-[0.7em] pr-[0.9em] mr-0 w-[6em]',
@@ -198,7 +198,7 @@ const RankedCountriesList: React.FC<RankedCountriesListProps> = ({
                 />
                 <FaChevronRight
                   className={classNames(
-                    'ml-2 mr-auto text-lg justify-center align-center bounce-right text-[var(--r-accent-blue)]',
+                    'ml-2 mr-auto text-lg justify-center align-center bounce-right text-[var(--er-accent-blue)]',
                     { 'tada-animation': showUnranked && rankedItems?.length },
                   )}
                 />

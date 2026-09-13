@@ -1,10 +1,6 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import {
-  setRankedItems,
-  setUnrankedItems,
-  appendCountriesToOtherCategories,
-} from './rootSlice';
+import { setRankedItems, setUnrankedItems, appendCountriesToOtherCategories } from './rootSlice';
 import { AppState } from './store';
 import { ContestantRow, TableState } from '../components/table/tableTypes';
 

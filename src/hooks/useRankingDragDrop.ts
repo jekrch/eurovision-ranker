@@ -3,11 +3,7 @@ import { useCallback } from 'react';
 
 import { CountryContestant } from '../data/CountryContestant';
 import { deleteRankedCountry } from '../redux/rankingActions';
-import {
-  setRankedItems,
-  setUnrankedItems,
-  addCountryToOtherCategories,
-} from '../redux/rootSlice';
+import { setRankedItems, setUnrankedItems, addCountryToOtherCategories } from '../redux/rootSlice';
 import { AppDispatch } from '../redux/store';
 import { logger } from '../utilities/logger';
 

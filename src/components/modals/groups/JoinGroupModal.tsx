@@ -184,7 +184,7 @@ const JoinGroupModal: React.FC<JoinGroupModalProps> = ({
                     {preview.description}
                   </p>
                 )}
-                <div className="text-[11px] text-[var(--er-text-subtle)] mt-1">
+                <div className="text-micro text-[var(--er-text-subtle)] mt-1">
                   {preview.member_count} {preview.member_count === 1 ? 'member' : 'members'}
                 </div>
               </div>

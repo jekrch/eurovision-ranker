@@ -2,7 +2,6 @@ import { faSort, faShareNodes } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import classNames from 'classnames';
 import React, { useEffect, useState } from 'react';
-import Ripples from 'react-ripples';
 
 import RankedHeaderMenu from './RankedHeaderMenu';
 import { CountryContestant } from '../../data/CountryContestant';
@@ -12,6 +11,13 @@ import { selectActiveRankedItems } from '../../redux/rankingSelectors';
 import { setActiveCategory, setShowTotalRank, setYear } from '../../redux/rootSlice';
 import { AppDispatch, AppState } from '../../redux/store';
 import Dropdown from '../Dropdown';
+
+/* Category tabs. The active tab is marked by an underline as well as color, so
+   the selection does not depend on hue alone. */
+const TAB_CLASS =
+  'px-4 py-[0.2em] text-sm font-medium flex-shrink-0 border-b-2 transition-colors duration-fast ease-out';
+const TAB_ACTIVE = 'text-accent-blue border-accent-blue';
+const TAB_INACTIVE = 'text-content-subtle border-transparent hover:text-content-primary';
 
 interface IRankedItemsHeaderProps {
   setMapModalShow: () => void;
@@ -79,7 +85,7 @@ const RankedItemsHeader: React.FC<IRankedItemsHeaderProps> = ({
   return (
     <div
       className={classNames(
-        'z-40 rounded-t-md round-b-sm w-full text-center font-bold bg-[var(--er-surface-bar)] gradient-background text-[var(--er-text-secondary)] py-1 text-md tracking-tighter shadow-md ranked-bar-background',
+        'z-40 rounded-t-md w-full text-center font-bold bg-[var(--er-surface-bar)] text-[var(--er-text-secondary)] py-1 tracking-tighter shadow-md ranked-bar-background',
         className,
       )}
     >
@@ -133,7 +139,7 @@ const RankedItemsHeader: React.FC<IRankedItemsHeaderProps> = ({
             <div>
               {!globalSearch ? year : null}
               {name && (
-                <span className="font-bold text-[var(--er-text-tertiary)] text-md">
+                <span className="font-bold text-[var(--er-text-tertiary)]">
                   {!globalSearch ? ` - ` : ``}
                   {name}
                 </span>
@@ -141,14 +147,14 @@ const RankedItemsHeader: React.FC<IRankedItemsHeaderProps> = ({
             </div>
             {isPristineLoaded && (isOwnLoaded || authorLabel) && (
               <div
-                className="mt-0.5 flex items-center justify-center gap-1 text-[0.65rem] font-medium tracking-normal text-[var(--er-text-subtle)] opacity-80"
+                className="mt-0.5 flex items-center justify-center gap-1 text-micro font-medium tracking-normal text-[var(--er-text-subtle)] opacity-80"
                 title={
                   isOwnLoaded
                     ? 'You opened your own shared ranking'
                     : `Shared ranking by ${authorLabel}`
                 }
               >
-                <FontAwesomeIcon icon={faShareNodes} className="text-[0.6rem]" />
+                <FontAwesomeIcon icon={faShareNodes} className="text-micro" />
                 <span className="truncate max-w-[14em]">
                   {isOwnLoaded ? 'shared ranking · by you' : <>shared ranking · by {authorLabel}</>}
                 </span>
@@ -176,35 +182,23 @@ const RankedItemsHeader: React.FC<IRankedItemsHeaderProps> = ({
           key={`total-tab-container`}
           className="flex bg-gray-800 bg-opacity-40 border-[var(--er-border-lightest)] mt-1 -mb-[0.2em] overflow-x-auto"
         >
-          <Ripples key="total-ripple" placeholder={<></>}>
-            <button
-              key="total-tab"
-              className={classNames(
-                'px-4 py-[0.2em] text-sm font-strong flex-shrink-0',
-                activeTab === 0
-                  ? 'text-[var(--r-accent-blue)] border-b-0 border-[var(--r-accent-ring)]'
-                  : 'text-[var(--er-text-subtle)] hover:text-[var(--er-interactive-primary)]',
-              )}
-              onClick={() => setActiveTab(0)}
-            >
-              Total
-            </button>
-          </Ripples>
+          <button
+            key="total-tab"
+            aria-pressed={activeTab === 0}
+            className={classNames(TAB_CLASS, activeTab === 0 ? TAB_ACTIVE : TAB_INACTIVE)}
+            onClick={() => setActiveTab(0)}
+          >
+            Total
+          </button>
           {categories.map((category, index) => (
-            <Ripples key={`ripple-${index + 1}`} placeholder={<></>}>
-              <button
-                key={`cat-btn-${index + 1}`}
-                className={classNames(
-                  'px-4 py-[0.2em] text-sm font-medium flex-shrink-0',
-                  activeTab === index + 1
-                    ? 'text-[var(--r-accent-blue)] border-b-0 border-[var(--r-accent-ring)]'
-                    : 'text-[var(--er-text-muted)] hover:text-[var(--er-interactive-primary)]',
-                )}
-                onClick={() => setActiveTab(index + 1)}
-              >
-                {category.name}
-              </button>
-            </Ripples>
+            <button
+              key={`cat-btn-${index + 1}`}
+              aria-pressed={activeTab === index + 1}
+              className={classNames(TAB_CLASS, activeTab === index + 1 ? TAB_ACTIVE : TAB_INACTIVE)}
+              onClick={() => setActiveTab(index + 1)}
+            >
+              {category.name}
+            </button>
           ))}
         </div>
       )}

@@ -10,7 +10,7 @@ import { updateUsername } from '../../../utilities/api/me';
 import { ApiError } from '../../../utilities/api/types';
 
 const sectionLabel =
-  'text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--er-text-subtle)]';
+  'text-micro font-semibold uppercase tracking-[0.08em] text-[var(--er-text-subtle)]';
 const inputClass =
   'border text-sm rounded-md block w-full p-2 bg-[color:var(--er-surface-primary)] border-white/5 placeholder-[var(--er-text-subtle)] text-[var(--er-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--er-button-primary)]/40 focus:border-[var(--er-button-primary)]/40';
 
@@ -115,7 +115,7 @@ const UsernameField: React.FC = () => {
             title={username ? 'Change username' : 'Set username'}
             className="inline-flex items-center gap-1.5 px-2 py-1 text-xs font-medium rounded-md text-[var(--er-text-tertiary)] hover:text-[var(--er-text-primary)] hover:bg-[var(--er-button-neutral)]/40 transition-colors"
           >
-            <FontAwesomeIcon icon={faPen} className="text-[10px]" />
+            <FontAwesomeIcon icon={faPen} className="text-micro" />
             {username ? 'Change' : 'Set username'}
           </button>
         </div>

@@ -88,7 +88,7 @@ const QuizSetup: React.FC<QuizSetupProps> = ({ onStart }) => {
           <FontAwesomeIcon
             size="sm"
             icon={faCircleQuestion}
-            className="text-[var(--r-accent-blue)] mt-[4px]"
+            className="text-[var(--er-accent-blue)] mt-[4px]"
           />
           Eurovision Quiz
         </div>
@@ -119,7 +119,7 @@ const QuizSetup: React.FC<QuizSetupProps> = ({ onStart }) => {
                 key={p.label}
                 type="button"
                 onClick={p.fn}
-                className="text-[0.7rem] px-2 py-0.5 rounded-full bg-[var(--er-surface-tertiary)] text-[var(--er-text-subtle)] hover:bg-[var(--er-surface-light)] hover:text-[var(--er-text-tertiary)]"
+                className="text-micro px-2 py-0.5 rounded-full bg-[var(--er-surface-tertiary)] text-[var(--er-text-subtle)] hover:bg-[var(--er-surface-light)] hover:text-[var(--er-text-tertiary)]"
               >
                 {p.label}
               </button>
@@ -149,7 +149,7 @@ const QuizSetup: React.FC<QuizSetupProps> = ({ onStart }) => {
           </div>
         </div>
         {sortedSelected.length === 0 && (
-          <p className="text-[var(--er-error,#f87171)] text-[0.7rem] mt-1 shrink-0">
+          <p className="text-[var(--er-error,#f87171)] text-micro mt-1 shrink-0">
             Select at least one year
           </p>
         )}
@@ -209,7 +209,7 @@ const QuizSetup: React.FC<QuizSetupProps> = ({ onStart }) => {
                   <div className="flex items-center gap-2">
                     <span
                       className={classNames(
-                        'w-4 h-4 rounded flex items-center justify-center flex-shrink-0 text-[0.6rem] text-white',
+                        'w-4 h-4 rounded flex items-center justify-center flex-shrink-0 text-micro text-white',
                         active ? 'bg-[var(--er-interactive-primary)]' : 'bg-black/30',
                       )}
                     >
@@ -219,7 +219,7 @@ const QuizSetup: React.FC<QuizSetupProps> = ({ onStart }) => {
                       {meta.label}
                     </span>
                   </div>
-                  <p className="text-[var(--er-text-subtle)] text-[0.7rem] mt-0.5 ml-6">
+                  <p className="text-[var(--er-text-subtle)] text-micro mt-0.5 ml-6">
                     {meta.description}
                   </p>
                 </button>
@@ -228,7 +228,7 @@ const QuizSetup: React.FC<QuizSetupProps> = ({ onStart }) => {
           </div>
         </div>
         {types.length === 0 && (
-          <p className="text-[var(--er-error,#f87171)] text-[0.7rem] mt-1 shrink-0">
+          <p className="text-[var(--er-error,#f87171)] text-micro mt-1 shrink-0">
             Select at least one question type
           </p>
         )}

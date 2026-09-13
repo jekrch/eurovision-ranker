@@ -80,7 +80,7 @@ const AuthModal: React.FC<AuthModalProps> = ({
               className={tabBtn(view.tab === 'login')}
               onClick={() => form.switchTab('login')}
             >
-              <FontAwesomeIcon icon={faRightToBracket} className="text-[10px]" />
+              <FontAwesomeIcon icon={faRightToBracket} className="text-micro" />
               Sign In
             </button>
             <button
@@ -88,7 +88,7 @@ const AuthModal: React.FC<AuthModalProps> = ({
               className={tabBtn(view.tab === 'reset')}
               onClick={() => form.switchTab('reset')}
             >
-              <FontAwesomeIcon icon={faKey} className="text-[10px]" />
+              <FontAwesomeIcon icon={faKey} className="text-micro" />
               Reset
             </button>
             {allowRegister && (
@@ -97,7 +97,7 @@ const AuthModal: React.FC<AuthModalProps> = ({
                 className={tabBtn(view.tab === 'register')}
                 onClick={() => form.switchTab('register')}
               >
-                <FontAwesomeIcon icon={faUserPlus} className="text-[10px]" />
+                <FontAwesomeIcon icon={faUserPlus} className="text-micro" />
                 Register
               </button>
             )}
@@ -112,7 +112,7 @@ const AuthModal: React.FC<AuthModalProps> = ({
             onClick={() => form.switchTab('login')}
             className="inline-flex items-center gap-1.5 text-xs text-[var(--er-text-subtle)] hover:text-[var(--er-text-primary)] transition-colors"
           >
-            <FontAwesomeIcon icon={faArrowLeft} className="text-[10px]" />
+            <FontAwesomeIcon icon={faArrowLeft} className="text-micro" />
             Back to sign in
           </button>
         )}

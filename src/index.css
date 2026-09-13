@@ -2,6 +2,51 @@
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
 
+/* Inter, self-hosted so the CSP's `font-src 'self'` covers it with no header
+   change. One variable file per unicode-range: a ranking of English country
+   names only ever pulls the latin subset, and the ext/cyrillic/greek files are
+   fetched lazily when an artist or song title actually needs them
+   (Kaarija, Maneskin, Go_A). font-display: swap so text paints immediately in
+   the fallback and never blocks the first render. */
+@font-face {
+  font-family: 'Inter var';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/fonts/inter-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191,
+    U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Inter var';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/fonts/inter-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02AF, U+0304, U+0308, U+0329, U+1E00-1E9F, U+1EF2-1EFF,
+    U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: 'Inter var';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/fonts/inter-cyrillic.woff2') format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+
+@font-face {
+  font-family: 'Inter var';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/fonts/inter-greek.woff2') format('woff2');
+  unicode-range: U+0370-03FF;
+}
+
 html {
    padding-left: env(safe-area-inset-left); 
    padding-right: env(safe-area-inset-right); 
@@ -22,9 +67,13 @@ body {
 }
 
 .product-name {
-  font-size: 1.225rem; 
-  font-weight: bolder; 
-  letter-spacing: -0.045em; 
+  font-size: 1.225rem;
+  /* an explicit weight rather than `bolder`, which resolves unpredictably
+     against a variable font's full 100-900 range */
+  font-weight: 600;
+  /* Inter is already tightly spaced, so the wordmark needs less negative
+     tracking than the old system stack did */
+  letter-spacing: -0.03em;
 }
 
 .site-content {
@@ -37,12 +86,29 @@ body {
 
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: 'Inter var', 'Inter', -apple-system, BlinkMacSystemFont,
+    'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans',
+    'Droid Sans', 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Selection is blocked only on the surfaces you actually drag. It used to be
+   set on <body>, which also made song titles, artist names and share URLs
+   impossible to copy. */
+.no-select,
+[data-rbd-draggable-id],
+[data-rbd-drag-handle-draggable-id],
+nav {
   user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Numbers that sit in columns — ranks, vote totals, places — must not change
+   width as their digits change, or every row jitters when a ranking reorders. */
+.tabular {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1;
 }
 
 code {
@@ -89,14 +155,10 @@ code {
   isolation: isolate;
 }
 
-/* The full-screen gradient lives on a composited ::before layer so its slow
-   "breathe" animates `transform: scale` (GPU-composited, no per-frame repaint)
-   instead of `background-size`. Animating `background-size` re-rasterized the
-   entire viewport every frame — a paint property that can't be composited and a
-   major battery/thermal cost on mobile. transform-origin pins the bottom edge so
-   the layer grows upward/outward, matching the original `ellipse at bottom`
-   gradient. The ::before sits at z-index:-1 behind content; the bottom toolbar
-   backdrop (::after, also z-index:-1) paints above it via DOM order. */
+/* The full-screen gradient sits on its own ::before layer at z-index:-1, behind
+   content; the bottom toolbar backdrop (::after, also z-index:-1) paints above
+   it via DOM order. The layer is painted once and never animates — the page
+   background should be still while the user works. */
 .normal-bg::before {
   content: "";
   position: absolute;
@@ -105,20 +167,6 @@ code {
   pointer-events: none;
   background: radial-gradient(ellipse at bottom, var(--er-ranked-bg-end) 0%, var(--er-nav-gradient-start) 100%);
   background-repeat: no-repeat;
-  transform-origin: center bottom;
-  animation: bg-breathe 10s infinite ease-in-out;
-  will-change: transform;
-}
-
-@keyframes bg-breathe {
-  0%, 100% { transform: scale(1); }
-  50%      { transform: scale(1.5, 1.1); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .normal-bg::before {
-    animation: none;
-  }
 }
 
 /* On scroll, iOS Safari makes the bottom toolbar translucent and tints it by
@@ -171,39 +219,24 @@ code {
 
 /* GRADIENT BACKGROUNDS - THEMED */
 .choice-background {
-  background: linear-gradient(155deg, var(--er-choice-bg-1), var(--er-choice-bg-2), var(--er-choice-bg-3)), url(/noise.svg);
-  filter: contrast(100%) brightness(100%);
-}
-
-.gradient-background2 {
-  background: linear-gradient(155deg, var(--er-gradient-bg2-1), var(--er-gradient-bg2-2), var(--er-gradient-bg2-3));
+  background: var(--er-surface-secondary);
+  border: 1px solid var(--er-border-subtle);
 }
 
 .gradient-background-modal {
-  background: linear-gradient(155deg, var(--er-choice-bg-1), var(--er-choice-bg-2), var(--er-choice-bg-3)), url(/noise.svg);
-  filter: contrast(100%) brightness(100%);
+  background: var(--er-surface-secondary);
+  border: 1px solid var(--er-border-subtle);
 }
 
-.gradient-background {
-  background: linear-gradient(155deg, var(--er-gradient-bg-1), var(--er-gradient-bg-2), var(--er-gradient-bg-3));
-  filter: contrast(100%) brightness(100%);
-  background-size: auto, auto, cover;
-  background-repeat: no-repeat;
+/* The header and footer bars that bracket the ranked list. */
+.ranked-bar-background {
+  background: var(--er-surface-bar);
 }
 
-.gradient-background-reverse {
-  background: linear-gradient(330deg, var(--er-gradient-bg-1), var(--er-gradient-bg-2), var(--er-gradient-bg-3));
-  filter: contrast(100%) brightness(100%);
-  background-size: auto, auto, cover;
-  background-repeat: no-repeat;
-}
-
-/* GRADIENT TEXT - THEMED */
+/* WORDMARK - THEMED
+   Flat fill with tightened tracking; the heart next to it carries the color. */
 .gradient-text {
-  background: linear-gradient(155deg, var(--er-gradient-text-1), var(--er-gradient-text-2), var(--er-gradient-text-3));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: var(--er-text-primary);
 }
 
 /* GLOW ANIMATION - THEMED
@@ -222,10 +255,8 @@ code {
   background-clip: padding-box;
 }
 
-/* The radial-gradient lives on this composited layer behind the card content;
-   opacity is the only property that animates, so the compositor just cross-fades
-   a cached layer with no per-frame repaints. The resting opacity doubles as the
-   static look under reduced-motion. */
+/* The radial-gradient lives on its own layer behind the card content, painted
+   once at a fixed opacity. It marks the top-ranked card without moving. */
 .first-card-glow::after {
   content: "";
   position: absolute;
@@ -239,8 +270,7 @@ code {
 
 /* OUTER halo — the glow that spills onto the page around the card. It must live
    OUTSIDE the card's overflow-hidden box, so it is rendered as a sibling behind
-   the card inside a non-clipped, isolated wrapper (see Card/DetailsCard). The
-   big blurred box-shadow is painted once; only opacity animates. */
+   the card inside a non-clipped, isolated wrapper (see Card/DetailsCard). */
 .first-card-halo {
   position: absolute;
   inset: 0;
@@ -253,22 +283,12 @@ code {
   opacity: 0.65;
 }
 
-@keyframes glow-pulse {
-  0%, 100% { opacity: 0.4; }
-  50%      { opacity: 0.8; }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .first-card-glow::after,
-  .first-card-halo {
-    animation: glow-pulse 15s ease-in-out infinite;
-    will-change: opacity;
-  }
-}
-
-/* NAVIGATION GRADIENT - THEMED */
+/* NAVIGATION - THEMED
+   A flat surface with a hairline bottom edge. The chrome should sit quietly
+   behind the ranking, which is the thing worth looking at. */
 .nav-diagonal-split-bg {
-  background: linear-gradient(135deg, var(--er-nav-gradient-start), var(--er-nav-gradient-end));
+  background: var(--er-nav-gradient-start);
+  border-bottom: 1px solid var(--er-border-subtle);
 }
 
 /* EditNav is the bottom bar (sticky bottom-0). On iOS, when Safari's bottom
@@ -289,6 +309,7 @@ code {
 .edit-nav-bg {
   --edit-nav-lift: calc(env(safe-area-inset-bottom) * 2.2);
   padding-bottom: var(--edit-nav-lift);
+  border-top: 1px solid var(--er-border-subtle);
   background:
     linear-gradient(
       to top,
@@ -296,11 +317,13 @@ code {
       var(--er-surface-dark) var(--edit-nav-lift),
       transparent calc(var(--edit-nav-lift) + 1.5rem)
     ),
-    linear-gradient(135deg, var(--er-nav-gradient-start), var(--er-nav-gradient-end));
+    var(--er-nav-gradient-start);
 }
 
+ /* Onboarding nudge. Runs a fixed number of times and then rests — an
+    indicator that pulses forever stops reading as an indicator. */
 .subtle-pulse {
-  animation: subtle-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  animation: subtle-pulse 2s var(--er-ease-out) 5;
 }
 
 /* NOW-PLAYING EQUALIZER — small animated bars shown on the bottom edge of a
@@ -355,29 +378,38 @@ code {
   animation: phantomArrow 3s ease-in-out forwards;
 }
 
-/* ICONS - THEMED */
-.houseUser {
-  margin-top: 0.15em;
-  height: 1em;
-  color: var(--er-icon-muted);
-}
-
-.houseUser:hover {
-  opacity: 0.5 !important;
-  cursor: pointer;
-}
-
+/* NAV ICON BUTTONS - THEMED
+   These are real <button>s, so they reset the UA chrome and brighten on hover
+   rather than fading out — an affordance should get clearer when you reach for
+   it, not dimmer. */
+.houseUser,
 .configCog {
-  margin-top: 0.15em;
-  height: 1em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25em;
+  background: none;
+  border: none;
+  line-height: 1;
+  cursor: pointer;
   color: var(--er-icon-muted);
+  transition: color var(--er-dur-fast) var(--er-ease-out);
+}
+
+.houseUser:hover,
+.configCog:hover {
+  color: var(--er-text-secondary);
 }
 
 .configCog:hover {
-  opacity: 0.5 !important;
-  cursor: pointer;
   -webkit-animation: cog-spin 900ms none normal;
   animation: cog-spin 900ms none normal;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .configCog:hover {
+    animation: none;
+  }
 }
 
 @-webkit-keyframes cog-spin {
@@ -405,6 +437,20 @@ code {
 .donate-widget {
   transform: scale(0.6);
   transform-origin: top left;
+}
+
+/* FOCUS — every interactive element must show where the keyboard is.
+   :focus-visible means pointer users never see a ring they didn't ask for. */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+summary:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--er-focus-ring);
+  outline-offset: 2px;
+  border-radius: var(--er-radius-sm);
 }
 
 /* TEXT LINKS - THEMED */
@@ -444,23 +490,7 @@ code {
   height: 100%;
 }
 
-@keyframes ripple {
-  to {
-    transform: scale(4);
-    opacity: 0;
-  }
-}
-
 @keyframes pulseOnLoad {
-  0%, 100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.15);
-  }
-}
-
-@keyframes pulseOnHover {
   0%, 100% {
     transform: scale(1);
   }
@@ -474,9 +504,7 @@ code {
   animation: pulseOnLoad 1s ease-in-out 2;
 }
 
-.pulse-on-load:hover {
-  animation: pulseOnHover 1s ease-in-out infinite;
-}
+
 
 @keyframes tada {
   0%, 83.33% {
@@ -496,8 +524,10 @@ code {
   }
 }
 
+/* Draws the eye to the "View List" CTA the first time a ranking has items.
+   Two passes (~24s) is enough to be noticed; after that it holds still. */
 .tada-animation {
-  animation: tada 12s ease-in-out infinite;
+  animation: tada 12s ease-in-out 2;
   will-change: transform;
 }
 
@@ -514,7 +544,7 @@ code {
 }
 
 .bounce-right {
-  animation: bounceRight 6s ease-out infinite;
+  animation: bounceRight 6s ease-out 4;
 }
 
 @keyframes tada-6s {
@@ -536,7 +566,7 @@ code {
 }
 
 .tada-animation-6s {
-  animation: tada-6s 6s ease-in-out infinite;
+  animation: tada-6s 6s ease-in-out 4;
   will-change: transform;
 }
 
@@ -733,4 +763,35 @@ select:-webkit-autofill {
   box-shadow: 0 0 0 1000px var(--er-surface-primary) inset;
   caret-color: var(--er-text-primary);
   transition: background-color 9999s ease-in-out 0s;
+}
+
+/* REDUCED MOTION
+   A single stop for every animation that survives in the app. Decorative
+   backgrounds (auroral, starfield) and the welcome overlay hold still; the
+   now-playing equalizer keeps a fixed non-zero height so it still reads as an
+   indicator rather than disappearing. Transitions are shortened rather than
+   removed, so state changes remain legible without any travel. */
+@media (prefers-reduced-motion: reduce) {
+  .auroral-background,
+  .overlay-bg,
+  .tada-animation,
+  .tada-animation-6s,
+  .bounce-right,
+  .subtle-pulse,
+  .pulse-on-load,
+  .animate-phantomArrow,
+  #stars,
+  #stars2,
+  #stars3,
+  #stars:after,
+  #stars2:after,
+  #stars3:after {
+    animation: none !important;
+  }
+
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+  }
 }

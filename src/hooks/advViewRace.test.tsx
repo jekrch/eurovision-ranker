@@ -42,9 +42,50 @@ const rrow = (uid: string) => ({
   place_contest: 1,
 });
 
-const slot0 = ['adb', 'aae', 'bpb', 'bpx', 'bpm', 'bps', 'bqc', 'bpl', 'bpn', 'bph', 'box', 'bov', 'aag'];
-const slot1 = ['bpb', 'adb', 'bpx', 'bpm', 'bps', 'bpl', 'bqc', 'bpn', 'bph', 'bov', 'box', 'aag', 'aaf'];
-const slot2 = [...slot1, 'aae', 'boy', 'bpa', 'bpc', 'bpd', 'bpe', 'bpf', 'bpi', 'bpk', 'bpp', 'bpr'];
+const slot0 = [
+  'adb',
+  'aae',
+  'bpb',
+  'bpx',
+  'bpm',
+  'bps',
+  'bqc',
+  'bpl',
+  'bpn',
+  'bph',
+  'box',
+  'bov',
+  'aag',
+];
+const slot1 = [
+  'bpb',
+  'adb',
+  'bpx',
+  'bpm',
+  'bps',
+  'bpl',
+  'bqc',
+  'bpn',
+  'bph',
+  'bov',
+  'box',
+  'aag',
+  'aaf',
+];
+const slot2 = [
+  ...slot1,
+  'aae',
+  'boy',
+  'bpa',
+  'bpc',
+  'bpd',
+  'bpe',
+  'bpf',
+  'bpi',
+  'bpk',
+  'bpp',
+  'bpr',
+];
 const allUids = Array.from(new Set([...slot0, ...slot1, ...slot2]));
 
 function Harness() {

@@ -122,7 +122,7 @@ const QuizResults: React.FC<QuizResultsProps> = ({ result, onPlayAgain, onNewQui
         {/* stat pills */}
         <div className="flex items-center justify-center gap-3 text-center flex-wrap">
           <div className="bg-[var(--er-surface-tertiary)] rounded-lg px-4 py-2">
-            <div className="text-[var(--er-text-subtle)] text-[0.65rem] font-semibold tracking-wide">
+            <div className="text-[var(--er-text-subtle)] text-micro font-semibold tracking-wide">
               TIME
             </div>
             <div className="text-[var(--er-text-tertiary)] font-bold flex items-center gap-1.5 justify-center">
@@ -131,7 +131,7 @@ const QuizResults: React.FC<QuizResultsProps> = ({ result, onPlayAgain, onNewQui
             </div>
           </div>
           <div className="bg-[var(--er-surface-tertiary)] rounded-lg px-4 py-2">
-            <div className="text-[var(--er-text-subtle)] text-[0.65rem] font-semibold tracking-wide">
+            <div className="text-[var(--er-text-subtle)] text-micro font-semibold tracking-wide">
               CORRECT
             </div>
             <div className="text-[var(--er-text-tertiary)] font-bold">
@@ -139,7 +139,7 @@ const QuizResults: React.FC<QuizResultsProps> = ({ result, onPlayAgain, onNewQui
             </div>
           </div>
           <div className="bg-[var(--er-surface-tertiary)] rounded-lg px-4 py-2 max-w-[12rem]">
-            <div className="text-[var(--er-text-subtle)] text-[0.65rem] font-semibold tracking-wide">
+            <div className="text-[var(--er-text-subtle)] text-micro font-semibold tracking-wide">
               YEARS
             </div>
             <div className="text-[var(--er-text-tertiary)] font-bold truncate" title={yearsLabel}>
@@ -151,7 +151,7 @@ const QuizResults: React.FC<QuizResultsProps> = ({ result, onPlayAgain, onNewQui
         {/* per-category breakdown */}
         {showBreakdown && breakdown.length > 0 && (
           <div className="w-full bg-black/20 rounded-lg p-3">
-            <div className="text-[var(--er-text-subtle)] text-[0.65rem] font-semibold tracking-wide mb-2">
+            <div className="text-[var(--er-text-subtle)] text-micro font-semibold tracking-wide mb-2">
               BY CATEGORY
             </div>
             <div className="flex flex-col gap-2">
@@ -183,10 +183,10 @@ const QuizResults: React.FC<QuizResultsProps> = ({ result, onPlayAgain, onNewQui
       <div className="flex flex-col gap-5 flex-shrink-0">
         {/* challenge a friend — share the exact same quiz via a code/link */}
         <div className="w-full bg-black/20 rounded-lg p-3 ring-1 ring-white/5">
-          <div className="text-[var(--er-text-subtle)] text-[0.65rem] font-semibold tracking-wide mb-2">
+          <div className="text-[var(--er-text-subtle)] text-micro font-semibold tracking-wide mb-2">
             CHALLENGE A FRIEND
           </div>
-          <p className="text-[var(--er-text-subtle)] text-[0.7rem] leading-snug mb-2">
+          <p className="text-[var(--er-text-subtle)] text-micro leading-snug mb-2">
             Link to the exact same questions.
           </p>
           <div className="flex items-center gap-2">

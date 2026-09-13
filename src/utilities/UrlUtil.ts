@@ -277,9 +277,7 @@ export const encodeRankingsToURL = (
 ): string => {
   // Drop items missing the id this mode encodes (e.g. a country resolved without
   // a `uid` re-encoded into global mode) rather than emitting an undefined gap.
-  const ids = rankedCountries
-    .map((item) => (isGlobalMode ? item.uid : item.id))
-    .filter(Boolean);
+  const ids = rankedCountries.map((item) => (isGlobalMode ? item.uid : item.id)).filter(Boolean);
   return isGlobalMode ? `>${ids.join('')}` : ids.join('');
 };
 

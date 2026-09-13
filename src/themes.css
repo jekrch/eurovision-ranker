@@ -167,6 +167,14 @@
   
   /* Maps to: border-slate-700, border-gray-600 */
   --er-border-subtle: #334155;
+  /* navy analogues of the light->dark hairline ramp. These five are consumed
+     by cards, panels and dividers across the app; without them the base theme
+     rendered those borders with no color at all. */
+  --er-border-lightest: #e4e8f5;
+  --er-border-lighter: #ccd2e6;
+  --er-border-default: #b4bcd4;
+  --er-border-medium: #3a4570;
+  --er-border-darker: #2a3258;
   
   /* === OVERLAY/OPACITY COLORS === */
   /* Maps to: bg-opacity-30, bg-opacity-60, bg-opacity-70 variants */
@@ -186,6 +194,29 @@
   
   /* Maps to: ring-blue-400 - focus rings */
   --er-focus-ring: #60a5fa;
+
+  /* === CARD SURFACE ===
+     Ranked cards sit over the page gradient. A partly transparent surface gives
+     them a real, consistent ground while still letting the background read
+     through. Declared once: both :root and [data-theme] match documentElement,
+     so this re-resolves against whichever theme's --er-surface-primary wins.
+     Raise the percentage for more opaque cards. */
+  --er-surface-card: color-mix(in srgb, var(--er-surface-primary) 55%, transparent);
+
+  /* === MOTION ===
+     One easing curve and three durations for the whole app. These are not
+     themed: motion should feel identical whichever palette is active. */
+  --er-dur-fast: 120ms;
+  --er-dur-base: 180ms;
+  --er-dur-slow: 260ms;
+  --er-ease-out: cubic-bezier(0.2, 0, 0, 1);
+
+  /* === RADIUS ===
+     Mirrors the Tailwind borderRadius scale for use in plain CSS. */
+  --er-radius-sm: 3px;
+  --er-radius-control: 4px;
+  --er-radius-card: 6px;
+  --er-radius-panel: 8px;
 }
 
 /* Midnight Theme - Modern dark purple/blue variant */
@@ -595,6 +626,12 @@
   --er-border-secondary: #8d7750;
   --er-border-tertiary: #4a4228;
   --er-border-subtle: #3a3020;
+  /* forest/gold analogues of the light->dark hairline ramp */
+  --er-border-lightest: #dcece2;
+  --er-border-lighter: #c3d8ca;
+  --er-border-default: #b0c9b8;
+  --er-border-medium: #4a4228;
+  --er-border-darker: #3a3020;
   
   /* === OVERLAY/OPACITY COLORS === */
   --er-overlay-light: rgba(14, 24, 19, 0.3);

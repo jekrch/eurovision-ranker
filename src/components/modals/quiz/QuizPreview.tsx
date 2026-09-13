@@ -68,7 +68,7 @@ const QuizPreview: React.FC<QuizPreviewProps> = ({ config, onBegin }) => {
     <div className="flex flex-col gap-5 py-2">
       <div className="text-center">
         <div className="text-[var(--er-text-secondary)] text-2xl font-bold flex items-center justify-center gap-2">
-          <FontAwesomeIcon icon={faCircleQuestion} className="text-[var(--r-accent-blue)]" />
+          <FontAwesomeIcon icon={faCircleQuestion} className="text-[var(--er-accent-blue)]" />
           Eurovision Quiz
         </div>
         <p className="text-[var(--er-text-subtle)] text-xs mt-1">

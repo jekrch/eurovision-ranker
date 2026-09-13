@@ -50,7 +50,7 @@ const GroupSharedRankingsSection: React.FC<{
               <div className="flex items-start gap-2 min-w-0">
                 <FontAwesomeIcon
                   icon={faShareNodes}
-                  className="text-[10px] text-[var(--er-text-subtle)] shrink-0 mt-1"
+                  className="text-micro text-[var(--er-text-subtle)] shrink-0 mt-1"
                 />
                 <div className="min-w-0">
                   <div className="truncate text-[var(--er-text-primary)]">
@@ -58,7 +58,7 @@ const GroupSharedRankingsSection: React.FC<{
                       <span className="italic text-[var(--er-text-subtle)]">Untitled</span>
                     )}
                   </div>
-                  <div className="text-[10px] text-[var(--er-text-subtle)]">
+                  <div className="text-micro text-[var(--er-text-subtle)]">
                     {r.owner_email}
                     {r.year ? ` · ${r.year}` : ''}
                     {r.shared_at ? ` · ${shortDate(r.shared_at)}` : ''}

@@ -100,13 +100,12 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
           key={props.rank ? 'ranked-' : `unranked-card-${contestant?.id ?? country.id}`}
           className={classNames(
             props.className,
-            'm-auto text-[var(--er-text-tertiary)] bg-[var(--er-surface-primary)]x bg-opacity-30 no-select',
-            'relative min-h-[2.5em] py-[0.4em] flex flex-row', // Main card padding is py-[0.4em]
+            'm-auto text-content-tertiary bg-[var(--er-surface-card)] no-select',
+            'relative min-h-[2.5em] py-[0.4em] flex flex-row',
             'items-stretch !cursor-grabber whitespace-normal text-sm overflow-hidden',
-            'shadow border border-0.5 border-solid border-[var(--er-border-primary)] rounded-l-lg rounded-r-sm',
-            props.isDragging
-              ? 'shadow-[var(--er-button-primary-hover)] shadow-sm border-solid'
-              : '',
+            'border border-solid border-line-secondary rounded-lg',
+            'transition-shadow duration-fast ease-out',
+            props.isDragging ? 'shadow-drag' : '',
             showGlow ? 'first-card-glow' : '',
           )}
         >
@@ -140,7 +139,7 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
           )}
 
           <div className="relative z-10 flex flex-row items-stretch w-full">
-            <div className="relative -my-2 flex-shrink-0 pb-[1px] mr-0 font-bold w-8 pr-[0.01em] border-r-[0.05em] border-[var(--er-border-secondary)] bg-[var(--er-surface-accent-70)] bg-opacity-70 text-[var(--er-text-primary)] tracking-tighter items-center justify-center flex text-lg rounded-sm">
+            <div className="tabular relative -my-2 flex-shrink-0 w-8 border-r border-line-secondary bg-[var(--er-surface-accent-70)] text-content-primary font-semibold items-center justify-center flex text-lg">
               {props.rank}
               {isNowPlaying && (
                 <span
@@ -155,7 +154,7 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
               )}
             </div>
 
-            <div className="relative w-[5em] min-w-[4rem] -my-[0.2em]x my-1 ml-[0.2em]x ml-2 -mr-3 self-stretch overflow-hidden">
+            <div className="relative w-[5em] min-w-[4rem] my-1 ml-2 -mr-3 self-stretch overflow-hidden">
               {country.key !== 'yu' ? (
                 <LazyLoadedFlag
                   code={country.key}
@@ -178,103 +177,106 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
                 />
               )}
               {isGlobalMode && contestant && (
-                <div className="absolute bottom-0 left-0 right-0 bg-[var(--er-button-neutral-40)] text-[var(--er-text-secondary)] text-sm font-bold text-center py-1 z-10">
+                <div className="tabular absolute bottom-0 left-0 right-0 bg-[var(--er-button-neutral-40)] text-content-secondary text-xs font-medium text-center py-1 z-10">
                   {contestant.year}
                 </div>
               )}
             </div>
             {/* END OF UPDATED FLAG SECTION */}
 
-            {/* Text content section. Starts immediately after the flag container */}
-            <div className={classNames('flex-grow text-[var(--er-text-secondary)] font-bold pl-3')}>
-              {' '}
-              {/* Added pl-3 for spacing if flag edge is too abrupt */}
-              <div className={`overflow-hidden overflow-ellipsis`}>
-                <span className="float-right flex flex-row items-center">
-                  {contestant?.youtube && (
-                    <div
-                      onClick={() => {
-                        props.openSongModal();
-                      }}
-                      className="cursor-pointer rounded text-[var(--er-text-muted)] hover:text-[var(--er-text-secondary)] mr-[0.4em]"
-                    >
-                      <FaInfoCircle className="text-base" title="song info" />
-                    </div>
-                  )}
-                </span>
-                <span className="overflow-hidden overflow-ellipsis">{country?.name}</span>
-              </div>
-              <div className="pr-[1.5em] flex flex-grow items-center justify-between font-normal">
-                <div className="">
-                  {contestant ? (
-                    <>
-                      <span className="font-xs text-sm text-[var(--er-text-tertiary)]">
-                        {contestant?.artist}
-                      </span>
-                      <span
-                        className={classNames(
-                          'ml-2 font-xs text-xs text-[var(--er-text-tertiary)] rounded-sm bg-[var(--er-surface-tertiary-70)] bg-opacity-60',
-                        )}
-                      >
+            {/* Text content and row actions share one grid: a flexible text
+                column and an auto-width action column. Everything lines up on
+                the same edges whichever display toggles are on. */}
+            <div className="min-w-0 flex-grow grid grid-cols-[minmax(0,1fr)_auto] gap-x-2 items-start pl-3 pr-1">
+              <div className="min-w-0">
+                <div className="truncate text-content-secondary font-medium">{country?.name}</div>
+
+                {contestant ? (
+                  <>
+                    <div className="min-w-0 font-normal">
+                      <span className="text-sm text-content-tertiary">{contestant?.artist}</span>
+                      <span className="ml-2 text-xs text-content-tertiary rounded-sm bg-[var(--er-surface-tertiary-70)]">
                         {contestant.song?.length && !contestant.song?.includes('TBD')
                           ? `"${contestant.song}"`
                           : `${contestant.song}`}
                       </span>
+                    </div>
 
-                      <div className="mt-1 font-xs text-xs text-[var(--er-text-subtle)] mb-1 flex flex-wrap">
-                        {contestant?.votes?.totalPoints !== undefined &&
-                          voteCodeHasType(vote, 't') && (
-                            <div className="flex items-center mr-2">
-                              <span className="text-[var(--er-text-muted)]">total:&nbsp;</span>
-                              <span>{`${contestant?.votes?.totalPoints}`}</span>
-                            </div>
-                          )}
-                        {contestant?.votes?.telePoints !== undefined &&
-                          voteCodeHasType(vote, 'tv') && (
-                            <div className="flex items-center mr-2">
-                              <span className="text-[var(--er-text-muted)]">tele:&nbsp;</span>
-                              <span>{`${contestant?.votes?.telePoints}`}</span>
-                            </div>
-                          )}
-                        {contestant?.votes?.juryPoints !== undefined &&
-                          voteCodeHasType(vote, 'j') && (
-                            <div className="flex items-center mr-2">
-                              <span className="text-[var(--er-text-muted)]">jury:&nbsp;</span>
-                              <span>{`${contestant?.votes?.juryPoints}`}</span>
-                            </div>
-                          )}
-                      </div>
+                    {/* one rhythm for every metadata row, rather than a mix of
+                        mt-1/mb-1/mb-0 */}
+                    <div className="tabular mt-1 space-y-0.5 text-micro text-content-subtle font-normal">
+                      {(contestant?.votes?.totalPoints !== undefined &&
+                        voteCodeHasType(vote, 't')) ||
+                      (contestant?.votes?.telePoints !== undefined &&
+                        voteCodeHasType(vote, 'tv')) ||
+                      (contestant?.votes?.juryPoints !== undefined &&
+                        voteCodeHasType(vote, 'j')) ? (
+                        <div className="flex flex-wrap gap-x-3">
+                          {contestant?.votes?.totalPoints !== undefined &&
+                            voteCodeHasType(vote, 't') && (
+                              <span>
+                                <span className="text-content-muted">total </span>
+                                {contestant.votes.totalPoints}
+                              </span>
+                            )}
+                          {contestant?.votes?.telePoints !== undefined &&
+                            voteCodeHasType(vote, 'tv') && (
+                              <span>
+                                <span className="text-content-muted">tele </span>
+                                {contestant.votes.telePoints}
+                              </span>
+                            )}
+                          {contestant?.votes?.juryPoints !== undefined &&
+                            voteCodeHasType(vote, 'j') && (
+                              <span>
+                                <span className="text-content-muted">jury </span>
+                                {contestant.votes.juryPoints}
+                              </span>
+                            )}
+                        </div>
+                      ) : null}
+
                       {(contestant?.finalsRank ?? contestant?.contestRank) && showPlace && (
-                        <div className="mt-1 font-xs text-xs text-[var(--er-text-subtle)] mb-0 flex flex-wrap items-center mr-2">
-                          <span className="text-[var(--er-text-muted)]">place:&nbsp;</span>
-                          <span>{`${contestant?.finalsRank ?? contestant?.contestRank}`}</span>
+                        <div>
+                          <span className="text-content-muted">place </span>
+                          {contestant?.finalsRank ?? contestant?.contestRank}
                         </div>
                       )}
-                    </>
-                  ) : (
-                    <span className="font-xs text-xs text-[var(--er-text-muted)] font-bold">
-                      Did not participate
-                    </span>
-                  )}
-                </div>
+                    </div>
+                  </>
+                ) : (
+                  <span className="text-xs text-content-muted">Did not participate</span>
+                )}
+              </div>
+
+              {/* Action column: song info at the top, drag affordance at the
+                  bottom, both on the card's right edge. */}
+              <div className="flex flex-col items-end justify-between self-stretch">
+                {contestant?.youtube ? (
+                  <button
+                    type="button"
+                    aria-label={`Song details for ${country?.name}`}
+                    onClick={props.openSongModal}
+                    className="rounded text-content-muted hover:text-content-secondary transition-colors duration-fast ease-out"
+                  >
+                    <FaInfoCircle className="text-base" title="song info" />
+                  </button>
+                ) : (
+                  <span />
+                )}
+
+                {/* gripper: shown unless we are in the immutable, categorized
+                    total-rank mode, where cards cannot be reordered */}
+                {!showTotalRank && (
+                  <span
+                    aria-hidden="true"
+                    className="leading-none text-xl text-content-muted select-none"
+                  >
+                    &#8942;&#8942;
+                  </span>
+                )}
               </div>
             </div>
-
-            {/* 
-            if we are not in the immutable, categorized total rank mode,
-            show a gripper indicating that the cards can be dragged
-          */}
-
-            {!showTotalRank && (
-              <div
-                id="right-edge"
-                className="mb-[0em] absolute bottom-0 right-0 flex-shrink-0 flex flex-row justify-between text-xl font-bold text-[var(--er-text-muted)] z-10"
-              >
-                <div id="gripper" className="text-right pl-[0.3em] mr-[0.3em]">
-                  &#8942;&#8942;
-                </div>
-              </div>
-            )}
           </div>
         </div>
       </div>
@@ -282,7 +284,7 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
       {categories?.length > 0 && (showTotalRank || showComparison) && (
         <div
           ref={categoryRankingsRef}
-          className="mt-0 mx-[0.6em] shadow-lg rounded-b-md bg-[var(--er-surface-tertiary)] bg-opacity-100 border-[var(--er-border-medium)] border-x-[0.01em] border-b-[0.01em] overflow-x-auto relative ml-[2em]"
+          className="mt-0 mx-[0.6em] rounded-b-md bg-[var(--er-surface-tertiary)] border-line-medium border-x border-b overflow-x-auto relative ml-[2em]"
           onScroll={props.onCategoryScroll}
         >
           <div className="flex">
@@ -311,8 +313,8 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
                       className={classNames(
                         'ml-1 inline-block text-sm text-opacity-40',
                         rankDifference < 0
-                          ? 'text-[var(--r-accent-success)]'
-                          : 'text-[var(--r-accent-error)]',
+                          ? 'text-[var(--er-accent-success)]'
+                          : 'text-[var(--er-accent-error)]',
                       )}
                     />
                   )}

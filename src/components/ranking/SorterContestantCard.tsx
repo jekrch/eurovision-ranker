@@ -64,7 +64,7 @@ const SorterContestantCard: React.FC<SorterContestantCardProps> = ({
     <div className="relative">
       {/* highlight if this was the previous choice */}
       {showAsPreviousChoice && (
-        <div className="absolute inset-0 bg-[var(--er-interactive-primary)] opacity-30 rounded-lg pointer-events-none z-20 border-2 border-[var(--r-accent-ring)]"></div>
+        <div className="absolute inset-0 bg-[var(--er-interactive-primary)] opacity-30 rounded-lg pointer-events-none z-20 border-2 border-[var(--er-focus-ring)]"></div>
       )}
 
       <div
@@ -72,7 +72,7 @@ const SorterContestantCard: React.FC<SorterContestantCardProps> = ({
           'm-auto text-[var(--er-text-tertiary)] bg-[var(--er-surface-primary)] bg-opacity-30 no-select choice-background',
           'relative mx-auto min-h-[9em]', // maintain minimum height
           'flex flex-col items-stretch whitespace-normal text-sm overflow-hidden', // allow internal overflow hidden
-          'shadow border-y border-0.5 rounded-md',
+          'shadow border-y rounded-md',
           'border-solid border-[var(--er-border-subtle)]',
           'w-full z-10',
         )}
@@ -130,7 +130,7 @@ const SorterContestantCard: React.FC<SorterContestantCardProps> = ({
                     href={contestant?.youtube}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="rounded text-[var(--r-accent-error)] hover:text-red-400 transition-colors duration-200"
+                    className="rounded text-[var(--er-accent-error)] hover:text-red-400 transition-colors duration-200"
                     onClick={(e) => e.stopPropagation()}
                   >
                     <FaYoutube className="text-4xl" title="Watch on YouTube" />

@@ -242,10 +242,7 @@ describe('updateStates — display toggles', () => {
     }) as UrlParams;
 
   it('enables the toggles whose params are set to "t"', () => {
-    updateStates(
-      base({ globalMode: 't', comparisonMode: 't', showPlace: 't' }),
-      mockDispatch,
-    );
+    updateStates(base({ globalMode: 't', comparisonMode: 't', showPlace: 't' }), mockDispatch);
     expect(setGlobalSearch).toHaveBeenCalledWith(true);
     expect(setShowComparison).toHaveBeenCalledWith(true);
     expect(setShowPlace).toHaveBeenCalledWith(true);
@@ -294,7 +291,7 @@ describe('extractParams — per-category ranking slot', () => {
 
 describe('encodeRankingsToURL', () => {
   const item = (id?: string, uid?: string): CountryContestant =>
-    ({ id, uid } as unknown as CountryContestant);
+    ({ id, uid }) as unknown as CountryContestant;
 
   it('joins ids without a marker in local mode', () => {
     expect(encodeRankingsToURL([item('a'), item('b')], false)).toBe('ab');
@@ -351,11 +348,14 @@ describe('urlParamHasValue / updateQueryParams', () => {
 
 describe('orderContestantsByRankingStr — local mode', () => {
   const cc = (id: string): CountryContestant =>
-    ({ id, country: { id }, contestant: null } as unknown as CountryContestant);
+    ({ id, country: { id }, contestant: null }) as unknown as CountryContestant;
 
   it('resolves ranked ids against the loaded year contestants', async () => {
     const yearContestants = [cc('a'), cc('b')];
-    const { rankedIds, rankedCountries } = await orderContestantsByRankingStr('ba', yearContestants);
+    const { rankedIds, rankedCountries } = await orderContestantsByRankingStr(
+      'ba',
+      yearContestants,
+    );
     expect(rankedIds).toEqual(['b', 'a']);
     expect(rankedCountries.map((c) => c.id)).toEqual(['b', 'a']);
   });

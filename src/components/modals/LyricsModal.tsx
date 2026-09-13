@@ -43,7 +43,7 @@ const SongModal: React.FC<SongModalProps> = (props: SongModalProps) => {
             : 'hover:text-[var(--er-text-muted)]'
         }`}
       >
-        <FontAwesomeIcon className="text-md" icon={icon} fixedWidth />
+        <FontAwesomeIcon className="text-base" icon={icon} fixedWidth />
         <span className="text-sm">{label}</span>
       </button>
     </li>

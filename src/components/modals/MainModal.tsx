@@ -109,7 +109,7 @@ const MainModal: React.FC<MainModalProps> = (props: MainModalProps) => {
                 <img src={`/mnay.png`} alt="Heart" className="w-full shadow-lg rounded mb-5" />
               </div>
               <button
-                className="w-full bg-[var(--er-button-primary)] hover:bg-[var(--er-button-primary-hover)] text-white font-normal py-1 px-3 rounded-md text-md mb-1"
+                className="w-full bg-[var(--er-button-primary)] hover:bg-[var(--er-button-primary-hover)] text-white font-normal py-1 px-3 rounded-md mb-1"
                 onClick={() => window.open('https://www.givemn.org/story/Jddsdf', '_blank')}
               >
                 {'Donate'}

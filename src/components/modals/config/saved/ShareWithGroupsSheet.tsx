@@ -71,13 +71,11 @@ const ShareWithGroupsSheet: React.FC<{
                   <div
                     className={`w-5 h-5 rounded border ${shared ? 'bg-[var(--er-button-primary)] border-[var(--er-button-primary)]' : 'border-white/20'} flex items-center justify-center shrink-0`}
                   >
-                    {shared && (
-                      <FontAwesomeIcon icon={faCheck} className="text-white text-[10px]" />
-                    )}
+                    {shared && <FontAwesomeIcon icon={faCheck} className="text-white text-micro" />}
                   </div>
                   <div className="flex-1 min-w-0 text-left">
                     <div className="truncate text-sm text-[var(--er-text-primary)]">{g.name}</div>
-                    <div className="text-[11px] text-[var(--er-text-subtle)]">
+                    <div className="text-micro text-[var(--er-text-subtle)]">
                       {g.member_count} {g.member_count === 1 ? 'member' : 'members'}
                     </div>
                   </div>
@@ -88,7 +86,7 @@ const ShareWithGroupsSheet: React.FC<{
         </ul>
       )}
 
-      <div className="mt-3 text-[11px] text-[var(--er-text-subtle)] leading-relaxed">
+      <div className="mt-3 text-micro text-[var(--er-text-subtle)] leading-relaxed">
         Group members can view this ranking. They can't edit it.
       </div>
     </div>

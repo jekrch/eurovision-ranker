@@ -55,10 +55,10 @@ const MapModal: React.FC<MapModalProps> = ({ isOpen, onClose }) => {
       isOpen={isOpen}
       onClose={onClose}
     >
-      <div className="-mt-3 mb-3 w-full text-md font-strong text-center tracking-wide text-[var(--er-text-primary)]">
+      <div className="-mt-3 mb-3 w-full font-semibold text-center tracking-wide text-[var(--er-text-primary)]">
         Ranking heat map
       </div>
-      <div className="mb-3 flex items-center justify-center gap-2 text-[10px] uppercase tracking-wider text-[var(--er-text-muted)]">
+      <div className="mb-3 flex items-center justify-center gap-2 text-micro uppercase tracking-wider text-[var(--er-text-muted)]">
         <span>Lower</span>
         <span
           className="h-2 w-28 rounded-full"

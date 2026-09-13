@@ -116,7 +116,7 @@ const SorterModal: React.FC<SorterModalProps> = ({ isOpen, onClose, initialItems
           className={classNames(
             'w-full max-w-full cursor-pointer transition-colors duration-200 rounded-lg overflow-hidden min-w-0',
             {
-              'md:hover:ring-2 md:hover:ring-[var(--r-accent-ring)] active:ring-2 active:ring-[var(--r-accent-ring)]':
+              'md:hover:ring-2 md:hover:ring-[var(--er-focus-ring)] active:ring-2 active:ring-[var(--er-focus-ring)]':
                 canInteract,
             },
             { 'pointer-events-none opacity-75': !canInteract },
@@ -130,7 +130,7 @@ const SorterModal: React.FC<SorterModalProps> = ({ isOpen, onClose, initialItems
 
         <div className="flex items-center gap-3 w-full max-w-[14rem] my-1 select-none">
           <span className="h-px flex-1 bg-gradient-to-r from-transparent to-[var(--er-border-subtle)]" />
-          <span className="text-[0.7rem] font-semibold uppercase tracking-[0.25em] text-[var(--er-text-tertiary)]">
+          <span className="text-micro font-semibold uppercase tracking-[0.25em] text-[var(--er-text-tertiary)]">
             vs
           </span>
           <span className="h-px flex-1 bg-gradient-to-l from-transparent to-[var(--er-border-subtle)]" />
@@ -142,7 +142,7 @@ const SorterModal: React.FC<SorterModalProps> = ({ isOpen, onClose, initialItems
           className={classNames(
             'w-full max-w-full cursor-pointer transition-colors duration-200 rounded-lg overflow-hidden',
             {
-              'md:hover:ring-2 md:hover:ring-[var(--r-accent-ring)] active:ring-2 active:ring-[var(--r-accent-ring)]':
+              'md:hover:ring-2 md:hover:ring-[var(--er-focus-ring)] active:ring-2 active:ring-[var(--er-focus-ring)]':
                 canInteract,
             },
             { 'pointer-events-none opacity-75': !canInteract },
@@ -283,7 +283,7 @@ const SorterModal: React.FC<SorterModalProps> = ({ isOpen, onClose, initialItems
 
               {/* forward button (completed, conditional) */}
               {/* wrapper to maintain layout width when forward button is hidden */}
-              <div className="w-[58px]x flex justify-center">
+              <div className="flex justify-center">
                 {canGoForward && (
                   <IconButton
                     onClick={handleForward}

@@ -22,7 +22,7 @@ export const Switch: React.FC<SwitchProps> = ({
       <div className={classNames('flex items-center gap-2', className)}>
         <Label
           className={classNames(
-            'cursor-pointer select-none text-[var(--er-text-secondary)] text-md',
+            'cursor-pointer select-none text-[var(--er-text-secondary)]',
             labelClass,
           )}
         >

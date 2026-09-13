@@ -127,7 +127,7 @@ const GroupDetailView: React.FC<{
               {detail.description}
             </p>
           )}
-          <div className="text-[11px] text-[var(--er-text-subtle)] mt-1">
+          <div className="text-micro text-[var(--er-text-subtle)] mt-1">
             {detail.member_count} / 20 {detail.member_count === 1 ? 'member' : 'members'}
           </div>
         </div>

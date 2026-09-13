@@ -76,7 +76,7 @@ const WelcomeOverlay: React.FC<WelcomeOverlayProps> = ({
         )}
       >
         <div className="text-[var(--er-text-tertiary)] mx-8 mt-0">
-          <div className="text-md text-center font-semibold tracking-tight text-[var(--er-text-tertiary)] mb-0 leading-tight">
+          <div className="text-center font-semibold tracking-tight text-[var(--er-text-tertiary)] mb-0 leading-tight">
             Welcome to
             <div className="mt-0">
               <span className="text-xl gradient-text font-bold">
@@ -96,7 +96,7 @@ const WelcomeOverlay: React.FC<WelcomeOverlayProps> = ({
 
         <div className="text-sm mx-8 my-4 mt-1 overflow-auto [scrollbar-gutter:stable]">
           <div className="mb-2 italic text-sm">where you can...</div>
-          <ol className="list-none text-md space-y-[2px]">
+          <ol className="list-none space-y-[2px]">
             <li className="flex items-start">
               {' '}
               <FaList className="mt-1 mr-2 text-indigo-500" />{' '}
@@ -124,7 +124,7 @@ const WelcomeOverlay: React.FC<WelcomeOverlayProps> = ({
               {/* <span className={classNames(
                                 "absolute -left-[0.5em] subtle-pulse",
                                 "inline-block bg-gradient-to-r from-[var(--er-surface-medium)] to-[var(--er-interactive-dark)] text-[var(--er-text-secondary)]",
-                                "text-[0.6rem] font-bold pl-[1.2em] pr-[1.5em] py-0.2",
+                                "text-micro font-bold pl-[1.2em] pr-[1.5em] py-0.2",
                                 "transition-opacity duration-[2000] ease-in",
                                 (welcomeOverlayIsOpen && !exiting) ? 'opacity-100' : 'opacity-0'
                             )}
@@ -140,7 +140,7 @@ const WelcomeOverlay: React.FC<WelcomeOverlayProps> = ({
                 className={classNames(
                   'absolute -left-[0.9em] subtle-pulse',
                   'inline-block bg-gradient-to-r from-[var(--er-surface-medium)] to-[var(--er-interactive-dark)] text-[var(--er-text-secondary)]',
-                  'text-[0.6rem] font-bold pl-[1.2em] pr-[1.5em] py-0.2',
+                  'text-micro font-bold pl-[1.2em] pr-[1.5em] py-0.2',
                   'transition-opacity duration-[2000] ease-in',
                   welcomeOverlayIsOpen && !exiting ? 'opacity-100' : 'opacity-0',
                 )}

@@ -27,7 +27,9 @@ const render = (preloaded: Parameters<typeof makeTestStore>[0]) =>
 
 describe('useRankingDirty', () => {
   it('treats state as dirty when no ranking id is associated', () => {
-    const { result } = render({ root: { name: 'Mine', year: '2024', categoryRankings: [[cc('a')]] } });
+    const { result } = render({
+      root: { name: 'Mine', year: '2024', categoryRankings: [[cc('a')]] },
+    });
 
     expect(result.current.currentRankingId).toBeNull();
     expect(result.current.isDirty).toBe(true);

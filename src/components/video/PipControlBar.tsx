@@ -53,7 +53,7 @@ const PipControlBar: React.FC<PipControlBarProps> = ({
         aria-pressed={autoContinue}
         title={autoContinue ? 'Auto-continue on' : 'Auto-continue to next video'}
         onClick={toggleAutoContinue}
-        className={`flex h-7 items-center gap-1 rounded px-1.5 ml-3 text-[0.65rem] font-semibold uppercase tracking-wide ${
+        className={`flex h-7 items-center gap-1 rounded px-1.5 ml-3 text-micro font-semibold uppercase tracking-wide ${
           autoContinue
             ? 'bg-white/90 text-black'
             : 'text-white/80 hover:bg-white/15 hover:text-white'

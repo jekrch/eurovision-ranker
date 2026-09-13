@@ -41,9 +41,7 @@ export function installHistoryLoopGuard(): void {
   // recognisable caller (useUrlWriter, updateQueryParams, categoryUrl, …)
   const callerFrom = (stack: string | undefined): string => {
     if (!stack) return '(no stack)';
-    const line = stack
-      .split('\n')
-      .find((l) => /\/src\//.test(l) && !/historyLoopGuard/.test(l));
+    const line = stack.split('\n').find((l) => /\/src\//.test(l) && !/historyLoopGuard/.test(l));
     return line?.trim() ?? '(unknown caller)';
   };
 

@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#241a20" />
   <meta name="description" content="Create, share, and analyze your Eurovision Song Contest rankings. Drag and drop contestants to build your perfect ranking for any Eurovision year." />
   <meta name="keywords" content="Eurovision, Eurovision Song Contest, Eurovision ranking, ESC, song contest, music ranking, Eurovision ranker, Eurovision rank, Eurovision fan app" />
@@ -49,6 +49,9 @@
 
   <!-- Preload critical assets -->
   <link rel="preload" href="/eurovision-heart.svg" as="image" type="image/svg+xml">
+  <!-- Only the latin subset is preloaded; the ext/cyrillic/greek faces are
+       fetched on demand via their unicode-range (see index.css). -->
+  <link rel="preload" href="/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
 
   <!-- Favicon -->
   <link rel="icon" href="/favicon.ico" sizes="any">

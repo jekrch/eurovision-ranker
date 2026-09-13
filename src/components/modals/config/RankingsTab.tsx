@@ -28,7 +28,7 @@ import TooltipHelp from '../../TooltipHelp';
 
 // Shared styling tokens — kept in sync with the modern GroupsTab look.
 const sectionLabel =
-  'text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--er-text-subtle)]';
+  'text-micro font-semibold uppercase tracking-[0.08em] text-[var(--er-text-subtle)]';
 const fieldLabel = 'text-xs text-[var(--er-text-subtle)]';
 const primaryBtn =
   'inline-flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-medium rounded-md text-white bg-[var(--er-button-primary)] hover:bg-[var(--er-button-primary-hover)] disabled:bg-[var(--er-button-neutral)]/40 disabled:text-[var(--er-text-subtle)] disabled:cursor-not-allowed transition-colors';

@@ -204,7 +204,7 @@ const RankedHeaderMenu: React.FC<RankedHeaderMenuProps> = (props: RankedHeaderMe
 
           {rankedItems.length > 0 && (
             <ImageCaptureMenuItem
-              className="text-[var(--r-accent-blue)] hover:text-white mr-2"
+              className="text-[var(--er-accent-blue)] hover:text-white mr-2"
               iconClassName="text-lg"
               onClick={() => setIsImageStyleModalOpen(true)}
               afterClick={close}

@@ -2,7 +2,6 @@ import { faPlus, faMinus, faCheck } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import classNames from 'classnames';
 import React from 'react';
-import Ripples from 'react-ripples';
 
 import { ContestantRow } from './tableTypes';
 
@@ -42,23 +41,19 @@ const TableBody: React.FC<TableBodyProps> = ({
               )}
             >
               <div className="flex justify-center h-full">
-                <Ripples
-                  className="flex items-center justify-center w-full h-full"
-                  placeholder={<></>}
+                <button
+                  onClick={() => handleToggleSelected(contestant.id)}
+                  aria-label={showSelected ? 'Remove from selection' : 'Add to selection'}
+                  className="text-content-secondary hover:text-slate-100 p-2 rounded-md h-full w-full transition-colors duration-fast ease-out"
                 >
-                  <button
-                    onClick={() => handleToggleSelected(contestant.id)}
-                    className="text-[var(--er-text-secondary)] hover:text-slate-100 p-2 rounded-md h-full w-full"
-                  >
-                    {showSelected ? (
-                      <FontAwesomeIcon icon={faMinus} className="text-[var(--er-accent-error)]" />
-                    ) : isSelected ? (
-                      <FontAwesomeIcon icon={faCheck} className="text-[var(--er-accent-success)]" />
-                    ) : (
-                      <FontAwesomeIcon icon={faPlus} />
-                    )}
-                  </button>
-                </Ripples>
+                  {showSelected ? (
+                    <FontAwesomeIcon icon={faMinus} className="text-accent-error" />
+                  ) : isSelected ? (
+                    <FontAwesomeIcon icon={faCheck} className="text-accent-success" />
+                  ) : (
+                    <FontAwesomeIcon icon={faPlus} />
+                  )}
+                </button>
               </div>
             </td>
             <td className="px-6 py-4 whitespace-nowrap overflow-x-clip">{contestant.year}</td>

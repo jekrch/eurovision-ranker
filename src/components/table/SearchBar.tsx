@@ -29,7 +29,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ searchTerm, handleSearch, classNa
           value={searchTerm}
           onChange={handleSearch}
           placeholder="Search..."
-          className="text-sm w-full pl-10 pr-4 py-[0.4em] border rounded-md focus:outline-none focus:ring-1 mt-1 focus:[var(--er-border-subtle)] bg-transparent text-[var(--er-text-secondary)] border-[var(--er-border-primary)] placeholder-[var(--er-text-subtle)]"
+          className="text-sm w-full pl-10 pr-4 py-[0.4em] border rounded-md focus:outline-none focus:ring-2 focus:ring-focusring mt-1 bg-transparent text-content-secondary border-line-primary placeholder-content-subtle"
         />
         <FontAwesomeIcon
           icon={faSearch}

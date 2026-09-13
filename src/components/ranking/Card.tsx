@@ -25,9 +25,9 @@ export const Card: FC<CardProps> = (props) => {
   const cardVideoId = youtube ? getYouTubeVideoId(youtube) : null;
   const isNowPlaying = !!pipVideoId && cardVideoId === pipVideoId;
 
-  // the #1 card gets a pulsing glow: an inner radial fill (first-card-glow) plus
-  // an outer halo rendered behind the card (first-card-halo) so it can spill
-  // outside the card's overflow-hidden box
+  // the #1 card is marked with a static glow: an inner radial fill
+  // (first-card-glow) plus an outer halo rendered behind the card
+  // (first-card-halo) so it can spill outside the card's overflow-hidden box
   const showGlow = !props.isDragging && props.rank === 1;
 
   return (
@@ -37,15 +37,16 @@ export const Card: FC<CardProps> = (props) => {
         key={props.rank ? 'ranked-' : 'unranked-' + 'card-' + country.name}
         className={classNames(
           props.className,
-          'min-h-[2.5em] py-[0.4em] flex flex-row items-stretch !cursor-grabber whitespace-normal text-sm overflow-hidden shadow rounded border border-0.5 border-[var(--er-border-default)]',
-          props.isDragging ? 'shadow-slate-400 shadow-sm border-solid' : '',
+          'min-h-[2.5em] py-[0.4em] flex flex-row items-stretch !cursor-grabber whitespace-normal text-sm overflow-hidden rounded border border-line',
+          'transition-shadow duration-fast ease-out',
+          props.isDragging ? 'shadow-drag border-solid' : '',
           showGlow ? 'first-card-glow' : '',
           props.rank ? 'border-solid border-gray' : 'border-dashed',
           !props.isDeleteMode && !props.addCallBack ? 'pr-[1em]' : '',
         )}
       >
         {props.rank ? (
-          <div className="relative flex-shrink-0 ml-2 mr-2 tracking-tighter items-center justify-center flex text-md rounded text-[var(--er-text-tertiary)]">
+          <div className="tabular relative flex-shrink-0 ml-2 mr-2 items-center justify-center flex rounded text-content-tertiary">
             {props.rank}.
             {isNowPlaying && (
               <span
@@ -64,7 +65,7 @@ export const Card: FC<CardProps> = (props) => {
         )}
 
         {/* <i className={`z-0 float-right text-3xl ml-2 flag-icon -mr-2 ${props.country?.icon}`} /> */}
-        <div className={classNames('flex-grow text-[var(--er-text-tertiary)] font-normal my-auto')}>
+        <div className={classNames('flex-grow text-content-tertiary font-normal my-auto')}>
           <div
             className={`overflow-hidden overflow-ellipsis ${props.rank && props.isDeleteMode && 'max-w-[3.9em]'}`}
           >
@@ -80,8 +81,10 @@ export const Card: FC<CardProps> = (props) => {
           <button
             className={classNames(
               'rounded-sm ml-2 -mt-[2px] -mb-[2px] mr-[3px] text-white font-normal py-1 px-2 text-xs',
-              'bg-red-800 opacity-70 hover:bg-red-600 active:bg-red-700',
+              'bg-[var(--er-accent-error)] opacity-70 hover:opacity-100',
+              'transition-opacity duration-fast ease-out',
             )}
+            aria-label={`Remove ${country?.name} from ranking`}
             onClick={() => {
               props?.deleteCallBack?.(props.countryContestant.id);
             }}
@@ -94,8 +97,10 @@ export const Card: FC<CardProps> = (props) => {
           <button
             className={classNames(
               'rounded-sm ml-1 mr-[4px] flex items-center justify-center leading-none font-normal py-0 px-2 text-2xl',
-              'text-[var(--er-text-tertiary)] opacity-30 hover:opacity-80 active:opacity-100 transition-opacity duration-150',
+              'text-content-tertiary opacity-30 hover:opacity-80 active:opacity-100',
+              'transition-opacity duration-fast ease-out',
             )}
+            aria-label={`Add ${country?.name} to ranking`}
             onClick={(e) => {
               e.stopPropagation();
               props.addCallBack?.();

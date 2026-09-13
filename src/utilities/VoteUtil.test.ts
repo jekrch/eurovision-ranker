@@ -139,10 +139,7 @@ describe('assignVotes', () => {
   });
 
   it('sums points per recipient and attaches them to the matching contestant', () => {
-    const result = assignVotes(
-      [cc()],
-      [vote({ totalPoints: 5 }), vote({ totalPoints: 7 })],
-    );
+    const result = assignVotes([cc()], [vote({ totalPoints: 5 }), vote({ totalPoints: 7 })]);
     expect(result[0].contestant?.votes?.totalPoints).toBe(12);
   });
 

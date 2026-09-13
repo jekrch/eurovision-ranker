@@ -1,6 +1,9 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { CallBackProps, EVENTS, ACTIONS, STATUS } from 'react-joyride';
 
+import TourExitPrompt from './TourExitPrompt';
+import { tourDelay } from './tourTarget';
+import { useTourSteps } from './useTourSteps';
 import { CountryContestant } from '../data/CountryContestant';
 import { useAppDispatch, useAppSelector } from '../hooks/stateHooks';
 import { useResetRanking } from '../hooks/useResetRanking';
@@ -24,9 +27,13 @@ import { clearCategories } from '../utilities/CategoryUtil';
 import { fetchCountryContestantsByYear } from '../utilities/ContestantRepository';
 import { clone } from '../utilities/ContestantUtil';
 import { joyrideOptions, SKIP_WELCOME_AFTER_TOUR_KEY } from '../utilities/JoyrideUtil';
+import { logger } from '../utilities/logger';
 import { goToUrl } from '../utilities/UrlUtil';
 
 import type Joyride from 'react-joyride';
+
+/** the contest year the tour walks the user through */
+const TOUR_YEAR = '2023';
 
 interface JoyrideTourProps {
   setRefreshUrl: (num: number) => void;
@@ -44,8 +51,18 @@ const JoyrideTour: React.FC<JoyrideTourProps> = (props: JoyrideTourProps) => {
   const [startTour, setStartTour] = useState<boolean>(false);
   const resetRanking = useResetRanking();
   const [originalUrlQuery, setOriginalUrlQuery] = useState<string>('');
-  const [joyrideStepIndex, setJoyrideStepIndex] = useState(0);
   const [JoyrideComponent, setJoyrideComponent] = useState<typeof Joyride | null>(null);
+  const [exitPromptOpen, setExitPromptOpen] = useState(false);
+  // bumped to remount joyride after a cancelled exit - see cancelExit
+  const [joyrideKey, setJoyrideKey] = useState(0);
+
+  const { stepIndex, goToStep } = useTourSteps({
+    steps: tourSteps,
+    running: startTour,
+    prepareStep: executeTourStepActions,
+    onFinish: endTour,
+    onAbandon: endTour,
+  });
 
   useEffect(() => {
     if (props.runTour) {
@@ -71,6 +88,8 @@ const JoyrideTour: React.FC<JoyrideTourProps> = (props: JoyrideTourProps) => {
       // the reloaded app skips the welcome overlay and drops the user
       // straight into the select view instead.
       if (!props.runTour) {
+        setExitPromptOpen(false);
+
         try {
           sessionStorage.setItem(SKIP_WELCOME_AFTER_TOUR_KEY, '1');
         } catch {
@@ -97,32 +116,57 @@ const JoyrideTour: React.FC<JoyrideTourProps> = (props: JoyrideTourProps) => {
     resetRanking();
   }
 
-  useEffect(() => {
-    const executeJoyRideStep = async () => {
-      await executeTourStepActions(joyrideStepIndex);
-    };
-    executeJoyRideStep();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [joyrideStepIndex]);
+  function endTour() {
+    setExitPromptOpen(false);
+    props.setRunTour(false);
+  }
 
-  const handleJoyrideCallback = useCallback((data: CallBackProps) => {
+  /**
+   * Joyride treats a click on its overlay and a press of Escape as exits, the
+   * same as the tooltip's close button, so every one of them asks first. The
+   * step stays where it is until the user answers.
+   */
+  function requestExit() {
+    setExitPromptOpen(true);
+  }
+
+  function cancelExit() {
+    setExitPromptOpen(false);
+    // joyride is left holding a "close" action it never got to carry out, and
+    // it only reacts to an action that *changes*, so a second Escape or overlay
+    // click would go unnoticed. Remounting it puts the current step back with a
+    // clean slate.
+    setJoyrideKey((key) => key + 1);
+  }
+
+  const handleJoyrideCallback = (data: CallBackProps) => {
     const { action, index, status, type } = data;
 
-    if (type === EVENTS.STEP_BEFORE && index === 0) {
-      clearRanking(year);
+    if (([STATUS.FINISHED, STATUS.SKIPPED] as string[]).includes(status)) {
+      endTour();
+
+      return;
     }
 
-    if (
-      ([STATUS.FINISHED, STATUS.SKIPPED] as string[]).includes(status) ||
-      (action === ACTIONS.CLOSE && type === EVENTS.STEP_AFTER)
-    ) {
-      props.setRunTour(false); // End the tour
-      setJoyrideStepIndex(0);
-    } else if (type === EVENTS.STEP_AFTER || type === EVENTS.TARGET_NOT_FOUND) {
-      setJoyrideStepIndex(index + (action === ACTIONS.PREV ? -1 : 1));
+    if (type === EVENTS.STEP_AFTER) {
+      if (action === ACTIONS.CLOSE || action === ACTIONS.SKIP) {
+        requestExit();
+
+        return;
+      }
+
+      goToStep(index + (action === ACTIONS.PREV ? -1 : 1));
+
+      return;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+
+    if (type === EVENTS.TARGET_NOT_FOUND) {
+      // Don't skip ahead: the next step's target almost always depends on the
+      // state this step was going to set up, so skipping cascades to the end of
+      // the tour. The watchdog in useTourSteps waits for the element instead.
+      logger.warn(`[tour] step ${index} target missing; waiting for it to return`);
+    }
+  };
 
   async function clearRanking(year: string) {
     const yearContestants = await fetchCountryContestantsByYear(year, '');
@@ -137,18 +181,24 @@ const JoyrideTour: React.FC<JoyrideTourProps> = (props: JoyrideTourProps) => {
   }
 
   /**
-   * Each case statement corresponds to a step in the tour
+   * Each case statement corresponds to a step in the tour, and runs before that
+   * step is shown so the elements it points at are on screen by then.
    * @param index
    */
   async function executeTourStepActions(index: number) {
     switch (index) {
+      case 0:
+        await clearRanking(year);
+
+        break;
+
       case 1:
-        if (year !== '2023') {
-          dispatch(setYear('2023'));
+        if (year !== TOUR_YEAR) {
+          dispatch(setYear(TOUR_YEAR));
           props.setRefreshUrl(Math.random());
         }
 
-        await clearRanking(year);
+        await clearRanking(TOUR_YEAR);
 
         dispatch(setName(''));
 
@@ -219,11 +269,12 @@ const JoyrideTour: React.FC<JoyrideTourProps> = (props: JoyrideTourProps) => {
 
       case 11:
         dispatch(setShowUnranked(true));
-        //openModal('rankings');
         break;
 
       case 13:
         props.openConfigModal('rankings');
+        // the modal fades in; let it land before its contents are pointed at
+        await tourDelay(150);
         break;
 
       case 14:
@@ -233,7 +284,7 @@ const JoyrideTour: React.FC<JoyrideTourProps> = (props: JoyrideTourProps) => {
       case 16:
         props.setConfigModalShow(false);
         dispatch(setName(''));
-        await clearRanking(year);
+        await clearRanking(TOUR_YEAR);
         dispatch(setShowUnranked(true));
         break;
     }
@@ -242,18 +293,22 @@ const JoyrideTour: React.FC<JoyrideTourProps> = (props: JoyrideTourProps) => {
   if (!JoyrideComponent) return null;
 
   return (
-    <JoyrideComponent
-      disableScrolling={true}
-      disableScrollParentFix={true}
-      continuous
-      run={startTour}
-      steps={tourSteps}
-      stepIndex={joyrideStepIndex}
-      callback={handleJoyrideCallback}
-      showProgress={true}
-      disableOverlay={false}
-      styles={joyrideOptions}
-    />
+    <>
+      <JoyrideComponent
+        key={joyrideKey}
+        disableScrolling={true}
+        disableScrollParentFix={true}
+        continuous
+        run={startTour}
+        steps={tourSteps}
+        stepIndex={stepIndex}
+        callback={handleJoyrideCallback}
+        showProgress={true}
+        disableOverlay={false}
+        styles={joyrideOptions}
+      />
+      <TourExitPrompt isOpen={exitPromptOpen} onConfirm={endTour} onCancel={cancelExit} />
+    </>
   );
 };
 

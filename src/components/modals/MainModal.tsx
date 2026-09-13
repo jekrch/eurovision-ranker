@@ -1,6 +1,7 @@
 import { faHeart, faHouseUser } from '@fortawesome/free-solid-svg-icons';
 import React, { useEffect, useState } from 'react';
 
+import TabBar from '../TabBar';
 import TabButton from '../TabButton';
 import Modal from './Modal';
 
@@ -28,7 +29,7 @@ const MainModal: React.FC<MainModalProps> = (props: MainModalProps) => {
   return (
     <Modal isOpen={props.isOpen} onClose={props.onClose} className="h-[85vh] !max-h-[550px]">
       <div className="border-b border-[var(--er-border-lightest)] dark:border-[var(--er-border-darker)] -mt-4">
-        <ul className="flex flex-wrap -mb-px text-sm font-medium text-center text-[var(--er-text-muted)] dark:text-[var(--er-text-subtle)]">
+        <TabBar activeKey={activeTab}>
           <TabButton
             isActive={activeTab === 'about'}
             onClick={() => setActiveTab('about')}
@@ -41,10 +42,16 @@ const MainModal: React.FC<MainModalProps> = (props: MainModalProps) => {
             icon={faHeart}
             label="Donate"
           />
-        </ul>
+        </TabBar>
       </div>
 
-      <div className="overflow-y-auto pt-4 pr-4 -mr-4 select-text pb-3 flex-grow min-h-0 [scrollbar-gutter:stable]">
+      {/* `key` is the active tab, so switching tabs mounts a fresh panel and
+          replays its entrance (see transitions.css). Remounting also drops the
+          outgoing tab's scroll offset, so every tab opens at the top. */}
+      <div
+        key={activeTab}
+        className="tab-panel-enter-animation overflow-y-auto pt-4 pr-4 -mr-4 select-text pb-3 flex-grow min-h-0 [scrollbar-gutter:stable]"
+      >
         {activeTab === 'about' && (
           <div className="">
             <p>

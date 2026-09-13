@@ -1,4 +1,4 @@
-import React, { Suspense } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import { Toaster } from 'react-hot-toast';
 
 import { useAppDispatch } from '../hooks/stateHooks';
@@ -58,6 +58,17 @@ const AppModals: React.FC<AppModalsProps> = ({ setRefreshUrl }) => {
     setJoinGroupToken,
   } = useModalController();
 
+  // The quiz modal fades out over ~300ms on close, so it has to stay mounted
+  // past the point where quizModalOpen flips false. Latching this on the first
+  // open mirrors the hasRendered gate the useModal-backed modals use.
+  const [quizHasRendered, setQuizHasRendered] = useState(false);
+
+  useEffect(() => {
+    if (quizModalOpen) {
+      setQuizHasRendered(true);
+    }
+  }, [quizModalOpen]);
+
   return (
     <>
       {/* Render all modals conditionally */}
@@ -87,7 +98,9 @@ const AppModals: React.FC<AppModalsProps> = ({ setRefreshUrl }) => {
         )}
       </Suspense>
 
-      <div className="tour-step-14 sort-tour-step-modal">
+      {/* the sorter tour points `.sort-tour-step-modal` at the sorter itself, so
+          this wrapper carries only the config-modal step marker */}
+      <div className="tour-step-14">
         {(modalState.config.isOpen || modalState.config.hasRendered) && (
           <Suspense fallback={<div />}>
             <LazyConfigModal
@@ -161,7 +174,7 @@ const AppModals: React.FC<AppModalsProps> = ({ setRefreshUrl }) => {
         }}
       />
 
-      {quizModalOpen && (
+      {(quizModalOpen || quizHasRendered) && (
         <Suspense fallback={<div />}>
           <LazyQuizModal
             isOpen={quizModalOpen}

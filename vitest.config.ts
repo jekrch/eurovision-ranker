@@ -5,6 +5,7 @@ export default defineConfig({
   plugins: [react()],
   test: {
     include: ['**/*.test.tsx', '**/*.test.ts'],
+    setupFiles: './src/test/setup.ts',
     globals: true,
     coverage: {
       provider: 'v8',
@@ -19,6 +20,7 @@ export default defineConfig({
         'src/**/*.test.{ts,tsx}',
         'src/**/*.d.ts',
         'src/setupTests.ts',
+        'src/test/**',
         'src/data/**',
       ],
       thresholds: {

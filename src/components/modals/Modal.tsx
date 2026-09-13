@@ -169,7 +169,10 @@ const Modal: React.FC<ModalContainerProps> = ({
             type="button"
             aria-label="Close modal"
             className={classNames(
-              'absolute top-3 right-3 text-[var(--er-text-subtle)] bg-transparent hover:bg-white/10 hover:text-white rounded-full text-sm w-8 h-8 inline-flex justify-center items-center transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/30',
+              // z-10 keeps the button clickable over positioned modal content: it sits
+              // before the content in the DOM, so anything positioned in there (a tab
+              // strip, say) would otherwise paint over it
+              'absolute top-3 right-3 z-10 text-[var(--er-text-subtle)] bg-transparent hover:bg-white/10 hover:text-white rounded-full text-sm w-8 h-8 inline-flex justify-center items-center transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/30',
               closeBtnClassName,
             )}
             data-modal-hide="default-modal"

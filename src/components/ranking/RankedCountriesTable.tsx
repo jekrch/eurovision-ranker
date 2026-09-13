@@ -14,7 +14,7 @@ import ContestantTable from '../table/ContestantTable';
  */
 const RankedCountriesTable: React.FC = () => {
   return (
-    <div className="z-20">
+    <div className="z-20 view-enter-animation">
       <div className={classNames('grid h-full max-h-full min-h-full grid-rows-[auto_1fr]')}>
         <div className="overflow-y-auto h-full">
           <ContestantTable />

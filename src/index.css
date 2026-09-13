@@ -75,7 +75,7 @@ code {
 
 /* keep the heat map tooltip arrow in sync with its themed surface */
 #country-tooltip .react-tooltip-arrow {
-  background-color: var(--er-surface-accent);
+  background-color: var(--er-tooltip-bg);
 }
 
 .normal-bg {
@@ -180,7 +180,9 @@ code {
 }
 
 .gradient-background-modal {
-  background: linear-gradient(155deg, var(--er-choice-bg-1), var(--er-choice-bg-2), var(--er-choice-bg-3)), url(/noise.svg);
+  /* the gradient's far end (bottom right) is darkened so it doesn't wash out
+     behind modal content; every theme's choice-bg-3 darkens by the same ratio */
+  background: linear-gradient(155deg, var(--er-choice-bg-1), var(--er-choice-bg-2), color-mix(in srgb, var(--er-choice-bg-3) 70%, black)), url(/noise.svg);
   filter: contrast(100%) brightness(100%);
 }
 
@@ -620,9 +622,12 @@ code {
 }
 
 
+/* the header menu opens and closes on the same curve as the standard dropdown
+   (see Dropdown.tsx): the enter is the showier half, the close gets out of the
+   way quickly */
 .menu-enter {
   opacity: 0;
-  transform: translateY(-8px) scale(0.97);
+  transform: translateY(-4px) scale(0.95);
 }
 
 .menu-enter-active {
@@ -633,12 +638,21 @@ code {
 
 .menu-exit {
   opacity: 1;
+  transform: translateY(0) scale(1);
 }
 
 .menu-exit-active {
   opacity: 0;
-  transform: translateY(-5px);
-  transition: opacity 200ms, transform 200ms;
+  transform: translateY(-4px) scale(0.95);
+  pointer-events: none;
+  transition: opacity 100ms ease-in, transform 100ms ease-in;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .menu-enter-active,
+  .menu-exit-active {
+    transition: none;
+  }
 }
 
 .submenu-enter {
@@ -734,3 +748,4 @@ select:-webkit-autofill {
   caret-color: var(--er-text-primary);
   transition: background-color 9999s ease-in-out 0s;
 }
+

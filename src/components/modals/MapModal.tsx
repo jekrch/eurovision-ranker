@@ -84,7 +84,7 @@ const MapModal: React.FC<MapModalProps> = ({ isOpen, onClose }) => {
           place="bottom-end"
           className="!z-50 !rounded-md !px-2.5 !py-1.5 !text-xs !font-medium !shadow-lg !opacity-100"
           style={{
-            backgroundColor: 'var(--er-surface-accent)',
+            backgroundColor: 'var(--er-tooltip-bg)',
             color: 'var(--er-text-primary)',
             border: '1px solid var(--er-border-subtle)',
           }}

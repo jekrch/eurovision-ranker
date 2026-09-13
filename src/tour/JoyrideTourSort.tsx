@@ -1,6 +1,9 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { CallBackProps, EVENTS, ACTIONS, STATUS } from 'react-joyride';
 
+import TourExitPrompt from './TourExitPrompt';
+import { tourDelay } from './tourTarget';
+import { useTourSteps } from './useTourSteps';
 import { CountryContestant } from '../data/CountryContestant';
 import { useAppDispatch, useAppSelector } from '../hooks/stateHooks';
 import { useResetRanking } from '../hooks/useResetRanking';
@@ -25,6 +28,12 @@ import { logger } from '../utilities/logger';
 import { goToUrl } from '../utilities/UrlUtil';
 
 import type Joyride from 'react-joyride';
+
+/** the contest year the sorter tour walks the user through */
+const TOUR_YEAR = '2025';
+
+/** the countries the tour ranks on the user's behalf, in the order it ranks them */
+const TOUR_COUNTRY_CODES = ['fi', 'se', 'dk', 'al', 'ee', 'pt'];
 
 interface JoyrideTourSortProps {
   setRefreshUrl: (num: number) => void;
@@ -90,12 +99,18 @@ const JoyrideTourSort: React.FC<JoyrideTourSortProps> = (props: JoyrideTourSortP
   const [startTour, setStartTour] = useState<boolean>(false);
   const resetRanking = useResetRanking();
   const [originalUrlQuery, setOriginalUrlQuery] = useState<string>('');
-  const [joyrideStepIndex, setJoyrideStepIndex] = useState(0);
   const [JoyrideComponent, setJoyrideComponent] = useState<typeof Joyride | null>(null);
+  const [exitPromptOpen, setExitPromptOpen] = useState(false);
+  // bumped to remount joyride after a cancelled exit - see cancelExit
+  const [joyrideKey, setJoyrideKey] = useState(0);
 
-  // refs for tracking state between renders
-  const stepExecutedRef = useRef<{ [key: number]: boolean }>({});
-  const stepTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const { stepIndex, goToStep } = useTourSteps({
+    steps: joyRideTourSteps,
+    running: startTour,
+    prepareStep: executeTourStepActions,
+    onFinish: endTour,
+    onAbandon: endTour,
+  });
 
   // initialize joyride when the tour starts
   useEffect(() => {
@@ -103,10 +118,6 @@ const JoyrideTourSort: React.FC<JoyrideTourSortProps> = (props: JoyrideTourSortP
       // only import when the tour is about to run
       import('react-joyride').then((module) => {
         setJoyrideComponent(() => module.default);
-        // reset step index
-        setJoyrideStepIndex(0);
-        // clear executed steps tracking
-        stepExecutedRef.current = {};
       });
     }
 
@@ -116,12 +127,11 @@ const JoyrideTourSort: React.FC<JoyrideTourSortProps> = (props: JoyrideTourSortP
         logger.log('[JoyrideTourSort] Tour started');
         setOriginalUrlQuery(window.location.search);
         clearRankingForTour();
-        setJoyrideStepIndex(0);
-        stepExecutedRef.current = {};
       }
       // ending tour
       else if (!props.runTour && startTour) {
         logger.log('[JoyrideTourSort] Tour ended');
+        setExitPromptOpen(false);
         // Flag that we just came from the tour so the reloaded app skips the
         // welcome overlay and drops the user straight into the select view.
         try {
@@ -130,12 +140,6 @@ const JoyrideTourSort: React.FC<JoyrideTourSortProps> = (props: JoyrideTourSortP
           /* sessionStorage may be unavailable */
         }
         goToUrl(originalUrlQuery, undefined);
-
-        // clear any pending timers
-        if (stepTimerRef.current) {
-          clearTimeout(stepTimerRef.current);
-          stepTimerRef.current = null;
-        }
       }
 
       setStartTour(props.runTour);
@@ -152,27 +156,28 @@ const JoyrideTourSort: React.FC<JoyrideTourSortProps> = (props: JoyrideTourSortP
     resetRanking();
   }
 
-  // execute actions for the current step
-  useEffect(() => {
-    if (!startTour) return;
+  function endTour() {
+    setExitPromptOpen(false);
+    props.setRunTour(false);
+  }
 
-    const currentStep = joyrideStepIndex;
-    logger.log(`[JoyrideTourSort] Current step index: ${currentStep}`);
+  /**
+   * Joyride treats a click on its overlay and a press of Escape as exits, the
+   * same as the tooltip's close button, so every one of them asks first. The
+   * step stays where it is until the user answers.
+   */
+  function requestExit() {
+    setExitPromptOpen(true);
+  }
 
-    // check if we've already executed this step
-    if (stepExecutedRef.current[currentStep]) {
-      logger.log(`[JoyrideTourSort] Step ${currentStep} already executed, skipping`);
-      return;
-    }
-
-    // mark this step as executed
-    stepExecutedRef.current[currentStep] = true;
-
-    // execute step actions
-    logger.log(`[JoyrideTourSort] Executing actions for step ${currentStep}`);
-    executeTourStepActions(currentStep);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [joyrideStepIndex, startTour]);
+  function cancelExit() {
+    setExitPromptOpen(false);
+    // joyride is left holding a "close" action it never got to carry out, and
+    // it only reacts to an action that *changes*, so a second Escape or overlay
+    // click would go unnoticed. Remounting it puts the current step back with a
+    // clean slate.
+    setJoyrideKey((key) => key + 1);
+  }
 
   // handle joyride events
   const handleJoyrideCallback = (data: CallBackProps) => {
@@ -182,47 +187,38 @@ const JoyrideTourSort: React.FC<JoyrideTourSortProps> = (props: JoyrideTourSortP
       `[JoyrideTourSort] Joyride callback: type=${type}, index=${index}, status=${status}, action=${action}`,
     );
 
-    // initialize on first step
-    if (type === EVENTS.STEP_BEFORE && index === 0) {
-      logger.log('[JoyrideTourSort] Initializing first step');
-      clearRanking(year);
-    }
-
-    // handle tour completion
     if (([STATUS.FINISHED, STATUS.SKIPPED] as string[]).includes(status)) {
-      props.setRunTour(false);
-      setJoyrideStepIndex(0);
+      endTour();
+
       return;
     }
 
-    // handle tour close
-    if (action === ACTIONS.CLOSE && type === EVENTS.STEP_AFTER) {
-      logger.log('[JoyrideTourSort] Tour closed');
-      props.setRunTour(false);
-      return;
-    }
-
-    // handle step navigation
     if (type === EVENTS.STEP_AFTER) {
-      // clear any pending timers
-      if (stepTimerRef.current) {
-        clearTimeout(stepTimerRef.current);
+      if (action === ACTIONS.CLOSE || action === ACTIONS.SKIP) {
+        requestExit();
+
+        return;
       }
 
-      // calculate next step
-      const nextStep = index + (action === ACTIONS.PREV ? -1 : 1);
-      logger.log(`[JoyrideTourSort] Moving to step ${nextStep}`);
+      goToStep(index + (action === ACTIONS.PREV ? -1 : 1));
 
-      // use a timer to ensure UI updates before changing steps
-      stepTimerRef.current = setTimeout(() => {
-        logger.log(`[JoyrideTourSort] Setting step index to ${nextStep}`);
-        setJoyrideStepIndex(nextStep);
-      }, 100);
+      return;
+    }
+
+    if (type === EVENTS.TARGET_NOT_FOUND) {
+      // Don't skip ahead: the next step's target almost always depends on the
+      // state this step was going to set up, so skipping cascades to the end of
+      // the tour. The watchdog in useTourSteps waits for the element instead.
+      logger.warn(`[JoyrideTourSort] step ${index} target missing; waiting for it to return`);
     }
   };
 
-  // clear ranking for the given year
-  async function clearRanking(year: string) {
+  /**
+   * Clears the ranking for the given year and hands back that year's
+   * contestants, so a caller can seed the tour's example ranking from the list
+   * it just loaded rather than from whatever the store held a render ago.
+   */
+  async function clearRanking(year: string): Promise<CountryContestant[]> {
     logger.log(`[JoyrideTourSort] Clearing ranking for year ${year}`);
     try {
       const yearContestants = await fetchCountryContestantsByYear(year, '');
@@ -234,127 +230,115 @@ const JoyrideTourSort: React.FC<JoyrideTourSortProps> = (props: JoyrideTourSortP
       props.setRefreshUrl(Math.random());
 
       logger.log('[JoyrideTourSort] Ranking cleared successfully');
+
+      return yearContestants;
     } catch (error) {
       logger.error('[JoyrideTourSort] Error clearing ranking:', error);
+
+      return [];
     }
   }
 
-  // move selected countries to ranked items
-  function moveCountriesToRanked() {
-    // list of country codes to select
-    const specificCountryCodes = ['fi', 'se', 'dk', 'al', 'ee', 'pt'];
-
-    // filter out the specific items based on country codes
-    const specificItems = unrankedItems.filter((item) =>
-      specificCountryCodes.includes(item.country.key.toLowerCase()),
+  /**
+   * Seeds the ranking the tour demonstrates the sorter on. Derived entirely
+   * from `source`, so calling it twice with the same list is a no-op rather
+   * than a second, different ranking.
+   */
+  function moveCountriesToRanked(source: CountryContestant[]) {
+    const specificItems = source.filter((item) =>
+      TOUR_COUNTRY_CODES.includes(item.country.key.toLowerCase()),
     );
 
     logger.log(`[JoyrideTourSort] Found ${specificItems.length} countries to rank`);
 
+    // if we can't find the countries by code, just use the first 6 available
     if (specificItems.length === 0) {
       logger.warn('[JoyrideTourSort] No matching countries found in unranked items');
-      // if we can't find the countries by code, just use the first 6 available
-      if (unrankedItems.length >= 6) {
-        const firstSixItems = unrankedItems.slice(0, 6);
-        const remainingUnrankedItems = unrankedItems.slice(6);
 
-        dispatch(setRankedItems(firstSixItems));
-        dispatch(setUnrankedItems(remainingUnrankedItems));
+      if (source.length >= 6) {
+        dispatch(setRankedItems(source.slice(0, 6)));
+        dispatch(setUnrankedItems(source.slice(6)));
         dispatch(setName('Example Ranking'));
         props.setRefreshUrl(Math.random());
       }
+
       return;
     }
 
-    // remove these items from unrankedItems
-    const remainingUnrankedItems = unrankedItems.filter(
-      (item) => !specificCountryCodes.includes(item.country.key.toLowerCase()),
+    // rank them in the order the tour lists them
+    const rankedTourItems = TOUR_COUNTRY_CODES.map((code) =>
+      specificItems.find((item) => item.country.key.toLowerCase() === code),
+    ).filter((item) => item !== undefined) as CountryContestant[];
+
+    logger.log(`[JoyrideTourSort] Setting ${rankedTourItems.length} ranked items`);
+    dispatch(setRankedItems(rankedTourItems));
+    dispatch(
+      setUnrankedItems(
+        source.filter((item) => !TOUR_COUNTRY_CODES.includes(item.country.key.toLowerCase())),
+      ),
     );
-
-    // sort the specific items in the desired order
-    const sortedSpecificItems = specificCountryCodes
-      .map((code) => specificItems.find((item) => item.country.key.toLowerCase() === code))
-      .filter((item) => item !== undefined) as CountryContestant[];
-
-    // create new ranked items list
-    const newRankedItems = [...sortedSpecificItems, ...rankedItems];
-
-    // update state
-    logger.log(`[JoyrideTourSort] Setting ${newRankedItems.length} ranked items`);
-    dispatch(setRankedItems(newRankedItems));
-    dispatch(setUnrankedItems(remainingUnrankedItems));
     dispatch(setName('Example Ranking'));
 
-    // refresh URL to update UI
     props.setRefreshUrl(Math.random());
   }
 
-  // execute actions for specific steps
+  /**
+   * Puts the app into the state a step describes. Runs before that step is
+   * shown, so the element it points at is on screen by the time the tooltip is.
+   */
   async function executeTourStepActions(index: number) {
     logger.log(`[JoyrideTourSort] Executing step ${index} actions`);
 
     try {
       switch (index) {
-        case 0: // first step - initialize ranking state and add ranked items
-          if (year !== '2025') {
-            dispatch(setYear('2025'));
+        case 0: {
+          // first step - initialize ranking state and add ranked items
+          if (year !== TOUR_YEAR) {
+            dispatch(setYear(TOUR_YEAR));
             props.setRefreshUrl(Math.random());
           }
 
-          await clearRanking(year);
+          const yearContestants = await clearRanking(TOUR_YEAR);
           dispatch(setName(''));
           dispatch(setShowUnranked(true));
           clearCategories(0, dispatch);
           dispatch(setShowTotalRank(false));
 
-          // critical: add a delay then move countries to ranked to prepare for next step
-          setTimeout(() => {
-            moveCountriesToRanked();
-          }, 500);
+          // the example ranking fills in a beat after the step lands, so the
+          // user sees the drag the step is describing actually happen
+          void tourDelay(600).then(() => moveCountriesToRanked(yearContestants));
           break;
+        }
 
-        case 1: // second step - view details
-          // ensure countries are showing in ranked view
+        case 1: // second step - the "View List" button, which needs a ranking to point at
+          // the demonstration above may not have landed yet if they clicked
+          // through quickly, and this step has nothing to point at without it
           if (rankedItems.length === 0) {
-            logger.log('[JoyrideTourSort] No ranked items found, adding them now');
-            moveCountriesToRanked();
+            moveCountriesToRanked(unrankedItems);
           }
-          // keep showing unranked items to see the "View List" button
           dispatch(setShowUnranked(true));
           break;
 
-        case 2: // third step - sort button
-          // critical: toggle to show only ranked items (details view)
+        case 2: // third step - sort button, which only exists in the list view
           dispatch(setShowUnranked(false));
           props.setRefreshUrl(Math.random());
           break;
 
-        case 3: // fourth step - open sort modal
-          // use a delay to ensure UI is ready
-          setTimeout(() => {
-            logger.log('[JoyrideTourSort] Opening sort modal now');
-            props.openSortModal();
-          }, 300);
+        case 3: // fourth step - the sorter itself
+          props.openSortModal();
           break;
 
-        case 4: // fifth step - close sort modal
-          // close the sort modal with a delay
-          setTimeout(() => {
-            logger.log('[JoyrideTourSort] Closing sort modal now');
-            props.closeSortModal();
-          }, 300);
+        case 4: // fifth step - back out of the sorter
+          props.closeSortModal();
+          // the modal fades out over its own transition; let it clear the screen
+          await tourDelay(300);
           break;
 
         case 5: // final step - reset ranking
-          logger.log('[JoyrideTourSort] Step 5: Final step, resetting ranking');
-          await clearRanking(year);
+          logger.log('[JoyrideTourSort] Final step, resetting ranking');
+          await clearRanking(TOUR_YEAR);
           dispatch(setName(''));
           dispatch(setShowUnranked(true));
-          break;
-
-        case 6: // end of tour
-          props.setRunTour(false);
-          setJoyrideStepIndex(0);
           break;
 
         default:
@@ -371,19 +355,19 @@ const JoyrideTourSort: React.FC<JoyrideTourSortProps> = (props: JoyrideTourSortP
   return (
     <>
       <JoyrideComponent
+        key={joyrideKey}
         callback={handleJoyrideCallback}
         continuous={true}
         run={startTour}
-        stepIndex={joyrideStepIndex}
+        stepIndex={stepIndex}
         steps={joyRideTourSteps}
         styles={joyrideOptions}
         disableOverlay={false}
         disableScrolling={true}
         disableScrollParentFix={true}
         showProgress={true}
-        // force re-render on step change with a key
-        key={`joyride-tour-${joyrideStepIndex}`}
       />
+      <TourExitPrompt isOpen={exitPromptOpen} onConfirm={endTour} onCancel={cancelExit} />
     </>
   );
 };

@@ -95,7 +95,7 @@ const AppContent: React.FC<AppContentProps> = ({
           >
             {/* Unranked Countries List */}
             {showUnranked && !globalSearch && (
-              <div className="relative flex flex-col">
+              <div className="relative flex flex-col view-enter-left-animation">
                 <div className="tour-step-15 sticky top-0 rounded-t-md round-b-sm text-center font-bold bg-[var(--er-surface-bar)] gradient-background-reverse text-[var(--er-text-secondary)] tracking-tighter shadow-md z-50">
                   <div className="flex items-center justify-center gap-1 py-1 px-0">
                     <TooltipHelp
@@ -125,7 +125,13 @@ const AppContent: React.FC<AppContentProps> = ({
               </Suspense>
             ) : (
               <Suspense fallback={<ContentPlaceholder />}>
+                {/* `key` changes with the view, so switching between select and
+                    list mode remounts the column and its entrance animation
+                    (see transitions.css) plays for the view being opened. The
+                    two modes render different cards for every row anyway, so
+                    this costs no render work the switch wasn't already doing. */}
                 <LazyRankedCountriesList
+                  key={showUnranked ? 'select-view' : 'list-view'}
                   openSongModal={openSongModalWithData}
                   openModal={openMainModalWithTab}
                   openConfigModal={openConfigModalWithTab}

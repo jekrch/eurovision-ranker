@@ -7,8 +7,10 @@ import PhantomArrow from './PhantomArrow';
 import { StrictModeDroppable } from './StrictModeDroppable';
 import { CountryContestant } from '../../data/CountryContestant';
 import { useAppSelector } from '../../hooks/stateHooks';
+import { useViewOpening } from '../../hooks/useViewOpening';
 import { selectActiveRankedItems } from '../../redux/rankingSelectors';
 import { AppState } from '../../redux/store';
+import { staggerStyle } from '../../utilities/animationUtil';
 
 interface UnrankedCountriesListProps {
   onAddToRanked?: (item: CountryContestant) => void;
@@ -21,6 +23,7 @@ const UnrankedCountriesList: React.FC<UnrankedCountriesListProps> = ({ onAddToRa
   const unrankedItems = useAppSelector((state: AppState) => state.root.unrankedItems);
   const rankedItems = useAppSelector(selectActiveRankedItems);
   const welcomeOverlayIsOpen = useAppSelector((state: AppState) => state.root.welcomeOverlayIsOpen);
+  const isOpening = useViewOpening(unrankedItems.length > 0);
 
   return (
     <div className="min-w-[10em] max-w-[40vw] overflow-y-auto overflow-x-hidden flex-grow mr-0 relative">
@@ -42,13 +45,23 @@ const UnrankedCountriesList: React.FC<UnrankedCountriesListProps> = ({ onAddToRa
                     {...provided.dragHandleProps}
                     className="no-select m-2 relative"
                   >
-                    <Card
-                      key={item.id.toString()}
-                      className="m-auto text-[var(--er-text-tertiary)] bg-'blue' no-select"
-                      countryContestant={item}
-                      isDragging={snapshot.isDragging}
-                      addCallBack={onAddToRanked ? () => onAddToRanked(item) : undefined}
-                    />
+                    {/* The staggered entrance rides on a wrapper because the
+                        <li> above carries the drag transform (see
+                        transitions.css), and it only plays while the view is
+                        opening (see useViewOpening): this column rebuilds on
+                        every add, and rows shouldn't re-cascade mid-edit. */}
+                    <div
+                      className={classNames({ 'view-item-enter-animation': isOpening })}
+                      style={isOpening ? staggerStyle(index) : undefined}
+                    >
+                      <Card
+                        key={item.id.toString()}
+                        className="m-auto text-[var(--er-text-tertiary)] bg-'blue' no-select"
+                        countryContestant={item}
+                        isDragging={snapshot.isDragging}
+                        addCallBack={onAddToRanked ? () => onAddToRanked(item) : undefined}
+                      />
+                    </div>
                     {index === 0 && !welcomeOverlayIsOpen && (
                       <PhantomArrow show={rankedItems.length === 0 && !welcomeOverlayIsOpen} />
                     )}

@@ -17,6 +17,7 @@ import RankingsTab from './RankingsTab';
 import SavedRankingsTab from './SavedRankingsTab';
 import { useAppSelector } from '../../../hooks/stateHooks';
 import { AppState } from '../../../redux/store';
+import TabBar from '../../TabBar';
 import TabButton from '../../TabButton';
 
 type ConfigModalProps = {
@@ -94,7 +95,7 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
       className="isolate h-[85vh] !max-h-[550px]"
     >
       <div className="border-b border-[var(--er-border-lightest)] dark:border-[var(--er-border-darker)] -mt-4">
-        <ul className="flex flex-wrap -mb-px text-sm font-medium text-center text-[var(--er-text-muted)] dark:text-[var(--er-text-subtle)]">
+        <TabBar activeKey={activeTab}>
           <TabButton
             isActive={activeTab === 'rankings'}
             onClick={() => setActiveTab('rankings')}
@@ -138,10 +139,16 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
             icon={faUserGroup}
             label="Groups"
           />
-        </ul>
+        </TabBar>
       </div>
 
-      <div className="overflow-y-auto pt-4 pr-4 -mr-4 select-text pb-3 flex-grow min-h-0 [scrollbar-gutter:stable]">
+      {/* `key` is the active tab, so switching tabs mounts a fresh panel and
+          replays its entrance (see transitions.css). Remounting also drops the
+          outgoing tab's scroll offset, so every tab opens at the top. */}
+      <div
+        key={activeTab}
+        className="tab-panel-enter-animation overflow-y-auto pt-4 pr-4 -mr-4 select-text pb-3 flex-grow min-h-0 [scrollbar-gutter:stable]"
+      >
         {activeTab === 'display' && <DisplayTab />}
 
         {activeTab === 'rankings' && <RankingsTab />}

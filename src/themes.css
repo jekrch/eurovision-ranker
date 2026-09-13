@@ -76,6 +76,14 @@
 
   --er-button-neutral-hover: #334155;
   
+  /* === TOOLTIP COLORS === */
+  /* Tooltips borrow the small-raised-surface color, lifted slightly so they
+     read as floating above the modal and card backgrounds they cover (in the
+     base theme raw tertiary is actually a touch darker than the modal).
+     Defined once here — each theme overrides --er-surface-tertiary on :root,
+     so the lift follows the active theme. */
+  --er-tooltip-bg: color-mix(in srgb, var(--er-surface-tertiary) 92%, #fff);
+  
   /* === TEXT COLORS === */
   /* Maps to: text-slate-200 */
   --er-text-primary: #e2e8f0;

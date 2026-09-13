@@ -15,6 +15,7 @@ installHistoryLoopGuard();
 import './index.css';
 import './themes.css';
 import './auroral.css';
+import './transitions.css';
 
 registerUnauthorizedHandler(() => {
   store.dispatch(logout());

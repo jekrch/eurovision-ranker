@@ -16,10 +16,12 @@ import { StrictModeDroppable } from './StrictModeDroppable';
 import { supportedYears } from '../../data/Contestants';
 import { CountryContestant } from '../../data/CountryContestant';
 import { useAppDispatch, useAppSelector } from '../../hooks/stateHooks';
+import { useViewOpening } from '../../hooks/useViewOpening';
 import { deleteRankedCountry } from '../../redux/rankingActions';
 import { selectActiveRankedItems } from '../../redux/rankingSelectors';
 import { setShowUnranked } from '../../redux/rootSlice';
 import { AppDispatch, AppState } from '../../redux/store';
+import { staggerStyle } from '../../utilities/animationUtil';
 import { generateYoutubePlaylistUrl } from '../../utilities/YoutubeUtil';
 import { HeartIcon } from '../HeartIcon';
 import IconButton from '../IconButton';
@@ -62,6 +64,7 @@ const RankedCountriesList: React.FC<RankedCountriesListProps> = ({
   const showTotalRank = useAppSelector((state: AppState) => state.root.showTotalRank);
   const isDeleteMode = useAppSelector((state: AppState) => state.root.isDeleteMode);
   const rankedItems = useAppSelector(selectActiveRankedItems);
+  const isOpening = useViewOpening(rankedItems.length > 0);
 
   /**
    * used to synchronize the horizontal scrollbar on detail cards across all ranked items
@@ -87,7 +90,7 @@ const RankedCountriesList: React.FC<RankedCountriesListProps> = ({
   );
 
   return (
-    <div className="tour-step-5 z-20">
+    <div className="tour-step-5 z-20 view-enter-animation">
       <StrictModeDroppable droppableId="rankedItems">
         {(provided: DroppableProvided) => (
           <div className={classNames('grid h-full max-h-full min-h-full grid-rows-[auto_1fr]')}>
@@ -158,27 +161,37 @@ const RankedCountriesList: React.FC<RankedCountriesListProps> = ({
                           'mt-0': index === 0,
                         })}
                       >
-                        {showUnranked ? (
-                          <Card
-                            key={`card-${countryContestant?.uid ?? countryContestant.id}`}
-                            className="m-auto text-[var(--er-text-tertiary)] bg-[var(--er-surface-primary)] no-select"
-                            rank={index + 1}
-                            countryContestant={countryContestant}
-                            isDeleteMode={showUnranked && isDeleteMode}
-                            deleteCallBack={handleDeleteRankedCountry}
-                            isDragging={snapshot.isDragging}
-                          />
-                        ) : (
-                          <DetailsCard
-                            key={`card-${countryContestant?.uid ?? countryContestant.id}`}
-                            rank={index + 1}
-                            countryContestant={countryContestant}
-                            openSongModal={() => openSongModal(countryContestant)}
-                            isDragging={snapshot.isDragging}
-                            categoryScrollPosition={categoryScrollPosition}
-                            onCategoryScroll={handleCategoryScroll}
-                          />
-                        )}
+                        {/* The staggered entrance rides on a wrapper because
+                            the <li> above carries the drag transform (see
+                            transitions.css), and it only plays while the view
+                            is opening (see useViewOpening) so a card added to
+                            the ranking doesn't wait its turn. */}
+                        <div
+                          className={classNames({ 'view-item-enter-animation': isOpening })}
+                          style={isOpening ? staggerStyle(index) : undefined}
+                        >
+                          {showUnranked ? (
+                            <Card
+                              key={`card-${countryContestant?.uid ?? countryContestant.id}`}
+                              className="m-auto text-[var(--er-text-tertiary)] bg-[var(--er-surface-primary)] no-select"
+                              rank={index + 1}
+                              countryContestant={countryContestant}
+                              isDeleteMode={showUnranked && isDeleteMode}
+                              deleteCallBack={handleDeleteRankedCountry}
+                              isDragging={snapshot.isDragging}
+                            />
+                          ) : (
+                            <DetailsCard
+                              key={`card-${countryContestant?.uid ?? countryContestant.id}`}
+                              rank={index + 1}
+                              countryContestant={countryContestant}
+                              openSongModal={() => openSongModal(countryContestant)}
+                              isDragging={snapshot.isDragging}
+                              categoryScrollPosition={categoryScrollPosition}
+                              onCategoryScroll={handleCategoryScroll}
+                            />
+                          )}
+                        </div>
                       </li>
                     )}
                   </Draggable>

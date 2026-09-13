@@ -31,7 +31,7 @@ const TooltipHelp: React.FC<TooltipHelpProps> = ({
         />
       </a>
       <Tooltip
-        className="z-50 max-w-[15em] !bg-[var(--er-button-primary)] !text-[var(--er-text-secondary)] !font-normal shadow-xl shadow-black"
+        className="z-50 max-w-[15em] !bg-[var(--er-tooltip-bg)] !text-[var(--er-text-secondary)] !font-normal shadow-xl shadow-black"
         id={tooltipId}
         place={place}
         variant="info"

@@ -32,6 +32,10 @@ import MenuItem from '../MenuItem';
 import SubmenuItem from '../SubmenuItem';
 import { useVideoPip } from '../video/VideoPipContext';
 
+/** matches the standard dropdown's open/close timing (see Dropdown.tsx) */
+const MENU_ENTER_MS = 150;
+const MENU_LEAVE_MS = 100;
+
 interface RankedHeaderMenuProps {
   onMapClick?: () => void;
   openNameModal: () => void;
@@ -50,7 +54,7 @@ const RankedHeaderMenu: React.FC<RankedHeaderMenuProps> = (props: RankedHeaderMe
   const dispatch: AppDispatch = useAppDispatch();
   const { playList, hasPlayableVideos } = useVideoPip();
   const CLOSING_DURATION = 300;
-  const menuNodeRef = useRef(null);
+  const menuNodeRef = useRef<HTMLUListElement>(null);
   const showTotalRank = useAppSelector((state: AppState) => state.root.showTotalRank);
   const toggleMenu = () => {
     const shouldClose = isMenuOpen;
@@ -127,14 +131,15 @@ const RankedHeaderMenu: React.FC<RankedHeaderMenuProps> = (props: RankedHeaderMe
       </button>
       <CSSTransition
         in={isMenuOpen}
-        timeout={200}
+        timeout={{ enter: MENU_ENTER_MS, exit: MENU_LEAVE_MS }}
         classNames="menu"
         nodeRef={menuNodeRef}
         unmountOnExit
       >
         <ul
+          ref={menuNodeRef}
           role="menu"
-          className="absolute z-20 min-w-[190px] right-0 mt-2 rounded-xl border border-[var(--er-border-subtle)] bg-[var(--er-surface-secondary)] shadow-2xl shadow-black/50 overflow-hidden flex flex-col py-1"
+          className="absolute z-20 min-w-[190px] right-0 mt-2 origin-top-right rounded-xl border border-[var(--er-border-subtle)] bg-[var(--er-surface-secondary)] shadow-2xl shadow-black/50 overflow-hidden flex flex-col py-1"
         >
           {hasPlayableVideos && (
             <MenuItem icon={faPlay} text="Play Ranking" onClick={playList} afterClick={close} />

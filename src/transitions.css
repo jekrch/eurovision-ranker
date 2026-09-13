@@ -1,0 +1,130 @@
+/* VIEW TRANSITIONS
+ *
+ * One small system for the app's major view changes (select <-> list view, the
+ * global search table). It has two halves:
+ *
+ *   1. a container entrance  - the view fades in and settles a few pixels
+ *   2. a staggered entrance  - the view's items ride in one after another
+ *
+ * Both are one-shot mount animations, so a view replays its entrance by
+ * remounting (see the view `key` on the ranked list in AppContent) rather than
+ * through any JS animation bookkeeping.
+ *
+ * Two rules for anything added here:
+ *
+ *   - only animate `opacity` and `transform`. Both are composited, so a forty
+ *     card ranking animates without a per-frame repaint.
+ *   - never put these classes on an element whose transform is set by
+ *     JavaScript (a @hello-pangea/dnd draggable, say). An animation's computed
+ *     value outranks an inline style, so the fill would pin the element in
+ *     place and break the drag. Wrap the element instead.
+ */
+
+:root {
+  /* decelerating curve: leaves quickly, lands softly */
+  --er-view-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --er-view-duration: 280ms;
+  --er-view-item-duration: 320ms;
+  /* a tab switch is lateral navigation inside a surface that's already open, so
+     it gets a shorter, shallower version of the same motion */
+  --er-tab-panel-duration: 200ms;
+  /* the underline travels a little longer than the panel it belongs to, so the
+     eye can follow it to the tab that's arriving */
+  --er-tab-indicator-duration: 260ms;
+  /* per item offset of the staggered entrance. --er-stagger-index is set inline
+     per item (see staggerStyle) and clamped there so a long ranking doesn't
+     trail in for seconds. */
+  --er-stagger-step: 24ms;
+}
+
+@keyframes viewEnter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes viewEnterLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes viewItemEnter {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* A tab panel drifts rather than slides: the panels of a tab bar aren't
+   ordered left to right in any meaningful way (the config modal has six), so a
+   horizontal slide would have to pick a direction, and picking the same one
+   both ways reads as wrong half the time. */
+@keyframes tabPanelEnter {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* `backwards` rather than `both`: the item entrance needs its start state to
+   hold through its stagger delay, but nothing should stay filled afterwards -
+   the last keyframe and the element's own styles are identical, so letting the
+   fill lapse leaves no animation-owned transform sitting on the element. */
+.view-enter-animation {
+  animation: viewEnter var(--er-view-duration) var(--er-view-ease) backwards;
+}
+
+.view-enter-left-animation {
+  animation: viewEnterLeft var(--er-view-duration) var(--er-view-ease) backwards;
+}
+
+.view-item-enter-animation {
+  animation: viewItemEnter var(--er-view-item-duration) var(--er-view-ease) backwards;
+  animation-delay: calc(var(--er-stagger-index, 0) * var(--er-stagger-step));
+}
+
+.tab-panel-enter-animation {
+  animation: tabPanelEnter var(--er-tab-panel-duration) var(--er-view-ease) backwards;
+}
+
+/* the tab strip's underline (see TabBar). It travels by transform; the width is
+   a real width rather than a scale, so that the line lands exactly as wide as it
+   was measured to be, and it's transitioned alongside the travel - one 2px bar
+   is not the kind of thing the composited-only rule above is protecting. */
+.tab-indicator-animation {
+  transition:
+    transform var(--er-tab-indicator-duration) var(--er-view-ease),
+    width var(--er-tab-indicator-duration) var(--er-view-ease);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tab-panel-enter-animation,
+  .view-enter-animation,
+  .view-enter-left-animation,
+  .view-item-enter-animation {
+    animation: none;
+  }
+
+  .tab-indicator-animation {
+    transition: none;
+  }
+}

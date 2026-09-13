@@ -1,5 +1,4 @@
 import { faAlignLeft, faPlay, faChartColumn } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
 
 import Modal from './Modal';
@@ -9,6 +8,8 @@ import SongVideoTab from './song/SongVideoTab';
 import SongVotesTab from './song/SongVotesTab';
 import { useSongModal } from './song/useSongModal';
 import { CountryContestant } from '../../data/CountryContestant';
+import TabBar from '../TabBar';
+import TabButton from '../TabButton';
 
 type SongModalProps = {
   isOpen: boolean;
@@ -27,27 +28,11 @@ const SongModal: React.FC<SongModalProps> = (props: SongModalProps) => {
   const m = useSongModal({ isOpen: props.isOpen, countryContestant: props.countryContestant });
   const { contestant, videoId } = m;
 
-  const TabButton: React.FC<{ tab: TabKey; icon: typeof faAlignLeft; label: string }> = ({
-    tab,
-    icon,
-    label,
-  }) => (
-    <li className="mr-0 sm:mr-2">
-      <button
-        onClick={() => m.selectTab(tab)}
-        aria-label={label}
-        title={label}
-        className={`inline-flex items-center gap-2 justify-center px-[14px] sm:px-4 py-3 border-b-2 border-transparent ${
-          m.activeTab === tab
-            ? 'text-[var(--er-interactive-primary)] !border-[var(--er-interactive-primary)]'
-            : 'hover:text-[var(--er-text-muted)]'
-        }`}
-      >
-        <FontAwesomeIcon className="text-md" icon={icon} fixedWidth />
-        <span className="text-sm">{label}</span>
-      </button>
-    </li>
-  );
+  const tabProps = (tab: TabKey) => ({
+    isActive: m.activeTab === tab,
+    onClick: () => m.selectTab(tab),
+    showLabel: true,
+  });
 
   return (
     <Modal
@@ -65,11 +50,11 @@ const SongModal: React.FC<SongModalProps> = (props: SongModalProps) => {
       </div>
 
       <div className="border-b border-[var(--er-border-secondary)]">
-        <ul className="flex flex-wrap -mb-px text-sm font-medium text-center text-[var(--er-text-muted)] dark:text-[var(--er-text-subtle)]">
-          <TabButton tab="lyrics" icon={faAlignLeft} label="Lyrics" />
-          {videoId && <TabButton tab="video" icon={faPlay} label="Video" />}
-          {m.hasVotes && <TabButton tab="votes" icon={faChartColumn} label="Votes" />}
-        </ul>
+        <TabBar activeKey={m.activeTab}>
+          <TabButton {...tabProps('lyrics')} icon={faAlignLeft} label="Lyrics" />
+          {videoId && <TabButton {...tabProps('video')} icon={faPlay} label="Video" />}
+          {m.hasVotes && <TabButton {...tabProps('votes')} icon={faChartColumn} label="Votes" />}
+        </TabBar>
       </div>
 
       {/* fixed-height body so the modal doesn't resize when switching tabs */}

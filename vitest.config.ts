@@ -24,11 +24,11 @@ export default defineConfig({
         'src/data/**',
       ],
       thresholds: {
-        // Baseline floor: measured 2026-06-14
-        lines: 62,
-        functions: 60,
-        branches: 47,
-        statements: 62,
+        // Baseline floor: measured 2026-09-13
+        lines: 93,
+        functions: 92,
+        branches: 83,
+        statements: 92,
       },
     },
   },

@@ -1,6 +1,6 @@
 import { DragDropContext, OnDragEndResponder } from '@hello-pangea/dnd';
 import classNames from 'classnames';
-import React, { Suspense } from 'react';
+import React, { Suspense, useCallback, useState } from 'react';
 
 import { useModalController } from './modals/ModalControllerContext';
 import { setShowUnranked } from '../redux/rootSlice';
@@ -10,6 +10,7 @@ import { Switch } from './Switch';
 import TooltipHelp from './TooltipHelp';
 import { useAppDispatch } from '../hooks/stateHooks';
 import { useRankingDragDrop } from '../hooks/useRankingDragDrop';
+import { RankingAddition } from '../hooks/useRecentlyAdded';
 
 // lazy load the list views to reduce initial bundle size
 const LazyRankedCountriesList = React.lazy(() => import('./ranking/RankedCountriesList'));
@@ -54,6 +55,18 @@ const AppContent: React.FC<AppContentProps> = ({
     openLoginModal,
     setQuizModalOpen,
   } = useModalController();
+
+  // Only an add from a country's "+" button gets the ranked list's entrance. A
+  // dropped card has already been animated into its slot by the drag library.
+  const [latestAddition, setLatestAddition] = useState<RankingAddition | null>(null);
+
+  const handleAddWithButton: typeof handleAddToRanked = useCallback(
+    (item) => {
+      setLatestAddition({ id: item.uid ?? item.id, at: Date.now() });
+      handleAddToRanked(item);
+    },
+    [handleAddToRanked],
+  );
 
   return (
     <div
@@ -112,7 +125,7 @@ const AppContent: React.FC<AppContentProps> = ({
                   </div>
                 </div>
                 <Suspense fallback={<ContentPlaceholder />}>
-                  <LazyUnrankedCountriesList onAddToRanked={handleAddToRanked} />
+                  <LazyUnrankedCountriesList onAddToRanked={handleAddWithButton} />
                 </Suspense>
               </div>
             )}
@@ -132,6 +145,7 @@ const AppContent: React.FC<AppContentProps> = ({
                     this costs no render work the switch wasn't already doing. */}
                 <LazyRankedCountriesList
                   key={showUnranked ? 'select-view' : 'list-view'}
+                  latestAddition={latestAddition}
                   openSongModal={openSongModalWithData}
                   openModal={openMainModalWithTab}
                   openConfigModal={openConfigModalWithTab}

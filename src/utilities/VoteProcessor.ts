@@ -145,7 +145,7 @@ export function voteCodeHasType(voteCode: string, typeCode: string): boolean {
     return false;
   }
   const typeCodes = voteCode.split('-')?.[1]?.split('.');
-  return typeCodes?.includes(typeCode);
+  return typeCodes?.includes(typeCode) ?? false;
 }
 
 export function voteCodeHasAnyType(voteCode: string) {

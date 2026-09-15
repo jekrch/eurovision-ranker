@@ -16,6 +16,7 @@ import { StrictModeDroppable } from './StrictModeDroppable';
 import { supportedYears } from '../../data/Contestants';
 import { CountryContestant } from '../../data/CountryContestant';
 import { useAppDispatch, useAppSelector } from '../../hooks/stateHooks';
+import { RankingAddition, useRecentlyAdded } from '../../hooks/useRecentlyAdded';
 import { useViewOpening } from '../../hooks/useViewOpening';
 import { deleteRankedCountry } from '../../redux/rankingActions';
 import { selectActiveRankedItems } from '../../redux/rankingSelectors';
@@ -37,6 +38,8 @@ interface RankedCountriesListProps {
   openSorterModal: () => void;
   openAuthModal: () => void;
   openQuizModal: () => void;
+  /** the country most recently added with its "+" button on the select view */
+  latestAddition?: RankingAddition | null;
 }
 
 /**
@@ -57,6 +60,7 @@ const RankedCountriesList: React.FC<RankedCountriesListProps> = ({
   openSorterModal,
   openAuthModal,
   openQuizModal,
+  latestAddition = null,
 }) => {
   const dispatch: AppDispatch = useAppDispatch();
   const showUnranked = useAppSelector((state: AppState) => state.root.showUnranked);
@@ -65,6 +69,7 @@ const RankedCountriesList: React.FC<RankedCountriesListProps> = ({
   const isDeleteMode = useAppSelector((state: AppState) => state.root.isDeleteMode);
   const rankedItems = useAppSelector(selectActiveRankedItems);
   const isOpening = useViewOpening(rankedItems.length > 0);
+  const wasRecentlyAdded = useRecentlyAdded(latestAddition);
 
   /**
    * used to synchronize the horizontal scrollbar on detail cards across all ranked items
@@ -165,9 +170,17 @@ const RankedCountriesList: React.FC<RankedCountriesListProps> = ({
                             the <li> above carries the drag transform (see
                             transitions.css), and it only plays while the view
                             is opening (see useViewOpening) so a card added to
-                            the ranking doesn't wait its turn. */}
+                            the ranking doesn't wait its turn. A card added
+                            with its "+" button plays its own entrance instead
+                            (see useRecentlyAdded). */}
                         <div
-                          className={classNames({ 'view-item-enter-animation': isOpening })}
+                          className={classNames({
+                            'view-item-enter-animation': isOpening,
+                            'ranked-item-added-animation':
+                              !isOpening &&
+                              showUnranked &&
+                              wasRecentlyAdded(countryContestant?.uid ?? countryContestant.id),
+                          })}
                           style={isOpening ? staggerStyle(index) : undefined}
                         >
                           {showUnranked ? (

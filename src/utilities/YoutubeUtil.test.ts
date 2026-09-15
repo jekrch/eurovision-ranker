@@ -1,4 +1,10 @@
-import { generateYoutubePlaylistUrl } from './YoutubeUtil';
+import {
+  generateYoutubePlaylistUrl,
+  getYoutubeThumbnail,
+  getYouTubeThumbnailUrl,
+  getYouTubeVideoId,
+  rankedHasAnyYoutubeLinks,
+} from './YoutubeUtil';
 import { Contestant } from '../data/Contestant';
 import { Country } from '../data/Country';
 import { CountryContestant } from '../data/CountryContestant';
@@ -57,5 +63,60 @@ describe('generateYoutubePlaylistUrl', () => {
 
     // expect URL to be just the base URL without any video IDs
     expect(emptyPlaylistUrl).toBe('https://www.youtube.com/watch_videos?video_ids=video1');
+  });
+});
+
+describe('rankedHasAnyYoutubeLinks', () => {
+  it('reports a link when at least one entry has one', () => {
+    expect(rankedHasAnyYoutubeLinks(mockRankedItems)).toBe(true);
+  });
+
+  it('reports no link when no entry has one', () => {
+    expect(rankedHasAnyYoutubeLinks([{ contestant: {} } as CountryContestant])).toBe(false);
+  });
+
+  it('reports no link for an empty ranking', () => {
+    expect(rankedHasAnyYoutubeLinks([])).toBe(false);
+  });
+});
+
+describe('getYouTubeVideoId', () => {
+  it.each([
+    ['https://www.youtube.com/watch?v=dQw4w9WgXcQ', 'dQw4w9WgXcQ'],
+    ['https://youtu.be/dQw4w9WgXcQ', 'dQw4w9WgXcQ'],
+    ['https://www.youtube.com/embed/dQw4w9WgXcQ', 'dQw4w9WgXcQ'],
+    ['https://www.youtube.com/watch?v=dQw4w9WgXcQ&t=42s', 'dQw4w9WgXcQ'],
+  ])('reads the video out of %s', (url, expected) => {
+    expect(getYouTubeVideoId(url)).toBe(expected);
+  });
+
+  it('finds no video in an unrelated link', () => {
+    expect(getYouTubeVideoId('https://example.com/song')).toBeNull();
+  });
+
+  it('rejects an identifier that is the wrong length to be a video', () => {
+    expect(getYouTubeVideoId('https://www.youtube.com/watch?v=tooshort')).toBeNull();
+  });
+});
+
+describe('getYoutubeThumbnail', () => {
+  it('points at the thumbnail for the linked video', () => {
+    expect(getYoutubeThumbnail('https://www.youtube.com/watch?v=dQw4w9WgXcQ')).toBe(
+      'https://img.youtube.com/vi/dQw4w9WgXcQ/hqdefault.jpg',
+    );
+  });
+
+  it('has no thumbnail when there is no link', () => {
+    expect(getYoutubeThumbnail(undefined)).toBeNull();
+  });
+
+  it('has no thumbnail when the link holds no video', () => {
+    expect(getYoutubeThumbnail('https://example.com/song')).toBeNull();
+  });
+});
+
+describe('getYouTubeThumbnailUrl', () => {
+  it('has no thumbnail without a video', () => {
+    expect(getYouTubeThumbnailUrl(null)).toBeNull();
   });
 });

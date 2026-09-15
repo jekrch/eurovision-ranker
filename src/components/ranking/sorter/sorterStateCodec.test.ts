@@ -1,3 +1,4 @@
+import pako from 'pako';
 import { describe, it, expect } from 'vitest';
 
 import { compressFullState, decompressFullState } from './sorterStateCodec';
@@ -45,5 +46,53 @@ describe('sorter state codec', () => {
     expect(state.isComplete).toBe(true);
     const final = decompressFullState(compressFullState(state)!);
     expect(value(final)).toEqual(value(state));
+  });
+});
+
+describe('a sorter state that cannot be stored', () => {
+  it('is reported rather than stored half-encoded', () => {
+    const items = Array.from({ length: 4 }, (_, i) => make(`C${i}`));
+    const state = initSortState(items);
+    // a comparison against an item the sort never knew about
+    const stray = make('STRAY');
+    const broken = {
+      ...state,
+      comparisons: [...state.comparisons, { leftItem: stray, rightItem: items[0]! }],
+    };
+
+    expect(compressFullState(broken as typeof state)).toBeNull();
+  });
+});
+
+describe('a stored sorter state that cannot be read back', () => {
+  it('is reported when there is nothing stored', () => {
+    expect(decompressFullState(new Uint8Array())).toBeNull();
+  });
+
+  it('is reported when the stored bytes are not a sorter state', () => {
+    expect(decompressFullState(new Uint8Array([1, 2, 3, 4]))).toBeNull();
+  });
+
+  it('restores what it can from a state stored without its optional parts', () => {
+    const items = Array.from({ length: 3 }, (_, i) => make(`C${i}`));
+    const stored = pako.deflate(
+      JSON.stringify({
+        action: 'init',
+        isComplete: false,
+        totalComparisons: 0,
+        maxRemainingComparisons: 3,
+        allItems: items,
+      }),
+    );
+
+    const restored = decompressFullState(stored);
+
+    expect(restored).toMatchObject({
+      comparisons: [],
+      mergeStack: [],
+      currentMergeStep: null,
+      currentRanking: [],
+    });
+    expect(restored!.allItems).toHaveLength(3);
   });
 });

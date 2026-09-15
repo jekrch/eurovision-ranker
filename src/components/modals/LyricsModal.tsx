@@ -49,7 +49,7 @@ const SongModal: React.FC<SongModalProps> = (props: SongModalProps) => {
         </div>
       </div>
 
-      <div className="border-b border-[var(--er-border-secondary)]">
+      <div className="border-b border-[var(--er-border-lightest)] dark:border-[var(--er-border-darker)]">
         <TabBar activeKey={m.activeTab}>
           <TabButton {...tabProps('lyrics')} icon={faAlignLeft} label="Lyrics" />
           {videoId && <TabButton {...tabProps('video')} icon={faPlay} label="Video" />}

@@ -180,9 +180,9 @@ code {
 }
 
 .gradient-background-modal {
-  /* the gradient's far end (bottom right) is darkened so it doesn't wash out
-     behind modal content; every theme's choice-bg-3 darkens by the same ratio */
-  background: linear-gradient(155deg, var(--er-choice-bg-1), var(--er-choice-bg-2), color-mix(in srgb, var(--er-choice-bg-3) 70%, black)), url(/noise.svg);
+  /* the far end (bottom right) uses modal-bg-3 rather than the choice card's
+     lighter choice-bg-3, so the gradient stays behind the modal's text */
+  background: linear-gradient(155deg, var(--er-choice-bg-1), var(--er-choice-bg-2), var(--er-modal-bg-3)), url(/noise.svg);
   filter: contrast(100%) brightness(100%);
 }
 

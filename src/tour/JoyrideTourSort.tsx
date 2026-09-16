@@ -23,7 +23,12 @@ import {
 import { AppDispatch, AppState } from '../redux/store';
 import { clearCategories } from '../utilities/CategoryUtil';
 import { fetchCountryContestantsByYear } from '../utilities/ContestantRepository';
-import { joyrideOptions, SKIP_WELCOME_AFTER_TOUR_KEY } from '../utilities/JoyrideUtil';
+import {
+  joyrideFloaterProps,
+  joyrideOptions,
+  JOYRIDE_SPOTLIGHT_PADDING,
+  SKIP_WELCOME_AFTER_TOUR_KEY,
+} from '../utilities/JoyrideUtil';
 import { logger } from '../utilities/logger';
 import { goToUrl } from '../utilities/UrlUtil';
 
@@ -34,6 +39,12 @@ const TOUR_YEAR = '2025';
 
 /** the countries the tour ranks on the user's behalf, in the order it ranks them */
 const TOUR_COUNTRY_CODES = ['fi', 'se', 'dk', 'al', 'ee', 'pt'];
+
+/** how long the sorter is given to finish opening before it's spotlighted */
+const MODAL_OPEN_SETTLE_MS = 400;
+
+/** and to finish closing, before the step after it points at the page behind */
+const MODAL_CLOSE_SETTLE_MS = 320;
 
 interface JoyrideTourSortProps {
   setRefreshUrl: (num: number) => void;
@@ -64,18 +75,26 @@ const joyRideTourSteps = [
     disableBeacon: true,
   },
   {
+    // the sorter fills most of the screen, so let joyride put the tooltip
+    // wherever there's actually room beside it
     target: '.sort-tour-step-modal',
     content: 'Answer the prompts with the contestant you prefer',
     disableBeacon: true,
+    placement: 'auto' as const,
   },
   {
+    // the closing steps are about the ranking as a whole rather than any one
+    // control, and their target is the whole app shell - spotlighting that is
+    // just the entire viewport, so they're centred instead
     target: '.tour-step-18',
     content:
       "Once you're done, you can generate a ranking that reflects all of your choices. Neat!",
     disableBeacon: true,
+    placement: 'center' as const,
   },
   {
     target: '.tour-step-18',
+    placement: 'center' as const,
     content: (
       <>
         <p>Enjoy your new ranking! You can save or share it by copying the URL.</p>
@@ -326,12 +345,15 @@ const JoyrideTourSort: React.FC<JoyrideTourSortProps> = (props: JoyrideTourSortP
 
         case 3: // fourth step - the sorter itself
           props.openSortModal();
+          // the panel fades and scales in; let it land before it's spotlighted,
+          // or the highlight is drawn around where it no longer is
+          await tourDelay(MODAL_OPEN_SETTLE_MS);
           break;
 
         case 4: // fifth step - back out of the sorter
           props.closeSortModal();
           // the modal fades out over its own transition; let it clear the screen
-          await tourDelay(300);
+          await tourDelay(MODAL_CLOSE_SETTLE_MS);
           break;
 
         case 5: // final step - reset ranking
@@ -366,6 +388,8 @@ const JoyrideTourSort: React.FC<JoyrideTourSortProps> = (props: JoyrideTourSortP
         disableScrolling={true}
         disableScrollParentFix={true}
         showProgress={true}
+        spotlightPadding={JOYRIDE_SPOTLIGHT_PADDING}
+        floaterProps={joyrideFloaterProps}
       />
       <TourExitPrompt isOpen={exitPromptOpen} onConfirm={endTour} onCancel={cancelExit} />
     </>

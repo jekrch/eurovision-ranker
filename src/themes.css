@@ -197,6 +197,27 @@
   
   /* Maps to: ring-blue-400 - focus rings */
   --er-focus-ring: #60a5fa;
+
+  /* === DRAG STATE === */
+  /* The lift a card gets while it is dragged (see .card-drag in index.css).
+     Both derive from what the active theme already sets, so neither needs a per
+     theme override: every theme is dark, so the cast shadow is plain black at
+     low alpha, and the ring is the theme's own focus color softened. */
+  /* === RANKED CARD SURFACE === */
+  /* Raw surface-primary is the darkest color a theme has, so a card painted
+     with it reads as a solid slab against the lighter column gradient behind
+     it. The card sits one step up from that instead, and at rest lets a little
+     of the column show through. Every theme sets a tertiary lighter than its
+     primary, so this tracks the theme without a per theme override. Dial the
+     first percentage for weight, the second for how much column shows. */
+  --er-card-surface-base: color-mix(in srgb, var(--er-surface-primary) 62%, var(--er-surface-tertiary));
+  --er-card-surface: color-mix(in srgb, var(--er-card-surface-base) 86%, transparent);
+  /* the same card in flight, opaque so it stops sampling what it crosses */
+  --er-card-surface-lifted: var(--er-card-surface-base);
+
+  --er-drag-shadow: rgba(0, 0, 0, 0.45);
+  --er-drag-shadow-soft: rgba(0, 0, 0, 0.3);
+  --er-drag-ring: color-mix(in srgb, var(--er-focus-ring) 55%, transparent);
 }
 
 /* Midnight Theme - Modern dark purple/blue variant */

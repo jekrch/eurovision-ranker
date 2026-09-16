@@ -13,6 +13,7 @@ import { AppState } from '../../../redux/store';
 import { acceptInvite, previewInvite } from '../../../utilities/api/groups';
 import { ApiError, GroupInvitePreview } from '../../../utilities/api/types';
 import Modal from '../Modal';
+import ModalHeader from '../ModalHeader';
 
 interface JoinGroupModalProps {
   isOpen: boolean;
@@ -100,21 +101,11 @@ const JoinGroupModal: React.FC<JoinGroupModalProps> = ({
   if (isOpen && !user) {
     return (
       <Modal isOpen={isOpen} onClose={onClose} className="max-w-md !p-0 overflow-hidden">
-        <div className="px-6 pt-6 pb-4 bg-gradient-to-b from-black/30 via-black/10 to-transparent border-b border-white/5">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[var(--er-button-primary)] to-[var(--er-button-primary-hover)] flex items-center justify-center text-white shadow-sm shrink-0">
-              <FontAwesomeIcon icon={faShieldHalved} className="text-sm" />
-            </div>
-            <div className="min-w-0">
-              <h2 className="text-base font-semibold text-[var(--er-text-primary)] leading-tight truncate">
-                Join a group
-              </h2>
-              <p className="text-xs text-[var(--er-text-subtle)] mt-0.5">
-                Sign in to accept this invite.
-              </p>
-            </div>
-          </div>
-        </div>
+        <ModalHeader
+          icon={faShieldHalved}
+          title="Join a group"
+          subtitle="Sign in to accept this invite."
+        />
         <div className="px-6 py-5 space-y-3">
           <p className="text-sm text-[var(--er-text-tertiary)]">
             You need an account to join. Sign in or create one, then reopen the link.
@@ -132,21 +123,11 @@ const JoinGroupModal: React.FC<JoinGroupModalProps> = ({
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} className="max-w-md !p-0 overflow-hidden">
-      <div className="px-6 pt-6 pb-4 bg-gradient-to-b from-black/30 via-black/10 to-transparent border-b border-white/5">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[var(--er-button-primary)] to-[var(--er-button-primary-hover)] flex items-center justify-center text-white shadow-sm shrink-0">
-            <FontAwesomeIcon icon={faUserGroup} className="text-sm" />
-          </div>
-          <div className="min-w-0">
-            <h2 className="text-base font-semibold text-[var(--er-text-primary)] leading-tight truncate">
-              Join a group
-            </h2>
-            <p className="text-xs text-[var(--er-text-subtle)] mt-0.5">
-              You've been invited to a Eurovision Ranker group.
-            </p>
-          </div>
-        </div>
-      </div>
+      <ModalHeader
+        icon={faUserGroup}
+        title="Join a group"
+        subtitle="You've been invited to a Eurovision Ranker group."
+      />
 
       <div className="px-6 py-5 space-y-4">
         {loading && <div className="text-xs text-[var(--er-text-subtle)]">Loading invite…</div>}

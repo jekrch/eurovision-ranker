@@ -18,6 +18,10 @@ interface AppState {
   showUnranked: boolean;
   isDeleteMode: boolean;
   headerMenuOpen: boolean;
+  // Bumped to ask the ranked header's menu to close. The open flag above is a
+  // one-shot trigger the menu resets as it opens, so it can't also say "close";
+  // a counter can, and says it again however many times it's asked.
+  headerMenuCloseNonce: number;
   contestants: CountryContestant[];
   // Per-category rankings; index aligns with `categories` (slot 0 is also the
   // single ranking when no categories are defined). The displayed list is
@@ -51,6 +55,7 @@ const initialState: AppState = {
   showUnranked: false,
   isDeleteMode: false,
   headerMenuOpen: false,
+  headerMenuCloseNonce: 0,
   contestants: [],
   categoryRankings: [[]],
   unrankedItems: [],
@@ -121,6 +126,9 @@ const rootSlice = createSlice({
     },
     setHeaderMenuOpen: (state, action: PayloadAction<boolean>) => {
       state.headerMenuOpen = action.payload;
+    },
+    closeHeaderMenu: (state) => {
+      state.headerMenuCloseNonce += 1;
     },
     setWelcomeOverlayIsOpen: (state, action: PayloadAction<boolean>) => {
       state.welcomeOverlayIsOpen = action.payload;
@@ -307,6 +315,7 @@ export const {
   setShowUnranked,
   setIsDeleteMode,
   setHeaderMenuOpen,
+  closeHeaderMenu,
   setRankedItems,
   setCategoryRankings,
   setActiveRankingAndSyncCategoryMembership,

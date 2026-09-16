@@ -3,9 +3,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import classNames from 'classnames';
 import React from 'react';
 
-import { useAppDispatch, useAppSelector } from '../../hooks/stateHooks';
-import { setShowUnranked } from '../../redux/rootSlice';
-import { AppDispatch, AppState } from '../../redux/store';
+import { useAppSelector } from '../../hooks/stateHooks';
+import { useDetailsViewToggle } from '../../hooks/useDetailsViewToggle';
+import { AppState } from '../../redux/store';
 import { HeartIcon } from '../HeartIcon';
 import IconButton from '../IconButton';
 
@@ -21,8 +21,8 @@ type NavbarProps = {
  * @returns
  */
 const Navbar: React.FC<NavbarProps> = ({ openModal, openConfigModal }) => {
-  const dispatch: AppDispatch = useAppDispatch();
   const showUnranked = useAppSelector((state: AppState) => state.root.showUnranked);
+  const toggleDetailsView = useDetailsViewToggle();
 
   return (
     <nav className="nav-diagonal-split-bg py-1 px-4 sticky z-50">
@@ -44,7 +44,7 @@ const Navbar: React.FC<NavbarProps> = ({ openModal, openConfigModal }) => {
                 className={classNames(
                   'tour-step-11 py-1 pl-[0.7em] pr-[0.9em] rounded-full text-xs mr-0 w-[5em]',
                 )}
-                onClick={() => dispatch(setShowUnranked(!showUnranked))}
+                onClick={toggleDetailsView}
                 title={showUnranked ? 'Details' : 'Select'}
               />
               <FontAwesomeIcon

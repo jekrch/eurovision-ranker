@@ -3,12 +3,11 @@ import classNames from 'classnames';
 import React, { Suspense, useCallback, useState } from 'react';
 
 import { useModalController } from './modals/ModalControllerContext';
-import { setShowUnranked } from '../redux/rootSlice';
 import EditNav from './nav/EditNav';
 import ContentPlaceholder from './ranking/ContentPlaceholder';
 import { Switch } from './Switch';
 import TooltipHelp from './TooltipHelp';
-import { useAppDispatch } from '../hooks/stateHooks';
+import { useDetailsViewToggle } from '../hooks/useDetailsViewToggle';
 import { useRankingDragDrop } from '../hooks/useRankingDragDrop';
 import { RankingAddition } from '../hooks/useRecentlyAdded';
 
@@ -45,7 +44,7 @@ const AppContent: React.FC<AppContentProps> = ({
   handleAddToRanked,
   updateGlobalSearch,
 }) => {
-  const dispatch = useAppDispatch();
+  const toggleDetailsView = useDetailsViewToggle();
   const {
     openSongModalWithData,
     openMainModalWithTab,
@@ -166,9 +165,7 @@ const AppContent: React.FC<AppContentProps> = ({
       <div className="hidden fixed bottom-[3em] left-[1em] z-50">
         <div className="p-2 bg-slate-300 bg-opacity-40 rounded-lg">
           <button
-            onClick={() => {
-              dispatch(setShowUnranked(!showUnranked));
-            }}
+            onClick={toggleDetailsView}
             className={
               'w-[4em] py-3 bg-[var(--er-surface-bar)] hover:bg-[var(--er-interactive-dark)] z-50 relative' +
               'overflow-hidden text-[var(--er-text-primary)] font-normal py-1 px-3 ' +

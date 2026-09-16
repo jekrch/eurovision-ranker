@@ -224,8 +224,10 @@ const RankingsTab: React.FC = () => {
         sent.
       </p>
 
-      {/* ESC final rankings */}
-      <section className={sectionCard}>
+      {/* ESC final rankings. `tour-step-14` is the tour's settings step: it
+          points here rather than at the panel, which is too tall to hang a
+          tooltip off without running past the bottom of the screen */}
+      <section className={`tour-step-14 ${sectionCard}`}>
         <div className={headerBar}>
           <FontAwesomeIcon
             icon={faTrophy}

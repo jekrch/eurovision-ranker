@@ -9,6 +9,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
 
 import Modal from '../Modal';
+import ModalHeader from '../ModalHeader';
 import { InviteAlert } from './AuthFormElements';
 import { tabBtn } from './authStyles';
 import { AuthView } from './authTypes';
@@ -52,22 +53,7 @@ const AuthModal: React.FC<AuthModalProps> = ({
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} className="max-w-md !p-0 overflow-hidden">
-      {/* Header */}
-      <div className="px-6 pt-6 pb-4 bg-gradient-to-b from-black/30 via-black/10 to-transparent border-b border-white/5">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[var(--er-button-primary)] to-[var(--er-button-primary-hover)] flex items-center justify-center text-white shadow-sm shrink-0">
-            <FontAwesomeIcon icon={faShieldHalved} className="text-sm" />
-          </div>
-          <div className="min-w-0">
-            <h2 className="text-base font-semibold text-[var(--er-text-primary)] leading-tight truncate">
-              {headerCopy.title}
-            </h2>
-            <p className="text-xs text-[var(--er-text-subtle)] mt-0.5 truncate">
-              {headerCopy.subtitle}
-            </p>
-          </div>
-        </div>
-      </div>
+      <ModalHeader icon={faShieldHalved} title={headerCopy.title} subtitle={headerCopy.subtitle} />
 
       <div className="px-6 py-5 space-y-4">
         {/* Tab switcher (only on step 1) */}

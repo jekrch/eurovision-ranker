@@ -11,6 +11,9 @@ export interface CardProps {
   countryContestant: CountryContestant;
   className: string;
   isDragging: boolean;
+  /** true while a dropped card is flying back into the list, so the lift can be
+      released and the card can settle as it travels rather than at the end */
+  isDropAnimating?: boolean;
   isDeleteMode?: boolean;
   deleteCallBack?: (id: string) => void;
   addCallBack?: () => void;
@@ -30,6 +33,13 @@ export const Card: FC<CardProps> = (props) => {
   // outside the card's overflow-hidden box
   const showGlow = !props.isDragging && props.rank === 1;
 
+  // the card is held from the pick up until the drop animation starts
+  const isLifted = props.isDragging && !props.isDropAnimating;
+
+  // the "+" is a shortcut for the card sitting in the column, not something the
+  // card carries with it: a card in flight shows the row it is about to become
+  const showAddButton = !!props.addCallBack && !props.isDragging;
+
   return (
     <div className={classNames('relative mx-[.5rem]', { isolate: showGlow })}>
       {showGlow && <span className="first-card-halo" aria-hidden="true" />}
@@ -37,8 +47,8 @@ export const Card: FC<CardProps> = (props) => {
         key={props.rank ? 'ranked-' : 'unranked-' + 'card-' + country.name}
         className={classNames(
           props.className,
-          'min-h-[2.5em] py-[0.4em] flex flex-row items-stretch !cursor-grabber whitespace-normal text-sm overflow-hidden shadow rounded border border-0.5 border-[var(--er-border-default)]',
-          props.isDragging ? 'shadow-slate-400 shadow-sm border-solid' : '',
+          'card-drag min-h-[2.5em] py-[0.4em] flex flex-row items-stretch whitespace-normal text-sm overflow-hidden shadow rounded border border-0.5 border-[var(--er-border-default)]',
+          isLifted ? 'card-drag-active cursor-grabbing' : 'cursor-grab active:cursor-grabbing',
           showGlow ? 'first-card-glow' : '',
           props.rank ? 'border-solid border-gray' : 'border-dashed',
           !props.isDeleteMode && !props.addCallBack ? 'pr-[1em]' : '',
@@ -90,7 +100,7 @@ export const Card: FC<CardProps> = (props) => {
           </button>
         )}
 
-        {props.addCallBack && (
+        {showAddButton && (
           <button
             className={classNames(
               'rounded-sm ml-1 mr-[4px] flex items-center justify-center leading-none font-normal py-0 px-2 text-2xl',

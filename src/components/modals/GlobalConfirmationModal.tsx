@@ -3,6 +3,7 @@ import React from 'react';
 
 import IconButton from '../IconButton';
 import Modal from '../modals/Modal';
+import { modalActionBtn, modalFooter } from '../modals/modalStyles';
 
 interface GlobalConfirmationModalProps {
   isOpen: boolean;
@@ -38,9 +39,14 @@ const GlobalConfirmationModal: React.FC<GlobalConfirmationModalProps> = ({
       <div className="mb-4 text-sm text-gray-900 dark:text-[var(--er-text-secondary)] whitespace-pre-line leading-[1.2em]">
         {message}
       </div>
-      <div className="float-right mt-1 -mb-1">
-        <IconButton className="" onClick={handleConfirm} title="Confirm" />
-        <IconButton className="ml-2" onClick={onClose} title="Cancel" isGrayTheme={true} />
+      <div className={classNames(modalFooter, 'mt-1 -mb-1')}>
+        <IconButton className={modalActionBtn} onClick={handleConfirm} title="Confirm" />
+        <IconButton
+          className={modalActionBtn}
+          onClick={onClose}
+          title="Cancel"
+          isGrayTheme={true}
+        />
       </div>
     </Modal>
   );

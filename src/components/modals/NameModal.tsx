@@ -1,6 +1,8 @@
+import classNames from 'classnames';
 import React, { useEffect, useRef, useState } from 'react';
 
 import Modal from './Modal';
+import { modalActionBtn, modalFooter } from './modalStyles';
 import { useAppDispatch, useAppSelector } from '../../hooks/stateHooks';
 import { setName } from '../../redux/rootSlice';
 import { AppDispatch, AppState } from '../../redux/store';
@@ -46,7 +48,7 @@ const NameModal: React.FC<NameModalProps> = (props: NameModalProps) => {
         <input
           id="name"
           ref={inputRef}
-          className="border text-sm rounded-md block w-full p-2.5 bg-[var(--er-border-subtle)] border-[var(--er-border-medium)] placeholder-[var(--er-text-subtle)] text-[var(--er-text-primary)] focus:outline-none focus:ring-1 focus:ring-slate-400 focus:border-transparent"
+          className="border text-sm rounded-lg block w-full p-2.5 bg-[color:var(--er-surface-primary)] border-white/5 placeholder-[var(--er-text-subtle)] text-[var(--er-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--er-button-primary)]/40 focus:border-[var(--er-button-primary)]/40 transition-colors"
           placeholder="Ranking name"
           value={inputValue}
           onKeyDown={handleKeyDown}
@@ -54,20 +56,16 @@ const NameModal: React.FC<NameModalProps> = (props: NameModalProps) => {
           onChange={(e) => setInputValue(e.target.value)}
         />
       </div>
-      <div className="float-right mt-1 -mb-1">
+      <div className={classNames(modalFooter, 'mt-1 -mb-1')}>
+        <IconButton className={modalActionBtn} onClick={handleSave} title="Save" />
         <IconButton
-          className="w-[1/2] !font-medium !text-[0.9em] !px-4 py-2"
-          onClick={handleSave}
-          title="Save"
-        />
-        <IconButton
-          className="ml-3 w-[1/2] !font-medium !text-[0.9em] !px-4 py-2"
+          className={modalActionBtn}
           onClick={() => setInputValue('')}
           isGrayTheme={true}
           title="Clear"
         />
         <IconButton
-          className="ml-3 w-[1/2] !font-medium !text-[0.9em] !px-4 py-2"
+          className={modalActionBtn}
           onClick={props.onClose}
           isGrayTheme={true}
           title="Cancel"

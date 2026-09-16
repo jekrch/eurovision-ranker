@@ -1,8 +1,17 @@
 import { faCheck, faGlasses } from '@fortawesome/free-solid-svg-icons';
 import classNames from 'classnames';
 import React, { useRef, useState } from 'react';
-import { FaList, FaTv, FaGlobe, FaCog, FaHeart, FaSort, FaQuestionCircle } from 'react-icons/fa';
+import { IconType } from 'react-icons';
+import { FaList, FaTv, FaGlobe, FaCog, FaSort, FaQuestionCircle } from 'react-icons/fa';
 
+import {
+  eyebrow,
+  hairline,
+  iconChip,
+  modalActionBtn,
+  modalBackdrop,
+  modalPanel,
+} from './modalStyles';
 import { useAppDispatch, useAppSelector } from '../../hooks/stateHooks';
 import { setWelcomeOverlayIsOpen } from '../../redux/rootSlice';
 import { AppDispatch, AppState } from '../../redux/store';
@@ -16,6 +25,28 @@ interface WelcomeOverlayProps {
   handleGetStarted: () => void;
   handleTakeTour: () => void;
 }
+
+/** The "where you can..." pitch. Each row fades in behind the one above it. */
+const FEATURES: { icon: IconType; iconClassName: string; text: string }[] = [
+  { icon: FaList, iconClassName: 'text-indigo-400', text: 'rank contests going back to 1956' },
+  {
+    icon: FaTv,
+    iconClassName: 'text-[var(--er-interactive-primary)]',
+    text: 'create YouTube playlists',
+  },
+  { icon: FaGlobe, iconClassName: 'text-sky-400', text: 'view a heat map of your ranking' },
+  {
+    icon: FaCog,
+    iconClassName: 'text-[var(--er-text-subtle)]',
+    text: 'explore past voting records',
+  },
+  { icon: FaSort, iconClassName: 'text-purple-400', text: 'use a sorter to generate rankings' },
+  {
+    icon: FaQuestionCircle,
+    iconClassName: 'text-pink-400',
+    text: 'test your knowledge with a quiz',
+  },
+];
 
 /**
  * An overlay modal that is displayed when first loading the site if no ranking is
@@ -53,122 +84,99 @@ const WelcomeOverlay: React.FC<WelcomeOverlayProps> = ({
     handleGetStarted();
   }
 
+  // the colour fields sit at different strengths so they read as depth rather
+  // than one flat wash
+  const fieldOpacity = (resting: string) => (exiting ? 'opacity-0' : resting);
+
   return (
     <div
-      className={`z-[1000] w-full h-full fixed top-0 left-0 flex items-center justify-center`} // bg-gray-900 transition-opacity duration-100 ${exiting ? 'bg-opacity-0' : 'bg-opacity-80'}`}
+      className="z-[1000] w-full h-full fixed top-0 left-0 flex items-center justify-center"
       onClick={handleClickOutside}
     >
+      {/* dim + blur sits beneath the drifting colour fields so they read as light
+          over a dark ground rather than as stripes over the app */}
       <div
-        className={`overlay-bg transition-opacity duration-500 ${exiting ? 'opacity-0' : 'opacity-30'}`}
+        className={classNames(
+          'absolute inset-0 z-0 transition-opacity duration-500',
+          modalBackdrop,
+          exiting ? 'opacity-0' : 'opacity-100',
+        )}
       ></div>
       <div
-        className={`overlay-bg overlay-bg2 transition-opacity duration-500 ${exiting ? 'opacity-0' : 'opacity-30'}`}
+        className={classNames(
+          'overlay-bg z-[1] transition-opacity duration-500',
+          fieldOpacity('opacity-40'),
+        )}
       ></div>
       <div
-        className={`overlay-bg overlay-bg3 transition-opacity duration-500 ${exiting ? 'opacity-0' : 'opacity-30'}`}
+        className={classNames(
+          'overlay-bg overlay-bg2 z-[1] transition-opacity duration-500',
+          fieldOpacity('opacity-30'),
+        )}
       ></div>
+      <div
+        className={classNames(
+          'overlay-bg overlay-bg3 z-[1] transition-opacity duration-500',
+          fieldOpacity('opacity-25'),
+        )}
+      ></div>
+
       <div
         ref={overlayContentRef}
         className={classNames(
-          'flex flex-col justify-between z-50 overlay left-5 right-5 top-[3em] ',
-          'bottom-[1em] rounded-xl absolute bg-[var(--er-choice-bg-1)] gradient-background-modalx opacity-98 pb-6 pt-6',
-          'm-auto shadow-lg max-w-[20em] max-h-[22em] text-[var(--er-text-tertiary)] opacity-96x z-[300]',
+          'overlay welcome-card relative z-10 mx-5 w-full max-w-[21em] max-h-[calc(100%-3em)]',
+          'flex flex-col px-6 py-6 gradient-background-modal text-[var(--er-text-tertiary)]',
+          modalPanel,
         )}
       >
-        <div className="text-[var(--er-text-tertiary)] mx-8 mt-0">
-          <div className="text-md text-center font-semibold tracking-tight text-[var(--er-text-tertiary)] mb-0 leading-tight">
-            Welcome to
-            <div className="mt-0">
-              <span className="text-xl gradient-text font-bold">
-                Eurovision Ranker
-                <HeartIcon
-                  alt="Heart"
-                  className="inline align-middle ml-[0.3em] mb-1 w-5 h-5 pulse-on-load my-heart-icon"
-                />
-                {/* <img
-                                src={`/eurovision-heart.svg`}
-                                alt="Heart"
-                                className="w-5 h-5 mb-1 ml-[0.2em] inline pulse-on-load" /> */}
-              </span>
-            </div>
+        <div className="text-center">
+          <div className={eyebrow}>Welcome to</div>
+          <div className="mt-1 text-xl font-bold tracking-tight leading-tight">
+            <span className="gradient-text">Eurovision Ranker</span>
+            <HeartIcon
+              alt="Heart"
+              className="inline align-middle ml-[0.3em] mb-1 w-5 h-5 pulse-on-load my-heart-icon"
+            />
           </div>
+          <div className={classNames(hairline, 'mt-4')}></div>
         </div>
 
-        <div className="text-sm mx-8 my-4 mt-1 overflow-auto [scrollbar-gutter:stable]">
-          <div className="mb-2 italic text-sm">where you can...</div>
-          <ol className="list-none text-md space-y-[2px]">
-            <li className="flex items-start">
-              {' '}
-              <FaList className="mt-1 mr-2 text-indigo-500" />{' '}
-              <span>rank contests going back to 1956</span>
-            </li>
-            <li className="flex items-start">
-              {' '}
-              <FaTv className="mt-1 mr-2 text-[var(--er-interactive-primary)]" />{' '}
-              <span>create YouTube playlists </span>
-            </li>
-            <li className="flex items-start">
-              {' '}
-              <FaGlobe className="mt-1 mr-2 text-sky-500" />{' '}
-              <span>view a heat map of your ranking</span>
-            </li>
-
-            <li className="flex items-start">
-              {' '}
-              <FaCog className="mt-1 mr-2 text-[var(--er-text-muted)]" />{' '}
-              <span>explore past voting records</span>
-            </li>
-            <li className="flex items-start">
-              <FaSort className="mt-1 mr-2 text-purple-500" />
-              <span>use a sorter to generate rankings</span>
-              {/* <span className={classNames(
-                                "absolute -left-[0.5em] subtle-pulse",
-                                "inline-block bg-gradient-to-r from-[var(--er-surface-medium)] to-[var(--er-interactive-dark)] text-[var(--er-text-secondary)]",
-                                "text-[0.6rem] font-bold pl-[1.2em] pr-[1.5em] py-0.2",
-                                "transition-opacity duration-[2000] ease-in",
-                                (welcomeOverlayIsOpen && !exiting) ? 'opacity-100' : 'opacity-0'
-                            )}
-                                style={{
-                                    clipPath: 'polygon(0% 0%, 80% 0%, 100% 50%, 80% 100%, 0% 100%)'
-                                }}
-                            >NEW</span> */}
-            </li>
-            <li className="flex items-start">
-              <FaQuestionCircle className="mt-1 mr-2 text-pink-500" />
-              <span>test your knowledge with a quiz</span>
-              <span
-                className={classNames(
-                  'absolute -left-[0.9em] subtle-pulse',
-                  'inline-block bg-gradient-to-r from-[var(--er-surface-medium)] to-[var(--er-interactive-dark)] text-[var(--er-text-secondary)]',
-                  'text-[0.6rem] font-bold pl-[1.2em] pr-[1.5em] py-0.2',
-                  'transition-opacity duration-[2000] ease-in',
-                  welcomeOverlayIsOpen && !exiting ? 'opacity-100' : 'opacity-0',
-                )}
-                style={{
-                  clipPath: 'polygon(0% 0%, 80% 0%, 100% 50%, 80% 100%, 0% 100%)',
-                }}
+        <div className="mt-4 flex-1 overflow-auto [scrollbar-gutter:stable]">
+          <div className="mb-3 text-xs italic text-[var(--er-text-subtle)]">where you can...</div>
+          <ul className="list-none space-y-2 text-[0.82rem]">
+            {FEATURES.map(({ icon: Icon, iconClassName, text }, index) => (
+              <li
+                key={text}
+                className="welcome-feature flex items-center"
+                style={{ animationDelay: `${120 + index * 55}ms` }}
               >
-                NEW
-              </span>
+                <span className={classNames(iconChip, 'mr-2.5')}>
+                  <Icon className={classNames('h-3 w-3', iconClassName)} />
+                </span>
+                <span className="leading-snug">{text}</span>
+              </li>
+            ))}
+            <li
+              className="welcome-feature flex items-center text-[var(--er-text-subtle)]"
+              style={{ animationDelay: `${120 + FEATURES.length * 55}ms` }}
+            >
+              <span className="mr-2.5 h-6 w-6 flex-none"></span>
+              <span className="leading-snug">...and more!</span>
             </li>
-            <li className="flex items-start">
-              {' '}
-              <FaHeart className="mt-1 mr-2 opacity-0" /> <span>...and more!</span>
-            </li>
-          </ol>
+          </ul>
         </div>
 
-        <div className="mx-8 mb-2 space-y-1 space-x-3">
+        <div className="mt-5 flex gap-2.5">
           <IconButton
             icon={faCheck}
-            className="w-[9em] py-2 rounded-lg"
+            className={classNames(modalActionBtn, 'flex-1')}
             iconClassName="mr-[3px]"
             title="Get Started"
             onClick={getStarted}
           />
           <IconButton
             icon={faGlasses}
-            className="w-[9em] py-2 rounded-lg bg-[var(--er-button-primary-hover)]"
+            className={classNames(modalActionBtn, 'flex-1 bg-[var(--er-button-primary-hover)]')}
             title="Take Tour"
             onClick={handleTakeTour}
           />

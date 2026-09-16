@@ -186,12 +186,13 @@ const RankedCountriesList: React.FC<RankedCountriesListProps> = ({
                           {showUnranked ? (
                             <Card
                               key={`card-${countryContestant?.uid ?? countryContestant.id}`}
-                              className="m-auto text-[var(--er-text-tertiary)] bg-[var(--er-surface-primary)] no-select"
+                              className="m-auto text-[var(--er-text-tertiary)] bg-[var(--er-card-surface)] no-select"
                               rank={index + 1}
                               countryContestant={countryContestant}
                               isDeleteMode={showUnranked && isDeleteMode}
                               deleteCallBack={handleDeleteRankedCountry}
                               isDragging={snapshot.isDragging}
+                              isDropAnimating={snapshot.isDropAnimating}
                             />
                           ) : (
                             <DetailsCard
@@ -209,7 +210,13 @@ const RankedCountriesList: React.FC<RankedCountriesListProps> = ({
                     )}
                   </Draggable>
                 ))}
-                {provided.placeholder}
+                {/* The drop gap has to open downward without widening the column. The dnd
+                    library sizes its placeholder from the card being dragged, so a card
+                    arriving from the other column brings that column's width with it and
+                    this one stretches for the length of the drag, then snaps back on the
+                    drop. Clipping keeps the gap's height and takes its width out of the
+                    column's intrinsic size. */}
+                <div className="max-w-0 overflow-hidden">{provided.placeholder}</div>
               </ul>
             </div>
             {showUnranked && rankedItems?.length > 0 && (

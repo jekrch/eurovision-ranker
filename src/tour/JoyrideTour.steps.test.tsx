@@ -196,14 +196,14 @@ describe('the steps that show off the ranking view', () => {
     expect(store.getState().root.showUnranked).toBe(false);
   });
 
-  it('demonstrates reordering by swapping the top two', async () => {
+  it('demonstrates reordering while the step describing it is on screen', async () => {
     const { store } = await startTour();
     // the tour clears the ranking as it opens, so rank inside the tour
     act(() => {
       store.dispatch(setRankedItems([countryContestant('fi'), countryContestant('hr')]));
     });
 
-    next(4);
+    next(3);
     await settle();
 
     expect(rankedIds(store)).toEqual(['hr', 'fi']);
@@ -218,6 +218,16 @@ describe('the steps that show off the ranking view', () => {
     expect(store.getState().root.headerMenuOpen).toBe(true);
   });
 
+  it('puts the ranking menu away once the steps move on from it', async () => {
+    const { store } = await startTour();
+    const before = store.getState().root.headerMenuCloseNonce;
+
+    next(8);
+    await settle();
+
+    expect(store.getState().root.headerMenuCloseNonce).toBeGreaterThan(before);
+  });
+
   it('brings the country list back for the later steps', async () => {
     const { store } = await startTour();
 
@@ -229,13 +239,13 @@ describe('the steps that show off the ranking view', () => {
 });
 
 describe('the steps that walk through settings', () => {
-  it('opens the saved rankings settings', async () => {
+  it('opens settings on the rankings tab the step describes, not the remembered one', async () => {
     const { openConfigModal } = await startTour();
 
     next(12);
     await settle();
 
-    expect(openConfigModal).toHaveBeenCalledWith('rankings');
+    expect(openConfigModal).toHaveBeenCalledWith('rankings', true);
   });
 
   it('closes the settings again afterwards', async () => {
@@ -256,13 +266,27 @@ describe('the closing step', () => {
       store.dispatch(setRankedItems([countryContestant('fi')]));
     });
 
-    next(15);
+    next(16);
     await settle();
 
     expect(setConfigModalShow).toHaveBeenCalledWith(false);
     expect(store.getState().root.name).toBe('');
     expect(rankedIds(store)).toEqual([]);
     expect(store.getState().root.showUnranked).toBe(true);
+  });
+
+  it('keeps the example ranking until the step quoting its URL is done with it', async () => {
+    const { store } = await startTour();
+    act(() => {
+      store.dispatch(setName("Sigrit's Top Picks"));
+      store.dispatch(setRankedItems([countryContestant('fi')]));
+    });
+
+    next(15);
+    await settle();
+
+    expect(store.getState().root.name).toBe("Sigrit's Top Picks");
+    expect(rankedIds(store)).toEqual(['fi']);
   });
 });
 

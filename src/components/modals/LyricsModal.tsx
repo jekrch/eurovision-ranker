@@ -2,6 +2,7 @@ import { faAlignLeft, faPlay, faChartColumn } from '@fortawesome/free-solid-svg-
 import React from 'react';
 
 import Modal from './Modal';
+import { hairline } from './modalStyles';
 import SongLyricsTab from './song/SongLyricsTab';
 import { TabKey } from './song/songModalUtils';
 import SongVideoTab from './song/SongVideoTab';
@@ -49,12 +50,13 @@ const SongModal: React.FC<SongModalProps> = (props: SongModalProps) => {
         </div>
       </div>
 
-      <div className="border-b border-[var(--er-border-lightest)] dark:border-[var(--er-border-darker)]">
+      <div>
         <TabBar activeKey={m.activeTab}>
           <TabButton {...tabProps('lyrics')} icon={faAlignLeft} label="Lyrics" />
           {videoId && <TabButton {...tabProps('video')} icon={faPlay} label="Video" />}
           {m.hasVotes && <TabButton {...tabProps('votes')} icon={faChartColumn} label="Votes" />}
         </TabBar>
+        <div className={hairline}></div>
       </div>
 
       {/* fixed-height body so the modal doesn't resize when switching tabs */}

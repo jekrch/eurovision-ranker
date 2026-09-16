@@ -1,35 +1,36 @@
 import { useEffect } from 'react';
 
 import { useAppSelector } from './stateHooks';
-import { THEME_OPTIONS, THEME_SURFACE_COLORS } from '../components/modals/config/DisplayTab';
+import { THEME_OPTIONS } from '../components/modals/config/DisplayTab';
 
-/** Resolve the dark surface color for the active theme (falling back to default). */
-function resolveSurfaceColor(theme: string): string {
-  const effectiveTheme =
-    theme && theme !== 'ab' ? theme : THEME_OPTIONS.find((t) => t.default)?.code || '';
+const DEFAULT_THEME_CODE = THEME_OPTIONS.find((t) => t.default)?.code || '';
 
-  return (
-    THEME_SURFACE_COLORS[effectiveTheme] ??
-    THEME_SURFACE_COLORS[THEME_OPTIONS.find((t) => t.default)?.code || '']
-  );
+/**
+ * Resolve the palette a theme code renders with. 'ab' (Auroral) layers its own
+ * background over the default palette instead of defining one.
+ *
+ * Mirrored by the pre-paint script in index.html; keep the two in sync.
+ */
+function resolveThemeCode(theme: string): string {
+  return theme && theme !== 'ab' ? theme : DEFAULT_THEME_CODE;
 }
 
 export function useThemeEffect() {
   const theme = useAppSelector((state) => state.root.theme);
 
   useEffect(() => {
-    const effectiveTheme =
-      theme && theme !== 'ab' ? theme : THEME_OPTIONS.find((t) => t.default)?.code || '';
+    document.documentElement.setAttribute('data-theme', resolveThemeCode(theme));
 
-    document.documentElement.setAttribute('data-theme', effectiveTheme);
-
-    const color = resolveSurfaceColor(theme);
-
-    document.body.style.backgroundColor = color;
+    // The page background is painted from --er-surface-secondary in CSS, so it
+    // follows the attribute above on its own. The browser chrome color lives
+    // outside CSS and has to be handed the resolved value.
+    const surface = getComputedStyle(document.documentElement)
+      .getPropertyValue('--er-surface-secondary')
+      .trim();
 
     const meta = document.querySelector('meta[name="theme-color"]');
-    if (meta) {
-      meta.setAttribute('content', color);
+    if (meta && surface) {
+      meta.setAttribute('content', surface);
     }
 
     // The iOS Safari bottom toolbar samples the dark fill of the EditNav bar

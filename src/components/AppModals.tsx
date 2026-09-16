@@ -5,6 +5,7 @@ import { useAppDispatch } from '../hooks/stateHooks';
 import { setShowUnranked } from '../redux/rootSlice';
 import { toastOptions } from '../utilities/ToasterUtil';
 import AuthModal from './modals/auth/AuthModal';
+import EmptyRankingModal from './modals/EmptyRankingModal';
 import JoinGroupModal from './modals/groups/JoinGroupModal';
 import { useModalController } from './modals/ModalControllerContext';
 import SorterModal from './ranking/SorterModal';
@@ -98,25 +99,24 @@ const AppModals: React.FC<AppModalsProps> = ({ setRefreshUrl }) => {
         )}
       </Suspense>
 
-      {/* the sorter tour points `.sort-tour-step-modal` at the sorter itself, so
-          this wrapper carries only the config-modal step marker */}
-      <div className="tour-step-14">
-        {(modalState.config.isOpen || modalState.config.hasRendered) && (
-          <Suspense fallback={<div />}>
-            <LazyConfigModal
-              tab={configModalTab}
-              tabRequestNonce={configTabNonce}
-              isOpen={modalState.config.isOpen}
-              onClose={() => closeModal('config')}
-              startTour={() => {
-                dispatch(setShowUnranked(true));
-                openModal('tour');
-              }}
-              openAuthModal={openLoginModal}
-            />
-          </Suspense>
-        )}
-      </div>
+      {/* the tour's settings step points at the panel itself (`.tour-step-14`,
+          set inside ConfigModal), not at a wrapper here: a wrapper around a
+          fixed-position modal has no size for the spotlight to sit on */}
+      {(modalState.config.isOpen || modalState.config.hasRendered) && (
+        <Suspense fallback={<div />}>
+          <LazyConfigModal
+            tab={configModalTab}
+            tabRequestNonce={configTabNonce}
+            isOpen={modalState.config.isOpen}
+            onClose={() => closeModal('config')}
+            startTour={() => {
+              dispatch(setShowUnranked(true));
+              openModal('tour');
+            }}
+            openAuthModal={openLoginModal}
+          />
+        </Suspense>
+      )}
 
       {(modalState.map.isOpen || modalState.map.hasRendered) && (
         <Suspense fallback={<div />}>
@@ -134,6 +134,18 @@ const AppModals: React.FC<AppModalsProps> = ({ setRefreshUrl }) => {
             runTour={modalState.tour.isOpen}
           />
         </Suspense>
+      )}
+
+      {(modalState.emptyRanking.isOpen || modalState.emptyRanking.hasRendered) && (
+        <EmptyRankingModal
+          isOpen={modalState.emptyRanking.isOpen}
+          onClose={() => closeModal('emptyRanking')}
+          onStartTour={() => {
+            closeModal('emptyRanking');
+            dispatch(setShowUnranked(true));
+            openModal('tour');
+          }}
+        />
       )}
 
       {(modalState.sortTour.isOpen || modalState.sortTour.hasRendered) && (

@@ -12,8 +12,9 @@ body {
   width: 100%;
   margin: 0;
   padding: 0;
-  background-color: #241a20; 
-  /* var(--er-surface-secondary); */
+  /* Follows the active theme through data-theme on <html>, which an inline
+     script in index.html stamps before the first paint. */
+  background-color: var(--er-surface-secondary);
 }
 
 .container {
@@ -265,6 +266,57 @@ code {
   .first-card-halo {
     animation: glow-pulse 15s ease-in-out infinite;
     will-change: opacity;
+  }
+}
+
+/* CARD DRAG STATE - THEMED
+   The lift a country card gets while it is being dragged.
+
+   Where it lives: @hello-pangea/dnd owns the inline transform on the <li> that
+   actually travels, so the lift rides on the card box inside that <li>. The two
+   transforms compose instead of fighting, and the same rule that keeps the view
+   entrance animations off draggables (see transitions.css) is respected.
+
+   What it costs: transform is composited, so the settle in and out is free. The
+   shadow and the background repaint, but only twice per drag (once when the
+   card is picked up, once when it lands), not per frame. */
+.card-drag {
+  transition:
+    transform 160ms var(--er-view-ease, ease-out),
+    box-shadow 160ms var(--er-view-ease, ease-out),
+    background-color 160ms var(--er-view-ease, ease-out),
+    border-color 160ms var(--er-view-ease, ease-out);
+}
+
+/* Held. A small scale plus a hair of tilt reads as picked up without covering
+   the rows on either side, which are the ones the drop is being aimed at. The
+   background goes opaque for the length of the drag so the card stops sampling
+   whatever it is passing over: the selection column's cards are transparent at
+   rest, and a see through card in flight is the thing that reads as broken. */
+/* The doubled class is deliberate. Tailwind's utilities are emitted after this
+   file, so a single class here loses every tie to the utilities already on the
+   card (shadow, border-dashed, the border color) and the lift would come out
+   flat. Two classes outrank them without reaching for !important. */
+.card-drag-active.card-drag-active {
+  transform: scale(1.03) rotate(-0.75deg);
+  background-color: var(--er-card-surface-lifted);
+  border-style: solid;
+  border-color: var(--er-drag-ring);
+  box-shadow:
+    0 10px 18px -8px var(--er-drag-shadow),
+    0 3px 7px -4px var(--er-drag-shadow-soft),
+    0 0 0 1px var(--er-drag-ring);
+}
+
+/* Reduced motion keeps the whole affordance, minus the movement: the card still
+   separates from the column, it just does it with depth rather than travel. */
+@media (prefers-reduced-motion: reduce) {
+  .card-drag {
+    transition: none;
+  }
+
+  .card-drag-active.card-drag-active {
+    transform: none;
   }
 }
 
@@ -546,22 +598,45 @@ code {
   width: clamp(6em, 45vw, 10.5em);
 }
 
+/* The welcome card. `.overlay`/`.slide-left` belong to it alone — App's
+   get-started handler adds `slide-left` to play the exit before unmounting.
+   Layout, surface and depth live in the component's utility classes; this rule
+   only owns the exit, which lifts and shrinks the card rather than throwing it
+   off screen. */
 .overlay {
-  top: var(--nav-height);
-  bottom: var(--edit-nav-height);
-  background-color: rgba(0, 0, 0, 0.6);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 100;
-  transition: transform 0.4s ease-in-out, opacity 0.4s ease-in-out;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease-out;
   will-change: transform;
   opacity: 1;
 }
 
 .overlay.slide-left {
-  transform: translateY(-100%);
+  transform: translateY(-1.5rem) scale(0.96);
   opacity: 0;
+}
+
+/* Entrance. `backwards` rather than `both`/`forwards` matters: a filled
+   animation would keep overriding `transform` afterwards and swallow the exit
+   transition above. */
+.welcome-card {
+  animation: welcome-card-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+}
+
+.welcome-feature {
+  animation: welcome-feature-in 0.45s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+}
+
+@keyframes welcome-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.75rem) scale(0.97);
+  }
+}
+
+@keyframes welcome-feature-in {
+  from {
+    opacity: 0;
+    transform: translateX(-0.4rem);
+  }
 }
 
 @keyframes slideUp {
@@ -579,34 +654,45 @@ code {
   animation: slideUp 0.2s ease-in forwards;
 }
 
-/* WELCOME OVERLAY - THEMED */
+/* WELCOME OVERLAY BACKDROP - THEMED
+   Three soft colour fields drifting behind the welcome card, in place of the
+   hard-edged diagonal stripe this used to be. The blur is baked into the
+   gradient stops instead of a `filter`, so nothing repaints: only `transform`
+   animates and the compositor just moves cached full-viewport layers. */
 .overlay-bg {
-  animation: slide 3s ease-in-out infinite alternate;
-  background-image: linear-gradient(-60deg, var(--er-welcome-gradient-1) 50%, var(--er-welcome-gradient-2) 50%);
-  bottom: 0;
-  left: -50%;
-  opacity: .5;
   position: fixed;
-  right: -50%;
-  top: 0;
-  z-index: -1;
+  inset: -25%;
+  pointer-events: none;
+  background-image: radial-gradient(closest-side circle at 32% 34%, var(--er-welcome-gradient-1), transparent 100%);
+  animation: welcome-drift 16s ease-in-out infinite alternate;
+  will-change: transform;
 }
 
 .overlay-bg2 {
+  background-image: radial-gradient(closest-side circle at 70% 40%, var(--er-welcome-gradient-2), transparent 100%);
   animation-direction: alternate-reverse;
-  animation-duration: 4s;
+  animation-duration: 22s;
 }
 
 .overlay-bg3 {
-  animation-duration: 5s;
+  background-image: radial-gradient(closest-side circle at 50% 76%, var(--er-welcome-gradient-1), transparent 100%);
+  animation-duration: 28s;
 }
 
-@keyframes slide {
+@keyframes welcome-drift {
   0% {
-    transform: translateX(-25%);
+    transform: translate3d(-4%, -3%, 0) scale(1);
   }
   100% {
-    transform: translateX(25%);
+    transform: translate3d(5%, 4%, 0) scale(1.15);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .overlay-bg,
+  .welcome-card,
+  .welcome-feature {
+    animation: none;
   }
 }
 
@@ -749,3 +835,62 @@ select:-webkit-autofill {
   transition: background-color 9999s ease-in-out 0s;
 }
 
+
+/* GUIDED TOUR (react-joyride)
+   Joyride writes the tooltip's own styles inline from JoyrideUtil, so what
+   lives here is only what a style object can't say: the entrance each step
+   plays, and the button states. */
+
+/* joyride keys the step wrapper by index, so the tooltip is a fresh element on
+   every step and this runs each time it lands */
+.react-joyride__tooltip {
+  animation: tourTooltipEnter var(--er-view-duration) var(--er-view-ease) backwards;
+}
+
+@keyframes tourTooltipEnter {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* the inline styles win on specificity, so the states that change them say so */
+.react-joyride__tooltip button {
+  transition:
+    background-color 150ms ease,
+    color 150ms ease,
+    transform 150ms ease;
+}
+
+.react-joyride__tooltip button[data-test-id='button-primary']:hover {
+  background-color: var(--er-button-primary-hover) !important;
+}
+
+.react-joyride__tooltip button[data-test-id='button-primary']:active {
+  transform: scale(0.97);
+}
+
+.react-joyride__tooltip button[data-test-id='button-back']:hover,
+.react-joyride__tooltip button[data-test-id='button-skip']:hover,
+.react-joyride__tooltip button[data-test-id='button-close']:hover {
+  color: var(--er-text-primary) !important;
+}
+
+.react-joyride__tooltip button:focus-visible {
+  outline: 2px solid var(--er-border-tertiary);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .react-joyride__tooltip {
+    animation: none;
+  }
+
+  .react-joyride__tooltip button {
+    transition: none;
+  }
+}

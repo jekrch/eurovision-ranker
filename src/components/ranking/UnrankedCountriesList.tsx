@@ -59,6 +59,7 @@ const UnrankedCountriesList: React.FC<UnrankedCountriesListProps> = ({ onAddToRa
                         className="m-auto text-[var(--er-text-tertiary)] bg-'blue' no-select"
                         countryContestant={item}
                         isDragging={snapshot.isDragging}
+                        isDropAnimating={snapshot.isDropAnimating}
                         addCallBack={onAddToRanked ? () => onAddToRanked(item) : undefined}
                       />
                     </div>
@@ -69,7 +70,13 @@ const UnrankedCountriesList: React.FC<UnrankedCountriesListProps> = ({ onAddToRa
                 )}
               </Draggable>
             ))}
-            {provided.placeholder}
+            {/* The drop gap has to open downward without widening the column. The dnd
+                library sizes its placeholder from the card being dragged, so a card
+                arriving from the other column brings that column's width with it and
+                this one stretches for the length of the drag, then snaps back on the
+                drop. Clipping keeps the gap's height and takes its width out of the
+                column's intrinsic size. */}
+            <div className="max-w-0 overflow-hidden">{provided.placeholder}</div>
           </ul>
         )}
       </StrictModeDroppable>

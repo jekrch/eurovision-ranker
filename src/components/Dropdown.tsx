@@ -99,6 +99,7 @@ const MenuPanel: React.FC<MenuPanelProps> = ({ open, openUpwards, children }) =>
   const [closing, setClosing] = useState(false);
   const [shown, setShown] = useState(false);
   const [wasOpen, setWasOpen] = useState(open);
+  const [panel, setPanel] = useState<HTMLElement | null>(null);
 
   // react to opening and closing here rather than in an effect: an effect lands
   // a render too late, so the panel would unmount before it could animate out,
@@ -123,16 +124,27 @@ const MenuPanel: React.FC<MenuPanelProps> = ({ open, openUpwards, children }) =>
     return () => clearTimeout(timeout);
   }, [closing]);
 
-  // the panel mounts closed; animate it open on the next frame
+  // the panel mounts closed; animate it open on the next frame.
+  //
+  // this waits on the panel element rather than on `open`, because the two
+  // don't always arrive together: headless ui keeps its portals empty until it
+  // has settled its first client render, so the first menu opened on a page
+  // gets its element a render later than every menu after it. keyed to `open`,
+  // that one menu spent its opening frame with nothing on screen and then
+  // appeared already open.
   useEffect(() => {
-    if (!open) {
+    if (!open || !panel) {
       return;
     }
+
+    // a freshly inserted element has no style for a transition to start from,
+    // so read one back before asking for the open state
+    panel.getBoundingClientRect();
 
     const frame = requestAnimationFrame(() => setShown(true));
 
     return () => cancelAnimationFrame(frame);
-  }, [open]);
+  }, [open, panel]);
 
   if (!open && !closing) {
     return null;
@@ -140,6 +152,7 @@ const MenuPanel: React.FC<MenuPanelProps> = ({ open, openUpwards, children }) =>
 
   return (
     <MenuItems
+      ref={setPanel}
       static
       // `modal` would lock document scrolling and pad away the scrollbar while
       // the menu is open. this app does its own scroll locking (see

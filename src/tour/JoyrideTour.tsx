@@ -20,13 +20,19 @@ import {
   setGlobalSearch,
   setTheme,
   clearAllCategoryRankings,
+  closeHeaderMenu,
 } from '../redux/rootSlice';
 import { AppDispatch, AppState } from '../redux/store';
 import { tourSteps } from '../tour/steps';
 import { clearCategories } from '../utilities/CategoryUtil';
 import { fetchCountryContestantsByYear } from '../utilities/ContestantRepository';
 import { clone } from '../utilities/ContestantUtil';
-import { joyrideOptions, SKIP_WELCOME_AFTER_TOUR_KEY } from '../utilities/JoyrideUtil';
+import {
+  joyrideFloaterProps,
+  joyrideOptions,
+  JOYRIDE_SPOTLIGHT_PADDING,
+  SKIP_WELCOME_AFTER_TOUR_KEY,
+} from '../utilities/JoyrideUtil';
 import { logger } from '../utilities/logger';
 import { goToUrl } from '../utilities/UrlUtil';
 
@@ -35,9 +41,27 @@ import type Joyride from 'react-joyride';
 /** the contest year the tour walks the user through */
 const TOUR_YEAR = '2023';
 
+/**
+ * How long a step waits for a piece of the app to finish moving before it
+ * points at what's underneath. A step that lands mid-transition spotlights an
+ * element that's still fading or sliding, and the highlight ends up off the
+ * thing it's describing.
+ */
+const MENU_SETTLE_MS = 200;
+const MODAL_OPEN_SETTLE_MS = 400;
+const MODAL_CLOSE_SETTLE_MS = 320;
+
+/**
+ * How long after the reordering step arrives the tour swaps the top two
+ * countries. Long enough for the list view to finish its entrance, short enough
+ * that the swap happens while the user is still reading the step that describes
+ * it.
+ */
+const REORDER_DEMO_MS = 450;
+
 interface JoyrideTourProps {
   setRefreshUrl: (num: number) => void;
-  openConfigModal: (tabName: string) => void;
+  openConfigModal: (tabName: string, force?: boolean) => void;
   setConfigModalShow: (show: boolean) => void;
   setRunTour: (run: boolean) => void;
   runTour: boolean;
@@ -239,32 +263,39 @@ const JoyrideTour: React.FC<JoyrideTourProps> = (props: JoyrideTourProps) => {
         break;
       }
 
-      case 4:
+      case 4: {
         dispatch(setShowUnranked(false));
 
-        break;
-
-      case 5: {
-        const swappedRankedItems = clone(rankedItems);
-
+        // This step is the one about reordering, so the tour demonstrates it
+        // here rather than on the way out: the swap plays a beat after the step
+        // lands, while the user is reading it.
         if (rankedItems.length >= 2) {
-          // swap the first two elements
+          const swappedRankedItems = clone(rankedItems);
 
           swappedRankedItems[0] = rankedItems[1];
           swappedRankedItems[1] = rankedItems[0];
+
+          void tourDelay(REORDER_DEMO_MS).then(() => {
+            dispatch(setRankedItems(swappedRankedItems));
+            props.setRefreshUrl(Math.random());
+          });
         }
-
-        dispatch(setRankedItems(swappedRankedItems));
-
-        props.setRefreshUrl(Math.random());
-
-        dispatch(setHeaderMenuOpen(true));
 
         break;
       }
 
       case 6:
+        // the menu the next few steps walk through. Step 5 points at the button
+        // that opens it, so it stays shut until the user has clicked past that.
         dispatch(setHeaderMenuOpen(true));
+        await tourDelay(MENU_SETTLE_MS);
+        break;
+
+      case 9:
+        // done with the menu - put it away rather than leaving it hanging open
+        // over the header the next two steps point at
+        dispatch(closeHeaderMenu());
+        await tourDelay(MENU_SETTLE_MS);
         break;
 
       case 11:
@@ -272,16 +303,25 @@ const JoyrideTour: React.FC<JoyrideTourProps> = (props: JoyrideTourProps) => {
         break;
 
       case 13:
-        props.openConfigModal('rankings');
-        // the modal fades in; let it land before its contents are pointed at
-        await tourDelay(150);
+        // forced: without it the panel reopens on whichever tab the user last
+        // had, and the step talks about "Rankings"
+        props.openConfigModal('rankings', true);
+        // the panel fades and scales in; let it land before it's spotlighted,
+        // or the highlight is drawn around where it no longer is
+        await tourDelay(MODAL_OPEN_SETTLE_MS);
         break;
 
       case 14:
         props.setConfigModalShow(false);
+        // likewise on the way out: the closing panel would otherwise sit over
+        // the switch this step points at
+        await tourDelay(MODAL_CLOSE_SETTLE_MS);
         break;
 
-      case 16:
+      case 17:
+        // the last step. The example ranking has been the subject right up to
+        // the URL step before this one, so it's only now cleared away, leaving
+        // the app ready for the user's own.
         props.setConfigModalShow(false);
         dispatch(setName(''));
         await clearRanking(TOUR_YEAR);
@@ -305,6 +345,8 @@ const JoyrideTour: React.FC<JoyrideTourProps> = (props: JoyrideTourProps) => {
         callback={handleJoyrideCallback}
         showProgress={true}
         disableOverlay={false}
+        spotlightPadding={JOYRIDE_SPOTLIGHT_PADDING}
+        floaterProps={joyrideFloaterProps}
         styles={joyrideOptions}
       />
       <TourExitPrompt isOpen={exitPromptOpen} onConfirm={endTour} onCancel={cancelExit} />

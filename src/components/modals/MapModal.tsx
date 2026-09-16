@@ -2,6 +2,7 @@ import React, { useState, Suspense } from 'react';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 
 import Modal from './Modal';
+import { hairline } from './modalStyles';
 import { useAppSelector } from '../../hooks/stateHooks';
 import { selectActiveRankedItems } from '../../redux/rankingSelectors';
 
@@ -55,8 +56,11 @@ const MapModal: React.FC<MapModalProps> = ({ isOpen, onClose }) => {
       isOpen={isOpen}
       onClose={onClose}
     >
-      <div className="-mt-3 mb-3 w-full text-md font-strong text-center tracking-wide text-[var(--er-text-primary)]">
-        Ranking heat map
+      <div className="-mt-3 mb-3">
+        <div className="w-full text-sm font-semibold text-center text-[var(--er-text-primary)]">
+          Ranking heat map
+        </div>
+        <div className={`${hairline} mt-3`}></div>
       </div>
       <div className="mb-3 flex items-center justify-center gap-2 text-[10px] uppercase tracking-wider text-[var(--er-text-muted)]">
         <span>Lower</span>

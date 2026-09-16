@@ -9,6 +9,7 @@ import {
 import React, { useEffect, useRef, useState } from 'react';
 
 import Modal from '../Modal';
+import { hairline } from '../modalStyles';
 import AnalyzeTab from './AnalyzeTab';
 import CategoriesTab from './CategoriesTab';
 import DisplayTab from './DisplayTab';
@@ -94,7 +95,7 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
       onClose={props.onClose}
       className="isolate h-[85vh] !max-h-[550px]"
     >
-      <div className="border-b border-[var(--er-border-lightest)] dark:border-[var(--er-border-darker)] -mt-4">
+      <div className="-mt-4">
         <TabBar activeKey={activeTab}>
           <TabButton
             isActive={activeTab === 'rankings'}
@@ -140,6 +141,7 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
             label="Groups"
           />
         </TabBar>
+        <div className={hairline}></div>
       </div>
 
       {/* `key` is the active tab, so switching tabs mounts a fresh panel and

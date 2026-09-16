@@ -1,6 +1,14 @@
 import { useState, useEffect } from 'react';
 
-export type ModalType = 'main' | 'name' | 'map' | 'song' | 'config' | 'tour' | 'sortTour';
+export type ModalType =
+  | 'main'
+  | 'name'
+  | 'map'
+  | 'song'
+  | 'config'
+  | 'tour'
+  | 'sortTour'
+  | 'emptyRanking';
 
 interface ModalState {
   isOpen: boolean;
@@ -25,6 +33,7 @@ export const useModal = (initialTab: string = 'about'): UseModalReturn => {
     config: { isOpen: false, hasRendered: false },
     tour: { isOpen: false, hasRendered: false },
     sortTour: { isOpen: false, hasRendered: false },
+    emptyRanking: { isOpen: false, hasRendered: false },
   });
 
   const [currentTab, setModalTab] = useState(initialTab);

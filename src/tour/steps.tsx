@@ -1,3 +1,19 @@
+import React from 'react';
+
+import TourUrlLink from './TourUrlLink';
+
+/**
+ * The guided tour's steps, in order. `content` is the copy the user reads;
+ * `placement` is only ever a hint about where the tooltip sits relative to the
+ * element the step points at.
+ *
+ * The three closing steps talk about the page as a whole rather than any one
+ * control, and their target is the whole app shell - spotlighting that is just
+ * the entire viewport, so they're centred instead, which drops the spotlight
+ * and reads as a card over the dimmed page.
+ */
+const CENTERED = 'center' as const;
+
 export const tourSteps = [
   {
     target: '.tour-step-1',
@@ -66,13 +82,20 @@ export const tourSteps = [
     target: '.tour-step-16',
     content:
       'Want to save or share your ranking? Just copy the URL! All of your ranking data is stored there.',
+    placement: CENTERED,
   },
   {
     target: '.tour-step-17',
-    content: 'e.g. your current URL is: eurovision-ranker.com?n=Sigrit%27s+Top+Picks&y=23&r=nidk4t',
+    content: (
+      <>
+        e.g. your current URL is: <TourUrlLink />
+      </>
+    ),
+    placement: CENTERED,
   },
   {
     target: '.tour-step-18',
     content: 'Enjoy, friends ❤️',
+    placement: CENTERED,
   },
 ].map((step) => ({ ...step, disableBeacon: true }));

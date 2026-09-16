@@ -100,6 +100,22 @@
     })(window.location);
   </script>
 
+  <!-- Stamp the active theme on <html> before the first paint. The theme is
+       carried in the `t` query param, so it is already known here; without this
+       the page paints the :root palette and then repaints once React mounts and
+       applies the real theme. THEME_CODES/DEFAULT_CODE mirror THEME_OPTIONS in
+       src/components/modals/config/DisplayTab.tsx. -->
+  <script>
+    (function () {
+      var THEME_CODES = ['d', 'ab', 'm', 'o', 's', 'f', 'p', 'pr', 'r'];
+      var DEFAULT_CODE = 's';
+      var t = new URLSearchParams(window.location.search).get('t');
+      // 'ab' (Auroral) layers over the default palette instead of defining one
+      var known = t && t !== 'ab' && THEME_CODES.indexOf(t) !== -1;
+      document.documentElement.setAttribute('data-theme', known ? t : DEFAULT_CODE);
+    })();
+  </script>
+
   <script defer src="https://analytics.jacobkrch.com/script.js" data-website-id="0f4290a3-6a38-4398-b083-fc3cdabe5f13"></script>
   
 </head>

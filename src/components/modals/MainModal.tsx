@@ -1,6 +1,7 @@
 import { faHeart, faHouseUser } from '@fortawesome/free-solid-svg-icons';
 import React, { useEffect, useState } from 'react';
 
+import { hairline } from './modalStyles';
 import TabBar from '../TabBar';
 import TabButton from '../TabButton';
 import Modal from './Modal';
@@ -28,7 +29,7 @@ const MainModal: React.FC<MainModalProps> = (props: MainModalProps) => {
 
   return (
     <Modal isOpen={props.isOpen} onClose={props.onClose} className="h-[85vh] !max-h-[550px]">
-      <div className="border-b border-[var(--er-border-lightest)] dark:border-[var(--er-border-darker)] -mt-4">
+      <div className="-mt-4">
         <TabBar activeKey={activeTab}>
           <TabButton
             isActive={activeTab === 'about'}
@@ -43,6 +44,7 @@ const MainModal: React.FC<MainModalProps> = (props: MainModalProps) => {
             label="Donate"
           />
         </TabBar>
+        <div className={hairline}></div>
       </div>
 
       {/* `key` is the active tab, so switching tabs mounts a fresh panel and

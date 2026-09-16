@@ -2,6 +2,7 @@ import classNames from 'classnames';
 import React, { ReactNode, useEffect, useRef, useState, useCallback } from 'react';
 
 import GlobalConfirmationModal from './GlobalConfirmationModal';
+import { modalBackdrop, modalPanel } from './modalStyles';
 import { useScrollLock } from '../../hooks/useScrollLock';
 
 type ModalContainerProps = {
@@ -141,7 +142,8 @@ const Modal: React.FC<ModalContainerProps> = ({
     <>
       <div
         className={classNames(
-          'fixed inset-0 z-50 flex justify-center items-center bg-black/60 backdrop-blur-sm transition-opacity duration-300',
+          'fixed inset-0 z-50 flex justify-center items-center transition-opacity duration-300',
+          modalBackdrop,
           isOpen && showModal ? transitionStyles.opacity : 'opacity-0', // Control overlay visibility smoothly
           !isOpen && !showModal ? 'pointer-events-none' : '', // Prevent interaction when fully closed
         )}
@@ -158,7 +160,8 @@ const Modal: React.FC<ModalContainerProps> = ({
           ref={modalRef}
           data-modal-content
           className={classNames(
-            'relative z-10 bg-[var(--er-surface-secondary)] m-4 max-h-[85vh] text-[var(--er-text-tertiary)] p-6 rounded-xl ring-1 ring-white/10 shadow-2xl shadow-black/40 max-w-lg w-full min-w-0 flex flex-col transform transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]',
+            'relative z-10 bg-[var(--er-surface-secondary)] m-4 max-h-[85vh] text-[var(--er-text-tertiary)] p-6 max-w-lg w-full min-w-0 flex flex-col transform transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]',
+            modalPanel,
             isOpen && showModal
               ? `${transitionStyles.opacity} ${transitionStyles.transform}`
               : 'opacity-0 translate-y-4 scale-95', // Control modal visibility/position smoothly

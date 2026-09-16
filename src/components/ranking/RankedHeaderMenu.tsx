@@ -51,6 +51,7 @@ const RankedHeaderMenu: React.FC<RankedHeaderMenuProps> = (props: RankedHeaderMe
   const menuRef = useRef<HTMLDivElement>(null);
   const rankedItems = useAppSelector(selectActiveRankedItems);
   const globalMenuOpenTrigger = useAppSelector((state: AppState) => state.root.headerMenuOpen);
+  const globalMenuCloseNonce = useAppSelector((state: AppState) => state.root.headerMenuCloseNonce);
   const dispatch: AppDispatch = useAppDispatch();
   const { playList, hasPlayableVideos } = useVideoPip();
   const CLOSING_DURATION = 300;
@@ -113,6 +114,26 @@ const RankedHeaderMenu: React.FC<RankedHeaderMenuProps> = (props: RankedHeaderMe
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [globalMenuOpenTrigger]);
+
+  // the tour opens this menu to walk through it and closes it again when it
+  // moves on to something else. Skipped on mount so a page load doesn't count
+  // as a close request.
+  const closedNonce = useRef(globalMenuCloseNonce);
+
+  useEffect(() => {
+    if (globalMenuCloseNonce === closedNonce.current) {
+      return;
+    }
+
+    closedNonce.current = globalMenuCloseNonce;
+    setIsMenuOpen(false);
+
+    const timeoutId = setTimeout(() => {
+      document.body.classList.remove('no-scroll');
+    }, CLOSING_DURATION);
+
+    return () => clearTimeout(timeoutId);
+  }, [globalMenuCloseNonce]);
 
   function close() {
     setIsMenuOpen(false);

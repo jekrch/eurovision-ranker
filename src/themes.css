@@ -140,12 +140,15 @@
   
   /* === SPECIAL GRADIENT BACKGROUNDS === */
   /* Maps to: .choice-background, .gradient-background-modal.
-     The modal takes a darker far stop than the choice card does, so the
-     gradient stays behind its text rather than competing with it. */
+     The modal takes a darker, lower-chroma far stop than the choice card does,
+     for two reasons: the gradient stays behind its text rather than competing
+     with it, and the welcome card's bottom corner sits over the drifting
+     welcome-gradient stripes, which share this hue in most themes — a lighter
+     stop there makes the card's edge melt into the animation. */
   --er-choice-bg-1: #1d2344;
   --er-choice-bg-2: #1d2344;
   --er-choice-bg-3: #4b2764;
-  --er-modal-bg-3: #2d173c;
+  --er-modal-bg-3: #1f1228;
   
   /* Maps to: .gradient-background, .gradient-background-reverse */
   --er-gradient-bg-1: #517cbc;
@@ -309,7 +312,7 @@
   --er-choice-bg-1: #18141f;
   --er-choice-bg-2: #1f1a28;
   --er-choice-bg-3: #4a4069;
-  --er-modal-bg-3: #2c263f;
+  --er-modal-bg-3: #201d2c;
   
   --er-gradient-bg-1: #492995;
   --er-gradient-bg-2: #1f1a28;
@@ -434,7 +437,7 @@
   --er-choice-bg-1: #133330;
   --er-choice-bg-2: #1a4440;
   --er-choice-bg-3: #3a5f7a;
-  --er-modal-bg-3: #233949;
+  --er-modal-bg-3: #1d2b35;
   
   --er-gradient-bg-1: #4a7090;
   --er-gradient-bg-2: #1a4440;
@@ -559,7 +562,7 @@
   --er-choice-bg-1: #241a20;
   --er-choice-bg-2: #342528;
   --er-choice-bg-3: #b8825d;
-  --er-modal-bg-3: #6e4e38;
+  --er-modal-bg-3: #433226;
   
   --er-gradient-bg-1: #c8926d;
   --er-gradient-bg-2: #342528;
@@ -673,7 +676,7 @@
   --er-choice-bg-1: #16211b;
   --er-choice-bg-2: #1e2d25;
   --er-choice-bg-3: #6b5634;
-  --er-modal-bg-3: #40341f;
+  --er-modal-bg-3: #2f281a;
   
   --er-gradient-bg-1: #8d7750;
   --er-gradient-bg-2: #1e2d25;
@@ -792,7 +795,7 @@
   --er-choice-bg-1: #2a1e28;
   --er-choice-bg-2: #3a2a35;
   --er-choice-bg-3: #c17b8e;
-  --er-modal-bg-3: #744a55;
+  --er-modal-bg-3: #563b42;
   
   --er-gradient-bg-1: #d18fa0;
   --er-gradient-bg-2: #3a2a35;
@@ -918,7 +921,7 @@
   --er-choice-bg-1: #251631;
   --er-choice-bg-2: #2f1f3d;
   --er-choice-bg-3: #c74f9e;
-  --er-modal-bg-3: #772f5f;
+  --er-modal-bg-3: #572848;
   
   --er-gradient-bg-1: #e85d9a;
   --er-gradient-bg-2: #5a7fe8;
@@ -1037,7 +1040,7 @@
   --er-choice-bg-1: #1e1a14;
   --er-choice-bg-2: #2a2419;
   --er-choice-bg-3: #5a6f72;
-  --er-modal-bg-3: #364344;
+  --er-modal-bg-3: #2a3233;
   
   --er-gradient-bg-1: #6a7f82;
   --er-gradient-bg-2: #2a2419;

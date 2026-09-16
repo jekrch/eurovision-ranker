@@ -654,37 +654,35 @@ code {
   animation: slideUp 0.2s ease-in forwards;
 }
 
-/* WELCOME OVERLAY BACKDROP - THEMED
-   Three soft colour fields drifting behind the welcome card, in place of the
-   hard-edged diagonal stripe this used to be. The blur is baked into the
-   gradient stops instead of a `filter`, so nothing repaints: only `transform`
-   animates and the compositor just moves cached full-viewport layers. */
+/* WELCOME OVERLAY - THEMED
+   Resting opacity comes from the component rather than from here, so the
+   layers can fade out with the card on exit. */
 .overlay-bg {
+  animation: slide 4.5s ease-in-out infinite alternate;
+  background-image: linear-gradient(-60deg, var(--er-welcome-gradient-1) 50%, var(--er-welcome-gradient-2) 50%);
+  bottom: 0;
+  left: -50%;
   position: fixed;
-  inset: -25%;
-  pointer-events: none;
-  background-image: radial-gradient(closest-side circle at 32% 34%, var(--er-welcome-gradient-1), transparent 100%);
-  animation: welcome-drift 16s ease-in-out infinite alternate;
-  will-change: transform;
+  right: -50%;
+  top: 0;
+  z-index: -1;
 }
 
 .overlay-bg2 {
-  background-image: radial-gradient(closest-side circle at 70% 40%, var(--er-welcome-gradient-2), transparent 100%);
   animation-direction: alternate-reverse;
-  animation-duration: 22s;
+  animation-duration: 6s;
 }
 
 .overlay-bg3 {
-  background-image: radial-gradient(closest-side circle at 50% 76%, var(--er-welcome-gradient-1), transparent 100%);
-  animation-duration: 28s;
+  animation-duration: 7.5s;
 }
 
-@keyframes welcome-drift {
+@keyframes slide {
   0% {
-    transform: translate3d(-4%, -3%, 0) scale(1);
+    transform: translateX(-25%);
   }
   100% {
-    transform: translate3d(5%, 4%, 0) scale(1.15);
+    transform: translateX(25%);
   }
 }
 

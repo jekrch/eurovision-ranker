@@ -33,6 +33,15 @@ export const joyrideFloaterProps = {
   },
 };
 
+export const JOYRIDE_Z_INDEX = 10000;
+
+/**
+ * Joyride stacks its tooltip at the base z-index plus 100, so anything that has
+ * to sit above the tour - the exit prompt - needs more headroom than the base
+ * alone suggests.
+ */
+export const JOYRIDE_TOOLTIP_Z_INDEX = JOYRIDE_Z_INDEX + 100;
+
 /**
  * The shared look for both guided tours.
  *
@@ -42,7 +51,7 @@ export const joyrideFloaterProps = {
  */
 export const joyrideOptions = {
   options: {
-    zIndex: 10000,
+    zIndex: JOYRIDE_Z_INDEX,
     width: 348,
     arrowColor: 'var(--er-surface-secondary)',
     backgroundColor: 'var(--er-surface-secondary)',

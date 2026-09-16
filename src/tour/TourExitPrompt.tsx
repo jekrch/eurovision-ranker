@@ -2,13 +2,14 @@ import React from 'react';
 import { createPortal } from 'react-dom';
 
 import IconButton from '../components/IconButton';
+import { JOYRIDE_TOOLTIP_Z_INDEX } from '../utilities/JoyrideUtil';
 
 /**
- * Above the joyride overlay, which sits at 10000 (see joyrideOptions). The
- * shared Modal can't be used for this: it renders at z-50, so the tour's own
- * overlay would cover it.
+ * Above every piece of the tour, including the step tooltip, which joyride
+ * stacks higher than its overlay. The shared Modal can't be used for this: it
+ * renders at z-50, so the tour's own overlay would cover it.
  */
-const EXIT_PROMPT_Z_INDEX = 10010;
+const EXIT_PROMPT_Z_INDEX = JOYRIDE_TOOLTIP_Z_INDEX + 10;
 
 /**
  * Surfaces that stay open for the tour recognise the tour's own chrome by a

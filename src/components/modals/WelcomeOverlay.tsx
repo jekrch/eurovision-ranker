@@ -2,16 +2,9 @@ import { faCheck, faGlasses } from '@fortawesome/free-solid-svg-icons';
 import classNames from 'classnames';
 import React, { useRef, useState } from 'react';
 import { IconType } from 'react-icons';
-import { FaList, FaTv, FaGlobe, FaCog, FaSort, FaQuestionCircle } from 'react-icons/fa';
+import { FaList, FaTv, FaCog, FaSort, FaQuestionCircle } from 'react-icons/fa';
 
-import {
-  eyebrow,
-  hairline,
-  iconChip,
-  modalActionBtn,
-  modalBackdrop,
-  modalPanel,
-} from './modalStyles';
+import { eyebrow, hairline, iconChip, modalActionBtn, modalPanel } from './modalStyles';
 import { useAppDispatch, useAppSelector } from '../../hooks/stateHooks';
 import { setWelcomeOverlayIsOpen } from '../../redux/rootSlice';
 import { AppDispatch, AppState } from '../../redux/store';
@@ -34,7 +27,7 @@ const FEATURES: { icon: IconType; iconClassName: string; text: string }[] = [
     iconClassName: 'text-[var(--er-interactive-primary)]',
     text: 'create YouTube playlists',
   },
-  { icon: FaGlobe, iconClassName: 'text-sky-400', text: 'view a heat map of your ranking' },
+  // { icon: FaGlobe, iconClassName: 'text-sky-400', text: 'view a heat map of your ranking' },
   {
     icon: FaCog,
     iconClassName: 'text-[var(--er-text-subtle)]',
@@ -84,40 +77,26 @@ const WelcomeOverlay: React.FC<WelcomeOverlayProps> = ({
     handleGetStarted();
   }
 
-  // the colour fields sit at different strengths so they read as depth rather
-  // than one flat wash
-  const fieldOpacity = (resting: string) => (exiting ? 'opacity-0' : resting);
+  const backdropOpacity = exiting ? 'opacity-0' : 'opacity-20';
 
   return (
     <div
       className="z-[1000] w-full h-full fixed top-0 left-0 flex items-center justify-center"
       onClick={handleClickOutside}
     >
-      {/* dim + blur sits beneath the drifting colour fields so they read as light
-          over a dark ground rather than as stripes over the app */}
+      <div
+        className={classNames('overlay-bg transition-opacity duration-500', backdropOpacity)}
+      ></div>
       <div
         className={classNames(
-          'absolute inset-0 z-0 transition-opacity duration-500',
-          modalBackdrop,
-          exiting ? 'opacity-0' : 'opacity-100',
+          'overlay-bg overlay-bg2 transition-opacity duration-500',
+          backdropOpacity,
         )}
       ></div>
       <div
         className={classNames(
-          'overlay-bg z-[1] transition-opacity duration-500',
-          fieldOpacity('opacity-40'),
-        )}
-      ></div>
-      <div
-        className={classNames(
-          'overlay-bg overlay-bg2 z-[1] transition-opacity duration-500',
-          fieldOpacity('opacity-30'),
-        )}
-      ></div>
-      <div
-        className={classNames(
-          'overlay-bg overlay-bg3 z-[1] transition-opacity duration-500',
-          fieldOpacity('opacity-25'),
+          'overlay-bg overlay-bg3 transition-opacity duration-500',
+          backdropOpacity,
         )}
       ></div>
 

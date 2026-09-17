@@ -25,6 +25,10 @@
   --er-view-ease: cubic-bezier(0.16, 1, 0.3, 1);
   --er-view-duration: 280ms;
   --er-view-item-duration: 320ms;
+  /* switching between the select and details views moves the ranked cards
+     sideways, a longer trip than the page load's settle, so it gets a little
+     more time to cover it at the same pace */
+  --er-view-switch-item-duration: 400ms;
   /* a tab switch is lateral navigation inside a surface that's already open, so
      it gets a shorter, shallower version of the same motion */
   --er-tab-panel-duration: 200ms;
@@ -74,6 +78,47 @@
   }
 }
 
+/* SWITCHING BETWEEN THE SELECT AND DETAILS VIEWS
+ *
+ * The ranked column sits on the right of the select view and in the center of
+ * the details view, and the button that opens details points right. So opening
+ * details carries the column and its cards in from the right, and going back
+ * carries them in from the left, alongside the selection column's own entrance
+ * from that side. The cards travel further than the column does, which reads as
+ * the list catching up to the view rather than the whole page sliding. */
+@keyframes viewEnterFromRight {
+  from {
+    opacity: 0;
+    transform: translateX(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes viewItemEnterFromRight {
+  from {
+    opacity: 0;
+    transform: translateX(36px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes viewItemEnterFromLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
 /* A country added to the ranking comes in from the left, the side of the
    selection column it just left, so the eye can follow it across. */
 @keyframes rankedItemAdded {
@@ -119,6 +164,22 @@
   animation-delay: calc(var(--er-stagger-index, 0) * var(--er-stagger-step));
 }
 
+.view-enter-from-right-animation {
+  animation: viewEnterFromRight var(--er-view-duration) var(--er-view-ease) backwards;
+}
+
+.view-item-enter-from-right-animation {
+  animation: viewItemEnterFromRight var(--er-view-switch-item-duration) var(--er-view-ease)
+    backwards;
+  animation-delay: calc(var(--er-stagger-index, 0) * var(--er-stagger-step));
+}
+
+.view-item-enter-from-left-animation {
+  animation: viewItemEnterFromLeft var(--er-view-switch-item-duration) var(--er-view-ease)
+    backwards;
+  animation-delay: calc(var(--er-stagger-index, 0) * var(--er-stagger-step));
+}
+
 .ranked-item-added-animation {
   animation: rankedItemAdded var(--er-item-added-duration) var(--er-item-added-ease) backwards;
 }
@@ -141,8 +202,11 @@
   .ranked-item-added-animation,
   .tab-panel-enter-animation,
   .view-enter-animation,
+  .view-enter-from-right-animation,
   .view-enter-left-animation,
-  .view-item-enter-animation {
+  .view-item-enter-animation,
+  .view-item-enter-from-left-animation,
+  .view-item-enter-from-right-animation {
     animation: none;
   }
 

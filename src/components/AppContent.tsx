@@ -10,6 +10,7 @@ import TooltipHelp from './TooltipHelp';
 import { useDetailsViewToggle } from '../hooks/useDetailsViewToggle';
 import { useRankingDragDrop } from '../hooks/useRankingDragDrop';
 import { RankingAddition } from '../hooks/useRecentlyAdded';
+import { useViewSwitch } from '../hooks/useViewSwitch';
 
 // lazy load the list views to reduce initial bundle size
 const LazyRankedCountriesList = React.lazy(() => import('./ranking/RankedCountriesList'));
@@ -45,6 +46,7 @@ const AppContent: React.FC<AppContentProps> = ({
   updateGlobalSearch,
 }) => {
   const toggleDetailsView = useDetailsViewToggle();
+  const viewSwitch = useViewSwitch(showUnranked);
   const {
     openSongModalWithData,
     openMainModalWithTab,
@@ -145,6 +147,7 @@ const AppContent: React.FC<AppContentProps> = ({
                 <LazyRankedCountriesList
                   key={showUnranked ? 'select-view' : 'list-view'}
                   latestAddition={latestAddition}
+                  viewSwitch={viewSwitch}
                   openSongModal={openSongModalWithData}
                   openModal={openMainModalWithTab}
                   openConfigModal={openConfigModalWithTab}

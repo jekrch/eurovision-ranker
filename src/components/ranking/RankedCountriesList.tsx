@@ -18,6 +18,7 @@ import { CountryContestant } from '../../data/CountryContestant';
 import { useAppDispatch, useAppSelector } from '../../hooks/stateHooks';
 import { RankingAddition, useRecentlyAdded } from '../../hooks/useRecentlyAdded';
 import { useViewOpening } from '../../hooks/useViewOpening';
+import { ViewSwitch } from '../../hooks/useViewSwitch';
 import { deleteRankedCountry } from '../../redux/rankingActions';
 import { selectActiveRankedItems } from '../../redux/rankingSelectors';
 import { setShowUnranked } from '../../redux/rootSlice';
@@ -40,6 +41,8 @@ interface RankedCountriesListProps {
   openQuizModal: () => void;
   /** the country most recently added with its "+" button on the select view */
   latestAddition?: RankingAddition | null;
+  /** how the user arrived at this view, which sets the direction of its entrance */
+  viewSwitch?: ViewSwitch;
 }
 
 /**
@@ -61,6 +64,7 @@ const RankedCountriesList: React.FC<RankedCountriesListProps> = ({
   openAuthModal,
   openQuizModal,
   latestAddition = null,
+  viewSwitch = null,
 }) => {
   const dispatch: AppDispatch = useAppDispatch();
   const showUnranked = useAppSelector((state: AppState) => state.root.showUnranked);
@@ -70,6 +74,21 @@ const RankedCountriesList: React.FC<RankedCountriesListProps> = ({
   const rankedItems = useAppSelector(selectActiveRankedItems);
   const isOpening = useViewOpening(rankedItems.length > 0);
   const wasRecentlyAdded = useRecentlyAdded(latestAddition);
+
+  // A switch between views moves the ranked column sideways (see
+  // transitions.css); the page load keeps the plain settle.
+  const containerEntrance =
+    viewSwitch === 'toDetails'
+      ? 'view-enter-from-right-animation'
+      : viewSwitch === 'toSelect'
+        ? 'view-enter-left-animation'
+        : 'view-enter-animation';
+  const itemEntrance =
+    viewSwitch === 'toDetails'
+      ? 'view-item-enter-from-right-animation'
+      : viewSwitch === 'toSelect'
+        ? 'view-item-enter-from-left-animation'
+        : 'view-item-enter-animation';
 
   /**
    * used to synchronize the horizontal scrollbar on detail cards across all ranked items
@@ -95,7 +114,7 @@ const RankedCountriesList: React.FC<RankedCountriesListProps> = ({
   );
 
   return (
-    <div className="tour-step-5 z-20 view-enter-animation">
+    <div className={classNames('tour-step-5 z-20', containerEntrance)}>
       <StrictModeDroppable droppableId="rankedItems">
         {(provided: DroppableProvided) => (
           <div className={classNames('grid h-full max-h-full min-h-full grid-rows-[auto_1fr]')}>
@@ -175,7 +194,7 @@ const RankedCountriesList: React.FC<RankedCountriesListProps> = ({
                             (see useRecentlyAdded). */}
                         <div
                           className={classNames({
-                            'view-item-enter-animation': isOpening,
+                            [itemEntrance]: isOpening,
                             'ranked-item-added-animation':
                               !isOpening &&
                               showUnranked &&

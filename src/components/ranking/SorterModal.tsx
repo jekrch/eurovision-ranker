@@ -8,6 +8,7 @@ import classNames from 'classnames';
 import React from 'react';
 
 import { CountryContestant } from '../../data/CountryContestant';
+import { staggerStyle } from '../../utilities/animationUtil';
 import { getSortedItems } from '../../utilities/SorterUtils';
 import IconButton from '../IconButton';
 import Modal from '../modals/Modal';
@@ -39,6 +40,7 @@ const SorterModal: React.FC<SorterModalProps> = ({ isOpen, onClose, initialItems
     progress,
     currentComparison,
     previousChoiceForThisStep,
+    lastNavigationAction,
     canGoBack,
     canGoForward,
     handleChoice,
@@ -80,6 +82,20 @@ const SorterModal: React.FC<SorterModalProps> = ({ isOpen, onClose, initialItems
       : 'pointer-events-none opacity-75',
   );
 
+  // the pair slides in the direction of travel. the first pair arrives with the
+  // modal itself, so only a choice or a step through history moves it.
+  const cardEnterClass =
+    lastNavigationAction === 'back'
+      ? 'sorter-card-enter-from-left-animation'
+      : lastNavigationAction === 'choice' || lastNavigationAction === 'forward'
+        ? 'sorter-card-enter-from-right-animation'
+        : undefined;
+  // each card is keyed by its slot and the contestant in it, so a new contestant
+  // replays the entrance while one that stays put across steps doesn't move
+  const stepKey = currentSortState?.totalComparisons ?? 0;
+  const cardKey = (side: 'left' | 'right', item: CountryContestant) =>
+    `${side}-${item.uid ?? item.country?.key ?? stepKey}`;
+
   // placeholder shown while the session loads or can't start
   const statusMessage = (message: string) => (
     <div className="text-center p-8 text-sm text-[var(--er-text-subtle)] min-h-[20em] flex items-center justify-center">
@@ -116,12 +132,19 @@ const SorterModal: React.FC<SorterModalProps> = ({ isOpen, onClose, initialItems
     // render active comparison screen
     content = (
       <div className="flex flex-col justify-start items-center gap-2 mb-2 min-h-[20em] px-2 pt-2 w-full overflow-hidden min-w-0">
-        {/* left choice card */}
-        <div onClick={() => handleChoice('left')} className={choiceWrapperClass}>
-          <SorterContestantCard
-            countryContestant={currentComparison.leftItem}
-            showAsPreviousChoice={previousChoiceForThisStep === 'left'}
-          />
+        {/* left choice card. the entrance sits on a wrapper so it doesn't fight the
+            hover lift's transform */}
+        <div
+          key={cardKey('left', currentComparison.leftItem)}
+          className={classNames('w-full min-w-0', cardEnterClass)}
+          style={staggerStyle(0)}
+        >
+          <div onClick={() => handleChoice('left')} className={choiceWrapperClass}>
+            <SorterContestantCard
+              countryContestant={currentComparison.leftItem}
+              showAsPreviousChoice={previousChoiceForThisStep === 'left'}
+            />
+          </div>
         </div>
 
         <div className="flex items-center gap-3 w-full max-w-[14rem] my-1 select-none">
@@ -133,11 +156,17 @@ const SorterModal: React.FC<SorterModalProps> = ({ isOpen, onClose, initialItems
         </div>
 
         {/* right choice card */}
-        <div onClick={() => handleChoice('right')} className={choiceWrapperClass}>
-          <SorterContestantCard
-            countryContestant={currentComparison.rightItem}
-            showAsPreviousChoice={previousChoiceForThisStep === 'right'}
-          />
+        <div
+          key={cardKey('right', currentComparison.rightItem)}
+          className={classNames('w-full min-w-0', cardEnterClass)}
+          style={staggerStyle(1)}
+        >
+          <div onClick={() => handleChoice('right')} className={choiceWrapperClass}>
+            <SorterContestantCard
+              countryContestant={currentComparison.rightItem}
+              showAsPreviousChoice={previousChoiceForThisStep === 'right'}
+            />
+          </div>
         </div>
       </div>
     );

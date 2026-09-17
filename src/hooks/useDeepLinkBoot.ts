@@ -1,8 +1,6 @@
 import { useEffect } from 'react';
 
 import { useModalController } from '../components/modals/ModalControllerContext';
-import { ping } from '../utilities/api/health';
-import { logger } from '../utilities/logger';
 
 interface DeepLinkBootArgs {
   // Loads a `?id=<ranking_id>` shared ranking into the store. Owned by App
@@ -16,8 +14,8 @@ interface DeepLinkBootArgs {
  * /complete-registration, /reset-password, ?signup=beta, /join-group?token=,
  * ?join=, ?quiz=<code>, and ?id=<ranking_id>. Each recognized link opens the
  * matching modal (via the modal controller) and strips its params back to the
- * SPA root so a reload or share copies a clean URL. Also fires a best-effort
- * API reachability probe. Runs once; the URL is only read at startup.
+ * SPA root so a reload or share copies a clean URL. Runs once; the URL is only
+ * read at startup.
  */
 export function useDeepLinkBoot({ loadPublicRankingById }: DeepLinkBootArgs): void {
   const {
@@ -84,11 +82,6 @@ export function useDeepLinkBoot({ loadPublicRankingById }: DeepLinkBootArgs): vo
     if (idParam) {
       loadPublicRankingById(idParam);
     }
-
-    // Fire-and-forget reachability check; surface only on dev console.
-    ping().catch((e) => {
-      if (import.meta.env.DEV) logger.warn('API healthz failed', e);
-    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 }

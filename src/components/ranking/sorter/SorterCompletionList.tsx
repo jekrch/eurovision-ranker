@@ -2,6 +2,7 @@ import classNames from 'classnames';
 import React from 'react';
 
 import { CountryContestant } from '../../../data/CountryContestant';
+import { staggerStyle } from '../../../utilities/animationUtil';
 import { LazyLoadedFlag } from '../../LazyFlag';
 import { eyebrow } from '../../modals/modalStyles';
 
@@ -40,7 +41,8 @@ const SorterCompletionList: React.FC<SorterCompletionListProps> = ({
               return (
                 <li
                   key={item.uid || index}
-                  className="flex items-stretch bg-[var(--er-surface-accent-70)] rounded-xl ring-1 ring-inset ring-white/[0.06] shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_1px_2px_rgba(0,0,0,0.3),0_2px_6px_-2px_rgba(0,0,0,0.25)] overflow-hidden"
+                  style={staggerStyle(index)}
+                  className="view-item-enter-animation flex items-stretch bg-[var(--er-surface-accent-70)] rounded-xl ring-1 ring-inset ring-white/[0.06] shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_1px_2px_rgba(0,0,0,0.3),0_2px_6px_-2px_rgba(0,0,0,0.25)] overflow-hidden"
                 >
                   {/* Rank box */}
                   <div

@@ -544,6 +544,7 @@ export const useSorterSession = (
     progress,
     currentComparison,
     previousChoiceForThisStep,
+    lastNavigationAction,
     canGoBack,
     canGoForward,
     handleChoice,

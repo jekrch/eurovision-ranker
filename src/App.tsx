@@ -112,8 +112,8 @@ const App: React.FC = () => {
     writerReadyRef.current = true;
   }, [refreshUrl]);
 
-  // boot: handle email-link deep paths, ?signup=beta gate, ?id= shared rankings,
-  // and the API reachability probe. Opens the matching modals via the controller.
+  // boot: handle email-link deep paths, ?signup=beta gate, and ?id= shared
+  // rankings. Opens the matching modals via the controller.
   useDeepLinkBoot({ loadPublicRankingById });
 
   // Hydrate the signed-in user's username from /api/me whenever the auth token

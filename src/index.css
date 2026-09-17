@@ -308,14 +308,34 @@ code {
     0 0 0 1px var(--er-drag-ring);
 }
 
+/* A details card carries its category strip below the card box, so the tilt
+   goes on the wrapper around both and the strip travels with the card instead
+   of being left flat underneath it. The card box keeps the surface, border and
+   shadow. The card is wider than a list card, so the same angle would swing its
+   far edge further; the scale and tilt are dialed back to land on a similar
+   amount of movement. */
+.card-drag-stack {
+  transition: transform 160ms var(--er-view-ease, ease-out);
+}
+
+.card-drag-stack-active {
+  transform: scale(1.02) rotate(-0.4deg);
+}
+
+.card-drag-stack-active .card-drag-active.card-drag-active {
+  transform: none;
+}
+
 /* Reduced motion keeps the whole affordance, minus the movement: the card still
    separates from the column, it just does it with depth rather than travel. */
 @media (prefers-reduced-motion: reduce) {
-  .card-drag {
+  .card-drag,
+  .card-drag-stack {
     transition: none;
   }
 
-  .card-drag-active.card-drag-active {
+  .card-drag-active.card-drag-active,
+  .card-drag-stack-active {
     transform: none;
   }
 }

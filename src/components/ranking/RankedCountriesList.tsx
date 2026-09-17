@@ -220,6 +220,7 @@ const RankedCountriesList: React.FC<RankedCountriesListProps> = ({
                               countryContestant={countryContestant}
                               openSongModal={() => openSongModal(countryContestant)}
                               isDragging={snapshot.isDragging}
+                              isDropAnimating={snapshot.isDropAnimating}
                               categoryScrollPosition={categoryScrollPosition}
                               onCategoryScroll={handleCategoryScroll}
                             />

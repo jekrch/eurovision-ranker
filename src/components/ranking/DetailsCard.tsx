@@ -23,6 +23,7 @@ export interface DetailsCardProps {
   countryContestant: CountryContestant;
   className?: string;
   isDragging: boolean;
+  isDropAnimating?: boolean;
   categoryScrollPosition: number;
   onCategoryScroll: (event: React.UIEvent<HTMLDivElement>) => void;
   openSongModal: () => void;
@@ -60,6 +61,9 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
   // outside the card's overflow-hidden box
   const showGlow = !props.isDragging && props.rank === 1;
 
+  // the card is held from the pick up until the drop animation starts
+  const isLifted = props.isDragging && !props.isDropAnimating;
+
   useEffect(() => {
     if (categoryRankingsRef.current) {
       categoryRankingsRef.current.scrollLeft = props.categoryScrollPosition;
@@ -93,7 +97,7 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
   }
 
   return (
-    <div>
+    <div className={classNames('card-drag-stack', { 'card-drag-stack-active': isLifted })}>
       <div className={classNames('relative mx-[.5rem]', { isolate: showGlow })}>
         {showGlow && <span className="first-card-halo" aria-hidden="true" />}
         <div
@@ -103,10 +107,9 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
             'm-auto text-[var(--er-text-tertiary)] bg-[var(--er-surface-primary)]x bg-opacity-30 no-select',
             'relative min-h-[2.5em] py-[0.4em] flex flex-row', // Main card padding is py-[0.4em]
             'items-stretch !cursor-grabber whitespace-normal text-sm overflow-hidden',
-            'shadow border border-0.5 border-solid border-[var(--er-border-primary)] rounded-l-lg rounded-r-sm',
-            props.isDragging
-              ? 'shadow-[var(--er-button-primary-hover)] shadow-sm border-solid'
-              : '',
+            'border border-0.5 border-solid border-[color-mix(in_srgb,var(--er-border-primary)_55%,transparent)] rounded-l-lg rounded-r-md',
+            'card-drag shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_1px_2px_rgba(0,0,0,0.3),0_2px_6px_-2px_rgba(0,0,0,0.25)]',
+            isLifted && 'card-drag-active',
             showGlow ? 'first-card-glow' : '',
           )}
         >
@@ -140,7 +143,7 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
           )}
 
           <div className="relative z-10 flex flex-row items-stretch w-full">
-            <div className="relative -my-2 flex-shrink-0 pb-[1px] mr-0 font-bold w-8 pr-[0.01em] border-r-[0.05em] border-[var(--er-border-secondary)] bg-[var(--er-surface-accent-70)] bg-opacity-70 text-[var(--er-text-primary)] tracking-tighter items-center justify-center flex text-lg rounded-sm">
+            <div className="relative -my-2 flex-shrink-0 pb-[1px] mr-0 font-bold w-8 pr-[0.01em] border-r-[0.05em] border-[var(--er-border-secondary)] bg-[var(--er-surface-accent-70)] bg-gradient-to-b from-white/[0.07] to-black/[0.08] text-[var(--er-text-primary)] tabular-nums tracking-tighter items-center justify-center flex text-lg rounded-sm">
               {props.rank}
               {isNowPlaying && (
                 <span
@@ -178,7 +181,7 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
                 />
               )}
               {isGlobalMode && contestant && (
-                <div className="absolute bottom-0 left-0 right-0 bg-[var(--er-button-neutral-40)] text-[var(--er-text-secondary)] text-sm font-bold text-center py-1 z-10">
+                <div className="absolute bottom-0 left-0 right-0 bg-[var(--er-button-neutral-40)] text-[var(--er-text-secondary)] text-sm font-bold tabular-nums tracking-wide text-center py-1 z-10">
                   {contestant.year}
                 </div>
               )}
@@ -196,7 +199,7 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
                       onClick={() => {
                         props.openSongModal();
                       }}
-                      className="cursor-pointer rounded text-[var(--er-text-muted)] hover:text-[var(--er-text-secondary)] mr-[0.4em]"
+                      className="cursor-pointer rounded text-[var(--er-text-muted)] hover:text-[var(--er-text-secondary)] transition-colors duration-150 mr-[0.4em]"
                     >
                       <FaInfoCircle className="text-base" title="song info" />
                     </div>
@@ -213,7 +216,7 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
                       </span>
                       <span
                         className={classNames(
-                          'ml-2 font-xs text-xs text-[var(--er-text-tertiary)] rounded-sm bg-[var(--er-surface-tertiary-70)] bg-opacity-60',
+                          'ml-1 px-1 font-xs text-xs text-[var(--er-text-tertiary)] rounded bg-[var(--er-surface-tertiary-70)] ring-1 ring-inset ring-white/[0.04]',
                         )}
                       >
                         {contestant.song?.length && !contestant.song?.includes('TBD')
@@ -226,28 +229,28 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
                           voteCodeHasType(vote, 't') && (
                             <div className="flex items-center mr-2">
                               <span className="text-[var(--er-text-muted)]">total:&nbsp;</span>
-                              <span>{`${contestant?.votes?.totalPoints}`}</span>
+                              <span className="tabular-nums font-medium">{`${contestant?.votes?.totalPoints}`}</span>
                             </div>
                           )}
                         {contestant?.votes?.telePoints !== undefined &&
                           voteCodeHasType(vote, 'tv') && (
                             <div className="flex items-center mr-2">
                               <span className="text-[var(--er-text-muted)]">tele:&nbsp;</span>
-                              <span>{`${contestant?.votes?.telePoints}`}</span>
+                              <span className="tabular-nums font-medium">{`${contestant?.votes?.telePoints}`}</span>
                             </div>
                           )}
                         {contestant?.votes?.juryPoints !== undefined &&
                           voteCodeHasType(vote, 'j') && (
                             <div className="flex items-center mr-2">
                               <span className="text-[var(--er-text-muted)]">jury:&nbsp;</span>
-                              <span>{`${contestant?.votes?.juryPoints}`}</span>
+                              <span className="tabular-nums font-medium">{`${contestant?.votes?.juryPoints}`}</span>
                             </div>
                           )}
                       </div>
                       {(contestant?.finalsRank ?? contestant?.contestRank) && showPlace && (
                         <div className="mt-1 font-xs text-xs text-[var(--er-text-subtle)] mb-0 flex flex-wrap items-center mr-2">
                           <span className="text-[var(--er-text-muted)]">place:&nbsp;</span>
-                          <span>{`${contestant?.finalsRank ?? contestant?.contestRank}`}</span>
+                          <span className="tabular-nums font-medium">{`${contestant?.finalsRank ?? contestant?.contestRank}`}</span>
                         </div>
                       )}
                     </>
@@ -270,7 +273,7 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
                 id="right-edge"
                 className="mb-[0em] absolute bottom-0 right-0 flex-shrink-0 flex flex-row justify-between text-xl font-bold text-[var(--er-text-muted)] z-10"
               >
-                <div id="gripper" className="text-right pl-[0.3em] mr-[0.3em]">
+                <div id="gripper" className="text-right pl-[0.3em] mr-[0.3em] opacity-70">
                   &#8942;&#8942;
                 </div>
               </div>
@@ -282,7 +285,7 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
       {categories?.length > 0 && (showTotalRank || showComparison) && (
         <div
           ref={categoryRankingsRef}
-          className="mt-0 mx-[0.6em] shadow-lg rounded-b-md bg-[var(--er-surface-tertiary)] bg-opacity-100 border-[var(--er-border-medium)] border-x-[0.01em] border-b-[0.01em] overflow-x-auto relative ml-[2em]"
+          className="mt-0 mx-[0.6em] shadow-[0_4px_10px_-4px_rgba(0,0,0,0.45)] rounded-b-md bg-[var(--er-surface-tertiary)] bg-gradient-to-b from-black/[0.12] to-transparent border-[color-mix(in_srgb,var(--er-border-medium,var(--er-border-subtle))_60%,transparent)] border-x-[0.01em] border-b-[0.01em] overflow-x-auto relative ml-[2em]"
           onScroll={props.onCategoryScroll}
         >
           <div className="flex">
@@ -301,18 +304,18 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
                   className="px-2 py-1 text-xs flex-shrink-0 text-[var(--er-text-tertiary)] h-[2em] flex items-center"
                   title={`weight: ${category.weight}`}
                 >
-                  <span className="">{category.name}:</span>{' '}
-                  <span className="ml-1 font-medium text-[var(--er-text-secondary)]">
+                  <span className="text-[var(--er-text-muted)]">{category.name}:</span>{' '}
+                  <span className="ml-1 font-medium tabular-nums text-[var(--er-text-secondary)]">
                     {categoryRankIndex || '--'}
                   </span>
                   {arrowIcon && (
                     <FontAwesomeIcon
                       icon={arrowIcon}
                       className={classNames(
-                        'ml-1 inline-block text-sm text-opacity-40',
+                        'ml-1 inline-block text-sm opacity-75',
                         rankDifference < 0
-                          ? 'text-[var(--r-accent-success)]'
-                          : 'text-[var(--r-accent-error)]',
+                          ? 'text-[var(--er-accent-success)]'
+                          : 'text-[var(--er-accent-error)]',
                       )}
                     />
                   )}

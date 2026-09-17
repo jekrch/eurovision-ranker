@@ -11,6 +11,7 @@ import { CountryContestant } from '../../data/CountryContestant';
 import { getSortedItems } from '../../utilities/SorterUtils';
 import IconButton from '../IconButton';
 import Modal from '../modals/Modal';
+import { hairline, modalActionBtn } from '../modals/modalStyles';
 import TooltipHelp from '../TooltipHelp';
 import SorterCompletionList from './sorter/SorterCompletionList';
 import useSorterSession from './sorter/useSorterSession';
@@ -48,25 +49,43 @@ const SorterModal: React.FC<SorterModalProps> = ({ isOpen, onClose, initialItems
 
   // --- render ---
 
-  // shared sleek button styles — subtle glass surfaces with ring borders,
-  // matching the modal shell's aesthetic. only the apply action carries accent.
-  const btnBase = 'px-4 py-2 text-sm rounded-lg ring-1 transition-colors duration-150';
+  // footer buttons share the modal action sizing. backgrounds and text colors are
+  // marked important for the same reason modalActionBtn's utilities are: IconButton
+  // emits its own bg and text classes, which would otherwise win.
+  const btnBase = classNames(modalActionBtn, 'ring-1 ring-inset disabled:cursor-not-allowed');
   const btnNeutralEnabled =
-    'bg-white/5 hover:bg-white/10 text-[var(--er-text-secondary)] ring-white/10';
+    '!bg-white/[0.06] hover:!bg-white/[0.12] !text-[var(--er-text-secondary)] hover:!text-[var(--er-text-primary)] ring-white/10';
   const btnNeutralDisabled =
-    'bg-transparent text-[var(--er-text-subtle)] ring-white/5 opacity-40 cursor-not-allowed';
+    '!bg-transparent !text-[var(--er-text-subtle)] ring-white/5 opacity-40';
   const btnCancel = classNames(
     btnBase,
-    'bg-transparent hover:bg-white/10 text-[var(--er-text-secondary)] ring-white/10 disabled:opacity-40 disabled:cursor-not-allowed',
+    '!bg-transparent hover:!bg-white/[0.06] !text-[var(--er-text-subtle)] hover:!text-[var(--er-text-secondary)] ring-white/10 disabled:opacity-40',
   );
   const btnApply = classNames(
     btnBase,
-    'font-semibold text-white shadow-sm ring-white/10',
-    'bg-[var(--er-accent-success)] hover:bg-[var(--er-accent-success)] hover:brightness-110',
-    'disabled:bg-white/5 disabled:text-[var(--er-text-subtle)] disabled:opacity-50 disabled:shadow-none disabled:cursor-not-allowed',
+    '!font-semibold !text-white ring-white/15 shadow-sm shadow-black/30',
+    '!bg-gradient-to-b from-white/[0.08] to-transparent',
+    '!bg-[var(--er-button-primary)] hover:!bg-[var(--er-button-primary-hover)]',
+    'disabled:!bg-white/5 disabled:!text-[var(--er-text-subtle)] disabled:opacity-50 disabled:shadow-none',
   );
   const navBtnClass = (enabled: boolean, extra?: string) =>
     classNames(btnBase, enabled ? btnNeutralEnabled : btnNeutralDisabled, extra);
+
+  // the two choice cards lift slightly under the pointer and pick up an accent ring
+  const choiceWrapperClass = classNames(
+    'w-full max-w-full min-w-0 cursor-pointer rounded-xl overflow-hidden',
+    'transition-[transform,box-shadow] duration-200 ease-out motion-reduce:transition-none',
+    canInteract
+      ? 'md:hover:-translate-y-0.5 md:hover:shadow-lg md:hover:shadow-black/40 md:hover:ring-2 md:hover:ring-[var(--er-interactive-primary)] active:scale-[0.99] active:ring-2 active:ring-[var(--er-interactive-primary)] motion-reduce:transform-none'
+      : 'pointer-events-none opacity-75',
+  );
+
+  // placeholder shown while the session loads or can't start
+  const statusMessage = (message: string) => (
+    <div className="text-center p-8 text-sm text-[var(--er-text-subtle)] min-h-[20em] flex items-center justify-center">
+      {message}
+    </div>
+  );
 
   let content;
   let comparisonDenominator: number | string = '?';
@@ -77,51 +96,28 @@ const SorterModal: React.FC<SorterModalProps> = ({ isOpen, onClose, initialItems
 
   // show loading indicators first
   if (isComputing) {
-    content = (
-      <div className="text-center p-8 text-[var(--er-text-tertiary)] min-h-[20em] flex items-center justify-center">
-        Loading...
-      </div>
-    );
+    content = statusMessage('Loading...');
   } else if (isOpen && !isSessionLoaded && initialItems.length > 1) {
     // initializing message
-    content = (
-      <div className="text-center p-8 text-[var(--er-text-tertiary)] min-h-[20em] flex items-center justify-center">
-        Initializing sorter...
-      </div>
-    );
+    content = statusMessage('Initializing sorter...');
   } else if (isOpen && initialItems.length <= 1) {
     // message for insufficient items
-    content = (
-      <div className="text-center p-8 text-[var(--er-text-tertiary)] min-h-[20em] flex items-center justify-center">
-        Need at least two items to sort.
-      </div>
-    );
+    content = statusMessage('Need at least two items to sort.');
   } else if (isSessionLoaded && currentSortState?.isComplete) {
     // render completion screen
     const finalRanking = currentSortState ? getSortedItems(currentSortState) : [];
 
     content = (
       <SorterCompletionList
-        totalComparisons={currentSortState.totalComparisons}
         finalRanking={finalRanking}
       />
     );
   } else if (isSessionLoaded && currentComparison) {
     // render active comparison screen
     content = (
-      <div className="flex flex-col justify-start items-center gap-2 mb-2 min-h-[20em] px-[0.1em] pt-1 w-full overflow-hidden min-w-0">
+      <div className="flex flex-col justify-start items-center gap-2 mb-2 min-h-[20em] px-2 pt-2 w-full overflow-hidden min-w-0">
         {/* left choice card */}
-        <div
-          onClick={() => handleChoice('left')}
-          className={classNames(
-            'w-full max-w-full cursor-pointer transition-colors duration-200 rounded-lg overflow-hidden min-w-0',
-            {
-              'md:hover:ring-2 md:hover:ring-[var(--r-accent-ring)] active:ring-2 active:ring-[var(--r-accent-ring)]':
-                canInteract,
-            },
-            { 'pointer-events-none opacity-75': !canInteract },
-          )}
-        >
+        <div onClick={() => handleChoice('left')} className={choiceWrapperClass}>
           <SorterContestantCard
             countryContestant={currentComparison.leftItem}
             showAsPreviousChoice={previousChoiceForThisStep === 'left'}
@@ -129,25 +125,15 @@ const SorterModal: React.FC<SorterModalProps> = ({ isOpen, onClose, initialItems
         </div>
 
         <div className="flex items-center gap-3 w-full max-w-[14rem] my-1 select-none">
-          <span className="h-px flex-1 bg-gradient-to-r from-transparent to-[var(--er-border-subtle)]" />
-          <span className="text-[0.7rem] font-semibold uppercase tracking-[0.25em] text-[var(--er-text-tertiary)]">
+          <span className="h-px flex-1 bg-gradient-to-r from-transparent to-white/15" />
+          <span className="flex h-7 w-7 items-center justify-center rounded-full bg-white/[0.06] ring-1 ring-inset ring-white/10 text-[0.6rem] font-semibold uppercase tracking-[0.12em] text-[var(--er-text-subtle)]">
             vs
           </span>
-          <span className="h-px flex-1 bg-gradient-to-l from-transparent to-[var(--er-border-subtle)]" />
+          <span className="h-px flex-1 bg-gradient-to-l from-transparent to-white/15" />
         </div>
 
         {/* right choice card */}
-        <div
-          onClick={() => handleChoice('right')}
-          className={classNames(
-            'w-full max-w-full cursor-pointer transition-colors duration-200 rounded-lg overflow-hidden',
-            {
-              'md:hover:ring-2 md:hover:ring-[var(--r-accent-ring)] active:ring-2 active:ring-[var(--r-accent-ring)]':
-                canInteract,
-            },
-            { 'pointer-events-none opacity-75': !canInteract },
-          )}
-        >
+        <div onClick={() => handleChoice('right')} className={choiceWrapperClass}>
           <SorterContestantCard
             countryContestant={currentComparison.rightItem}
             showAsPreviousChoice={previousChoiceForThisStep === 'right'}
@@ -157,11 +143,7 @@ const SorterModal: React.FC<SorterModalProps> = ({ isOpen, onClose, initialItems
     );
   } else if (isSessionLoaded) {
     // fallback view if state is indeterminate
-    content = (
-      <div className="text-center p-8 text-[var(--er-text-tertiary)] min-h-[20em] flex items-center justify-center">
-        Preparing comparison...
-      </div>
-    );
+    content = statusMessage('Preparing comparison...');
   } else {
     // default view (or null) if modal open but nothing else matches
     content = null;
@@ -176,28 +158,24 @@ const SorterModal: React.FC<SorterModalProps> = ({ isOpen, onClose, initialItems
       shouldCloseWarn={
         isOpen && isSessionLoaded && !currentSortState?.isComplete && choiceLog.length > 0
       }
-      className="!max-h-[95vh] w-[calc(100%-2rem)] max-w-2xl sort-tour-step-modal px-0 py-1"
+      className="!max-h-[95vh] w-[calc(100%-2rem)] max-w-2xl sort-tour-step-modal !p-0 overflow-hidden"
     >
       <div className="flex flex-col max-h-[calc(95vh-2rem)] h-full bg-[var(--er-surface-dark)] text-[var(--er-text-primary)] overflow-hidden min-w-0">
         {/* header */}
         <div
           className={classNames(
-            'flex-shrink-0 px-4',
-            currentSortState?.isComplete ? 'pt-1' : 'pt-3',
+            'relative flex-shrink-0 px-4 bg-gradient-to-b from-black/30 via-black/10 to-transparent',
+            currentSortState?.isComplete ? 'pt-4' : 'pt-5',
           )}
         >
           {/* title and category */}
           <div className={classNames(currentSortState?.isComplete ? 'mb-1' : 'mb-4')}>
             <div className="flex items-center justify-between">
-              <h2
-                className={classNames(
-                  'text-xl font-bold text-center w-full text-[var(--er-text-secondary)]',
-                )}
-              >
+              <h2 className="text-lg font-semibold tracking-tight leading-tight text-center w-full text-[var(--er-text-primary)]">
                 {isSessionLoaded && !currentSortState?.isComplete && (
                   <TooltipHelp
                     content="Answer with your preferences and a ranking will be generated"
-                    className="text-[var(--er-text-secondary)] align-middle mb-1 mr-2"
+                    className="text-[var(--er-text-subtle)] align-middle mb-1 mr-2"
                     place="bottom-start"
                   />
                 )}
@@ -207,8 +185,10 @@ const SorterModal: React.FC<SorterModalProps> = ({ isOpen, onClose, initialItems
               </h2>
             </div>
             {activeCategory !== undefined && categories[activeCategory]?.name && (
-              <div className="items-center w-full mb-0 text-center text-[var(--er-text-tertiary)] text-sm">
-                {categories[activeCategory]?.name}
+              <div className="w-full mt-1.5 text-center">
+                <span className="inline-flex items-center rounded-full bg-white/[0.06] ring-1 ring-inset ring-white/10 px-2.5 py-0.5 text-xs font-medium text-[var(--er-text-tertiary)]">
+                  {categories[activeCategory]?.name}
+                </span>
               </div>
             )}
           </div>
@@ -217,16 +197,20 @@ const SorterModal: React.FC<SorterModalProps> = ({ isOpen, onClose, initialItems
           {/* show progress bar only when sorting is active */}
           {!currentSortState?.isComplete && isSessionLoaded && (
             <div className="mb-3">
-              <div className="w-full bg-white/5 ring-1 ring-white/5 rounded-full h-1.5 overflow-hidden">
+              <div className="w-full bg-black/25 ring-1 ring-inset ring-white/5 rounded-full h-1.5 overflow-hidden">
                 <div
-                  className="h-full rounded-full bg-[var(--er-interactive-primary)] transition-[width] duration-500 ease-out"
+                  className="h-full rounded-full bg-gradient-to-r from-[var(--er-button-primary)] to-[var(--er-interactive-primary)] shadow-[0_0_8px_var(--er-interactive-primary)] transition-[width] duration-500 ease-out motion-reduce:transition-none"
                   style={{ width: `${progress}%` }}
                 />
               </div>
-              <div className="text-xs text-[var(--er-text-tertiary)] text-right mt-1 min-h-[1em]">
+              <div className="text-[0.7rem] text-[var(--er-text-subtle)] text-right mt-1.5 min-h-[1em] tabular-nums">
                 {currentSortState ? (
                   <span>
-                    Comparisons: {currentSortState.totalComparisons} / ~{comparisonDenominator}
+                    Comparisons:{' '}
+                    <span className="font-medium text-[var(--er-text-secondary)]">
+                      {currentSortState.totalComparisons}
+                    </span>{' '}
+                    / ~{comparisonDenominator}
                     {isComputing && <span className="ml-2 text-orange-400">(Computing...)</span>}
                   </span>
                 ) : (
@@ -237,6 +221,7 @@ const SorterModal: React.FC<SorterModalProps> = ({ isOpen, onClose, initialItems
           )}
           {/* maintain space when progress bar is hidden to prevent layout shifts */}
           {currentSortState?.isComplete && <div className="h-[0.5rem]"></div>}
+          <div className={classNames(hairline, 'absolute inset-x-0 bottom-0')}></div>
         </div>
 
         {/* main content (scrollable) */}
@@ -250,10 +235,11 @@ const SorterModal: React.FC<SorterModalProps> = ({ isOpen, onClose, initialItems
         </div>
 
         {/* footer buttons */}
-        <div className="flex-shrink-0 mt-auto px-4 pb-3 pt-3 border-t border-[var(--er-border-subtle)]">
+        <div className="relative flex-shrink-0 mt-auto px-4 pb-4 pt-3 bg-gradient-to-t from-black/25 to-transparent">
+          <div className={classNames(hairline, 'absolute inset-x-0 top-0')}></div>
           {isSessionLoaded && currentSortState?.isComplete ? (
             // footer buttons for completed state
-            <div className="flex justify-center items-center space-x-4">
+            <div className="flex justify-center items-center gap-3">
               {/* back button (completed) */}
               <IconButton
                 onClick={handleBack}

@@ -64,7 +64,10 @@ const SorterContestantCard: React.FC<SorterContestantCardProps> = ({
     <div className="relative">
       {/* highlight if this was the previous choice */}
       {showAsPreviousChoice && (
-        <div className="absolute inset-0 bg-[var(--er-interactive-primary)] opacity-30 rounded-lg pointer-events-none z-20 border-2 border-[var(--r-accent-ring)]"></div>
+        <>
+          <div className="absolute inset-0 bg-[var(--er-interactive-primary)] opacity-20 rounded-xl pointer-events-none z-20"></div>
+          <div className="absolute inset-0 rounded-xl pointer-events-none z-20 ring-2 ring-inset ring-[var(--er-interactive-primary)]"></div>
+        </>
       )}
 
       <div
@@ -72,8 +75,8 @@ const SorterContestantCard: React.FC<SorterContestantCardProps> = ({
           'm-auto text-[var(--er-text-tertiary)] bg-[var(--er-surface-primary)] bg-opacity-30 no-select choice-background',
           'relative mx-auto min-h-[9em]', // maintain minimum height
           'flex flex-col items-stretch whitespace-normal text-sm overflow-hidden', // allow internal overflow hidden
-          'shadow border-y border-0.5 rounded-md',
-          'border-solid border-[var(--er-border-subtle)]',
+          'border border-solid border-[color-mix(in_srgb,var(--er-border-primary)_45%,transparent)] rounded-xl',
+          'shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_1px_2px_rgba(0,0,0,0.3),0_4px_12px_-4px_rgba(0,0,0,0.35)]',
           'w-full z-10',
         )}
       >
@@ -119,7 +122,7 @@ const SorterContestantCard: React.FC<SorterContestantCardProps> = ({
             {/* country name container prevents pushing youtube link down */}
             <div className="flex justify-between items-center mb-2">
               {/* allow country name to truncate */}
-              <span className="overflow-hidden text-ellipsis whitespace-nowrap text-lg tracking-wide bg-black/30 ring-1 ring-white/10 backdrop-blur-sm rounded-md px-2 py-1 shadow-sm mr-2 flex-shrink">
+              <span className="overflow-hidden text-ellipsis whitespace-nowrap text-lg font-semibold tracking-tight text-[var(--er-text-primary)] bg-black/30 ring-1 ring-inset ring-white/10 backdrop-blur-sm rounded-lg px-2.5 py-1 shadow-sm shadow-black/20 mr-2 flex-shrink">
                 {country?.name}
               </span>
 
@@ -130,7 +133,7 @@ const SorterContestantCard: React.FC<SorterContestantCardProps> = ({
                     href={contestant?.youtube}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="rounded text-[var(--r-accent-error)] hover:text-red-400 transition-colors duration-200"
+                    className="rounded text-[var(--er-accent-error)] hover:brightness-125 drop-shadow-[0_1px_2px_rgba(0,0,0,0.4)] transition-[filter] duration-150"
                     onClick={(e) => e.stopPropagation()}
                   >
                     <FaYoutube className="text-4xl" title="Watch on YouTube" />
@@ -145,7 +148,7 @@ const SorterContestantCard: React.FC<SorterContestantCardProps> = ({
                 <>
                   {/* use block and truncate artist name to prevent wrapping */}
                   <div
-                    className="block font-medium text-base rounded-md px-2 py-1 text-[var(--er-text-primary)] overflow-hidden text-ellipsis whitespace-nowrap"
+                    className="block font-semibold text-base rounded-lg px-2 py-1 text-[var(--er-text-primary)] overflow-hidden text-ellipsis whitespace-nowrap"
                     style={nameBarBgStyle}
                   >
                     {contestant?.artist}
@@ -154,7 +157,7 @@ const SorterContestantCard: React.FC<SorterContestantCardProps> = ({
                   {/* use block and truncate song name to prevent wrapping */}
                   <div
                     style={nameBarBgStyle}
-                    className="mt-2 block font-medium text-sm rounded-md px-2 py-1 text-[var(--er-text-primary)] overflow-hidden text-ellipsis whitespace-nowrap"
+                    className="mt-2 block font-medium text-sm rounded-lg px-2 py-1 text-[var(--er-text-secondary)] overflow-hidden text-ellipsis whitespace-nowrap"
                   >
                     {contestant.song?.length && !contestant.song?.toLowerCase().includes('tbd')
                       ? `"${contestant.song}"`
@@ -163,13 +166,13 @@ const SorterContestantCard: React.FC<SorterContestantCardProps> = ({
 
                   {isGlobalMode && contestant && (
                     // year tag remains inline-block as it's short
-                    <div className="bg-[var(--er-surface-tertiary)] bg-opacity-75 text-[var(--er-text-primary)] text-xs font-bold text-center py-1 px-2 mt-2 inline-block rounded-md ml-2 shadow-sm">
+                    <div className="bg-black/30 ring-1 ring-inset ring-white/10 backdrop-blur-sm text-[var(--er-text-secondary)] text-xs font-semibold tabular-nums tracking-wide text-center py-0.5 px-2 mt-2 inline-block rounded-md ml-2">
                       {contestant.year}
                     </div>
                   )}
                 </>
               ) : (
-                <span className="font-medium text-sm bg-[var(--er-surface-tertiary)] bg-opacity-75 rounded-md inline-block px-2 py-1 text-[var(--er-text-primary)] shadow-sm italic">
+                <span className="font-medium text-sm bg-black/30 ring-1 ring-inset ring-white/10 backdrop-blur-sm rounded-lg inline-block px-2.5 py-1 text-[var(--er-text-tertiary)] italic">
                   did not participate
                 </span>
               )}

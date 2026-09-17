@@ -1,11 +1,6 @@
-import {
-  faPlay,
-  faCircleQuestion,
-  faCalendar,
-  faGaugeHigh,
-  faListOl,
-} from '@fortawesome/free-solid-svg-icons';
+import { faPlay, faCalendar, faGaugeHigh, faListOl } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import classNames from 'classnames';
 import React, { useMemo } from 'react';
 
 import {
@@ -15,6 +10,9 @@ import {
   QUESTION_TYPE_META,
   QuizConfig,
 } from '../../../data/quiz/quizTypes';
+import { staggerStyle } from '../../../utilities/animationUtil';
+import { iconChip } from '../modalStyles';
+import { quizChip, quizLabel, quizPrimaryBtn, quizTile, quizTitle } from './quizStyles';
 
 interface QuizPreviewProps {
   config: QuizConfig;
@@ -66,41 +64,44 @@ const QuizPreview: React.FC<QuizPreviewProps> = ({ config, onBegin }) => {
 
   return (
     <div className="flex flex-col gap-5 py-2">
-      <div className="text-center">
-        <div className="text-[var(--er-text-secondary)] text-2xl font-bold flex items-center justify-center gap-2">
-          <FontAwesomeIcon icon={faCircleQuestion} className="text-[var(--r-accent-blue)]" />
-          Eurovision Quiz
-        </div>
-        <p className="text-[var(--er-text-subtle)] text-xs mt-1">
+      <div className="-mt-3 pr-8">
+        <h2 className={quizTitle}>Eurovision Quiz</h2>
+        <p className="text-[var(--er-text-subtle)] text-xs mt-0.5 truncate">
           You've been challenged to this quiz. Here's what's in it
         </p>
       </div>
 
       <div className="flex flex-col gap-2">
-        {rows.map((row) => (
+        {rows.map((row, index) => (
           <div
             key={row.label}
-            className="flex items-center gap-3 rounded-lg bg-black/20 px-3 py-2.5 ring-1 ring-white/5"
+            className={classNames(
+              quizTile,
+              'flex items-center gap-3 px-3 py-2.5 view-item-enter-animation',
+            )}
+            style={staggerStyle(index + 1)}
           >
-            <FontAwesomeIcon
-              icon={row.icon}
-              className="text-[var(--er-text-subtle)] w-4 flex-shrink-0"
-            />
-            <span className="text-[var(--er-text-subtle)] text-xs font-semibold w-20 flex-shrink-0">
-              {row.label}
+            <span className={classNames(iconChip, 'text-[var(--er-text-subtle)]')}>
+              <FontAwesomeIcon icon={row.icon} className="text-[0.7rem]" />
             </span>
-            <span className="text-[var(--er-text-tertiary)] text-sm font-medium">{row.value}</span>
+            <span className={classNames(quizLabel, 'w-20 flex-shrink-0')}>{row.label}</span>
+            <span className="text-[var(--er-text-primary)] text-sm font-medium tabular-nums">
+              {row.value}
+            </span>
           </div>
         ))}
       </div>
 
       <div>
-        <p className="text-[var(--er-text-subtle)] text-xs font-semibold mb-2">Question types</p>
+        <p className={classNames(quizLabel, 'mb-2')}>Question types</p>
         <div className="flex flex-wrap gap-1.5">
           {typeLabels.map((label) => (
             <span
               key={label}
-              className="text-xs px-2.5 py-1 rounded-full bg-[var(--er-surface-tertiary)] text-[var(--er-text-tertiary)] ring-1 ring-white/5"
+              className={classNames(
+                quizChip,
+                'text-xs px-2.5 py-1 !text-[var(--er-text-tertiary)]',
+              )}
             >
               {label}
             </span>
@@ -108,11 +109,7 @@ const QuizPreview: React.FC<QuizPreviewProps> = ({ config, onBegin }) => {
         </div>
       </div>
 
-      <button
-        type="button"
-        onClick={onBegin}
-        className="mt-1 w-full py-3 rounded-lg font-bold text-white bg-[var(--er-interactive-primary)] hover:brightness-110 active:scale-[0.99] flex items-center justify-center gap-2 shadow-lg transition-all duration-150"
-      >
+      <button type="button" onClick={onBegin} className={classNames(quizPrimaryBtn, 'mt-1')}>
         <FontAwesomeIcon icon={faPlay} />
         Begin Quiz
       </button>

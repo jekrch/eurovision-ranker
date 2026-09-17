@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'react-hot-toast';
 
@@ -122,7 +123,18 @@ const QuizModal: React.FC<QuizModalProps> = ({ isOpen, onClose, initialCode }) =
         )}
 
         {phase !== 'setup' && phase !== 'results' && (
-          <div className="max-h-[78vh] overflow-y-auto px-1 -mx-1">
+          // keyed by phase so each phase replays the entrance; the scroller itself moves
+          // rather than its content, so the settle can't push out a scrollbar. Play never
+          // scrolls here: its column is a fixed height within this cap and scrolls its own
+          // answers, and a question's entrance nudges content past the edges for a moment,
+          // which would otherwise flash scrollbars on every question.
+          <div
+            key={phase}
+            className={classNames(
+              'max-h-[78vh] px-1 -mx-1 view-enter-animation',
+              isPlaying ? 'overflow-hidden' : 'overflow-y-auto',
+            )}
+          >
             {phase === 'preview' && config && (
               <QuizPreview config={config} onBegin={() => buildQuiz(config, seedRef.current)} />
             )}

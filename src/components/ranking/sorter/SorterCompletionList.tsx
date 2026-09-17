@@ -1,44 +1,32 @@
-import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import classNames from 'classnames';
 import React from 'react';
 
 import { CountryContestant } from '../../../data/CountryContestant';
 import { LazyLoadedFlag } from '../../LazyFlag';
+import { eyebrow } from '../../modals/modalStyles';
 
 interface SorterCompletionListProps {
-  totalComparisons: number;
   finalRanking: CountryContestant[];
 }
 
 /*
- * completion screen for the sorter: a confirmation header plus the scrollable,
+ * completion screen for the sorter: a header plus the scrollable,
  * medal-colored final ranking list.
  */
 const SorterCompletionList: React.FC<SorterCompletionListProps> = ({
-  totalComparisons,
   finalRanking,
 }) => {
   return (
     <>
       {/* Fixed header content */}
-      <div className="flex-shrink-0 w-full flex flex-col items-center px-4">
-        <FontAwesomeIcon
-          icon={faCheckCircle}
-          className="text-4xl text-[#119822]x text-[var(--er-accent-success)] mb-3"
-        />
-        <p className="mb-2 text-[var(--er-text-secondary)] text-sm">
-          Your ranking is ready based on {totalComparisons} choices!
-        </p>
-        <h4 className="text-md font-semibold text-[var(--er-text-secondary)] mb-3">
-          Your Complete Ranking:
-        </h4>
+      <div className="flex-shrink-0 w-full flex flex-col items-center px-4 pt-3">
+        <h4 className={classNames(eyebrow, 'mb-3')}>Your Complete Ranking</h4>
       </div>
 
       {/* Scrollable list */}
       {finalRanking.length > 0 && (
         <div className="w-full max-w-md mx-auto flex-1 min-h-0 overflow-y-auto px-6 pr-2 mb-4">
-          <ol className="list-none p-0 m-0 space-y-3">
+          <ol className="list-none p-0 m-0 space-y-2.5">
             {finalRanking.map((item, index) => {
               const rank = index + 1;
               // Medal colors for top 3
@@ -52,22 +40,27 @@ const SorterCompletionList: React.FC<SorterCompletionListProps> = ({
               return (
                 <li
                   key={item.uid || index}
-                  className="flex items-stretch bg-[var(--er-surface-accent-70)] rounded-lg ring-1 ring-white/5 shadow-sm overflow-hidden"
+                  className="flex items-stretch bg-[var(--er-surface-accent-70)] rounded-xl ring-1 ring-inset ring-white/[0.06] shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_1px_2px_rgba(0,0,0,0.3),0_2px_6px_-2px_rgba(0,0,0,0.25)] overflow-hidden"
                 >
                   {/* Rank box */}
                   <div
                     className={classNames(
-                      'flex items-center justify-center min-w-[3.5rem] px-2',
+                      'flex items-center justify-center min-w-[3.5rem] px-2 bg-gradient-to-b from-white/[0.12] to-black/[0.1] border-r border-black/20',
                       rankBoxColor,
                     )}
                   >
-                    <span className="text-xl font-bold text-white">{rank}</span>
+                    <span className="text-xl font-bold tabular-nums tracking-tight text-white drop-shadow-[0_1px_1px_rgba(0,0,0,0.35)]">
+                      {rank}
+                    </span>
                   </div>
 
                   {/* Flag box */}
                   <div className="flex items-center justify-center px-3 py-2">
                     {item.country?.key && (
-                      <LazyLoadedFlag code={item.country.key} className="w-12 h-auto rounded-sm" />
+                      <LazyLoadedFlag
+                        code={item.country.key}
+                        className="w-12 h-auto rounded-[3px] ring-1 ring-black/20 shadow-sm shadow-black/30"
+                      />
                     )}
                   </div>
 
@@ -77,7 +70,7 @@ const SorterCompletionList: React.FC<SorterCompletionListProps> = ({
                       {item.contestant?.artist || 'Unknown Artist'}
                     </span>
                     {item.contestant?.song && (
-                      <span className="text-sm text-[var(--er-text-secondary)] truncate">
+                      <span className="text-sm text-[var(--er-text-tertiary)] truncate">
                         "{item.contestant.song}"
                       </span>
                     )}
@@ -90,7 +83,7 @@ const SorterCompletionList: React.FC<SorterCompletionListProps> = ({
       )}
 
       {/* Fixed footer text */}
-      <p className="text-sm text-[var(--er-text-tertiary)] flex-shrink-0 px-4 pb-4 text-center">
+      <p className="text-xs text-[var(--er-text-subtle)] flex-shrink-0 px-4 pb-4 text-center">
         You can go back to review choices, cancel, or apply this ranking.
       </p>
     </>

@@ -132,6 +132,23 @@
   }
 }
 
+/* QUIZ
+ *
+ * Moving to the next question is forward travel through a sequence, so the new
+ * question comes in from the right, the prompt first and its answers a beat
+ * behind. The answers travel the same short distance as the prompt: they sit in
+ * their own scroller, where a longer trip would push a scrollbar out mid flight. */
+@keyframes quizOptionEnter {
+  from {
+    opacity: 0;
+    transform: translateX(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
 /* A tab panel drifts rather than slides: the panels of a tab bar aren't
    ordered left to right in any meaningful way (the config modal has six), so a
    horizontal slide would have to pick a direction, and picking the same one
@@ -188,6 +205,12 @@
   animation: tabPanelEnter var(--er-tab-panel-duration) var(--er-view-ease) backwards;
 }
 
+.quiz-option-enter-animation {
+  animation: quizOptionEnter var(--er-view-item-duration) var(--er-view-ease) backwards;
+  /* one step in so the first answer trails the prompt */
+  animation-delay: calc((var(--er-stagger-index, 0) + 1) * var(--er-stagger-step) * 1.5);
+}
+
 /* the tab strip's underline (see TabBar). It travels by transform; the width is
    a real width rather than a scale, so that the line lands exactly as wide as it
    was measured to be, and it's transitioned alongside the travel - one 2px bar
@@ -199,6 +222,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .quiz-option-enter-animation,
   .ranked-item-added-animation,
   .tab-panel-enter-animation,
   .view-enter-animation,

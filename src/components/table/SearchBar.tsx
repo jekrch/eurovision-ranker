@@ -23,17 +23,17 @@ const SearchBar: React.FC<SearchBarProps> = ({ searchTerm, handleSearch, classNa
         content='Search across all columns. To search for a phrase, enclose your search term in quotes "like this"'
         className="mt-2 mr-3 pb-1"
       />
-      <div className="relative w-full mr-3">
+      <div className="relative w-full mr-3 mt-1">
         <input
           type="text"
           value={searchTerm}
           onChange={handleSearch}
           placeholder="Search..."
-          className="text-sm w-full pl-10 pr-4 py-[0.4em] border rounded-md focus:outline-none focus:ring-1 mt-1 focus:[var(--er-border-subtle)] bg-transparent text-[var(--er-text-secondary)] border-[var(--er-border-primary)] placeholder-[var(--er-text-subtle)]"
+          className="block text-sm w-full pl-9 pr-4 py-[0.45em] rounded-lg bg-[var(--er-surface-tertiary-70)] text-[var(--er-text-primary)] placeholder-[var(--er-text-subtle)] ring-1 ring-white/5 focus:outline-none focus:ring-2 focus:ring-[var(--er-button-primary)]/50 transition-shadow"
         />
         <FontAwesomeIcon
           icon={faSearch}
-          className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[var(--er-text-tertiary)]"
+          className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-xs text-[var(--er-text-subtle)]"
         />
       </div>
     </div>

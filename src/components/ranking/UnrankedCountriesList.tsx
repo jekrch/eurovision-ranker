@@ -28,7 +28,7 @@ const UnrankedCountriesList: React.FC<UnrankedCountriesListProps> = ({ onAddToRa
   return (
     <div className="min-w-[10em] max-w-[40vw] overflow-y-auto overflow-x-hidden flex-grow mr-0 relative">
       <StrictModeDroppable droppableId="unrankedItems" key={`strict-md`}>
-        {(provided) => (
+        {(provided, droppableSnapshot) => (
           <ul
             key={`ranked-list-${unrankedItems.length}`}
             {...provided.droppableProps}
@@ -75,8 +75,17 @@ const UnrankedCountriesList: React.FC<UnrankedCountriesListProps> = ({ onAddToRa
                 arriving from the other column brings that column's width with it and
                 this one stretches for the length of the drag, then snaps back on the
                 drop. Clipping keeps the gap's height and takes its width out of the
-                column's intrinsic size. */}
-            <div className="max-w-0 overflow-hidden">{provided.placeholder}</div>
+                column's intrinsic size. A card dragged from this column already set
+                its width, so its placeholder keeps that width in place of the card
+                while it floats; clipping it too would narrow the column mid-drag
+                whenever the widest card is the one moving. */}
+            <div
+              className={classNames({
+                'max-w-0 overflow-hidden': !droppableSnapshot.draggingFromThisWith,
+              })}
+            >
+              {provided.placeholder}
+            </div>
           </ul>
         )}
       </StrictModeDroppable>

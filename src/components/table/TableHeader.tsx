@@ -1,5 +1,6 @@
 import { faSortUp, faSortDown } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import classNames from 'classnames';
 import React from 'react';
 
 interface TableHeaderProps {
@@ -20,9 +21,9 @@ const TableHeader: React.FC<TableHeaderProps> = ({
     if (column === 'country') column = 'to_country';
     if (sortColumn !== column) return null;
     return sortDirection === 'asc' ? (
-      <FontAwesomeIcon icon={faSortUp} className="ml-2" />
+      <FontAwesomeIcon icon={faSortUp} className="ml-1.5 text-[var(--er-button-primary)]" />
     ) : (
-      <FontAwesomeIcon icon={faSortDown} className="ml-2" />
+      <FontAwesomeIcon icon={faSortDown} className="ml-1.5 text-[var(--er-button-primary)]" />
     );
   };
 
@@ -30,15 +31,21 @@ const TableHeader: React.FC<TableHeaderProps> = ({
   const columns = ['Year', 'Country', 'Performer', 'Song'];
 
   return (
-    <thead className="bg-[var(--er-button-neutral-hover)] text-[var(--er-text-secondary)] sticky top-0 z-40">
-      <tr>
-        <th className="py-3 text-center text-xs font-medium uppercase tracking-wider sticky left-0 z-50 bg-[var(--er-button-neutral-hover)]">
+    <thead className="bg-[var(--er-surface-tertiary)] text-[var(--er-text-tertiary)] sticky top-0 z-40">
+      <tr className="shadow-[inset_0_-1px_0_rgba(255,255,255,0.06)]">
+        <th className="py-3 text-center text-[0.7rem] font-semibold uppercase tracking-widest sticky left-0 z-50 bg-[var(--er-surface-tertiary)]">
           {showSelected ? 'Del' : 'Add'}
         </th>
         {columns.map((header) => (
           <th
             key={header}
-            className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider cursor-pointer hover:bg-[var(--er-button-primary)]"
+            className={classNames(
+              'px-6 py-3 text-left text-[0.7rem] font-semibold uppercase tracking-widest cursor-pointer select-none transition-colors hover:bg-white/5 hover:text-[var(--er-text-primary)]',
+              {
+                'text-[var(--er-text-primary)]':
+                  sortColumn === (header === 'Country' ? 'to_country' : header.toLowerCase()),
+              },
+            )}
             onClick={() => handleSort(header.toLowerCase())}
           >
             <div className="flex items-center whitespace-nowrap">

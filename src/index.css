@@ -163,8 +163,16 @@ code {
 }
 
 /* Override the --vh-based height cap in view mode so the container
-   can extend behind the iOS Safari toolbar */
+   can extend behind the iOS Safari toolbar. 100lvh is taller than the visible
+   viewport while the toolbars are showing, so in normal flow it would make the
+   document itself scrollable and the header could be scrolled off the top with
+   no easy way back (touches land on the inner list's scroller). Fixed
+   positioning keeps the full height without adding to the document's height. */
 .site-content.view-mode {
+  position: fixed;
+  top: 0;
+  left: env(safe-area-inset-left);
+  right: env(safe-area-inset-right);
   max-height: none;
   min-height: 100lvh;
   height: 100lvh;

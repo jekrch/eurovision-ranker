@@ -95,14 +95,14 @@ const ContestantTable: React.FC = () => {
               content="Uncheck this to use the simple year-based selection mode"
               className="text-[var(--er-text-secondary)] !mt-0 !mb-0"
             />
-            <div className="flex items-center gap-3 rounded-md border border-[var(--er-border-primary)] bg-[var(--er-surface-tertiary-70)] px-3 py-[0.3em]">
+            <div className="flex items-center gap-3 rounded-lg bg-[var(--er-surface-tertiary-70)] ring-1 ring-white/5 px-3 py-[0.35em]">
               <Switch
                 label="adv"
                 labelClassName="text-sm text-[var(--er-text-tertiary)]"
                 checked={globalSearch}
                 setChecked={switchAdvancedMode}
               />
-              <span className="h-4 w-px bg-[var(--er-border-subtle)]" aria-hidden="true" />
+              <span className="h-4 w-px bg-white/10" aria-hidden="true" />
               <Switch
                 label="selected"
                 labelClassName="text-sm text-[var(--er-text-tertiary)]"
@@ -128,7 +128,7 @@ const ContestantTable: React.FC = () => {
         message={`Are you sure you want to turn off advanced global search mode? \n\nYour current selections will be cleared, since they contain contestants from multiple years.`}
       />
 
-      <div className="flex-grow overflow-auto !rounded-t-md !rounded-tr-md mr-1 shadow-xl">
+      <div className="flex-grow min-h-0 overflow-auto rounded-lg mr-1 bg-[var(--er-card-surface)] ring-1 ring-white/5 shadow-lg shadow-black/20">
         <div className="relative">
           <table className="w-full bg-transparent table-fixed">
             <colgroup>

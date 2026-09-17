@@ -20,25 +20,23 @@ const TableBody: React.FC<TableBodyProps> = ({
   selectedContestants,
 }) => {
   return (
-    <tbody className="bg-transparent divide-y divide-gray-700">
+    <tbody className="bg-transparent divide-y divide-white/5">
       {paginatedContestants.map((contestant) => {
         const isSelected = !showSelected && selectedContestants.some((c) => c.id === contestant.id);
         return (
           <tr
             key={contestant.id}
             className={classNames(
-              'text-[var(--er-text-secondary)] transition-colors',
+              'group text-sm text-[var(--er-text-secondary)] transition-colors',
               isSelected
                 ? 'bg-[var(--er-surface-accent-70)] hover:bg-[var(--er-surface-accent)]'
-                : 'bg-opacity-50 hover:bg-[var(--er-surface-dark)]',
+                : 'hover:bg-white/[0.04]',
             )}
           >
             <td
               className={classNames(
-                'py-0 whitespace-nowrap sticky left-0 z-30',
-                isSelected
-                  ? 'bg-[var(--er-surface-accent)] hover:bg-[var(--er-button-primary)]'
-                  : 'bg-[var(--er-surface-dark)] hover:bg-[var(--er-button-primary)]',
+                'py-0 whitespace-nowrap sticky left-0 z-30 transition-colors',
+                isSelected ? 'bg-[var(--er-surface-accent)]' : 'bg-[var(--er-card-surface-base)]',
               )}
             >
               <div className="flex justify-center h-full">
@@ -48,21 +46,37 @@ const TableBody: React.FC<TableBodyProps> = ({
                 >
                   <button
                     onClick={() => handleToggleSelected(contestant.id)}
-                    className="text-[var(--er-text-secondary)] hover:text-slate-100 p-2 rounded-md h-full w-full"
+                    aria-label={showSelected ? 'Remove' : isSelected ? 'Deselect' : 'Select'}
+                    className="flex items-center justify-center p-2 h-full w-full focus:outline-none"
                   >
-                    {showSelected ? (
-                      <FontAwesomeIcon icon={faMinus} className="text-[var(--er-accent-error)]" />
-                    ) : isSelected ? (
-                      <FontAwesomeIcon icon={faCheck} className="text-[var(--er-accent-success)]" />
-                    ) : (
-                      <FontAwesomeIcon icon={faPlus} />
-                    )}
+                    <span
+                      className={classNames(
+                        'flex h-7 w-7 items-center justify-center rounded-full text-xs ring-1 transition-colors',
+                        showSelected
+                          ? 'bg-[var(--er-accent-error)]/10 ring-[var(--er-accent-error)]/30 text-[var(--er-accent-error)] group-hover:bg-[var(--er-accent-error)]/20'
+                          : isSelected
+                            ? 'bg-[var(--er-accent-success)]/15 ring-[var(--er-accent-success)]/40 text-[var(--er-accent-success)]'
+                            : 'bg-white/5 ring-white/10 text-[var(--er-text-tertiary)] group-hover:bg-[var(--er-button-primary)] group-hover:ring-transparent group-hover:text-white',
+                      )}
+                    >
+                      {showSelected ? (
+                        <FontAwesomeIcon icon={faMinus} />
+                      ) : isSelected ? (
+                        <FontAwesomeIcon icon={faCheck} />
+                      ) : (
+                        <FontAwesomeIcon icon={faPlus} />
+                      )}
+                    </span>
                   </button>
                 </Ripples>
               </div>
             </td>
-            <td className="px-6 py-4 whitespace-nowrap overflow-x-clip">{contestant.year}</td>
-            <td className="px-6 py-4 whitespace-nowrap overflow-x-clip">{contestant.to_country}</td>
+            <td className="px-6 py-4 whitespace-nowrap overflow-x-clip tabular-nums text-[var(--er-text-tertiary)]">
+              {contestant.year}
+            </td>
+            <td className="px-6 py-4 whitespace-nowrap overflow-x-clip font-medium text-[var(--er-text-primary)]">
+              {contestant.to_country}
+            </td>
             <td
               className="px-6 py-4 whitespace-nowrap overflow-x-clip"
               title={contestant.performer}

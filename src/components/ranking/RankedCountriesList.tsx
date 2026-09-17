@@ -3,6 +3,7 @@ import {
   DraggableProvided,
   DraggableStateSnapshot,
   DroppableProvided,
+  DroppableStateSnapshot,
 } from '@hello-pangea/dnd';
 import classNames from 'classnames';
 import React, { useCallback, useState } from 'react';
@@ -116,7 +117,7 @@ const RankedCountriesList: React.FC<RankedCountriesListProps> = ({
   return (
     <div className={classNames('tour-step-5 z-20', containerEntrance)}>
       <StrictModeDroppable droppableId="rankedItems">
-        {(provided: DroppableProvided) => (
+        {(provided: DroppableProvided, droppableSnapshot: DroppableStateSnapshot) => (
           <div className={classNames('grid h-full max-h-full min-h-full grid-rows-[auto_1fr]')}>
             <RankedItemsHeader
               setMapModalShow={() => openMapModal()}
@@ -235,8 +236,17 @@ const RankedCountriesList: React.FC<RankedCountriesListProps> = ({
                     arriving from the other column brings that column's width with it and
                     this one stretches for the length of the drag, then snaps back on the
                     drop. Clipping keeps the gap's height and takes its width out of the
-                    column's intrinsic size. */}
-                <div className="max-w-0 overflow-hidden">{provided.placeholder}</div>
+                    column's intrinsic size. A card dragged from this column already set
+                    its width, so its placeholder keeps that width in place of the card
+                    while it floats; clipping it too would narrow the column mid-drag
+                    whenever the widest card is the one moving. */}
+                <div
+                  className={classNames({
+                    'max-w-0 overflow-hidden': !droppableSnapshot.draggingFromThisWith,
+                  })}
+                >
+                  {provided.placeholder}
+                </div>
               </ul>
             </div>
             {showUnranked && rankedItems?.length > 0 && (

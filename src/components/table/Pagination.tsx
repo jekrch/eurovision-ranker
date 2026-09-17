@@ -1,3 +1,10 @@
+import {
+  faAngleLeft,
+  faAngleRight,
+  faAnglesLeft,
+  faAnglesRight,
+} from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import classNames from 'classnames';
 import React from 'react';
 
@@ -22,10 +29,10 @@ const Pagination: React.FC<PaginationProps> = ({
   handlePageChange,
 }) => {
   const navButtonClass = classNames(
-    'flex h-8 min-w-[2rem] items-center justify-center rounded-md px-2 text-base font-semibold leading-none',
-    'text-[var(--er-text-primary)] bg-[var(--er-button-neutral)]',
+    'flex h-8 min-w-[2rem] items-center justify-center rounded-md px-2 text-xs leading-none',
+    'text-[var(--er-text-primary)] bg-white/5 ring-1 ring-white/5',
     'hover:bg-[var(--er-button-primary)] hover:text-white transition-colors',
-    'disabled:opacity-40 disabled:pointer-events-none',
+    'disabled:opacity-30 disabled:pointer-events-none',
   );
 
   const renderPageButtons = () => {
@@ -37,7 +44,7 @@ const Pagination: React.FC<PaginationProps> = ({
           aria-label="First page"
           className={navButtonClass}
         >
-          {'«'}
+          <FontAwesomeIcon icon={faAnglesLeft} />
         </button>
         <button
           onClick={() => handlePageChange(currentPage - 1)}
@@ -45,7 +52,7 @@ const Pagination: React.FC<PaginationProps> = ({
           aria-label="Previous page"
           className={navButtonClass}
         >
-          {'‹'}
+          <FontAwesomeIcon icon={faAngleLeft} />
         </button>
         <span className="px-1.5 text-sm font-medium text-[var(--er-text-secondary)] tabular-nums whitespace-nowrap">
           {currentPage} / {totalPages}
@@ -56,7 +63,7 @@ const Pagination: React.FC<PaginationProps> = ({
           aria-label="Next page"
           className={navButtonClass}
         >
-          {'›'}
+          <FontAwesomeIcon icon={faAngleRight} />
         </button>
         <button
           onClick={() => handlePageChange(totalPages)}
@@ -64,7 +71,7 @@ const Pagination: React.FC<PaginationProps> = ({
           aria-label="Last page"
           className={navButtonClass}
         >
-          {'»'}
+          <FontAwesomeIcon icon={faAnglesRight} />
         </button>
       </>
     );
@@ -124,7 +131,7 @@ const Pagination: React.FC<PaginationProps> = ({
   };
 
   return (
-    <div className="mt-2 mr-1 flex items-center justify-between gap-2 rounded-md bg-[var(--er-surface-tertiary-70)] px-2 py-1.5">
+    <div className="mt-2 mr-1 flex items-center justify-between gap-2 rounded-lg bg-[var(--er-surface-tertiary-70)] ring-1 ring-white/5 px-2 py-1.5">
       <div className="flex items-center gap-2">
         <Dropdown
           value={`${pageSize}`}
@@ -135,7 +142,7 @@ const Pagination: React.FC<PaginationProps> = ({
           openUpwards={true}
           mini={true}
         />
-        <span className="text-sm text-[var(--er-text-secondary)] whitespace-nowrap">
+        <span className="text-sm text-[var(--er-text-tertiary)] tabular-nums whitespace-nowrap">
           of {displayedContestants.length}
         </span>
       </div>

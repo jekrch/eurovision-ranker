@@ -26,7 +26,7 @@ const Navbar: React.FC<NavbarProps> = ({ openModal, openConfigModal }) => {
 
   return (
     <nav className="nav-diagonal-split-bg py-1 px-4 sticky z-50">
-      <div className="container mx-auto flex justify-between items-center z-50">
+      <div className="container lg:max-w-[40rem] mx-auto flex justify-between items-center z-50">
         <div className="flex items-center flex-wrap">
           <div className="items-center -my-1">
             <span className="inline gradient-text product-name">Eurovision Ranker</span>

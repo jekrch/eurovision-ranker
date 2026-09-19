@@ -229,3 +229,37 @@ describe('fetchDistinctFromCountryIdsForYear', () => {
     vi.unstubAllGlobals();
   });
 });
+
+describe('fetchVoteRoundSummariesForYear', () => {
+  it('lists the rounds with votes, final first, with their voters and vote types', async () => {
+    const { fetchVoteRoundSummariesForYear } = await loadVoteRepository();
+    csvCache.fetchVoteCsv.mockResolvedValue(
+      csv(
+        '2019,sf2,se,gb,7,,',
+        '2019,sf1,dk,no,5,5,0',
+        '2019,f,se,gb,12,6,6',
+        '2019,f,no,gb,8,4,4',
+        '2018,sf,se,gb,5,,',
+      ),
+    );
+
+    const summaries = await fetchVoteRoundSummariesForYear('19');
+
+    expect(summaries).toEqual([
+      {
+        round: 'final',
+        fromCountryKeys: ['se', 'no'],
+        hasTeleVotes: true,
+        hasJuryVotes: true,
+      },
+      { round: 'semi-final-1', fromCountryKeys: ['dk'], hasTeleVotes: true, hasJuryVotes: false },
+      { round: 'semi-final-2', fromCountryKeys: ['se'], hasTeleVotes: false, hasJuryVotes: false },
+    ]);
+  });
+
+  it('returns no rounds for a year without vote data', async () => {
+    const { fetchVoteRoundSummariesForYear } = await loadVoteRepository();
+
+    expect(await fetchVoteRoundSummariesForYear('1956')).toEqual([]);
+  });
+});

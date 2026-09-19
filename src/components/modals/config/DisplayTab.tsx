@@ -164,9 +164,11 @@ const DisplayTab: React.FC = () => {
     const handleVoteCountryUpdate = async () => {
       if (vote === 'loading') return;
 
+      // keep the current round so a semi-final ranking stays on semi-final votes
+      const roundCode = vote?.split('-')?.[0] || 'f';
       const voteTypeCode = vote?.split('-')?.[1] ?? '';
       const countryCode = getVoteSourceCodeFromOption(displayVoteSource);
-      const newVoteCode = `f-${voteTypeCode}-${countryCode}`;
+      const newVoteCode = `${roundCode}-${voteTypeCode}-${countryCode}`;
 
       await resetRankedItemVotes(rankedItems, newVoteCode);
 

@@ -8,6 +8,9 @@ let cachedVoteYear: string;
 let cachedVoteRound: string;
 let cachedVotes: Vote[];
 
+/** Round codes usable as the first segment of a vote code (e.g. sf1-tv-gb) */
+const VOTE_ROUND_CODES = ['f', 'sf', 'sf1', 'sf2'];
+
 /**
  * Fetches voting records for the provided params. If these were just previously
  * fetched for the same year and round, use a cached list. This improves performance
@@ -165,8 +168,8 @@ export function updateVoteTypeCode(
     return '';
   }
 
-  // Ensure the round is present
-  if (!currentCode || !currentCode.startsWith('f-')) {
+  // Ensure a valid round is present, keeping the existing one (e.g. a semi-final)
+  if (!currentCode || !VOTE_ROUND_CODES.includes(currentCode.split('-')[0]!)) {
     currentCode = 'f-';
   }
 
@@ -297,6 +300,10 @@ function processVotingRound(round: string) {
     round = 'final';
   } else if (round === 'sf') {
     round = 'semi-final';
+  } else if (round === 'sf1') {
+    round = 'semi-final-1';
+  } else if (round === 'sf2') {
+    round = 'semi-final-2';
   } else {
     //throw new Error("Invalid voting round param value " + round);
     round = 'final';

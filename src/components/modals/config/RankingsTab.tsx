@@ -22,7 +22,11 @@ import {
 import { logger } from '../../../utilities/logger';
 import { goToUrl } from '../../../utilities/UrlUtil';
 import { sortByVotes } from '../../../utilities/VoteProcessor';
-import { getVoteCode, hasAnyJuryVotes, hasAnyTeleVotes } from '../../../utilities/VoteUtil';
+import {
+  fetchVoteRoundSummariesForYear,
+  VoteRoundSummary,
+} from '../../../utilities/VoteRepository';
+import { getVoteCode } from '../../../utilities/VoteUtil';
 import Dropdown from '../../Dropdown';
 import TooltipHelp from '../../TooltipHelp';
 
@@ -37,6 +41,14 @@ const sectionCard =
 const headerBar =
   'flex items-center gap-2 px-4 py-2.5 border-b border-white/5 bg-[var(--er-button-neutral)]/15';
 
+/** Rounds a ranking can be generated for, keyed by the vote data's round name */
+const ROUND_OPTIONS: { [round: string]: { label: string; code: string; name: string } } = {
+  final: { label: 'Final', code: 'f', name: 'Final' },
+  'semi-final': { label: 'Semi-Final', code: 'sf', name: 'Semi-Final' },
+  'semi-final-1': { label: 'Semi-Final 1', code: 'sf1', name: 'Semi-Final+1' },
+  'semi-final-2': { label: 'Semi-Final 2', code: 'sf2', name: 'Semi-Final+2' },
+};
+
 const RankingsTab: React.FC = () => {
   const year = useAppSelector((state: AppState) => state.root.year);
   const theme = useAppSelector((state: AppState) => state.root.theme);
@@ -46,8 +58,8 @@ const RankingsTab: React.FC = () => {
     'All',
     ...countries.sort((a, b) => a.name.localeCompare(b.name)).map((c) => c.name),
   ]);
-  const [hasJuryVotes, setHasJuryVotes] = useState(false);
-  const [hasTeleVotes, setHasTeleVotes] = useState(false);
+  const [roundSummaries, setRoundSummaries] = useState<VoteRoundSummary[]>([]);
+  const [round, setRound] = useState('final');
 
   const [contestantCountries, _setContestantCountries] = useState<string[]>([
     '',
@@ -55,23 +67,49 @@ const RankingsTab: React.FC = () => {
   ]);
   const [contestantCountry, setContestantCountry] = useState('');
   const [contestantCountryOrder, setContestantCountryOrder] = useState('Year');
-  // Update vote source options based on the selected year
-  useEffect(() => {
-    const updateVoteSourceOptions = async () => {
-      const yearContestants = await fetchCountryContestantsByYear(rankingYear, undefined);
+  const roundSummary = roundSummaries.find((rs) => rs.round === round);
+  const hasTeleVotes = roundSummary?.hasTeleVotes ?? false;
+  const hasJuryVotes = roundSummary?.hasJuryVotes ?? false;
+  const roundOption = ROUND_OPTIONS[round] ?? ROUND_OPTIONS.final!;
 
-      setVoteSourceOptions([
-        'All',
-        ...yearContestants
-          .map((cc) => cc.country)
-          .sort((a, b) => a.name.localeCompare(b.name))
-          .map((c) => c.name),
-      ]);
-      setHasTeleVotes(hasAnyTeleVotes(yearContestants));
-      setHasJuryVotes(hasAnyJuryVotes(yearContestants));
+  // Load which rounds have vote data for the selected year, falling back
+  // to the final when the selected round wasn't held that year
+  useEffect(() => {
+    let cancelled = false;
+
+    const updateRounds = async () => {
+      let summaries: VoteRoundSummary[] = [];
+      try {
+        summaries = await fetchVoteRoundSummariesForYear(rankingYear);
+      } catch (error) {
+        logger.error('Unable to load vote rounds for ' + rankingYear, error);
+      }
+      if (cancelled) return;
+
+      setRoundSummaries(summaries);
+      setRound((current) => (summaries.some((rs) => rs.round === current) ? current : 'final'));
     };
-    updateVoteSourceOptions();
+    updateRounds();
+
+    return () => {
+      cancelled = true;
+    };
   }, [rankingYear]);
+
+  // Update vote source options to the countries that voted in the selected round
+  useEffect(() => {
+    const options = [
+      'All',
+      ...(roundSummary?.fromCountryKeys ?? [])
+        .map((key) => countries.find((c) => c.key === key))
+        .filter((c) => c !== undefined)
+        .sort((a, b) => a.name.localeCompare(b.name))
+        .map((c) => c.name),
+    ];
+
+    setVoteSourceOptions(options);
+    setVoteSource((current) => (options.includes(current) ? current : 'All'));
+  }, [roundSummary]);
 
   /**
    * Get sorted ranking code based on the selected year, vote type, round, and vote source
@@ -88,21 +126,18 @@ const RankingsTab: React.FC = () => {
     round: string,
     voteSource?: string,
   ) => {
-    let voteCode = undefined;
     let sourceCountryKey = undefined;
 
     if (voteSource?.length && voteSource !== 'All') {
       sourceCountryKey = countries.find((c) => c.name === voteSource)?.key;
       if (!sourceCountryKey) {
         logger.error('Unable to find vote source: ' + voteSource);
-      } else {
-        voteCode = `${round}-${voteType}-${sourceCountryKey}`;
       }
     }
 
-    let countryContestants = await fetchCountryContestantsByYear(voteYear, voteCode);
+    let countryContestants = await fetchCountryContestantsByYear(voteYear);
 
-    if (sanitizeYear(year) === '1956') {
+    if (sanitizeYear(voteYear) === '1956') {
       return countryContestants
         .filter((cc) => cc.contestant?.finalsRank === 1)
         .map((cc) => cc.id)
@@ -163,12 +198,12 @@ const RankingsTab: React.FC = () => {
   // Open total ranking based on the selected year and vote source
   const openTotalRanking = async () => {
     const voteYear = rankingYear ?? year;
-    const concatenatedIds = await getSortedRankingCode(voteYear, 'total', 'final', voteSource);
+    const concatenatedIds = await getSortedRankingCode(voteYear, 'total', round, voteSource);
     goToUrl(
       `?r=${concatenatedIds}&` +
         `y=${voteYear.substring(2, 4)}&` +
-        `n=Final${getSourceCountryPostfix(voteSource)}&` +
-        `v=${getVoteCode('f', 't', voteSource)}`,
+        `n=${roundOption.name}${getSourceCountryPostfix(voteSource)}&` +
+        `v=${getVoteCode(roundOption.code, 't', voteSource)}`,
       theme,
     );
   };
@@ -188,24 +223,24 @@ const RankingsTab: React.FC = () => {
   // Get total televote ranking code based on the selected year and vote source
   const getTotalTelevoteRankingCode = async (voteSource: string) => {
     const voteYear = rankingYear ?? year;
-    const concatenatedIds = await getSortedRankingCode(voteYear, 'televote', 'final', voteSource);
+    const concatenatedIds = await getSortedRankingCode(voteYear, 'televote', round, voteSource);
     return (
       `?r=${concatenatedIds}&` +
       `y=${voteYear.substring(2, 4)}&` +
-      `n=Final+Televote${getSourceCountryPostfix(voteSource)}&` +
-      `v=${getVoteCode('f', 'tv', voteSource)}`
+      `n=${roundOption.name}+Televote${getSourceCountryPostfix(voteSource)}&` +
+      `v=${getVoteCode(roundOption.code, 'tv', voteSource)}`
     );
   };
 
   // Get total jury ranking code based on the selected year and vote source
   const getTotalJuryRankingCode = async (voteSource: string) => {
     const voteYear = rankingYear ?? year;
-    const concatenatedIds = await getSortedRankingCode(voteYear, 'jury', 'final', voteSource);
+    const concatenatedIds = await getSortedRankingCode(voteYear, 'jury', round, voteSource);
     return (
       `?r=${concatenatedIds}&` +
       `y=${voteYear.substring(2, 4)}&` +
-      `n=Final+Jury${getSourceCountryPostfix(voteSource)}&` +
-      `v=${getVoteCode('f', 'j', voteSource)}`
+      `n=${roundOption.name}+Jury${getSourceCountryPostfix(voteSource)}&` +
+      `v=${getVoteCode(roundOption.code, 'j', voteSource)}`
     );
   };
 
@@ -224,7 +259,7 @@ const RankingsTab: React.FC = () => {
         sent.
       </p>
 
-      {/* ESC final rankings. `tour-step-14` is the tour's settings step: it
+      {/* ESC contest rankings. `tour-step-14` is the tour's settings step: it
           points here rather than at the panel, which is too tall to hang a
           tooltip off without running past the bottom of the screen */}
       <section className={`tour-step-14 ${sectionCard}`}>
@@ -233,9 +268,9 @@ const RankingsTab: React.FC = () => {
             icon={faTrophy}
             className="text-[var(--er-button-primary)] text-xs shrink-0"
           />
-          <h3 className={sectionLabel}>ESC final rankings</h3>
+          <h3 className={sectionLabel}>ESC contest rankings</h3>
           <TooltipHelp
-            content="Select a year and voting country, then choose a vote source to see the official final ranking"
+            content="Select a year, round, and voting country, then choose a vote source to see the official ranking for that round"
             className="z-50"
           />
         </div>
@@ -251,6 +286,24 @@ const RankingsTab: React.FC = () => {
               options={supportedYears.filter((i) => i !== '2020')}
               showSearch={true}
             />
+            {roundSummaries.length > 1 && (
+              <Dropdown
+                key="round-selector"
+                className="min-w-[7rem]"
+                menuClassName="w-auto"
+                value={roundOption.label}
+                onChange={(label) =>
+                  setRound(
+                    Object.keys(ROUND_OPTIONS).find((r) => ROUND_OPTIONS[r]!.label === label) ??
+                      'final',
+                  )
+                }
+                options={roundSummaries
+                  .map((rs) => ROUND_OPTIONS[rs.round]?.label)
+                  .filter((label) => label !== undefined)}
+                showSearch={false}
+              />
+            )}
             <span className={fieldLabel}>from</span>
             <Dropdown
               key="country-selector"

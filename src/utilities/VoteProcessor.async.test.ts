@@ -283,6 +283,17 @@ describe('assignVotesByContestants', () => {
     expect(repo.fetchVotesForYear).toHaveBeenCalledWith('2023', undefined, 'semi-final');
     expect(result[0]!.contestant!.votes).toMatchObject({ totalPoints: 6 });
   });
+
+  it.each([
+    ['sf1-t', 'semi-final-1'],
+    ['sf2-tv-dk', 'semi-final-2'],
+  ])('reads the numbered semi-final from %s', async (code, round) => {
+    const { assignVotesByContestants } = await loadVoteProcessor();
+
+    await assignVotesByContestants([countryContestant('gb', '2019')], code);
+
+    expect(repo.fetchVotesForYear).toHaveBeenCalledWith('2019', undefined, round);
+  });
 });
 
 describe('fetchVotesByCode', () => {
@@ -329,6 +340,11 @@ describe('updateVoteTypeCode', () => {
   it('keeps the source country when a type is added', async () => {
     const { updateVoteTypeCode } = await loadVoteProcessor();
     expect(updateVoteTypeCode('f-j-gb', 'tv', true)).toBe('f-j.tv-gb');
+  });
+
+  it('keeps a semi-final round when a type is added', async () => {
+    const { updateVoteTypeCode } = await loadVoteProcessor();
+    expect(updateVoteTypeCode('sf1-t-gb', 'j', true)).toBe('sf1-t.j-gb');
   });
 
   it('drops the type section once the last type is removed', async () => {

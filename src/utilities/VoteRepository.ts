@@ -22,6 +22,9 @@ import { Vote } from '../data/Vote';
 
 const voteCache: { [key: string]: Vote[] } = {};
 
+/** Short round codes as stored in the vote CSV, in display order */
+const ROUND_ORDER = ['f', 'sf', 'sf1', 'sf2'];
+
 /**
  * Return vote data for the provided year. If a countryKey is provided,
  * only return the votes from that country on that year, otherwise return
@@ -141,6 +144,75 @@ export async function fetchVotesForYearsAndCountries(
       })
       .catch((error) => reject(error));
   });
+}
+
+/** What the vote data holds for one round of a contest year. */
+export interface VoteRoundSummary {
+  /** Long round name, e.g. 'semi-final-1' */
+  round: string;
+  /** Countries that cast votes in this round */
+  fromCountryKeys: string[];
+  hasTeleVotes: boolean;
+  hasJuryVotes: boolean;
+}
+
+const roundSummaryCache: { [year: string]: Promise<VoteRoundSummary[]> } = {};
+
+/**
+ * Summarize which rounds (final, semi-finals) have vote data for the provided
+ * year, ordered final first, then semi-finals. Done in a single pass over the
+ * vote CSV so a year change doesn't parse the file once per round
+ *
+ * @param year
+ * @returns
+ */
+export function fetchVoteRoundSummariesForYear(year: string): Promise<VoteRoundSummary[]> {
+  year = sanitizeYear(year);
+
+  if (!roundSummaryCache[year]) {
+    roundSummaryCache[year] = new Promise<VoteRoundSummary[]>((resolve, reject) => {
+      fetchVoteCsv(year)
+        .then((csvString) => {
+          Papa.parse(csvString, {
+            header: true,
+            complete: (results: CsvParseResult<VoteCsvRow>) => {
+              const byRound: {
+                [round: string]: { from: Set<string>; tele: boolean; jury: boolean };
+              } = {};
+
+              results.data
+                .filter((row: VoteCsvRow) => row.year === year && ROUND_ORDER.includes(row.round))
+                .forEach((row: VoteCsvRow) => {
+                  const summary = (byRound[row.round] ??= {
+                    from: new Set<string>(),
+                    tele: false,
+                    jury: false,
+                  });
+                  summary.from.add(row.from_country_id);
+                  summary.tele ||= parseInt(row.tele_points) > 0;
+                  summary.jury ||= parseInt(row.jury_points) > 0;
+                });
+
+              resolve(
+                ROUND_ORDER.filter((round) => byRound[round]).map((round) => ({
+                  round: convertRoundToLongName(round).toLowerCase(),
+                  fromCountryKeys: Array.from(byRound[round]!.from),
+                  hasTeleVotes: byRound[round]!.tele,
+                  hasJuryVotes: byRound[round]!.jury,
+                })),
+              );
+            },
+            error: (error: Error) => reject(error),
+          });
+        })
+        .catch((error) => reject(error));
+    });
+
+    // don't cache failures, so a later attempt can retry
+    roundSummaryCache[year].catch(() => delete roundSummaryCache[year]);
+  }
+
+  return roundSummaryCache[year];
 }
 
 const convertRoundToLongName = (round: string) => {

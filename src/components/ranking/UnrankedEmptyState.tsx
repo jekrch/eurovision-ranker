@@ -11,7 +11,7 @@ interface UnrankedEmptyStateProps {
 }
 
 const buttonClassName =
-  'w-full rounded-md border-[0.1em] border-[var(--er-border-tertiary)] px-2 py-1 text-xs ' +
+  'w-full rounded-md border-[0.1em] border-[var(--er-border-tertiary)] px-2 py-2 text-xs ' +
   'font-bold text-[var(--er-text-secondary)] hover:bg-[var(--er-interactive-dark)] ' +
   'hover:text-[var(--er-text-primary)] transition-colors';
 
@@ -25,7 +25,7 @@ const UnrankedEmptyState: React.FC<UnrankedEmptyStateProps> = ({
   onShowRanking,
   onOpenGlobalSearch,
 }) => (
-  <div className="view-item-enter-animation m-2">
+  <div className="m-2">
     <div
       className={classNames(
         'flex flex-col items-center gap-2 rounded-md border-2 border-dashed px-2 py-4 text-center',

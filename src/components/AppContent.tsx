@@ -75,6 +75,20 @@ const AppContent: React.FC<AppContentProps> = ({
   // Clear, wait for the rows to animate out before they leave the store.
   const rankedExit = useRankedExit();
 
+  // A country removed from the ranking in delete mode lands back in the
+  // selection column with the entrance Clear's countries come back with.
+  const [latestReturn, setLatestReturn] = useState<RankingAddition | null>(null);
+  const { removeRanked: removeRankedRow } = rankedExit;
+
+  const removeRanked: typeof removeRankedRow = useCallback(
+    (item, commit) =>
+      removeRankedRow(item, () => {
+        setLatestReturn({ id: item.id, at: Date.now() });
+        return commit();
+      }),
+    [removeRankedRow],
+  );
+
   // Add All and Clear move a whole ranking between the two columns at once, so
   // the rows leave one column and arrive in the other.
   const bulkMove = useBulkMove();
@@ -138,6 +152,7 @@ const AppContent: React.FC<AppContentProps> = ({
                 <Suspense fallback={<ContentPlaceholder />}>
                   <LazyUnrankedCountriesList
                     onAddToRanked={handleAddWithButton}
+                    latestReturn={latestReturn}
                     isAddingAll={bulkMove.isAddingAll}
                     isBulkMoving={bulkMove.isMoving}
                     onShowRanking={toggleDetailsView}
@@ -165,7 +180,7 @@ const AppContent: React.FC<AppContentProps> = ({
                   latestAddition={latestAddition}
                   exitingIds={rankedExit.exitingIds}
                   isClearing={rankedExit.isClearing}
-                  removeRanked={rankedExit.removeRanked}
+                  removeRanked={removeRanked}
                   isBulkMoving={bulkMove.isMoving}
                   viewSwitch={viewSwitch}
                   openSongModal={openSongModalWithData}

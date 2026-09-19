@@ -15,6 +15,7 @@ vi.mock('./Card', () => ({ Card: () => <div data-testid="card" /> }));
 vi.mock('./DetailsCard', () => ({ DetailsCard: () => <div data-testid="details-card" /> }));
 vi.mock('./IntroColumnWrapper', () => ({
   IntroColumnWrapper: () => <div data-testid="intro-column" />,
+  preloadIntroColumn: () => {},
 }));
 
 import RankedCountriesList from './RankedCountriesList';

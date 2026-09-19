@@ -53,6 +53,12 @@
      back after the last. useIntroSwap keeps the intro rendered for the same
      length while it leaves, and resizes the column alongside. */
   --er-intro-swap-duration: 240ms;
+  /* the selection column's all-ranked state giving way to the first country
+     back. It's small and gets out of the way quickly, and the country waits
+     for most of it before coming in (see UnrankedCountriesList), so the two
+     hand over rather than overlap. */
+  --er-empty-leave-duration: 150ms;
+  --er-empty-handoff: 110ms;
 }
 
 @keyframes viewEnter {
@@ -204,6 +210,19 @@
   }
 }
 
+/* The selection column's all-ranked state steps aside to the left, away from
+   the ranking the country coming back arrives from. */
+@keyframes unrankedEmptyLeave {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-24px);
+  }
+}
+
 /* QUIZ
  *
  * Moving to the next question is forward travel through a sequence, so the new
@@ -286,10 +305,13 @@
   animation-delay: calc(var(--er-stagger-index, 0) * var(--er-stagger-step));
 }
 
+/* --er-arrival-lead holds the rows back while the all-ranked state leaves */
 .unranked-item-returned-animation {
   animation: unrankedItemReturned var(--er-item-added-duration) var(--er-item-added-ease)
     backwards;
-  animation-delay: calc(var(--er-stagger-index, 0) * var(--er-stagger-step));
+  animation-delay: calc(
+    var(--er-arrival-lead, 0ms) + var(--er-stagger-index, 0) * var(--er-stagger-step)
+  );
 }
 
 /* `forwards` for the same reason: the intro is unmounted by a timer after this
@@ -301,6 +323,12 @@
 
 .ranked-intro-enter-animation {
   animation: rankedIntroEnter var(--er-view-item-duration) var(--er-view-ease) backwards;
+}
+
+/* the all-ranked state's exit, held by useIntroSwap the same way */
+.unranked-empty-leave-animation {
+  pointer-events: none;
+  animation: unrankedEmptyLeave var(--er-empty-leave-duration) var(--er-item-removed-ease) forwards;
 }
 
 /* Clearing the ranking empties the whole column, so nothing slides into a gap:
@@ -389,6 +417,7 @@
   .sorter-card-enter-from-left-animation,
   .sorter-card-enter-from-right-animation,
   .tab-panel-enter-animation,
+  .unranked-empty-leave-animation,
   .unranked-item-leaving-animation,
   .unranked-item-returned-animation,
   .view-enter-animation,

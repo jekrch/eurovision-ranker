@@ -6,7 +6,7 @@ import {
   DroppableStateSnapshot,
 } from '@hello-pangea/dnd';
 import classNames from 'classnames';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { FaChevronRight } from 'react-icons/fa';
 
 import { Card } from './Card';
@@ -110,9 +110,19 @@ const RankedCountriesList: React.FC<RankedCountriesListProps> = ({
     showUnranked && rankedItems.length === 0,
     showUnranked && (hasUnranked || rankedItems.length > 0),
   );
+  // Delete mode trims each name to make room for its remove button, which
+  // resizes the column, so turning it on or off animates the width too. The
+  // last mode is kept in an effect rather than during render so a repeated
+  // render still sees the toggle.
+  const showDeleteMode = showUnranked && isDeleteMode;
+  const lastDeleteMode = useRef(isDeleteMode);
+  useEffect(() => {
+    lastDeleteMode.current = isDeleteMode;
+  });
+  const deleteModeToggled = isDeleteMode !== lastDeleteMode.current;
   const columnRef = useWidthMorph<HTMLDivElement>(
-    rankedItems.length,
-    introPhase !== 'idle' || isMoving,
+    `${rankedItems.length}:${showDeleteMode}`,
+    introPhase !== 'idle' || isMoving || (showUnranked && deleteModeToggled),
   );
 
   useEffect(() => {
@@ -293,7 +303,7 @@ const RankedCountriesList: React.FC<RankedCountriesListProps> = ({
                                 className="m-auto text-[var(--er-text-tertiary)] bg-[var(--er-card-surface)] no-select"
                                 rank={index + 1}
                                 countryContestant={countryContestant}
-                                isDeleteMode={showUnranked && isDeleteMode}
+                                isDeleteMode={showDeleteMode}
                                 deleteCallBack={() => handleDeleteRankedCountry(countryContestant)}
                                 isDragging={snapshot.isDragging}
                                 isDropAnimating={snapshot.isDropAnimating}

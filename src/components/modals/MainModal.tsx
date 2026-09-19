@@ -150,7 +150,7 @@ const MainModal: React.FC<MainModalProps> = (props: MainModalProps) => {
             rel="noopener noreferrer"
             href="https://github.com/jekrch/eurovision-ranker/releases"
           >
-            v12.0
+            v12.1
           </a>
         </span>
         <span className="text-right">

@@ -5,6 +5,8 @@ import React from 'react';
 import Ripples from 'react-ripples';
 
 import { ContestantRow } from './tableTypes';
+import { useViewOpening } from '../../hooks/useViewOpening';
+import { staggerStyle } from '../../utilities/animationUtil';
 
 interface TableBodyProps {
   paginatedContestants: ContestantRow[];
@@ -19,15 +21,22 @@ const TableBody: React.FC<TableBodyProps> = ({
   showSelected,
   selectedContestants,
 }) => {
+  // Opening advanced mode brings the rows in one after another, behind the
+  // table's own entrance (see RankedCountriesTable). Only while the view is
+  // opening, so a later page, sort or search swaps rows in at once.
+  const isOpening = useViewOpening(paginatedContestants.length > 0);
+
   return (
     <tbody className="bg-transparent divide-y divide-white/5">
-      {paginatedContestants.map((contestant) => {
+      {paginatedContestants.map((contestant, index) => {
         const isSelected = !showSelected && selectedContestants.some((c) => c.id === contestant.id);
         return (
           <tr
             key={contestant.id}
+            style={isOpening ? staggerStyle(index) : undefined}
             className={classNames(
               'group text-sm text-[var(--er-text-secondary)] transition-colors',
+              { 'view-item-enter-animation': isOpening },
               isSelected
                 ? 'bg-[var(--er-surface-accent-70)] hover:bg-[var(--er-surface-accent)]'
                 : 'hover:bg-white/[0.04]',

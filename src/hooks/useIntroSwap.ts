@@ -15,13 +15,16 @@ export type IntroPhase = 'idle' | 'entering' | 'leaving';
  * Animates the select view's ranked column between its intro and its list: the
  * intro slides out to the right as the first country comes in and slides back
  * in when the last one goes. The column's width follows it (see useWidthMorph).
+ * The selection column's all-ranked state uses it the same way.
  *
  * @param isEmpty whether the column is showing its intro rather than rows
  * @param isArmed whether a change of `isEmpty` should animate. A cold load
  *   renders the column empty until the ranking lands, and that isn't an
  *   addition anyone made.
+ * @param exitMs how long the content takes to leave, mirroring its exit
+ *   animation's duration
  */
-export function useIntroSwap(isEmpty: boolean, isArmed: boolean) {
+export function useIntroSwap(isEmpty: boolean, isArmed: boolean, exitMs = INTRO_EXIT_MS) {
   const [, rerender] = useState(0);
   const wasEmpty = useRef(isEmpty);
   const wasArmed = useRef(false);
@@ -44,9 +47,9 @@ export function useIntroSwap(isEmpty: boolean, isArmed: boolean) {
     const timer = setTimeout(() => {
       phase.current = 'idle';
       rerender((n) => n + 1);
-    }, INTRO_EXIT_MS);
+    }, exitMs);
     return () => clearTimeout(timer);
-  }, [swap]);
+  }, [swap, exitMs]);
 
   return {
     /** the intro is on screen, either as the column's content or on its way out */

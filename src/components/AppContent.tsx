@@ -8,6 +8,8 @@ import ContentPlaceholder from './ranking/ContentPlaceholder';
 import { Switch } from './Switch';
 import TooltipHelp from './TooltipHelp';
 import { useDetailsViewToggle } from '../hooks/useDetailsViewToggle';
+import { useBulkMove } from '../hooks/useBulkMove';
+import { useRankedExit } from '../hooks/useRankedExit';
 import { useRankingDragDrop } from '../hooks/useRankingDragDrop';
 import { RankingAddition } from '../hooks/useRecentlyAdded';
 import { useViewSwitch } from '../hooks/useViewSwitch';
@@ -69,6 +71,14 @@ const AppContent: React.FC<AppContentProps> = ({
     [handleAddToRanked],
   );
 
+  // Removals from the ranked list, from a row's delete button or the edit bar's
+  // Clear, wait for the rows to animate out before they leave the store.
+  const rankedExit = useRankedExit();
+
+  // Add All and Clear move a whole ranking between the two columns at once, so
+  // the rows leave one column and arrive in the other.
+  const bulkMove = useBulkMove();
+
   return (
     <div
       className={classNames(
@@ -126,7 +136,13 @@ const AppContent: React.FC<AppContentProps> = ({
                   </div>
                 </div>
                 <Suspense fallback={<ContentPlaceholder />}>
-                  <LazyUnrankedCountriesList onAddToRanked={handleAddWithButton} />
+                  <LazyUnrankedCountriesList
+                    onAddToRanked={handleAddWithButton}
+                    isAddingAll={bulkMove.isAddingAll}
+                    isBulkMoving={bulkMove.isMoving}
+                    onShowRanking={toggleDetailsView}
+                    onOpenGlobalSearch={() => updateGlobalSearch(true)}
+                  />
                 </Suspense>
               </div>
             )}
@@ -147,6 +163,10 @@ const AppContent: React.FC<AppContentProps> = ({
                 <LazyRankedCountriesList
                   key={showUnranked ? 'select-view' : 'list-view'}
                   latestAddition={latestAddition}
+                  exitingIds={rankedExit.exitingIds}
+                  isClearing={rankedExit.isClearing}
+                  removeRanked={rankedExit.removeRanked}
+                  isBulkMoving={bulkMove.isMoving}
                   viewSwitch={viewSwitch}
                   openSongModal={openSongModalWithData}
                   openModal={openMainModalWithTab}
@@ -192,7 +212,12 @@ const AppContent: React.FC<AppContentProps> = ({
           key={`edit-nav-${theme}`}
           className={`edit-nav-container ${(!showOverlay || isOverlayExit) && 'slide-up-animation'}`}
         >
-          <EditNav setNameModalShow={() => openModal('name')} />
+          <EditNav
+            setNameModalShow={() => openModal('name')}
+            clearRanked={rankedExit.clearRanked}
+            isClearing={rankedExit.isClearing}
+            bulkMove={bulkMove}
+          />
         </div>
       )}
     </div>

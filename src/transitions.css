@@ -43,6 +43,16 @@
      card settles into its slot rather than just stopping there. */
   --er-item-added-duration: 360ms;
   --er-item-added-ease: cubic-bezier(0.34, 1.3, 0.64, 1);
+  /* a country removed from the ranking. It leaves on an accelerating curve,
+     the reverse of the way an addition lands; useRankedExit holds the store
+     update back for the same length. The rows below then slide up into the
+     gap (see useRowShift). */
+  --er-item-removed-duration: 200ms;
+  --er-item-removed-ease: cubic-bezier(0.4, 0, 1, 1);
+  /* the select view's intro giving way to the first ranked country, and coming
+     back after the last. useIntroSwap keeps the intro rendered for the same
+     length while it leaves, and resizes the column alongside. */
+  --er-intro-swap-duration: 240ms;
 }
 
 @keyframes viewEnter {
@@ -132,6 +142,68 @@
   }
 }
 
+/* A removed country goes back out the way it came in, toward the selection
+   column it's returning to. */
+@keyframes rankedItemRemoved {
+  from {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-16px) scale(0.96);
+  }
+}
+
+/* Add All sends the selection column's countries over to the ranking on its
+   right, and Clear brings them back from that side. */
+@keyframes unrankedItemLeaving {
+  from {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(16px) scale(0.96);
+  }
+}
+
+@keyframes unrankedItemReturned {
+  from {
+    opacity: 0;
+    transform: translateX(16px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+/* The intro steps aside to the right, away from the selection column the
+   first country arrives from, and comes back from the same side once the
+   ranking is empty again. */
+@keyframes rankedIntroLeave {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+}
+
+@keyframes rankedIntroEnter {
+  from {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
 /* QUIZ
  *
  * Moving to the next question is forward travel through a sequence, so the new
@@ -190,6 +262,53 @@
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+/* `forwards` on the exits: a removed row has to stay gone between the end of
+   its animation and the store update that takes it out of the list. */
+.ranked-item-removed-animation {
+  pointer-events: none;
+  animation: rankedItemRemoved var(--er-item-removed-duration) var(--er-item-removed-ease) forwards;
+}
+
+/* Add All's rows leave top to bottom on the entrance's stagger, and like the
+   clear they hold their end state until the store update takes them out. */
+.unranked-item-leaving-animation {
+  pointer-events: none;
+  animation: unrankedItemLeaving var(--er-item-removed-duration) var(--er-item-removed-ease) both;
+  animation-delay: calc(var(--er-stagger-index, 0) * var(--er-stagger-step));
+}
+
+/* A whole ranking arriving at once, from Add All or Clear, lands in turn with
+   the "+" button's entrance (see useArrivals). */
+.ranked-item-arrived-animation {
+  animation: rankedItemAdded var(--er-item-added-duration) var(--er-item-added-ease) backwards;
+  animation-delay: calc(var(--er-stagger-index, 0) * var(--er-stagger-step));
+}
+
+.unranked-item-returned-animation {
+  animation: unrankedItemReturned var(--er-item-added-duration) var(--er-item-added-ease)
+    backwards;
+  animation-delay: calc(var(--er-stagger-index, 0) * var(--er-stagger-step));
+}
+
+/* `forwards` for the same reason: the intro is unmounted by a timer after this
+   runs, and shouldn't reappear in between. */
+.ranked-intro-leave-animation {
+  pointer-events: none;
+  animation: rankedIntroLeave var(--er-intro-swap-duration) var(--er-item-removed-ease) forwards;
+}
+
+.ranked-intro-enter-animation {
+  animation: rankedIntroEnter var(--er-view-item-duration) var(--er-view-ease) backwards;
+}
+
+/* Clearing the ranking empties the whole column, so nothing slides into a gap:
+   the rows leave top to bottom on the entrance's stagger. */
+.ranked-item-cleared-animation {
+  pointer-events: none;
+  animation: rankedItemRemoved var(--er-item-removed-duration) var(--er-item-removed-ease) both;
+  animation-delay: calc(var(--er-stagger-index, 0) * var(--er-stagger-step));
 }
 
 /* `backwards` rather than `both`: the item entrance needs its start state to
@@ -262,9 +381,16 @@
 @media (prefers-reduced-motion: reduce) {
   .quiz-option-enter-animation,
   .ranked-item-added-animation,
+  .ranked-item-arrived-animation,
+  .ranked-item-cleared-animation,
+  .ranked-item-removed-animation,
+  .ranked-intro-enter-animation,
+  .ranked-intro-leave-animation,
   .sorter-card-enter-from-left-animation,
   .sorter-card-enter-from-right-animation,
   .tab-panel-enter-animation,
+  .unranked-item-leaving-animation,
+  .unranked-item-returned-animation,
   .view-enter-animation,
   .view-enter-from-right-animation,
   .view-enter-left-animation,

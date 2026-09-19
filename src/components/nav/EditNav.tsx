@@ -9,8 +9,10 @@ import classNames from 'classnames';
 import React, { SetStateAction } from 'react';
 
 import { useAppDispatch, useAppSelector } from '../../hooks/stateHooks';
+import { BulkMove } from '../../hooks/useBulkMove';
+import { RankedExit } from '../../hooks/useRankedExit';
 import { useRefreshUrl } from '../../hooks/useRefreshUrl';
-import { useResetRanking } from '../../hooks/useResetRanking';
+import { useRefillUnranked, useResetRanking } from '../../hooks/useResetRanking';
 import { selectActiveRankedItems } from '../../redux/rankingSelectors';
 import { addAllPaginatedContestants, setIsDeleteMode } from '../../redux/rootSlice';
 import { AppDispatch, AppState } from '../../redux/store';
@@ -18,6 +20,11 @@ import IconButton from '../IconButton';
 
 type EditNavProps = {
   setNameModalShow: React.Dispatch<SetStateAction<boolean>>;
+  /** animates the ranked list out before running the reset */
+  clearRanked: RankedExit['clearRanked'];
+  isClearing: boolean;
+  /** animates the selection column's rows across for Add All, and back for Clear */
+  bulkMove: BulkMove;
 };
 
 /**
@@ -27,7 +34,12 @@ type EditNavProps = {
  * @param param0
  * @returns
  */
-const EditNav: React.FC<EditNavProps> = ({ setNameModalShow }) => {
+const EditNav: React.FC<EditNavProps> = ({
+  setNameModalShow,
+  clearRanked,
+  isClearing,
+  bulkMove,
+}) => {
   const dispatch: AppDispatch = useAppDispatch();
   const rankedItems = useAppSelector(selectActiveRankedItems);
   const selectedContestants = useAppSelector(
@@ -40,14 +52,35 @@ const EditNav: React.FC<EditNavProps> = ({ setNameModalShow }) => {
   );
   const globalSearch = useAppSelector((state: AppState) => state.root.globalSearch);
   const resetRanking = useResetRanking();
-  const { handleAddAllUnranked } = useRefreshUrl();
+  const refillUnranked = useRefillUnranked();
+  const { rankAllUnranked, removeFromUnranked } = useRefreshUrl();
 
+  /**
+   * Add every unranked country. On the select view the selection column's rows
+   * animate across first; the global search table has no column to animate, so
+   * it adds at once.
+   */
   function addAll() {
     if (globalSearch) {
       addPaginatedContestants();
     } else {
-      handleAddAllUnranked();
+      bulkMove.addAll(unrankedItems.length, rankAllUnranked, removeFromUnranked);
     }
+  }
+
+  /**
+   * Reset the ranking. The ranked column animates its rows out first; the
+   * global search table has no rows of its own to animate, so it resets at once.
+   */
+  function clear() {
+    if (globalSearch) {
+      clearRanked([], resetRanking);
+      return;
+    }
+    clearRanked(rankedItems, resetRanking, () => {
+      bulkMove.markMoved();
+      return refillUnranked();
+    });
   }
 
   /**
@@ -81,17 +114,21 @@ const EditNav: React.FC<EditNavProps> = ({ setNameModalShow }) => {
             <div className="tour-step-3 flex items-center">
               <IconButton
                 icon={faArrowRight}
-                disabled={!canAddAll()}
+                disabled={bulkMove.isAddingAll || isClearing || !canAddAll()}
                 onClick={addAll}
                 iconClassName="mr-[0.3em]"
                 title="Add All"
               />
               <IconButton
                 icon={faTrashAlt}
-                disabled={!rankedItems.length && !selectedContestants?.length}
+                disabled={
+                  bulkMove.isAddingAll ||
+                  isClearing ||
+                  (!rankedItems.length && !selectedContestants?.length)
+                }
                 className="ml-4"
                 iconClassName="mr-[0.3em]"
-                onClick={resetRanking}
+                onClick={clear}
                 title="Clear"
               />
 

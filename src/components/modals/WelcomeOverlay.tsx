@@ -120,7 +120,7 @@ const WelcomeOverlay: React.FC<WelcomeOverlayProps> = ({
           <div className={classNames(hairline, 'mt-4')}></div>
         </div>
 
-        <div className="mt-4 flex-1 overflow-auto [scrollbar-gutter:stable]">
+        <div className="mt-4 pl-4 py-2 flex-1 overflow-auto [scrollbar-gutter:stable]">
           <div className="mb-3 text-xs italic text-[var(--er-text-subtle)]">where you can...</div>
           <ul className="list-none space-y-2 text-[0.82rem]">
             {FEATURES.map(({ icon: Icon, iconClassName, text }, index) => (

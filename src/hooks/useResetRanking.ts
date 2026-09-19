@@ -29,3 +29,19 @@ export const useResetRanking = () => {
 
   return resetRanking;
 };
+
+/**
+ * Puts every one of the year's contestants back in the selection column and
+ * leaves the ranking alone. Clear runs it while the ranked rows are still
+ * leaving, so the selection column refills alongside them rather than after;
+ * the reset that follows finishes the job.
+ */
+export const useRefillUnranked = () => {
+  const dispatch = useAppDispatch();
+  const year = useAppSelector((state: AppState) => state.root.year);
+
+  return useCallback(async () => {
+    const yearContestants: CountryContestant[] = await fetchCountryContestantsByYear(year, '');
+    dispatch(setUnrankedItems(yearContestants));
+  }, [dispatch, year]);
+};

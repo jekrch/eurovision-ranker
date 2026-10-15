@@ -1,14 +1,12 @@
-import { faCheck, faGlasses } from '@fortawesome/free-solid-svg-icons';
 import classNames from 'classnames';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useId, useLayoutEffect, useRef } from 'react';
 import { IconType } from 'react-icons';
-import { FaList, FaTv, FaCog, FaSort, FaQuestionCircle } from 'react-icons/fa';
+import { FaChartBar, FaQuestionCircle, FaSort, FaTv } from 'react-icons/fa';
 
-import { eyebrow, hairline, iconChip, modalActionBtn, modalPanel } from './modalStyles';
-import { useAppDispatch, useAppSelector } from '../../hooks/stateHooks';
+import { modalPanel } from './modalStyles';
+import { useAppDispatch } from '../../hooks/stateHooks';
 import { setWelcomeOverlayIsOpen } from '../../redux/rootSlice';
-import { AppDispatch, AppState } from '../../redux/store';
-import { logger } from '../../utilities/logger';
+import { AppDispatch } from '../../redux/store';
 import '../../themes.css';
 import { HeartIcon } from '../HeartIcon';
 import IconButton from '../IconButton';
@@ -19,35 +17,28 @@ interface WelcomeOverlayProps {
   handleTakeTour: () => void;
 }
 
-/** The "where you can..." pitch. Each row fades in behind the one above it. */
-const FEATURES: { icon: IconType; iconClassName: string; text: string }[] = [
-  { icon: FaList, iconClassName: 'text-indigo-400', text: 'rank contests going back to 1956' },
-  {
-    icon: FaTv,
-    iconClassName: 'text-[var(--er-interactive-primary)]',
-    text: 'create YouTube playlists',
-  },
-  // { icon: FaGlobe, iconClassName: 'text-sky-400', text: 'view a heat map of your ranking' },
-  {
-    icon: FaCog,
-    iconClassName: 'text-[var(--er-text-subtle)]',
-    text: 'explore past voting records',
-  },
-  { icon: FaSort, iconClassName: 'text-purple-400', text: 'use a sorter to generate rankings' },
-  {
-    icon: FaQuestionCircle,
-    iconClassName: 'text-pink-400',
-    text: 'test your knowledge with a quiz',
-  },
+/** What the app can do beyond ranking. Each row fades in behind the one above it. */
+const FEATURES: { icon: IconType; text: string }[] = [
+  { icon: FaSort, text: 'Use a sorter to build your ranking' },
+  { icon: FaTv, text: 'Create YouTube playlists' },
+  { icon: FaChartBar, text: 'Explore past voting records' },
+  { icon: FaQuestionCircle, text: 'Test your knowledge with a quiz' },
 ];
+
+/**
+ * Footer button sizing. Tighter than modalActionBtn so the pair sits under the
+ * feature list instead of competing with it. Marked important for the same
+ * reason modalActionBtn is: IconButton's own padding and radius win otherwise.
+ */
+const welcomeBtn = classNames(
+  '!rounded-md !px-3.5 !py-2 !font-medium leading-none transition-colors duration-150',
+  'focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40',
+);
 
 /**
  * An overlay modal that is displayed when first loading the site if no ranking is
  * encoded in the URL yet. The goal here is to provide some initial info to the user
  * and provide them with the option to take the app tour
- *
- * @param param0
- * @returns
  */
 const WelcomeOverlay: React.FC<WelcomeOverlayProps> = ({
   handleGetStarted,
@@ -55,27 +46,66 @@ const WelcomeOverlay: React.FC<WelcomeOverlayProps> = ({
   exiting,
 }) => {
   const dispatch: AppDispatch = useAppDispatch();
-  const welcomeOverlayIsOpen = useAppSelector((state: AppState) => state.root.welcomeOverlayIsOpen);
   const overlayContentRef = useRef<HTMLDivElement>(null);
-  const [closed, setClosed] = useState(false);
+  const closingRef = useRef(false);
+  const titleId = useId();
+  const descriptionId = useId();
 
-  if (!welcomeOverlayIsOpen && !closed) {
-    dispatch(setWelcomeOverlayIsOpen(true));
-    logger.log('set');
+  function getStarted() {
+    if (closingRef.current) return;
+    closingRef.current = true;
+    dispatch(setWelcomeOverlayIsOpen(false));
+    handleGetStarted();
   }
+
+  // read through a ref so the key listener below always calls the latest handler
+  const getStartedRef = useRef(getStarted);
+  getStartedRef.current = getStarted;
+
+  // before paint, so nothing that hides behind the overlay flashes on first render
+  useLayoutEffect(() => {
+    dispatch(setWelcomeOverlayIsOpen(true));
+  }, [dispatch]);
+
+  // focus lands on "Get started", Escape dismisses like a click outside does,
+  // and Tab cycles between the two buttons instead of reaching the page behind
+  useEffect(() => {
+    const buttons = () => Array.from(overlayContentRef.current?.querySelectorAll('button') ?? []);
+
+    buttons().at(-1)?.focus({ preventScroll: true });
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        getStartedRef.current();
+        return;
+      }
+      if (event.key !== 'Tab') return;
+
+      const focusable = buttons();
+      if (focusable.length === 0) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      const active = document.activeElement;
+      const inside = overlayContentRef.current?.contains(active) ?? false;
+
+      if (event.shiftKey && (active === first || !inside)) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && (active === last || !inside)) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   const handleClickOutside = (event: React.MouseEvent) => {
     if (overlayContentRef.current && !overlayContentRef.current.contains(event.target as Node)) {
       getStarted();
     }
   };
-
-  function getStarted() {
-    dispatch(setWelcomeOverlayIsOpen(false));
-    setClosed(true);
-    logger.log('closed');
-    handleGetStarted();
-  }
 
   const backdropOpacity = exiting ? 'opacity-0' : 'opacity-20';
 
@@ -102,6 +132,10 @@ const WelcomeOverlay: React.FC<WelcomeOverlayProps> = ({
 
       <div
         ref={overlayContentRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
+        aria-describedby={descriptionId}
         className={classNames(
           'overlay welcome-card relative z-10 mx-5 w-full max-w-[21em] max-h-[calc(100%-3em)]',
           'flex flex-col px-6 py-6 gradient-background-modal text-[var(--er-text-tertiary)]',
@@ -109,55 +143,51 @@ const WelcomeOverlay: React.FC<WelcomeOverlayProps> = ({
         )}
       >
         <div className="text-center">
-          <div className={eyebrow}>Welcome to</div>
-          <div className="mt-1 text-xl font-bold tracking-tight leading-tight">
+          <h2 id={titleId} className="text-xl font-bold tracking-tight leading-tight">
             <span className="gradient-text">Eurovision Ranker</span>
-            <HeartIcon
-              alt="Heart"
-              className="inline align-middle ml-[0.3em] mb-1 w-5 h-5 pulse-on-load my-heart-icon"
-            />
-          </div>
-          <div className={classNames(hairline, 'mt-4')}></div>
+            <span aria-hidden="true">
+              <HeartIcon className="inline align-middle ml-[0.3em] mb-1 w-5 h-5 pulse-on-load my-heart-icon" />
+            </span>
+          </h2>
+          <p id={descriptionId} className="mt-2 text-sm leading-snug">
+            Make your own ranking of any Eurovision contest since 1956.
+          </p>
         </div>
 
-        <div className="mt-4 pl-4 py-2 flex-1 overflow-auto [scrollbar-gutter:stable]">
-          <div className="mb-3 text-xs italic text-[var(--er-text-subtle)]">where you can...</div>
-          <ul className="list-none space-y-2 text-[0.82rem]">
-            {FEATURES.map(({ icon: Icon, iconClassName, text }, index) => (
+        <div className="mt-5 flex-1 overflow-auto [scrollbar-gutter:stable]">
+          <ul className="list-none space-y-2.5 text-sm">
+            {FEATURES.map(({ icon: Icon, text }, index) => (
               <li
                 key={text}
                 className="welcome-feature flex items-center"
                 style={{ animationDelay: `${120 + index * 55}ms` }}
               >
-                <span className={classNames(iconChip, 'mr-2.5')}>
-                  <Icon className={classNames('h-3 w-3', iconClassName)} />
+                <span className="mr-3 flex w-4 flex-none justify-center">
+                  <Icon
+                    aria-hidden="true"
+                    className="h-3.5 w-3.5 text-[var(--er-interactive-primary)]"
+                  />
                 </span>
                 <span className="leading-snug">{text}</span>
               </li>
             ))}
-            <li
-              className="welcome-feature flex items-center text-[var(--er-text-subtle)]"
-              style={{ animationDelay: `${120 + FEATURES.length * 55}ms` }}
-            >
-              <span className="mr-2.5 h-6 w-6 flex-none"></span>
-              <span className="leading-snug">...and more!</span>
-            </li>
           </ul>
         </div>
 
-        <div className="mt-5 flex gap-2.5">
+        <div className="mt-6 flex gap-2">
           <IconButton
-            icon={faCheck}
-            className={classNames(modalActionBtn, 'flex-1')}
-            iconClassName="mr-[3px]"
-            title="Get Started"
-            onClick={getStarted}
+            className={classNames(
+              welcomeBtn,
+              '!bg-transparent hover:!bg-white/[0.06] ring-1 ring-inset ring-white/15',
+              '!text-[var(--er-text-secondary)] hover:!text-[var(--er-text-primary)]',
+            )}
+            title="Take the tour"
+            onClick={handleTakeTour}
           />
           <IconButton
-            icon={faGlasses}
-            className={classNames(modalActionBtn, 'flex-1 bg-[var(--er-button-primary-hover)]')}
-            title="Take Tour"
-            onClick={handleTakeTour}
+            className={classNames(welcomeBtn, 'flex-1 !font-semibold')}
+            title="Get started"
+            onClick={getStarted}
           />
         </div>
       </div>

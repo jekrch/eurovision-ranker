@@ -1,0 +1,1 @@
+import{a as r}from"./rolldown-runtime-BasYchu3.js";import{i as n}from"./react-BPoI-zL7.js";var t=r(n(),1);function e(r){const n=(0,t.useRef)(null);return r&&null===n.current&&(n.current=Date.now()),null!==n.current&&Date.now()-n.current<900}export{e as t};

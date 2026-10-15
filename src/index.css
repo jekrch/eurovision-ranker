@@ -418,10 +418,13 @@ code {
    freed region with the dark themed surface color so iOS samples dark instead.
    The lift scales with the safe-area inset (0 on desktop, ~75px on an iPhone).
    --edit-nav-lift is the single tuning knob: raise the 2.2 multiplier if the
-   iOS bar still catches the button color, lower it if the gap looks too big. */
+   iOS bar still catches the button color, lower it if the gap looks too big.
+   The 0.5rem base keeps the buttons off the bottom edge when there is no inset
+   (this rule outranks Tailwind's layered padding utilities, so it owns the
+   bar's bottom padding). */
 .edit-nav-bg {
   --edit-nav-lift: calc(env(safe-area-inset-bottom) * 2.2);
-  padding-bottom: var(--edit-nav-lift);
+  padding-bottom: calc(0.5rem + var(--edit-nav-lift));
   background:
     linear-gradient(
       to top,

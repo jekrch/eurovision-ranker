@@ -97,6 +97,70 @@ describe('starting a ranking playing', () => {
   });
 });
 
+describe('playing a single video', () => {
+  it('floats a player showing that video', () => {
+    const { result } = playerWith(three());
+
+    act(() => result.current.playVideo(countryContestant('c', videoId(3))));
+
+    expect(result.current.video?.videoId).toBe(videoId(3));
+    expect(result.current.mode).toBe('pip');
+  });
+
+  it('plays straight away rather than waiting for the viewer', () => {
+    const { result } = playerWith(three());
+
+    act(() => result.current.playVideo(countryContestant('c', videoId(3))));
+
+    expect(result.current.autoplay).toBe(true);
+  });
+
+  it('leaves the playing-through-the-ranking setting as the viewer chose', () => {
+    const { result } = playerWith(three());
+
+    act(() => result.current.playVideo(countryContestant('c', videoId(3))));
+
+    expect(result.current.autoContinue).toBe(false);
+    expect(localStorage.getItem(AUTO_CONTINUE_KEY)).toBeNull();
+  });
+
+  it('plays a video that is not in the ranking', () => {
+    const { result } = playerWith(three());
+
+    act(() => result.current.playVideo(countryContestant('z', videoId(9))));
+
+    expect(result.current.pipVideoId).toBe(videoId(9));
+  });
+
+  it('switches the floating player to a different video', () => {
+    const { result } = playerWith(three());
+
+    act(() => result.current.playVideo(countryContestant('a', videoId(1))));
+    act(() => result.current.playVideo(countryContestant('c', videoId(3))));
+
+    expect(result.current.pipVideoId).toBe(videoId(3));
+  });
+
+  it('keeps the same video playing when asked for it again', () => {
+    const { result } = playerWith(three());
+
+    act(() => result.current.playVideo(countryContestant('a', videoId(1))));
+    sendPlayerState(PLAYING);
+    const before = result.current.video;
+    act(() => result.current.playVideo(countryContestant('a', videoId(1))));
+
+    expect(result.current.video).toBe(before);
+  });
+
+  it('does nothing for an entry with no video', () => {
+    const { result } = playerWith(three());
+
+    act(() => result.current.playVideo(countryContestant('b')));
+
+    expect(result.current.video).toBeNull();
+  });
+});
+
 describe('moving between videos', () => {
   it('moves to the next ranked video', () => {
     const { result } = playerWith(three());
@@ -324,6 +388,62 @@ describe('the rest of the app', () => {
 
     act(() => result.current.popOut());
 
+    expect(onMinimize).not.toHaveBeenCalled();
+  });
+});
+
+describe('playing a different song in the song modal while one is floating', () => {
+  const songInfo = (n: number) => ({
+    videoId: videoId(n),
+    title: `song ${n}`,
+    contestant: rankedItems.find((cc) => cc.contestant?.youtube?.endsWith(videoId(n)))!,
+  });
+
+  it('moves the player into the modal showing that song', () => {
+    const { result } = playerWith(three());
+    act(() => result.current.playList());
+
+    act(() => result.current.registerDock(document.createElement('div'), songInfo(3), true));
+
+    expect(result.current.mode).toBe('docked');
+    expect(result.current.video?.videoId).toBe(videoId(3));
+    expect(result.current.pipVideoId).toBeNull();
+  });
+
+  it('starts the song straight away once the viewer has pressed play', () => {
+    const { result } = playerWith(three());
+    act(() => result.current.playList());
+
+    act(() => result.current.registerDock(document.createElement('div'), songInfo(3), true));
+
+    expect(result.current.autoplay).toBe(true);
+  });
+
+  it('waits for the viewer to press play on a fresh open', () => {
+    const { result } = playerWith(three());
+
+    act(() => result.current.registerDock(document.createElement('div'), songInfo(3)));
+
+    expect(result.current.autoplay).toBe(false);
+  });
+
+  it('floats the modal song in place of the floating one when popped out', () => {
+    const { result, onMinimize } = playerWith(three());
+    act(() => result.current.playList());
+
+    act(() => result.current.popOut(songInfo(3)));
+
+    expect(result.current.pipVideoId).toBe(videoId(3));
+    expect(onMinimize).toHaveBeenCalledTimes(1);
+  });
+
+  it('leaves the floating song alone when popping out the song already floating', () => {
+    const { result, onMinimize } = playerWith(three());
+    act(() => result.current.playList());
+
+    act(() => result.current.popOut(songInfo(1)));
+
+    expect(result.current.pipVideoId).toBe(videoId(1));
     expect(onMinimize).not.toHaveBeenCalled();
   });
 });

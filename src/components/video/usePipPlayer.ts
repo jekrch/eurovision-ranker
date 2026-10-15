@@ -195,19 +195,22 @@ export const usePipPlayer = (
   }, []);
 
   const registerDock = useCallback(
-    (el: HTMLElement, info: VideoInfo) => {
-      // flying back from a floating pip should glide into place; a fresh open
-      // (or a brand-new video) should lock straight onto the modal
-      const animateIn = modeRef.current === 'pip';
+    (el: HTMLElement, info: VideoInfo, autoplay = false) => {
+      const sameVideo = videoRef.current?.videoId === info.videoId;
+      // the same song flying back from a floating pip should glide into place;
+      // a fresh open (or a different song replacing the pip) should lock
+      // straight onto the modal
+      const animateIn = modeRef.current === 'pip' && sameVideo;
       cancelClose();
       dockElRef.current = el;
-      if (videoRef.current?.videoId !== info.videoId) {
+      if (!sameVideo) {
         // a different song: (re)load the iframe with the new id. opening from
-        // the modal never autoplays — the user presses play themselves
+        // the modal only autoplays when the user already pressed play on it
+        advancingRef.current = false;
         playerStateRef.current = -1;
         lastGeomRef.current = null;
         videoRef.current = info;
-        setAutoplay(false);
+        setAutoplay(autoplay);
         setVideo(info);
       } else {
         // same song returning from pip: keep playing, just refresh metadata
@@ -300,13 +303,56 @@ export const usePipPlayer = (
     setExpandNonce((n) => n + 1);
   }, []);
 
+  // swap the pip to a different video (and autoplay it). geometry stays put,
+  // so the floating box doesn't move — only the iframe src changes.
+  const loadPipVideo = useCallback(
+    (info: VideoInfo) => {
+      cancelClose();
+      playerStateRef.current = -1;
+      videoRef.current = info;
+      setAutoplay(true);
+      setVideo(info);
+    },
+    [cancelClose],
+  );
+
+  // load a video straight into a floating, autoplaying pip without going
+  // through the song modal. a docked player (if any) is released so the pip
+  // takes over; the dock's later unmount is then ignored as stale.
+  const floatVideo = useCallback(
+    (info: VideoInfo) => {
+      cancelClose();
+      dockElRef.current = null;
+      advancingRef.current = false;
+      playerStateRef.current = -1;
+      lastGeomRef.current = null;
+      videoRef.current = info;
+      setAutoplay(true);
+      setVideo(info);
+      goMode('pip');
+    },
+    [goMode, cancelClose],
+  );
+
   // pop the docked player out to a floating pip: flag it so the dock's unmount
-  // floats (not tears down) the player, then close the modal to trigger that
-  const popOut = useCallback(() => {
-    if (!videoRef.current || modeRef.current === 'pip') return;
-    forcePipRef.current = true;
-    onMinimizeRef.current?.();
-  }, []);
+  // floats (not tears down) the player, then close the modal to trigger that.
+  // when the modal's song isn't the one in the player (another song is already
+  // floating), `info` floats that song in the pip instead.
+  const popOut = useCallback(
+    (info?: VideoInfo) => {
+      if (videoRef.current && modeRef.current === 'docked') {
+        forcePipRef.current = true;
+        onMinimizeRef.current?.();
+        return;
+      }
+      if (!info || (modeRef.current === 'pip' && videoRef.current?.videoId === info.videoId)) {
+        return;
+      }
+      floatVideo(info);
+      onMinimizeRef.current?.();
+    },
+    [floatVideo],
+  );
 
   // drag the floating pip around by grabbing its control bar. clicks that
   // land on a control button fall through to that button instead of dragging.
@@ -341,19 +387,6 @@ export const usePipPlayer = (
     [applyGeom],
   );
 
-  // swap the pip to a different video (and autoplay it). geometry stays put,
-  // so the floating box doesn't move — only the iframe src changes.
-  const loadPipVideo = useCallback(
-    (info: VideoInfo) => {
-      cancelClose();
-      playerStateRef.current = -1;
-      videoRef.current = info;
-      setAutoplay(true);
-      setVideo(info);
-    },
-    [cancelClose],
-  );
-
   // step to the adjacent ranked item that has a video, wrapping at the ends.
   // dir = +1 -> next, -1 -> previous.
   const navigate = useCallback(
@@ -384,7 +417,6 @@ export const usePipPlayer = (
     if (!playable.length) return;
     const info = videoInfoFor(playable[0]);
     if (!info) return;
-    cancelClose();
     // turn auto-continue on (and persist it) so it advances down the list
     setAutoContinue(true);
     autoContinueRef.current = true;
@@ -393,14 +425,20 @@ export const usePipPlayer = (
     } catch {
       /* ignore storage errors (e.g. private mode) */
     }
-    advancingRef.current = false;
-    playerStateRef.current = -1;
-    lastGeomRef.current = null;
-    videoRef.current = info;
-    setAutoplay(true);
-    setVideo(info);
-    goMode('pip');
-  }, [goMode, cancelClose]);
+    floatVideo(info);
+  }, [floatVideo]);
+
+  // float a single contestant's video in the pip (e.g. from the sorter, where
+  // there's no song modal to dock into). already floating -> leave it playing.
+  const playVideo = useCallback(
+    (cc: CountryContestant) => {
+      const info = videoInfoFor(cc);
+      if (!info) return;
+      if (modeRef.current === 'pip' && videoRef.current?.videoId === info.videoId) return;
+      floatVideo(info);
+    },
+    [floatVideo],
+  );
 
   const toggleAutoContinue = useCallback(() => {
     setAutoContinue((on) => {
@@ -556,6 +594,7 @@ export const usePipPlayer = (
     unregisterDock,
     popOut,
     playList,
+    playVideo,
     hasPlayableVideos,
     activeVideoId: video?.videoId ?? null,
     pipVideoId: mode === 'pip' && video ? video.videoId : null,

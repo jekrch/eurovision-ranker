@@ -1,5 +1,6 @@
-import React, { createContext, useContext, useLayoutEffect, useRef } from 'react';
+import React, { createContext, useContext, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { FaPlay } from 'react-icons/fa';
 
 import PipControlBar from './PipControlBar';
 import { usePipPlayer } from './usePipPlayer';
@@ -24,7 +25,10 @@ import { CountryContestant } from '../../data/CountryContestant';
  *
  * When the user leaves the video (switches tab / closes the modal) while it's
  * playing, we transition docked -> pip. Expanding the pip re-opens the modal on
- * the video tab, which re-docks the same (still-playing) iframe.
+ * the video tab, which re-docks the same (still-playing) iframe. Opening a
+ * different song's video tab while a pip is floating leaves the pip alone; the
+ * tab shows a poster until the user presses play, which then pulls the player
+ * out of the pip and into the modal.
  *
  * We avoid the official IFrame Player API on purpose: the app's CSP only allows
  * scripts from 'self', so we can't load https://www.youtube.com/iframe_api.
@@ -41,8 +45,9 @@ import { CountryContestant } from '../../data/CountryContestant';
 export type { VideoInfo } from './videoPipShared';
 
 interface VideoPipContextValue {
-  // called by the modal's video tab when it mounts: the player docks onto `el`
-  registerDock: (el: HTMLElement, info: VideoInfo) => void;
+  // called by the modal's video tab when it mounts: the player docks onto `el`.
+  // `autoplay` starts a newly loaded video straight away (the user pressed play)
+  registerDock: (el: HTMLElement, info: VideoInfo, autoplay?: boolean) => void;
   // called when that tab unmounts (tab switch / modal close): goes pip if the
   // video is playing, otherwise stops
   unregisterDock: (el: HTMLElement) => void;
@@ -55,11 +60,15 @@ interface VideoPipContextValue {
   // bumped each time the user expands the pip; the modal watches this to swing
   // itself back to the video tab
   expandNonce: number;
-  // pops the docked player out to a floating pip and closes the modal
-  popOut: () => void;
+  // pops the docked player out to a floating pip and closes the modal. with
+  // `info` and no docked player, floats that video in the pip instead
+  popOut: (info?: VideoInfo) => void;
   // floats a pip starting from the top ranked playable video with
   // auto-continue on, so it plays straight down the ranked list
   playList: () => void;
+  // floats a pip playing the given contestant's video straight away, without
+  // opening the song modal
+  playVideo: (contestant: CountryContestant) => void;
   // whether the ranked list has at least one playable video
   hasPlayableVideos: boolean;
 }
@@ -101,6 +110,7 @@ export const VideoPipProvider: React.FC<{
     unregisterDock,
     popOut,
     playList,
+    playVideo,
     hasPlayableVideos,
     activeVideoId,
     pipVideoId,
@@ -114,6 +124,7 @@ export const VideoPipProvider: React.FC<{
     expandNonce,
     popOut,
     playList,
+    playVideo,
     hasPlayableVideos,
   };
 
@@ -184,27 +195,58 @@ export const VideoPipProvider: React.FC<{
  * area and registers itself as the dock target; the persistent player from the
  * provider floats on top of it. Unmounting (tab switch / modal close) hands the
  * player off to pip mode (if playing) or stops it.
+ *
+ * If a different song is already floating in the pip, the dock holds off and
+ * shows a poster instead, so the pip keeps playing where it is. Pressing play on
+ * the poster docks the player here and starts this song, closing the pip.
  */
 export const VideoDock: React.FC<{ info: VideoInfo }> = ({ info }) => {
-  const { registerDock, unregisterDock } = useVideoPip();
+  const { registerDock, unregisterDock, pipVideoId } = useVideoPip();
   const ref = useRef<HTMLDivElement>(null);
   const infoRef = useRef(info);
   infoRef.current = info;
+  const [waiting, setWaiting] = useState(() => pipVideoId !== null && pipVideoId !== info.videoId);
+  const autoplayRef = useRef(false);
 
   useLayoutEffect(() => {
+    if (waiting) return;
     const el = ref.current;
-    if (el) registerDock(el, infoRef.current);
+    if (el) registerDock(el, infoRef.current, autoplayRef.current);
     return () => {
       if (el) unregisterDock(el);
     };
     // re-register only when the song actually changes
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [info.videoId]);
+  }, [info.videoId, waiting]);
+
+  const playHere = () => {
+    autoplayRef.current = true;
+    setWaiting(false);
+  };
 
   return (
     <div
       ref={ref}
       className="relative w-full aspect-video rounded-md overflow-hidden bg-black ring-1 ring-(--er-border-secondary)"
-    />
+    >
+      {waiting && (
+        <button
+          type="button"
+          onClick={playHere}
+          aria-label={`Play ${info.title}`}
+          title="Play here and close the pop-out"
+          className="group absolute inset-0 h-full w-full cursor-pointer"
+        >
+          <img
+            src={`https://i.ytimg.com/vi/${info.videoId}/hqdefault.jpg`}
+            alt=""
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+          <span className="absolute inset-0 m-auto flex h-12 w-[4.25rem] items-center justify-center rounded-xl bg-black/70 transition-colors group-hover:bg-[#FF0000]">
+            <FaPlay className="ml-1 text-xl text-white" />
+          </span>
+        </button>
+      )}
+    </div>
   );
 };

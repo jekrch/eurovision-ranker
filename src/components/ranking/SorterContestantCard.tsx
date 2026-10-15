@@ -4,8 +4,9 @@ import { FaYoutube } from 'react-icons/fa';
 
 import { CountryContestant } from '../../data/CountryContestant';
 import { useAppSelector } from '../../hooks/stateHooks';
-import { getYoutubeThumbnail } from '../../utilities/YoutubeUtil';
+import { getYouTubeVideoId, getYoutubeThumbnail } from '../../utilities/YoutubeUtil';
 import { LazyLoadedFlag } from '../LazyFlag';
+import { useVideoPip } from '../video/VideoPipContext';
 
 interface SorterContestantCardProps {
   countryContestant: CountryContestant;
@@ -18,10 +19,13 @@ const SorterContestantCard: React.FC<SorterContestantCardProps> = ({
 }) => {
   const isGlobalMode = useAppSelector((state) => state.root.globalSearch);
   const showThumbnail = useAppSelector((state) => state.root.showThumbnail);
+  const { playVideo } = useVideoPip();
 
   const contestant = countryContestant.contestant;
   const country = countryContestant.country;
   const youtubeThumb = getYoutubeThumbnail(contestant?.youtube);
+  // links we can't embed fall back to opening YouTube
+  const canPlayInline = !!(contestant?.youtube && getYouTubeVideoId(contestant.youtube));
 
   // flag related styles
   const flagContainerStyles =
@@ -134,7 +138,19 @@ const SorterContestantCard: React.FC<SorterContestantCardProps> = ({
                     target="_blank"
                     rel="noopener noreferrer"
                     className="rounded-sm text-(--er-accent-error) hover:brightness-125 drop-shadow-[0_1px_2px_rgba(0,0,0,0.4)] transition-[filter] duration-150"
-                    onClick={(e) => e.stopPropagation()}
+                    onClick={(e) => {
+                      // don't count the click as picking this card
+                      e.stopPropagation();
+                      // modified clicks (new tab etc.) keep the plain link behavior
+                      if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) {
+                        return;
+                      }
+                      // play in the floating player instead of leaving the sorter
+                      if (canPlayInline) {
+                        e.preventDefault();
+                        playVideo(countryContestant);
+                      }
+                    }}
                   >
                     <FaYoutube className="text-4xl" title="Watch on YouTube" />
                   </a>

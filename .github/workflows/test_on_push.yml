@@ -14,6 +14,12 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
+    - name: Set up Node
+      # vitest runs under node and requires ^22.12 or >=24
+      uses: actions/setup-node@v4
+      with:
+        node-version: 24
+
     - name: Set up Bun
       uses: oven-sh/setup-bun@v2
       with:

@@ -25,7 +25,7 @@ function currentAddress(): string {
 const TourUrlLink: React.FC = () => {
   const [address] = useState(currentAddress);
   const [copied, setCopied] = useState(false);
-  const timeoutRef = useRef<ReturnType<typeof setTimeout>>();
+  const timeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   useEffect(() => () => clearTimeout(timeoutRef.current), []);
 

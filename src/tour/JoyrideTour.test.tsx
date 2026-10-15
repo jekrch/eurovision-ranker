@@ -18,7 +18,7 @@ vi.mock('react-joyride', async () => {
 
   return {
     ...actual,
-    default: (props: Record<string, unknown>) => {
+    Joyride: (props: Record<string, unknown>) => {
       joyride.props.current = props;
 
       return null;
@@ -39,7 +39,7 @@ vi.mock('../utilities/UrlUtil', async () => {
 
 function emit(event: Record<string, unknown>): void {
   act(() => {
-    (joyride.props.current?.callback as (data: unknown) => void)({
+    (joyride.props.current?.onEvent as (data: unknown) => void)({
       status: STATUS.RUNNING,
       ...event,
     });

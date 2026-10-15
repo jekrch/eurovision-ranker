@@ -98,4 +98,4 @@ export const tourSteps = [
     content: 'Enjoy, friends ❤️',
     placement: CENTERED,
   },
-].map((step) => ({ ...step, disableBeacon: true }));
+];

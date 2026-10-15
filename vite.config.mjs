@@ -1,18 +1,15 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import viteTsconfigPaths from 'vite-tsconfig-paths'
 import tailwindcss from '@tailwindcss/vite';
 import compression from 'vite-plugin-compression2';
 import { visualizer } from 'rollup-plugin-visualizer';
 
 export default defineConfig({
     plugins: [
-      react(), 
+      react(),
       tailwindcss(),
-      viteTsconfigPaths(),
       compression({
-        algorithm: 'gzip',
-        ext: '.gz',
+        algorithms: ['gzip'],
       }),
       visualizer({
         filename: 'stats.html',
@@ -28,14 +25,25 @@ export default defineConfig({
           drop_debugger: true,
         },
       },
-      rollupOptions: {
+      rolldownOptions: {
         output: {
-          manualChunks: {
-            react: ['react', 'react-dom'],
-            redux: ['@reduxjs/toolkit', 'react-redux'],
+          codeSplitting: {
+            groups: [
+              {
+                name: 'react',
+                test: /[\\/]node_modules[\\/](react|react-dom|scheduler)[\\/]/,
+              },
+              {
+                name: 'redux',
+                test: /[\\/]node_modules[\\/](@reduxjs[\\/]toolkit|react-redux|redux|redux-thunk|immer|reselect)[\\/]/,
+              },
+            ],
           },
         },
       },
+    },
+    resolve: {
+      tsconfigPaths: true,
     },
     server: {
         open: true,

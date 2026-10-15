@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { CallBackProps, EVENTS, ACTIONS, STATUS } from 'react-joyride';
+import { EventData, EVENTS, ACTIONS, STATUS } from 'react-joyride';
 
 import TourExitPrompt from './TourExitPrompt';
 import { tourDelay } from './tourTarget';
@@ -24,15 +24,15 @@ import { AppDispatch, AppState } from '../redux/store';
 import { clearCategories } from '../utilities/CategoryUtil';
 import { fetchCountryContestantsByYear } from '../utilities/ContestantRepository';
 import {
-  joyrideFloaterProps,
+  joyrideFloatingOptions,
   joyrideOptions,
-  JOYRIDE_SPOTLIGHT_PADDING,
+  joyrideStyles,
   SKIP_WELCOME_AFTER_TOUR_KEY,
 } from '../utilities/JoyrideUtil';
 import { logger } from '../utilities/logger';
 import { goToUrl } from '../utilities/UrlUtil';
 
-import type Joyride from 'react-joyride';
+import type { Joyride } from 'react-joyride';
 
 /** the contest year the sorter tour walks the user through */
 const TOUR_YEAR = '2025';
@@ -62,24 +62,20 @@ const joyRideTourSteps = [
     target: '.tour-step-2',
     content:
       'To use the Sorter, drag contestants you want to rank from the left to the right column',
-    disableBeacon: true,
   },
   {
     target: '.tour-step-4',
     content: 'Click "View List" to see your unranked list',
-    disableBeacon: true,
   },
   {
     target: '.tour-step-10',
     content: 'Click here to open the Sorter',
-    disableBeacon: true,
   },
   {
     // the sorter fills most of the screen, so let joyride put the tooltip
     // wherever there's actually room beside it
     target: '.sort-tour-step-modal',
     content: 'Answer the prompts with the contestant you prefer',
-    disableBeacon: true,
     placement: 'auto' as const,
   },
   {
@@ -89,7 +85,6 @@ const joyRideTourSteps = [
     target: '.tour-step-18',
     content:
       "Once you're done, you can generate a ranking that reflects all of your choices. Neat!",
-    disableBeacon: true,
     placement: 'center' as const,
   },
   {
@@ -105,7 +100,6 @@ const joyRideTourSteps = [
         </p>
       </>
     ),
-    disableBeacon: true,
   },
 ];
 
@@ -136,7 +130,7 @@ const JoyrideTourSort: React.FC<JoyrideTourSortProps> = (props: JoyrideTourSortP
     if (props.runTour) {
       // only import when the tour is about to run
       import('react-joyride').then((module) => {
-        setJoyrideComponent(() => module.default);
+        setJoyrideComponent(() => module.Joyride);
       });
     }
 
@@ -199,7 +193,7 @@ const JoyrideTourSort: React.FC<JoyrideTourSortProps> = (props: JoyrideTourSortP
   }
 
   // handle joyride events
-  const handleJoyrideCallback = (data: CallBackProps) => {
+  const handleJoyrideCallback = (data: EventData) => {
     const { action, index, status, type } = data;
 
     logger.log(
@@ -378,18 +372,14 @@ const JoyrideTourSort: React.FC<JoyrideTourSortProps> = (props: JoyrideTourSortP
     <>
       <JoyrideComponent
         key={joyrideKey}
-        callback={handleJoyrideCallback}
+        onEvent={handleJoyrideCallback}
         continuous={true}
         run={startTour}
         stepIndex={stepIndex}
         steps={joyRideTourSteps}
-        styles={joyrideOptions}
-        disableOverlay={false}
-        disableScrolling={true}
-        disableScrollParentFix={true}
-        showProgress={true}
-        spotlightPadding={JOYRIDE_SPOTLIGHT_PADDING}
-        floaterProps={joyrideFloaterProps}
+        options={joyrideOptions}
+        styles={joyrideStyles}
+        floatingOptions={joyrideFloatingOptions}
       />
       <TourExitPrompt isOpen={exitPromptOpen} onConfirm={endTour} onCancel={cancelExit} />
     </>

@@ -19,7 +19,7 @@ vi.mock('react-joyride', async () => {
   const actual = await vi.importActual<typeof import('react-joyride')>('react-joyride');
   return {
     ...actual,
-    default: (props: Record<string, unknown>) => {
+    Joyride: (props: Record<string, unknown>) => {
       joyride.props.current = props;
       return null;
     },
@@ -55,7 +55,7 @@ const CONTEST = ['fi', 'hr', 'es', 'cz', 'no', 'is', 'se', 'gb'].map(countryCont
 /** Plays a "Next" from `index`, which prepares and moves to the step after it. */
 const next = (index: number) =>
   act(() => {
-    (joyride.props.current?.callback as (data: unknown) => void)({
+    (joyride.props.current?.onEvent as (data: unknown) => void)({
       status: STATUS.RUNNING,
       type: EVENTS.STEP_AFTER,
       action: ACTIONS.NEXT,

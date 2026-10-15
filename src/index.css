@@ -101,6 +101,35 @@ code {
   background-color: var(--er-tooltip-bg);
 }
 
+/* MAP (react-simple-maps)
+   A ranked country is filled with its rank colour, which MapContent passes in
+   as --map-geography-fill. Countries only respond to hover; the map is for
+   reading, so clicking one doesn't mark it. */
+.map-geography {
+  fill: var(--er-surface-tertiary);
+  stroke: var(--er-border-subtle);
+  stroke-width: 0.5;
+  outline: none;
+  transition:
+    fill 0.2s ease,
+    stroke 0.15s ease;
+}
+
+.map-geography--ranked {
+  fill: var(--map-geography-fill);
+}
+
+.map-geography:hover {
+  fill: var(--er-surface-accent);
+  stroke: var(--er-border-secondary);
+  stroke-width: 2;
+}
+
+.map-geography--ranked:hover {
+  fill: var(--map-geography-fill);
+  stroke: var(--er-focus-ring);
+}
+
 .normal-bg {
   padding-bottom: env(safe-area-inset-bottom);
   height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
@@ -889,7 +918,7 @@ select:-webkit-autofill {
    lives here is only what a style object can't say: the entrance each step
    plays, and the button states. */
 
-/* joyride keys the step wrapper by index, so the tooltip is a fresh element on
+/* joyride keys the step floater by index, so the tooltip is a fresh element on
    every step and this runs each time it lands */
 .react-joyride__tooltip {
   animation: tourTooltipEnter var(--er-view-duration) var(--er-view-ease) backwards;
@@ -914,18 +943,32 @@ select:-webkit-autofill {
     transform 150ms ease;
 }
 
-.react-joyride__tooltip button[data-test-id='button-primary']:hover {
+.react-joyride__tooltip button[data-action='primary']:hover {
   background-color: var(--er-button-primary-hover) !important;
 }
 
-.react-joyride__tooltip button[data-test-id='button-primary']:active {
+.react-joyride__tooltip button[data-action='primary']:active {
   transform: scale(0.97);
 }
 
-.react-joyride__tooltip button[data-test-id='button-back']:hover,
-.react-joyride__tooltip button[data-test-id='button-skip']:hover,
-.react-joyride__tooltip button[data-test-id='button-close']:hover {
+.react-joyride__tooltip button[data-action='back']:hover,
+.react-joyride__tooltip button[data-action='skip']:hover,
+.react-joyride__tooltip button[data-action='close']:hover {
   color: var(--er-text-primary) !important;
+}
+
+/* joyride paints the overlay and the close icon through SVG fill attributes,
+   which can't read a CSS variable, so the theme's colours are set here */
+.react-joyride__spotlight path {
+  fill: var(--er-overlay-heavy);
+}
+
+.react-joyride__tooltip button[data-action='close'] {
+  color: var(--er-text-subtle);
+}
+
+.react-joyride__tooltip button[data-action='close'] path {
+  fill: currentColor;
 }
 
 .react-joyride__tooltip button:focus-visible {

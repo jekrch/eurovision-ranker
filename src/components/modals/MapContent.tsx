@@ -1,19 +1,21 @@
+import classNames from 'classnames';
 import React from 'react';
 import { ComposableMap, Geographies, Geography, ZoomableGroup } from 'react-simple-maps';
 
 import geoJson from '../../data/geoJson.json';
 
-/** Shape of a geography feature exposed by react-simple-maps (which ships untyped). */
-interface MapGeography {
-  rsmKey?: string;
-  properties: {
-    iso_a2_eh?: string;
-    name?: string;
-    UNIQUE_KEY?: string;
-    [key: string]: unknown;
-  };
-  [key: string]: unknown;
-}
+type GeographiesProps = React.ComponentProps<typeof Geographies>;
+type MapGeographySource = GeographiesProps['geography'];
+// the package exports its feature type and its component under the same name,
+// so the type is read off what Geographies hands its children
+type MapGeography = Parameters<GeographiesProps['children']>[0]['geographies'][number];
+
+/**
+ * Where the main map is centred, as [longitude, latitude]. Both the projection
+ * and the zoomable group need it: the group pans to its own centre when it
+ * mounts, and would otherwise pan to [0, 0], off the west coast of Africa.
+ */
+const EUROPE_CENTER: [number, number] = [15, 50];
 
 interface MapContentProps {
   countryCodes: string[];
@@ -46,13 +48,14 @@ const GeographyRenderer: React.FC<{
   onHover: (name: string, rank: string) => void;
   onLeave: () => void;
 }> = ({ filterFn, countryCodes, isHighlighted, getColorByIndex, onHover, onLeave }) => (
-  <Geographies geography={{ ...preparedGeography }}>
-    {({ geographies }: { geographies: MapGeography[] }) =>
+  <Geographies geography={preparedGeography as MapGeographySource}>
+    {({ geographies }) =>
       geographies
-        ?.filter((geo: MapGeography) => (filterFn ? filterFn(geo) : true))
-        .map((geo: MapGeography) => {
-          if (!geo?.properties) return null;
-          const countryCode = geo.properties.iso_a2_eh;
+        ?.filter((geo) => (filterFn ? filterFn(geo) : true))
+        .map((geo) => {
+          const properties = geo?.properties;
+          if (!properties) return null;
+          const countryCode: string | undefined = properties.iso_a2_eh;
           if (!countryCode) return null;
 
           const fillColor = getColorByIndex(countryCode);
@@ -61,33 +64,18 @@ const GeographyRenderer: React.FC<{
 
           return (
             <Geography
-              key={geo.properties.UNIQUE_KEY}
+              key={properties.UNIQUE_KEY}
               geography={geo}
               data-tooltip-id="country-tooltip"
-              onMouseEnter={() => onHover(geo.properties.name || '', rank.toString())}
+              onMouseEnter={() => onHover(properties.name || '', rank.toString())}
               onMouseLeave={onLeave}
-              style={{
-                default: {
-                  fill: highlight ? fillColor : 'var(--er-surface-tertiary)',
-                  stroke: 'var(--er-border-subtle)',
-                  strokeWidth: 0.5,
-                  outline: 'none',
-                  transition: 'fill 0.2s ease, stroke 0.15s ease',
-                },
-                hover: {
-                  fill: highlight ? fillColor : 'var(--er-surface-accent)',
-                  stroke: highlight ? 'var(--er-focus-ring)' : 'var(--er-border-secondary)',
-                  strokeWidth: 2,
-                  outline: 'none',
-                  transition: 'fill 0.2s ease, stroke 0.15s ease',
-                },
-                pressed: {
-                  fill: highlight ? 'var(--er-accent-blue)' : 'var(--er-surface-accent)',
-                  stroke: 'var(--er-focus-ring)',
-                  strokeWidth: 1,
-                  outline: 'none',
-                },
-              }}
+              // the hover state lives in index.css under "MAP"; the country's
+              // rank colour reaches it through this property
+              className={classNames('map-geography', { 'map-geography--ranked': highlight })}
+              style={{ '--map-geography-fill': fillColor } as React.CSSProperties}
+              // react-simple-maps makes every country a tab stop, but there's
+              // nothing to do with one once it's focused
+              tabIndex={-1}
             />
           );
         })
@@ -124,12 +112,12 @@ const MapContent: React.FC<MapContentProps> = ({
             '--tw-ring-color': 'var(--er-border-subtle)',
           } as React.CSSProperties
         }
-        projectionConfig={{ scale: 550, center: [15, 50] }}
+        projectionConfig={{ scale: 550, center: EUROPE_CENTER }}
       >
-        <ZoomableGroup>
+        <ZoomableGroup center={EUROPE_CENTER}>
           <GeographyRenderer
             {...sharedProps}
-            filterFn={(geo) => geo.properties.iso_a2_eh !== 'AU'}
+            filterFn={(geo) => geo.properties?.iso_a2_eh !== 'AU'}
           />
         </ZoomableGroup>
       </ComposableMap>
@@ -144,7 +132,7 @@ const MapContent: React.FC<MapContentProps> = ({
         >
           <GeographyRenderer
             {...sharedProps}
-            filterFn={(geo) => geo.properties.iso_a2_eh === 'AU'}
+            filterFn={(geo) => geo.properties?.iso_a2_eh === 'AU'}
           />
         </ComposableMap>
         <span className="absolute bottom-0 left-0 right-0 text-[8px] text-center leading-tight text-(--er-text-muted)">

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { CallBackProps, EVENTS, ACTIONS, STATUS } from 'react-joyride';
+import { EventData, EVENTS, ACTIONS, STATUS } from 'react-joyride';
 
 import TourExitPrompt from './TourExitPrompt';
 import { tourDelay } from './tourTarget';
@@ -28,15 +28,15 @@ import { clearCategories } from '../utilities/CategoryUtil';
 import { fetchCountryContestantsByYear } from '../utilities/ContestantRepository';
 import { clone } from '../utilities/ContestantUtil';
 import {
-  joyrideFloaterProps,
+  joyrideFloatingOptions,
   joyrideOptions,
-  JOYRIDE_SPOTLIGHT_PADDING,
+  joyrideStyles,
   SKIP_WELCOME_AFTER_TOUR_KEY,
 } from '../utilities/JoyrideUtil';
 import { logger } from '../utilities/logger';
 import { goToUrl } from '../utilities/UrlUtil';
 
-import type Joyride from 'react-joyride';
+import type { Joyride } from 'react-joyride';
 
 /** the contest year the tour walks the user through */
 const TOUR_YEAR = '2023';
@@ -92,7 +92,7 @@ const JoyrideTour: React.FC<JoyrideTourProps> = (props: JoyrideTourProps) => {
     if (props.runTour) {
       // Only import when the tour is about to run
       import('react-joyride').then((module) => {
-        setJoyrideComponent(() => module.default);
+        setJoyrideComponent(() => module.Joyride);
       });
     }
 
@@ -163,7 +163,7 @@ const JoyrideTour: React.FC<JoyrideTourProps> = (props: JoyrideTourProps) => {
     setJoyrideKey((key) => key + 1);
   }
 
-  const handleJoyrideCallback = (data: CallBackProps) => {
+  const handleJoyrideCallback = (data: EventData) => {
     const { action, index, status, type } = data;
 
     if (([STATUS.FINISHED, STATUS.SKIPPED] as string[]).includes(status)) {
@@ -336,18 +336,14 @@ const JoyrideTour: React.FC<JoyrideTourProps> = (props: JoyrideTourProps) => {
     <>
       <JoyrideComponent
         key={joyrideKey}
-        disableScrolling={true}
-        disableScrollParentFix={true}
         continuous
         run={startTour}
         steps={tourSteps}
         stepIndex={stepIndex}
-        callback={handleJoyrideCallback}
-        showProgress={true}
-        disableOverlay={false}
-        spotlightPadding={JOYRIDE_SPOTLIGHT_PADDING}
-        floaterProps={joyrideFloaterProps}
-        styles={joyrideOptions}
+        onEvent={handleJoyrideCallback}
+        options={joyrideOptions}
+        styles={joyrideStyles}
+        floatingOptions={joyrideFloatingOptions}
       />
       <TourExitPrompt isOpen={exitPromptOpen} onConfirm={endTour} onCancel={cancelExit} />
     </>

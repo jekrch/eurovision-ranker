@@ -120,6 +120,11 @@ export const useContestantTable = () => {
   };
 
   useEffect(() => {
+    // Set once a newer run has started. The lookup below can resolve after the
+    // store has moved on, and applying that stale result would undo the newer
+    // run's reconcile, which then undoes this one, and so on.
+    let superseded = false;
+
     const updateRankedItems = async () => {
       if (areContestantRowsEqual(prevSelectedContestantsRef.current, selectedContestants)) {
         return;
@@ -141,6 +146,8 @@ export const useContestantTable = () => {
           .map((item) => item.uid);
 
         const newCountryContestants = await getCountryContestantsByUids(uidsToAdd, voteType);
+
+        if (superseded) return;
 
         const newRankedItems = [
           ...currentRankedItems.filter((item) => !uidsToRemove.includes(item.uid)),
@@ -165,6 +172,10 @@ export const useContestantTable = () => {
     };
 
     updateRankedItems();
+
+    return () => {
+      superseded = true;
+    };
   }, [selectedContestants, activeCategory, categories, rankedItems, dispatch]);
 
   // reset page and search term when switching views

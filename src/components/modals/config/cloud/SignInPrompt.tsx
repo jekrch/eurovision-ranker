@@ -13,15 +13,15 @@ const SignInPrompt: React.FC<{
   children?: React.ReactNode;
 }> = ({ icon, title, description, onSignIn, children }) => (
   <div className="flex flex-col items-center text-center py-6 px-2">
-    <div className="w-14 h-14 rounded-full bg-gradient-to-br from-[var(--er-button-primary)]/30 to-[var(--er-button-primary-hover)]/20 flex items-center justify-center mb-4 ring-1 ring-[var(--er-button-primary)]/20">
-      <FontAwesomeIcon icon={icon} className="text-[var(--er-button-primary)] text-lg" />
+    <div className="w-14 h-14 rounded-full bg-linear-to-br from-(--er-button-primary)/30 to-(--er-button-primary-hover)/20 flex items-center justify-center mb-4 ring-1 ring-(--er-button-primary)/20">
+      <FontAwesomeIcon icon={icon} className="text-(--er-button-primary) text-lg" />
     </div>
-    <h3 className="text-base font-semibold text-[var(--er-text-primary)] mb-1">{title}</h3>
-    <p className="text-sm text-[var(--er-text-subtle)] max-w-xs mb-5">{description}</p>
+    <h3 className="text-base font-semibold text-(--er-text-primary) mb-1">{title}</h3>
+    <p className="text-sm text-(--er-text-subtle) max-w-xs mb-5">{description}</p>
     <button
       type="button"
       onClick={onSignIn}
-      className={`px-5 py-2 text-sm font-medium text-white bg-[var(--er-button-primary)] hover:bg-[var(--er-button-primary-hover)] rounded-md transition-colors shadow-sm${children ? ' mb-5' : ''}`}
+      className={`px-5 py-2 text-sm font-medium text-white bg-(--er-button-primary) hover:bg-(--er-button-primary-hover) rounded-md transition-colors shadow-sm${children ? ' mb-5' : ''}`}
     >
       Sign In
     </button>

@@ -78,7 +78,7 @@ const ContestantTable: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-full bg-transparent text-[var(--er-text-secondary)]">
+    <div className="flex flex-col h-full bg-transparent text-(--er-text-secondary)">
       <div
         className={classNames('flex flex-col mb-1 pr-1 sm:flex-row sm:items-center sm:space-x-4')}
       >
@@ -87,25 +87,25 @@ const ContestantTable: React.FC = () => {
         </div>
         <div
           className={classNames(
-            'flex items-center justify-between gap-3 pb-1 text-sm mt-1 sm:mt-0 sm:justify-end sm:flex-grow min-w-[50%]',
+            'flex items-center justify-between gap-3 pb-1 text-sm mt-1 sm:mt-0 sm:justify-end sm:grow min-w-[50%]',
           )}
         >
           <div className="flex items-center gap-2">
             <TooltipHelp
               content="Uncheck this to use the simple year-based selection mode"
-              className="text-[var(--er-text-secondary)] !mt-0 !mb-0"
+              className="text-(--er-text-secondary) mt-0! mb-0!"
             />
-            <div className="flex items-center gap-3 rounded-lg bg-[var(--er-surface-tertiary-70)] ring-1 ring-white/5 px-3 py-[0.35em]">
+            <div className="flex items-center gap-3 rounded-lg bg-(--er-surface-tertiary-70) ring-1 ring-white/5 px-3 py-[0.35em]">
               <Switch
                 label="adv"
-                labelClassName="text-sm text-[var(--er-text-tertiary)]"
+                labelClassName="text-sm text-(--er-text-tertiary)"
                 checked={globalSearch}
                 setChecked={switchAdvancedMode}
               />
               <span className="h-4 w-px bg-white/10" aria-hidden="true" />
               <Switch
                 label="selected"
-                labelClassName="text-sm text-[var(--er-text-tertiary)]"
+                labelClassName="text-sm text-(--er-text-tertiary)"
                 checked={showSelected}
                 setChecked={setShowSelected}
               />
@@ -128,7 +128,7 @@ const ContestantTable: React.FC = () => {
         message={`Are you sure you want to turn off advanced global search mode? \n\nYour current selections will be cleared, since they contain contestants from multiple years.`}
       />
 
-      <div className="flex-grow min-h-0 overflow-auto rounded-lg mr-1 bg-[var(--er-card-surface)] ring-1 ring-white/5 shadow-lg shadow-black/20">
+      <div className="grow min-h-0 overflow-auto rounded-lg mr-1 bg-(--er-card-surface) ring-1 ring-white/5 shadow-lg shadow-black/20">
         <div className="relative">
           <table className="w-full bg-transparent table-fixed">
             <colgroup>

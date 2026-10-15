@@ -39,14 +39,14 @@ const TourExitPrompt: React.FC<TourExitPromptProps> = ({ isOpen, onConfirm, onCa
   return createPortal(
     <div
       id={EXIT_PROMPT_ID}
-      className="fixed inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4"
+      className="fixed inset-0 flex items-center justify-center bg-black/60 backdrop-blur-xs px-4"
       style={{ zIndex: EXIT_PROMPT_Z_INDEX }}
       role="alertdialog"
       aria-modal="true"
       aria-label="Exit the tour?"
     >
-      <div className="w-full max-w-[22em] rounded-xl bg-[var(--er-surface-secondary)] p-6 text-[var(--er-text-tertiary)] ring-1 ring-white/10 shadow-2xl shadow-black/40">
-        <div className="mb-4 text-sm text-[var(--er-text-secondary)] leading-[1.2em]">
+      <div className="w-full max-w-[22em] rounded-xl bg-(--er-surface-secondary) p-6 text-(--er-text-tertiary) ring-1 ring-white/10 shadow-2xl shadow-black/40">
+        <div className="mb-4 text-sm text-(--er-text-secondary) leading-[1.2em]">
           Exit the tour? The ranking you had before it started will be restored.
         </div>
         <div className="flex justify-end">

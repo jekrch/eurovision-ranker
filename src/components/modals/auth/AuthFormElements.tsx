@@ -5,15 +5,12 @@ import React from 'react';
 import { inputWithIcon } from './authStyles';
 
 export const InviteAlert: React.FC = () => (
-  <div className="rounded-lg border-[0.7px] border-[var(--er-button-primary)]/30 bg-[var(--er-button-primary)]/10 p-3 flex gap-2.5">
-    <FontAwesomeIcon
-      icon={faCircleInfo}
-      className="text-[var(--er-button-primary)] mt-0.5 shrink-0"
-    />
-    <div className="text-xs leading-relaxed text-[var(--er-text-tertiary)]">
-      <span className="font-semibold text-[var(--er-text-primary)]">Private preview.</span> Accounts
-      are invite-only while this feature is being tested with a small group. Public sign-ups will
-      open in a future release. Thanks for your patience!
+  <div className="rounded-lg border-[0.7px] border-(--er-button-primary)/30 bg-(--er-button-primary)/10 p-3 flex gap-2.5">
+    <FontAwesomeIcon icon={faCircleInfo} className="text-(--er-button-primary) mt-0.5 shrink-0" />
+    <div className="text-xs leading-relaxed text-(--er-text-tertiary)">
+      <span className="font-semibold text-(--er-text-primary)">Private preview.</span> Accounts are
+      invite-only while this feature is being tested with a small group. Public sign-ups will open
+      in a future release. Thanks for your patience!
     </div>
   </div>
 );
@@ -21,7 +18,7 @@ export const InviteAlert: React.FC = () => (
 export const FieldIcon: React.FC<{ icon: typeof faEnvelope }> = ({ icon }) => (
   <FontAwesomeIcon
     icon={icon}
-    className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--er-text-subtle)] text-xs pointer-events-none"
+    className="absolute left-3 top-1/2 -translate-y-1/2 text-(--er-text-subtle) text-xs pointer-events-none"
   />
 );
 
@@ -60,6 +57,6 @@ export const IconInput: React.FC<{
 export const EmailSentNotice: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <div className="flex gap-2.5 p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
     <FontAwesomeIcon icon={faCheck} className="text-emerald-400 mt-0.5 shrink-0" />
-    <div className="text-xs leading-relaxed text-[var(--er-text-tertiary)]">{children}</div>
+    <div className="text-xs leading-relaxed text-(--er-text-tertiary)">{children}</div>
   </div>
 );

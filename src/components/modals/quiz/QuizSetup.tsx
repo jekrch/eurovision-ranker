@@ -37,7 +37,7 @@ const Segmented = <T extends string>({
   value: T;
   onChange: (v: T) => void;
 }) => (
-  <div className={classNames(quizWell, 'flex w-full gap-0.5 p-0.5 !rounded-lg')}>
+  <div className={classNames(quizWell, 'flex w-full gap-0.5 p-0.5 rounded-lg!')}>
     {options.map((o) => (
       <button
         key={o.value}
@@ -46,8 +46,8 @@ const Segmented = <T extends string>({
         className={classNames(
           'flex-1 py-1.5 rounded-md text-xs font-semibold transition-colors duration-150',
           value === o.value
-            ? 'bg-[var(--er-interactive-primary)] bg-gradient-to-b from-white/[0.12] to-transparent text-white shadow-sm shadow-black/30 ring-1 ring-inset ring-white/15'
-            : 'text-[var(--er-text-subtle)] hover:bg-white/[0.06] hover:text-[var(--er-text-secondary)]',
+            ? 'bg-(--er-interactive-primary) bg-linear-to-b from-white/12 to-transparent text-white shadow-xs shadow-black/30 ring-1 ring-inset ring-white/15'
+            : 'text-(--er-text-subtle) hover:bg-white/6 hover:text-(--er-text-secondary)',
         )}
       >
         {o.label}
@@ -93,7 +93,7 @@ const QuizSetup: React.FC<QuizSetupProps> = ({ onStart }) => {
     <div className="flex flex-col gap-5 flex-1 min-h-0 view-enter-animation">
       <div className="-mt-3 pr-8 shrink-0">
         <h2 className={quizTitle}>Eurovision Quiz</h2>
-        <p className="text-[var(--er-text-subtle)] text-xs mt-0.5 truncate">
+        <p className="text-(--er-text-subtle) text-xs mt-0.5 truncate">
           Test your contest knowledge across the years
         </p>
       </div>
@@ -103,7 +103,7 @@ const QuizSetup: React.FC<QuizSetupProps> = ({ onStart }) => {
         <div className="flex items-center justify-between mb-2 shrink-0">
           <label className={classNames(quizLabel, 'flex items-center gap-2')}>
             Years
-            <span className="normal-case tracking-normal font-medium tabular-nums text-[var(--er-text-tertiary)]">
+            <span className="normal-case tracking-normal font-medium tabular-nums text-(--er-text-tertiary)">
               {years.length} selected
             </span>
           </label>
@@ -122,7 +122,7 @@ const QuizSetup: React.FC<QuizSetupProps> = ({ onStart }) => {
                 onClick={p.fn}
                 className={classNames(
                   quizChip,
-                  'text-[0.7rem] px-2.5 py-0.5 hover:bg-white/[0.1] hover:text-[var(--er-text-secondary)] transition-colors duration-150',
+                  'text-[0.7rem] px-2.5 py-0.5 hover:bg-white/10 hover:text-(--er-text-secondary) transition-colors duration-150',
                 )}
               >
                 {p.label}
@@ -142,8 +142,8 @@ const QuizSetup: React.FC<QuizSetupProps> = ({ onStart }) => {
                   className={classNames(
                     'text-xs px-2 py-1 rounded-md font-medium tabular-nums text-center ring-1 ring-inset transition-colors duration-100',
                     active
-                      ? 'bg-[var(--er-interactive-primary)] bg-gradient-to-b from-white/[0.12] to-transparent text-white ring-white/15 shadow-sm shadow-black/30'
-                      : 'bg-white/[0.04] ring-white/[0.06] text-[var(--er-text-subtle)] hover:bg-white/[0.08] hover:text-[var(--er-text-secondary)]',
+                      ? 'bg-(--er-interactive-primary) bg-linear-to-b from-white/12 to-transparent text-white ring-white/15 shadow-xs shadow-black/30'
+                      : 'bg-white/4 ring-white/6 text-(--er-text-subtle) hover:bg-white/8 hover:text-(--er-text-secondary)',
                   )}
                 >
                   {y}
@@ -153,7 +153,7 @@ const QuizSetup: React.FC<QuizSetupProps> = ({ onStart }) => {
           </div>
         </div>
         {sortedSelected.length === 0 && (
-          <p className="text-[var(--er-accent-error)] text-[0.7rem] mt-1.5 shrink-0">
+          <p className="text-(--er-accent-error) text-[0.7rem] mt-1.5 shrink-0">
             Select at least one year
           </p>
         )}
@@ -199,17 +199,15 @@ const QuizSetup: React.FC<QuizSetupProps> = ({ onStart }) => {
                   onClick={() => toggleGroup(meta.types)}
                   className={classNames(
                     'text-left px-3 py-2 rounded-lg ring-1 ring-inset transition-colors duration-100',
-                    active
-                      ? quizSelected
-                      : 'bg-white/[0.03] ring-white/[0.06] hover:bg-white/[0.07]',
+                    active ? quizSelected : 'bg-white/3 ring-white/6 hover:bg-white/[0.07]',
                   )}
                 >
                   <div className="flex items-center gap-2">
                     <span
                       className={classNames(
-                        'w-4 h-4 rounded flex items-center justify-center flex-shrink-0 text-[0.55rem] text-white ring-1 ring-inset transition-colors duration-100',
+                        'w-4 h-4 rounded-sm flex items-center justify-center shrink-0 text-[0.55rem] text-white ring-1 ring-inset transition-colors duration-100',
                         active
-                          ? 'bg-[var(--er-interactive-primary)] ring-white/15'
+                          ? 'bg-(--er-interactive-primary) ring-white/15'
                           : 'bg-black/30 ring-white/10',
                       )}
                     >
@@ -218,13 +216,13 @@ const QuizSetup: React.FC<QuizSetupProps> = ({ onStart }) => {
                     <span
                       className={classNames(
                         'text-sm font-medium',
-                        active ? 'text-[var(--er-text-primary)]' : 'text-[var(--er-text-tertiary)]',
+                        active ? 'text-(--er-text-primary)' : 'text-(--er-text-tertiary)',
                       )}
                     >
                       {meta.label}
                     </span>
                   </div>
-                  <p className="text-[var(--er-text-subtle)] text-[0.7rem] mt-0.5 ml-6">
+                  <p className="text-(--er-text-subtle) text-[0.7rem] mt-0.5 ml-6">
                     {meta.description}
                   </p>
                 </button>
@@ -233,7 +231,7 @@ const QuizSetup: React.FC<QuizSetupProps> = ({ onStart }) => {
           </div>
         </div>
         {types.length === 0 && (
-          <p className="text-[var(--er-accent-error)] text-[0.7rem] mt-1.5 shrink-0">
+          <p className="text-(--er-accent-error) text-[0.7rem] mt-1.5 shrink-0">
             Select at least one question type
           </p>
         )}
@@ -247,7 +245,7 @@ const QuizSetup: React.FC<QuizSetupProps> = ({ onStart }) => {
           'shrink-0 mt-1',
           canStart
             ? quizPrimaryBtn
-            : 'w-full py-3 rounded-xl font-semibold flex items-center justify-center gap-2 bg-white/[0.04] ring-1 ring-inset ring-white/[0.06] text-[var(--er-text-subtle)] cursor-not-allowed',
+            : 'w-full py-3 rounded-xl font-semibold flex items-center justify-center gap-2 bg-white/4 ring-1 ring-inset ring-white/6 text-(--er-text-subtle) cursor-not-allowed',
         )}
       >
         <FontAwesomeIcon icon={faPlay} />

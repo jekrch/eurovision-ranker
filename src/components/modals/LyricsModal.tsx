@@ -41,11 +41,11 @@ const SongModal: React.FC<SongModalProps> = (props: SongModalProps) => {
       onClose={props.onClose}
       className="z-50 select-text h-[36em] gradient-background-modal"
     >
-      <div className="-mt-[0.5em] mr-[1.2em] mb-3">
-        <div className="font-semibold text-base text-[var(--er-text-secondary)] pr-6">
+      <div className="mt-[-0.5em] mr-[1.2em] mb-3">
+        <div className="font-semibold text-base text-(--er-text-secondary) pr-6">
           {props.countryContestant?.country.name} &ndash; {contestant?.artist}
         </div>
-        <div className="text-sm text-[var(--er-text-tertiary)] italic mt-[0.15em]">
+        <div className="text-sm text-(--er-text-tertiary) italic mt-[0.15em]">
           "{contestant?.song}"
         </div>
       </div>

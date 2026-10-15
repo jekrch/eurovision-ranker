@@ -232,7 +232,7 @@ const RankedCountriesList: React.FC<RankedCountriesListProps> = ({
                 )}
                 {!showUnranked && rankedItems.length === 0 && (
                   <div className="flex items-center justify-center h-full">
-                    <span className="text-center mb-40 min-mt-5 text-[var(--er-text-muted)] mx-10 text-sm">
+                    <span className="text-center mb-40 min-mt-5 text-(--er-text-muted) mx-10 text-sm">
                       <div>Click 'Select' to choose</div> countries to rank
                       <div>
                         <HeartIcon
@@ -300,7 +300,7 @@ const RankedCountriesList: React.FC<RankedCountriesListProps> = ({
                             {showUnranked ? (
                               <Card
                                 key={`card-${countryContestant?.uid ?? countryContestant.id}`}
-                                className="m-auto text-[var(--er-text-tertiary)] bg-[var(--er-card-surface)] no-select"
+                                className="m-auto text-(--er-text-tertiary) bg-(--er-card-surface) no-select"
                                 rank={index + 1}
                                 countryContestant={countryContestant}
                                 isDeleteMode={showDeleteMode}
@@ -345,7 +345,7 @@ const RankedCountriesList: React.FC<RankedCountriesListProps> = ({
               </ul>
             </div>
             {showUnranked && rankedItems?.length > 0 && (
-              <div className="pl-2 rounded-b-md h-8 !bg-[var(--er-surface-bar)] ranked-bar-background text-[var(--er-text-secondary)] items-center flex shadow-md gradient-background">
+              <div className="pl-2 rounded-b-md h-8 bg-(--er-surface-bar)! ranked-bar-background text-(--er-text-secondary) items-center flex shadow-md gradient-background">
                 <IconButton
                   className={classNames(
                     'tour-step-4 ml-auto py-1 pl-[0.7em] pr-[0.9em] mr-0 w-[6em]',
@@ -356,7 +356,7 @@ const RankedCountriesList: React.FC<RankedCountriesListProps> = ({
                 />
                 <FaChevronRight
                   className={classNames(
-                    'ml-2 mr-auto text-lg justify-center align-center bounce-right text-[var(--r-accent-blue)]',
+                    'ml-2 mr-auto text-lg justify-center align-center bounce-right text-(--r-accent-blue)',
                     { 'tada-animation': showUnranked && rankedItems?.length },
                   )}
                 />

@@ -11,18 +11,18 @@ const GroupMembersSection: React.FC<{ detail: Group; user: AuthUser | null }> = 
 }) => (
   <section>
     <div className={`${sectionLabel} mb-2`}>Members</div>
-    {!detail.members && <div className="text-xs text-[var(--er-text-subtle)]">Loading…</div>}
+    {!detail.members && <div className="text-xs text-(--er-text-subtle)">Loading…</div>}
     {detail.members && (
       <ul className="space-y-1">
         {detail.members.map((m) => (
           <li
             key={m.user_id}
-            className="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-[var(--er-button-neutral)]/15"
+            className="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-(--er-button-neutral)/15"
           >
-            <div className="w-7 h-7 rounded-full bg-[var(--er-button-neutral)]/40 flex items-center justify-center text-[10px] text-[var(--er-text-primary)] font-semibold shrink-0">
+            <div className="w-7 h-7 rounded-full bg-(--er-button-neutral)/40 flex items-center justify-center text-[10px] text-(--er-text-primary) font-semibold shrink-0">
               {(m.email || '?').charAt(0).toUpperCase()}
             </div>
-            <span className="truncate flex-1 text-[var(--er-text-primary)]">{m.email}</span>
+            <span className="truncate flex-1 text-(--er-text-primary)">{m.email}</span>
             {m.role === 'owner' && (
               <FontAwesomeIcon
                 icon={faCrown}
@@ -31,7 +31,7 @@ const GroupMembersSection: React.FC<{ detail: Group; user: AuthUser | null }> = 
               />
             )}
             {user?.id === m.user_id && (
-              <span className="text-[10px] text-[var(--er-text-subtle)] uppercase">You</span>
+              <span className="text-[10px] text-(--er-text-subtle) uppercase">You</span>
             )}
           </li>
         ))}

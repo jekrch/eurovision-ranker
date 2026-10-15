@@ -29,15 +29,15 @@ const RevealCard: React.FC<{ option: QuizOption }> = ({ option }) => {
   const inner = (
     <div className="flex items-center gap-3">
       {thumb ? (
-        <div className="relative flex-shrink-0">
+        <div className="relative shrink-0">
           <img
             src={thumb}
             alt=""
             loading="lazy"
-            className="w-24 h-[3.375rem] object-cover rounded-lg shadow-sm shadow-black/40 ring-1 ring-white/10"
+            className="w-24 h-13.5 object-cover rounded-lg shadow-xs shadow-black/40 ring-1 ring-white/10"
           />
           <span className="absolute inset-0 flex items-center justify-center">
-            <span className="w-7 h-7 rounded-full bg-black/55 ring-1 ring-white/20 backdrop-blur-sm flex items-center justify-center">
+            <span className="w-7 h-7 rounded-full bg-black/55 ring-1 ring-white/20 backdrop-blur-xs flex items-center justify-center">
               <FontAwesomeIcon icon={faPlay} className="text-white text-xs ml-0.5" />
             </span>
           </span>
@@ -46,15 +46,15 @@ const RevealCard: React.FC<{ option: QuizOption }> = ({ option }) => {
         option.countryKey && (
           <LazyLoadedFlag
             code={option.countryKey}
-            className="!w-12 !h-8 rounded-[3px] object-cover flex-shrink-0 ring-1 ring-black/20 shadow-sm shadow-black/30"
+            className="w-12! h-8! rounded-[3px] object-cover shrink-0 ring-1 ring-black/20 shadow-xs shadow-black/30"
           />
         )
       )}
       <span className="min-w-0">
-        <span className="block text-[var(--er-text-primary)] text-sm font-semibold truncate">
+        <span className="block text-(--er-text-primary) text-sm font-semibold truncate">
           {caption}
         </span>
-        {sub && <span className="block text-[var(--er-text-subtle)] text-xs truncate">{sub}</span>}
+        {sub && <span className="block text-(--er-text-subtle) text-xs truncate">{sub}</span>}
       </span>
     </div>
   );
@@ -139,7 +139,7 @@ const QuizPlay: React.FC<QuizPlayProps> = ({ questions, onFinish }) => {
     return (
       <>
         {before}
-        <span className="text-[var(--er-interactive-primary)] font-bold">{promptHighlight}</span>
+        <span className="text-(--er-interactive-primary) font-bold">{promptHighlight}</span>
         {after}
       </>
     );
@@ -150,36 +150,35 @@ const QuizPlay: React.FC<QuizPlayProps> = ({ questions, onFinish }) => {
     // options list gives up space (and scrolls if needed) to the feedback area.
     <div className="flex flex-col h-[min(31rem,78vh)]">
       {/* progress + timer */}
-      <div className="flex items-center justify-between text-xs text-[var(--er-text-subtle)] font-medium tabular-nums flex-shrink-0 mr-8">
+      <div className="flex items-center justify-between text-xs text-(--er-text-subtle) font-medium tabular-nums shrink-0 mr-8">
         <span>
-          Question{' '}
-          <span className="font-semibold text-[var(--er-text-secondary)]">{index + 1}</span> /{' '}
+          Question <span className="font-semibold text-(--er-text-secondary)">{index + 1}</span> /{' '}
           {questions.length}
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="rounded-full bg-white/[0.05] ring-1 ring-inset ring-white/10 px-2 py-0.5">
-            Score <span className="font-semibold text-[var(--er-text-primary)]">{score}</span>
+          <span className="rounded-full bg-white/5 ring-1 ring-inset ring-white/10 px-2 py-0.5">
+            Score <span className="font-semibold text-(--er-text-primary)">{score}</span>
           </span>
-          <span className="flex items-center gap-1 rounded-full bg-white/[0.05] ring-1 ring-inset ring-white/10 px-2 py-0.5">
+          <span className="flex items-center gap-1 rounded-full bg-white/5 ring-1 ring-inset ring-white/10 px-2 py-0.5">
             <FontAwesomeIcon icon={faStopwatch} className="text-[0.65rem]" />
             {formatDuration(elapsed)}
           </span>
         </span>
       </div>
-      <div className="h-1.5 w-full rounded-full bg-black/25 ring-1 ring-inset ring-white/5 overflow-hidden mt-2.5 flex-shrink-0">
+      <div className="h-1.5 w-full rounded-full bg-black/25 ring-1 ring-inset ring-white/5 overflow-hidden mt-2.5 shrink-0">
         <div
-          className="h-full rounded-full bg-gradient-to-r from-[var(--er-button-primary)] to-[var(--er-interactive-primary)] transition-[width] duration-300 motion-reduce:transition-none"
+          className="h-full rounded-full bg-linear-to-r from-(--er-button-primary) to-(--er-interactive-primary) transition-[width] duration-300 motion-reduce:transition-none"
           style={{ width: `${(index / questions.length) * 100}%` }}
         />
       </div>
 
       {/* prompt */}
-      <div className="min-h-[3.5rem] flex items-center flex-shrink-0 mt-3">
+      <div className="min-h-14 flex items-center shrink-0 mt-3">
         {/* keyed by question so each new question replays its entrance */}
         <h3
           key={question.id}
           className={classNames(
-            'text-[var(--er-text-primary)] text-lg font-semibold tracking-tight leading-snug',
+            'text-(--er-text-primary) text-lg font-semibold tracking-tight leading-snug',
             // the first question arrives with the screen itself, so only later ones travel
             index > 0 && 'view-enter-from-right-animation',
           )}
@@ -189,19 +188,19 @@ const QuizPlay: React.FC<QuizPlayProps> = ({ questions, onFinish }) => {
       </div>
 
       {/* options (scrolls within the fixed-height column) */}
-      <div className="flex flex-col gap-2 flex-grow overflow-y-auto overflow-x-hidden min-h-0 px-1 -mx-1 py-1">
+      <div className="flex flex-col gap-2 grow overflow-y-auto overflow-x-hidden min-h-0 px-1 -mx-1 py-1">
         {displayOptions.map((opt, optionIndex) => {
           const isCorrect = opt.id === question.correctOptionId;
           const isSelected = opt.id === selectedId;
           let stateClass =
-            'bg-white/[0.04] ring-white/[0.08] shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] hover:bg-white/[0.08] hover:ring-white/15';
+            'bg-white/4 ring-white/8 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] hover:bg-white/8 hover:ring-white/15';
           if (answered) {
             if (isCorrect) {
               stateClass = quizCorrect;
             } else if (isSelected) {
               stateClass = quizIncorrect;
             } else {
-              stateClass = 'bg-white/[0.02] ring-white/[0.05] opacity-50';
+              stateClass = 'bg-white/2 ring-white/5 opacity-50';
             }
           }
           return (
@@ -212,7 +211,7 @@ const QuizPlay: React.FC<QuizPlayProps> = ({ questions, onFinish }) => {
               onClick={() => handleSelect(opt.id)}
               style={staggerStyle(optionIndex)}
               className={classNames(
-                'flex items-center gap-3 px-3 py-2.5 rounded-xl ring-1 ring-inset text-left transition-all duration-150 flex-shrink-0 quiz-option-enter-animation',
+                'flex items-center gap-3 px-3 py-2.5 rounded-xl ring-1 ring-inset text-left transition-all duration-150 shrink-0 quiz-option-enter-animation',
                 stateClass,
                 !answered && 'active:scale-[0.99] cursor-pointer motion-reduce:transform-none',
               )}
@@ -220,26 +219,26 @@ const QuizPlay: React.FC<QuizPlayProps> = ({ questions, onFinish }) => {
               {opt.countryKey && (
                 <LazyLoadedFlag
                   code={opt.countryKey}
-                  className="!w-8 !h-6 rounded-[3px] object-cover flex-shrink-0 ring-1 ring-black/20 shadow-sm shadow-black/30"
+                  className="w-8! h-6! rounded-[3px] object-cover shrink-0 ring-1 ring-black/20 shadow-xs shadow-black/30"
                 />
               )}
-              <span className="flex-grow min-w-0">
-                <span className="block text-[var(--er-text-primary)] font-medium truncate">
+              <span className="grow min-w-0">
+                <span className="block text-(--er-text-primary) font-medium truncate">
                   {opt.label}
                 </span>
                 {opt.sublabel && (
-                  <span className="block text-[var(--er-text-subtle)] text-xs truncate">
+                  <span className="block text-(--er-text-subtle) text-xs truncate">
                     {opt.sublabel}
                   </span>
                 )}
               </span>
               {answered && isCorrect && (
-                <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-[color-mix(in_srgb,var(--er-accent-success)_20%,transparent)] text-[var(--er-accent-success)] text-xs">
+                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[color-mix(in_srgb,var(--er-accent-success)_20%,transparent)] text-(--er-accent-success) text-xs">
                   <FontAwesomeIcon icon={faCheck} />
                 </span>
               )}
               {answered && isSelected && !isCorrect && (
-                <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-[color-mix(in_srgb,var(--er-accent-error)_20%,transparent)] text-[var(--er-accent-error)] text-xs">
+                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[color-mix(in_srgb,var(--er-accent-error)_20%,transparent)] text-(--er-accent-error) text-xs">
                   <FontAwesomeIcon icon={faXmark} />
                 </span>
               )}
@@ -249,11 +248,11 @@ const QuizPlay: React.FC<QuizPlayProps> = ({ questions, onFinish }) => {
       </div>
 
       {/* feedback + next (fixed at the bottom of the column) */}
-      <div className="flex-shrink-0 pt-3">
+      <div className="shrink-0 pt-3">
         {answered ? (
           <div className="flex flex-col gap-2 tab-panel-enter-animation">
             {correctOption && <RevealCard option={correctOption} />}
-            <p className="text-[var(--er-text-subtle)] text-xs leading-snug line-clamp-2">
+            <p className="text-(--er-text-subtle) text-xs leading-snug line-clamp-2">
               {question.explanation}
             </p>
             <button type="button" onClick={handleNext} className={quizPrimaryBtn}>
@@ -262,7 +261,7 @@ const QuizPlay: React.FC<QuizPlayProps> = ({ questions, onFinish }) => {
             </button>
           </div>
         ) : (
-          <p className="text-center text-[var(--er-text-subtle)] text-xs py-3 tab-panel-enter-animation">
+          <p className="text-center text-(--er-text-subtle) text-xs py-3 tab-panel-enter-animation">
             Select an answer
           </p>
         )}

@@ -13,12 +13,7 @@ interface SearchBarProps {
 
 const SearchBar: React.FC<SearchBarProps> = ({ searchTerm, handleSearch, className }) => {
   return (
-    <div
-      className={classNames(
-        'w-full sm:w-auto flex-grow sm:flex-grow-0 flex items-center',
-        className,
-      )}
-    >
+    <div className={classNames('w-full sm:w-auto grow sm:grow-0 flex items-center', className)}>
       <TooltipHelp
         content='Search across all columns. To search for a phrase, enclose your search term in quotes "like this"'
         className="mt-2 mr-3 pb-1"
@@ -29,11 +24,11 @@ const SearchBar: React.FC<SearchBarProps> = ({ searchTerm, handleSearch, classNa
           value={searchTerm}
           onChange={handleSearch}
           placeholder="Search..."
-          className="block text-sm w-full pl-9 pr-4 py-[0.45em] rounded-lg bg-[var(--er-surface-tertiary-70)] text-[var(--er-text-primary)] placeholder-[var(--er-text-subtle)] ring-1 ring-white/5 focus:outline-none focus:ring-2 focus:ring-[var(--er-button-primary)]/50 transition-shadow"
+          className="block text-sm w-full pl-9 pr-4 py-[0.45em] rounded-lg bg-(--er-surface-tertiary-70) text-(--er-text-primary) placeholder-(--er-text-subtle) ring-1 ring-white/5 focus:outline-hidden focus:ring-2 focus:ring-(--er-button-primary)/50 transition-shadow"
         />
         <FontAwesomeIcon
           icon={faSearch}
-          className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-xs text-[var(--er-text-subtle)]"
+          className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-xs text-(--er-text-subtle)"
         />
       </div>
     </div>

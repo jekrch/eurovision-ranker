@@ -204,7 +204,7 @@ export const VideoDock: React.FC<{ info: VideoInfo }> = ({ info }) => {
   return (
     <div
       ref={ref}
-      className="relative w-full aspect-video rounded-md overflow-hidden bg-black ring-1 ring-[var(--er-border-secondary)]"
+      className="relative w-full aspect-video rounded-md overflow-hidden bg-black ring-1 ring-(--er-border-secondary)"
     />
   );
 };

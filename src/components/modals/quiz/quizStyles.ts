@@ -19,19 +19,19 @@ export const quizIncorrect =
 
 /** Small tracked label heading a section or stat. */
 export const quizLabel =
-  'text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-[var(--er-text-subtle)]';
+  'text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-(--er-text-subtle)';
 
 /** Recessed well that groups a list or panel of controls. */
-export const quizWell = 'rounded-xl bg-black/20 ring-1 ring-inset ring-white/[0.06]';
+export const quizWell = 'rounded-xl bg-black/20 ring-1 ring-inset ring-white/6';
 
 /** Raised glass tile for a single stat, option or row. */
 export const quizTile =
-  'rounded-xl bg-white/[0.04] ring-1 ring-inset ring-white/[0.08] shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]';
+  'rounded-xl bg-white/4 ring-1 ring-inset ring-white/8 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]';
 
 /** The screen's main call to action. */
 export const quizPrimaryBtn = classNames(
   'w-full py-3 rounded-xl font-semibold text-white flex items-center justify-center gap-2',
-  'bg-[var(--er-interactive-primary)] bg-gradient-to-b from-white/[0.12] to-black/[0.06]',
+  'bg-(--er-interactive-primary) bg-linear-to-b from-white/12 to-black/6',
   'ring-1 ring-inset ring-white/15 shadow-lg shadow-black/30',
   'hover:brightness-110 active:scale-[0.99] transition-[filter,transform] duration-150 motion-reduce:transform-none',
 );
@@ -39,13 +39,13 @@ export const quizPrimaryBtn = classNames(
 /** Secondary action that sits beside or under the primary one. */
 export const quizSecondaryBtn = classNames(
   'py-2.5 rounded-xl font-medium flex items-center justify-center gap-2',
-  'bg-white/[0.05] ring-1 ring-inset ring-white/10 text-[var(--er-text-secondary)]',
-  'hover:bg-white/[0.1] hover:text-[var(--er-text-primary)] transition-colors duration-150',
+  'bg-white/5 ring-1 ring-inset ring-white/10 text-(--er-text-secondary)',
+  'hover:bg-white/10 hover:text-(--er-text-primary) transition-colors duration-150',
 );
 
 /** Small rounded chip for presets and tags. */
 export const quizChip =
-  'rounded-full bg-white/[0.05] ring-1 ring-inset ring-white/10 text-[var(--er-text-subtle)]';
+  'rounded-full bg-white/5 ring-1 ring-inset ring-white/10 text-(--er-text-subtle)';
 
 /** Compact screen title shared by setup and preview. */
-export const quizTitle = 'text-base font-semibold leading-tight text-[var(--er-text-primary)]';
+export const quizTitle = 'text-base font-semibold leading-tight text-(--er-text-primary)';

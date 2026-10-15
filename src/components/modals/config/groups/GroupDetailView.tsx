@@ -54,7 +54,7 @@ const GroupDetailView: React.FC<{
         <button type="button" onClick={onBack} className={`${ghostBtn} mb-3`}>
           <FontAwesomeIcon icon={faArrowLeft} /> Back
         </button>
-        <div className="text-xs text-[var(--er-text-subtle)]">
+        <div className="text-xs text-(--er-text-subtle)">
           {loading ? 'Loading…' : 'Group not available.'}
         </div>
       </div>
@@ -77,7 +77,7 @@ const GroupDetailView: React.FC<{
             <img
               src={detail.image_url}
               alt=""
-              className="w-full h-full object-cover opacity-[0.06] [mask-image:linear-gradient(to_bottom,black,transparent_75%)]"
+              className="w-full h-full object-cover opacity-[0.06] mask-[linear-gradient(to_bottom,black,transparent_75%)]"
             />
           </div>,
           bg.host,
@@ -108,7 +108,7 @@ const GroupDetailView: React.FC<{
         <GroupAvatar group={detail} size="lg" />
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <h3 className="text-base font-semibold text-[var(--er-text-primary)] truncate">
+            <h3 className="text-base font-semibold text-(--er-text-primary) truncate">
               {detail.name}
             </h3>
             {isOwner && (
@@ -123,11 +123,11 @@ const GroupDetailView: React.FC<{
             )}
           </div>
           {detail.description && (
-            <p className="text-xs text-[var(--er-text-subtle)] mt-0.5 whitespace-pre-line break-words">
+            <p className="text-xs text-(--er-text-subtle) mt-0.5 whitespace-pre-line wrap-break-word">
               {detail.description}
             </p>
           )}
-          <div className="text-[11px] text-[var(--er-text-subtle)] mt-1">
+          <div className="text-[11px] text-(--er-text-subtle) mt-1">
             {detail.member_count} / 20 {detail.member_count === 1 ? 'member' : 'members'}
           </div>
         </div>

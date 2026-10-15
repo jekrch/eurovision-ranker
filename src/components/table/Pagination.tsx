@@ -29,9 +29,9 @@ const Pagination: React.FC<PaginationProps> = ({
   handlePageChange,
 }) => {
   const navButtonClass = classNames(
-    'flex h-8 min-w-[2rem] items-center justify-center rounded-md px-2 text-xs leading-none',
-    'text-[var(--er-text-primary)] bg-white/5 ring-1 ring-white/5',
-    'hover:bg-[var(--er-button-primary)] hover:text-white transition-colors',
+    'flex h-8 min-w-8 items-center justify-center rounded-md px-2 text-xs leading-none',
+    'text-(--er-text-primary) bg-white/5 ring-1 ring-white/5',
+    'hover:bg-(--er-button-primary) hover:text-white transition-colors',
     'disabled:opacity-30 disabled:pointer-events-none',
   );
 
@@ -54,7 +54,7 @@ const Pagination: React.FC<PaginationProps> = ({
         >
           <FontAwesomeIcon icon={faAngleLeft} />
         </button>
-        <span className="px-1.5 text-sm font-medium text-[var(--er-text-secondary)] tabular-nums whitespace-nowrap">
+        <span className="px-1.5 text-sm font-medium text-(--er-text-secondary) tabular-nums whitespace-nowrap">
           {currentPage} / {totalPages}
         </span>
         <button
@@ -101,7 +101,7 @@ const Pagination: React.FC<PaginationProps> = ({
 
     // if (currentPage > 1) {
     //     pageButtons.push(
-    //         <button key="first" onClick={() => handlePageChange(1)} className="text-sm px-2 py-1 rounded bg-gray-700 text-gray-300 hover:bg-[var(--er-button-secondary-hover)]">
+    //         <button key="first" onClick={() => handlePageChange(1)} className="text-sm px-2 py-1 rounded-sm bg-gray-700 text-gray-300 hover:bg-(--er-button-secondary-hover)">
     //             {'<<'}
     //         </button>
     //     );
@@ -112,7 +112,7 @@ const Pagination: React.FC<PaginationProps> = ({
     //         <button
     //             key={page}
     //             onClick={() => handlePageChange(page)}
-    //             className={`px-2 py-1 rounded ${currentPage === page ? 'bg-[var(--er-button-primary)] text-white' : 'bg-gray-700 text-gray-300 hover:bg-[var(--er-button-secondary-hover)] text-sm'}`}
+    //             className={`px-2 py-1 rounded-sm ${currentPage === page ? 'bg-(--er-button-primary) text-white' : 'bg-gray-700 text-gray-300 hover:bg-(--er-button-secondary-hover) text-sm'}`}
     //         >
     //             {page}
     //         </button>
@@ -121,7 +121,7 @@ const Pagination: React.FC<PaginationProps> = ({
 
     // if (currentPage < totalPages) {
     //     pageButtons.push(
-    //         <button key="last" onClick={() => handlePageChange(totalPages)} className="text-sm px-2 py-1 rounded bg-gray-700 text-gray-300 hover:bg-[var(--er-button-secondary-hover)]">
+    //         <button key="last" onClick={() => handlePageChange(totalPages)} className="text-sm px-2 py-1 rounded-sm bg-gray-700 text-gray-300 hover:bg-(--er-button-secondary-hover)">
     //             {'>>'}
     //         </button>
     //     );
@@ -131,7 +131,7 @@ const Pagination: React.FC<PaginationProps> = ({
   };
 
   return (
-    <div className="mt-2 mr-1 flex items-center justify-between gap-2 rounded-lg bg-[var(--er-surface-tertiary-70)] ring-1 ring-white/5 px-2 py-1.5">
+    <div className="mt-2 mr-1 flex items-center justify-between gap-2 rounded-lg bg-(--er-surface-tertiary-70) ring-1 ring-white/5 px-2 py-1.5">
       <div className="flex items-center gap-2">
         <Dropdown
           value={`${pageSize}`}
@@ -142,7 +142,7 @@ const Pagination: React.FC<PaginationProps> = ({
           openUpwards={true}
           mini={true}
         />
-        <span className="text-sm text-[var(--er-text-tertiary)] tabular-nums whitespace-nowrap">
+        <span className="text-sm text-(--er-text-tertiary) tabular-nums whitespace-nowrap">
           of {displayedContestants.length}
         </span>
       </div>

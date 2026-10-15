@@ -160,7 +160,7 @@ const Modal: React.FC<ModalContainerProps> = ({
           ref={modalRef}
           data-modal-content
           className={classNames(
-            'relative z-10 bg-[var(--er-surface-secondary)] m-4 max-h-[85vh] text-[var(--er-text-tertiary)] p-6 max-w-lg w-full min-w-0 flex flex-col transform transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]',
+            'relative z-10 bg-(--er-surface-secondary) m-4 max-h-[85vh] text-(--er-text-tertiary) p-6 max-w-lg w-full min-w-0 flex flex-col transform transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]',
             modalPanel,
             isOpen && showModal
               ? `${transitionStyles.opacity} ${transitionStyles.transform}`
@@ -175,7 +175,7 @@ const Modal: React.FC<ModalContainerProps> = ({
               // z-10 keeps the button clickable over positioned modal content: it sits
               // before the content in the DOM, so anything positioned in there (a tab
               // strip, say) would otherwise paint over it
-              'absolute top-3 right-3 z-10 text-[var(--er-text-subtle)] bg-transparent hover:bg-white/10 hover:text-white rounded-full text-sm w-8 h-8 inline-flex justify-center items-center transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/30',
+              'absolute top-3 right-3 z-10 text-(--er-text-subtle) bg-transparent hover:bg-white/10 hover:text-white rounded-full text-sm w-8 h-8 inline-flex justify-center items-center transition-colors duration-150 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-white/30',
               closeBtnClassName,
             )}
             data-modal-hide="default-modal"

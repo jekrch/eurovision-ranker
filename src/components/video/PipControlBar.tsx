@@ -34,7 +34,7 @@ const PipControlBar: React.FC<PipControlBarProps> = ({
         aria-label="Previous video"
         title="Previous"
         onClick={() => navigate(-1)}
-        className="flex h-7 w-7 items-center justify-center rounded hover:bg-white/15 hover:text-white"
+        className="flex h-7 w-7 items-center justify-center rounded-sm hover:bg-white/15 hover:text-white"
       >
         <FaChevronLeft className="text-xs" />
       </button>
@@ -43,7 +43,7 @@ const PipControlBar: React.FC<PipControlBarProps> = ({
         aria-label="Next video"
         title="Next"
         onClick={() => navigate(1)}
-        className="flex h-7 w-7 items-center justify-center rounded hover:bg-white/15 hover:text-white ml-2"
+        className="flex h-7 w-7 items-center justify-center rounded-sm hover:bg-white/15 hover:text-white ml-2"
       >
         <FaChevronRight className="text-xs" />
       </button>
@@ -70,7 +70,7 @@ const PipControlBar: React.FC<PipControlBarProps> = ({
         aria-label="Return to tab"
         title="Return to tab"
         onClick={expand}
-        className="flex h-7 w-7 items-center justify-center rounded hover:bg-white/15 hover:text-white mr-3"
+        className="flex h-7 w-7 items-center justify-center rounded-sm hover:bg-white/15 hover:text-white mr-3"
       >
         <FaExpand className="text-xs" />
       </button>
@@ -79,7 +79,7 @@ const PipControlBar: React.FC<PipControlBarProps> = ({
         aria-label="Close video"
         title="Close"
         onClick={closePip}
-        className="flex h-7 w-7 items-center justify-center rounded hover:bg-white/15 hover:text-white"
+        className="flex h-7 w-7 items-center justify-center rounded-sm hover:bg-white/15 hover:text-white"
       >
         <FaTimes className="text-sm" />
       </button>

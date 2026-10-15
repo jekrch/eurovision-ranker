@@ -35,17 +35,17 @@ const TableBody: React.FC<TableBodyProps> = ({
             key={contestant.id}
             style={isOpening ? staggerStyle(index) : undefined}
             className={classNames(
-              'group text-sm text-[var(--er-text-secondary)] transition-colors',
+              'group text-sm text-(--er-text-secondary) transition-colors',
               { 'view-item-enter-animation': isOpening },
               isSelected
-                ? 'bg-[var(--er-surface-accent-70)] hover:bg-[var(--er-surface-accent)]'
-                : 'hover:bg-white/[0.04]',
+                ? 'bg-(--er-surface-accent-70) hover:bg-(--er-surface-accent)'
+                : 'hover:bg-white/4',
             )}
           >
             <td
               className={classNames(
                 'py-0 whitespace-nowrap sticky left-0 z-30 transition-colors',
-                isSelected ? 'bg-[var(--er-surface-accent)]' : 'bg-[var(--er-card-surface-base)]',
+                isSelected ? 'bg-(--er-surface-accent)' : 'bg-(--er-card-surface-base)',
               )}
             >
               <div className="flex justify-center h-full">
@@ -56,16 +56,16 @@ const TableBody: React.FC<TableBodyProps> = ({
                   <button
                     onClick={() => handleToggleSelected(contestant.id)}
                     aria-label={showSelected ? 'Remove' : isSelected ? 'Deselect' : 'Select'}
-                    className="flex items-center justify-center p-2 h-full w-full focus:outline-none"
+                    className="flex items-center justify-center p-2 h-full w-full focus:outline-hidden"
                   >
                     <span
                       className={classNames(
                         'flex h-7 w-7 items-center justify-center rounded-full text-xs ring-1 transition-colors',
                         showSelected
-                          ? 'bg-[var(--er-accent-error)]/10 ring-[var(--er-accent-error)]/30 text-[var(--er-accent-error)] group-hover:bg-[var(--er-accent-error)]/20'
+                          ? 'bg-(--er-accent-error)/10 ring-(--er-accent-error)/30 text-(--er-accent-error) group-hover:bg-(--er-accent-error)/20'
                           : isSelected
-                            ? 'bg-[var(--er-accent-success)]/15 ring-[var(--er-accent-success)]/40 text-[var(--er-accent-success)]'
-                            : 'bg-white/5 ring-white/10 text-[var(--er-text-tertiary)] group-hover:bg-[var(--er-button-primary)] group-hover:ring-transparent group-hover:text-white',
+                            ? 'bg-(--er-accent-success)/15 ring-(--er-accent-success)/40 text-(--er-accent-success)'
+                            : 'bg-white/5 ring-white/10 text-(--er-text-tertiary) group-hover:bg-(--er-button-primary) group-hover:ring-transparent group-hover:text-white',
                       )}
                     >
                       {showSelected ? (
@@ -80,10 +80,10 @@ const TableBody: React.FC<TableBodyProps> = ({
                 </Ripples>
               </div>
             </td>
-            <td className="px-6 py-4 whitespace-nowrap overflow-x-clip tabular-nums text-[var(--er-text-tertiary)]">
+            <td className="px-6 py-4 whitespace-nowrap overflow-x-clip tabular-nums text-(--er-text-tertiary)">
               {contestant.year}
             </td>
-            <td className="px-6 py-4 whitespace-nowrap overflow-x-clip font-medium text-[var(--er-text-primary)]">
+            <td className="px-6 py-4 whitespace-nowrap overflow-x-clip font-medium text-(--er-text-primary)">
               {contestant.to_country}
             </td>
             <td

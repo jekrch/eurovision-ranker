@@ -27,13 +27,13 @@ const SavedRankingsTab: React.FC<SavedRankingsTabProps> = ({ openAuthModal }) =>
         description="Sign in to save and sync your rankings across devices."
         onSignIn={openAuthModal}
       >
-        <div className="w-full max-w-sm rounded-lg border-[0.7px] border-[var(--er-button-primary)]/30 bg-[var(--er-button-primary)]/10 p-3 flex gap-2.5 text-left">
+        <div className="w-full max-w-sm rounded-lg border-[0.7px] border-(--er-button-primary)/30 bg-(--er-button-primary)/10 p-3 flex gap-2.5 text-left">
           <FontAwesomeIcon
             icon={faCircleInfo}
-            className="text-[var(--er-button-primary)] mt-0.5 shrink-0"
+            className="text-(--er-button-primary) mt-0.5 shrink-0"
           />
-          <div className="text-xs leading-relaxed text-[var(--er-text-tertiary)]">
-            <span className="font-semibold text-[var(--er-text-primary)]">Private preview.</span>{' '}
+          <div className="text-xs leading-relaxed text-(--er-text-tertiary)">
+            <span className="font-semibold text-(--er-text-primary)">Private preview.</span>{' '}
             Accounts are invite-only while this feature is being tested with a small group. Public
             sign-ups will open in a future release. Thanks for your patience!
           </div>
@@ -69,7 +69,7 @@ const SavedRankingsTab: React.FC<SavedRankingsTabProps> = ({ openAuthModal }) =>
           <div className="flex items-center gap-2">
             <span>Saved rankings</span>
             {c.rankings && c.rankings.length > 0 && (
-              <span className="normal-case tracking-normal text-[var(--er-text-subtle)] font-normal">
+              <span className="normal-case tracking-normal text-(--er-text-subtle) font-normal">
                 {c.rankings.length}
               </span>
             )}
@@ -78,7 +78,7 @@ const SavedRankingsTab: React.FC<SavedRankingsTabProps> = ({ openAuthModal }) =>
             type="button"
             onClick={c.refresh}
             disabled={c.loading}
-            className="w-6 h-6 inline-flex items-center justify-center rounded text-[var(--er-text-tertiary)] hover:text-[var(--er-text-primary)] hover:bg-[var(--er-button-neutral)]/40 disabled:opacity-40 transition-colors"
+            className="w-6 h-6 inline-flex items-center justify-center rounded-sm text-(--er-text-tertiary) hover:text-(--er-text-primary) hover:bg-(--er-button-neutral)/40 disabled:opacity-40 transition-colors"
             title="Refresh"
           >
             <FontAwesomeIcon
@@ -87,10 +87,10 @@ const SavedRankingsTab: React.FC<SavedRankingsTabProps> = ({ openAuthModal }) =>
             />
           </button>
         </div>
-        {c.loading && <div className="text-xs text-[var(--er-text-subtle)] py-2">Loading…</div>}
+        {c.loading && <div className="text-xs text-(--er-text-subtle) py-2">Loading…</div>}
         {c.error && <div className="text-xs text-red-400 py-2">{c.error}</div>}
         {!c.loading && !c.error && c.rankings && c.rankings.length === 0 && (
-          <div className="rounded-lg border border-dashed border-[var(--er-border-lightest)] dark:border-[var(--er-border-darker)] py-6 text-center text-xs text-[var(--er-text-subtle)]">
+          <div className="rounded-lg border border-dashed border-(--er-border-lightest) dark:border-(--er-border-darker) py-6 text-center text-xs text-(--er-text-subtle)">
             Nothing saved yet.
           </div>
         )}

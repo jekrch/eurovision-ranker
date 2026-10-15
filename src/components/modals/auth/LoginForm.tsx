@@ -48,7 +48,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
       <button
         type="button"
         onClick={() => switchTab('reset')}
-        className="text-xs text-[var(--er-text-subtle)] hover:text-[var(--er-text-primary)] transition-colors"
+        className="text-xs text-(--er-text-subtle) hover:text-(--er-text-primary) transition-colors"
       >
         Forgot password?
       </button>

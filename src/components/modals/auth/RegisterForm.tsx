@@ -28,7 +28,7 @@ export const RegisterInitiateForm: React.FC<RegisterInitiateFormProps> = ({
       <InviteAlert />
     ) : emailSent ? (
       <EmailSentNotice>
-        Check <span className="font-semibold text-[var(--er-text-primary)]">{email}</span> for a
+        Check <span className="font-semibold text-(--er-text-primary)">{email}</span> for a
         verification link. Open it to finish creating your account.
       </EmailSentNotice>
     ) : (

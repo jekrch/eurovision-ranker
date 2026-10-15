@@ -79,7 +79,7 @@ const RankedItemsHeader: React.FC<IRankedItemsHeaderProps> = ({
   return (
     <div
       className={classNames(
-        'z-40 rounded-t-md round-b-sm w-full text-center font-bold bg-[var(--er-surface-bar)] gradient-background text-[var(--er-text-secondary)] py-1 text-md tracking-tighter shadow-md ranked-bar-background',
+        'z-40 rounded-t-md round-b-sm w-full text-center font-bold bg-(--er-surface-bar) gradient-background text-(--er-text-secondary) py-1 text-md tracking-tighter shadow-md ranked-bar-background',
         className,
       )}
     >
@@ -87,7 +87,7 @@ const RankedItemsHeader: React.FC<IRankedItemsHeaderProps> = ({
         <div className="w-full m-auto flex items-center justify-center">
           <Dropdown
             className="tour-step-1 min-w-[5em] w-auto"
-            buttonClassName="!h-[1.8em]"
+            buttonClassName="h-[1.8em]!"
             value={year}
             onChange={(y) => {
               dispatch(setYear(y));
@@ -112,9 +112,9 @@ const RankedItemsHeader: React.FC<IRankedItemsHeaderProps> = ({
                 aria-label="Open Sorter"
                 data-umami-event="Sorter Button (header)"
                 className={classNames(
-                  'w-6 h-6 bg-[var(--er-surface-muted-accent)] rounded-full flex justify-center items-center text-[var(--er-text-tertiary)] hover:text-[var(--er-text-muted)]',
+                  'w-6 h-6 bg-(--er-surface-muted-accent) rounded-full flex justify-center items-center text-(--er-text-tertiary) hover:text-(--er-text-muted)',
                   {
-                    'hover:bg-[var(--er-surface-light)] hover:cursor-pointer': !isSorterDisabled,
+                    'hover:bg-(--er-surface-light) hover:cursor-pointer': !isSorterDisabled,
                     'opacity-50 cursor-not-allowed': isSorterDisabled,
                   },
                 )}
@@ -127,13 +127,13 @@ const RankedItemsHeader: React.FC<IRankedItemsHeaderProps> = ({
           </div>
 
           {/* ---- Center Content (Title) ---- */}
-          <div className="justify-center text-center flex-grow mx-2">
+          <div className="justify-center text-center grow mx-2">
             {' '}
-            {/* Use flex-grow to take available space, mx-2 for spacing */}
+            {/* Use grow to take available space, mx-2 for spacing */}
             <div>
               {!globalSearch ? year : null}
               {name && (
-                <span className="font-bold text-[var(--er-text-tertiary)] text-md">
+                <span className="font-bold text-(--er-text-tertiary) text-md">
                   {!globalSearch ? ` - ` : ``}
                   {name}
                 </span>
@@ -141,7 +141,7 @@ const RankedItemsHeader: React.FC<IRankedItemsHeaderProps> = ({
             </div>
             {isPristineLoaded && (isOwnLoaded || authorLabel) && (
               <div
-                className="mt-0.5 flex items-center justify-center gap-1 text-[0.65rem] font-medium tracking-normal text-[var(--er-text-subtle)] opacity-80"
+                className="mt-0.5 flex items-center justify-center gap-1 text-[0.65rem] font-medium tracking-normal text-(--er-text-subtle) opacity-80"
                 title={
                   isOwnLoaded
                     ? 'You opened your own shared ranking'
@@ -174,16 +174,16 @@ const RankedItemsHeader: React.FC<IRankedItemsHeaderProps> = ({
       {!showUnranked && categories.length > 0 && (
         <div
           key={`total-tab-container`}
-          className="flex bg-gray-800 bg-opacity-40 border-[var(--er-border-lightest)] mt-1 -mb-[0.2em] overflow-x-auto"
+          className="flex bg-gray-800/40 border-(--er-border-lightest) mt-1 mb-[-0.2em] overflow-x-auto"
         >
           <Ripples key="total-ripple" placeholder={<></>}>
             <button
               key="total-tab"
               className={classNames(
-                'px-4 py-[0.2em] text-sm font-strong flex-shrink-0',
+                'px-4 py-[0.2em] text-sm font-strong shrink-0',
                 activeTab === 0
-                  ? 'text-[var(--r-accent-blue)] border-b-0 border-[var(--r-accent-ring)]'
-                  : 'text-[var(--er-text-subtle)] hover:text-[var(--er-interactive-primary)]',
+                  ? 'text-(--r-accent-blue) border-b-0 border-(--r-accent-ring)'
+                  : 'text-(--er-text-subtle) hover:text-(--er-interactive-primary)',
               )}
               onClick={() => setActiveTab(0)}
             >
@@ -195,10 +195,10 @@ const RankedItemsHeader: React.FC<IRankedItemsHeaderProps> = ({
               <button
                 key={`cat-btn-${index + 1}`}
                 className={classNames(
-                  'px-4 py-[0.2em] text-sm font-medium flex-shrink-0',
+                  'px-4 py-[0.2em] text-sm font-medium shrink-0',
                   activeTab === index + 1
-                    ? 'text-[var(--r-accent-blue)] border-b-0 border-[var(--r-accent-ring)]'
-                    : 'text-[var(--er-text-muted)] hover:text-[var(--er-interactive-primary)]',
+                    ? 'text-(--r-accent-blue) border-b-0 border-(--r-accent-ring)'
+                    : 'text-(--er-text-muted) hover:text-(--er-interactive-primary)',
                 )}
                 onClick={() => setActiveTab(index + 1)}
               >

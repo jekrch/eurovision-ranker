@@ -23,7 +23,7 @@ const EmptyRankingModal: React.FC<EmptyRankingModalProps> = ({ isOpen, onClose, 
   <Modal
     isOpen={isOpen}
     onClose={onClose}
-    className="max-w-[24em] !p-0 overflow-hidden"
+    className="max-w-[24em] p-0! overflow-hidden"
     closeBtnClassName="hidden"
   >
     <ModalHeader
@@ -35,7 +35,7 @@ const EmptyRankingModal: React.FC<EmptyRankingModalProps> = ({ isOpen, onClose, 
     />
 
     <div className="px-5 pt-4 pb-5">
-      <p className="text-[0.82rem] leading-snug text-[var(--er-text-secondary)]">
+      <p className="text-[0.82rem] leading-snug text-(--er-text-secondary)">
         The details view shows songs, videos, and voting records for the countries you've ranked.
         Drag some into the ranked column, or use 'Add All' to take the whole year at once.
       </p>

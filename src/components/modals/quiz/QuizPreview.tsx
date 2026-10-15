@@ -66,7 +66,7 @@ const QuizPreview: React.FC<QuizPreviewProps> = ({ config, onBegin }) => {
     <div className="flex flex-col gap-5 py-2">
       <div className="-mt-3 pr-8">
         <h2 className={quizTitle}>Eurovision Quiz</h2>
-        <p className="text-[var(--er-text-subtle)] text-xs mt-0.5 truncate">
+        <p className="text-(--er-text-subtle) text-xs mt-0.5 truncate">
           You've been challenged to this quiz. Here's what's in it
         </p>
       </div>
@@ -81,11 +81,11 @@ const QuizPreview: React.FC<QuizPreviewProps> = ({ config, onBegin }) => {
             )}
             style={staggerStyle(index + 1)}
           >
-            <span className={classNames(iconChip, 'text-[var(--er-text-subtle)]')}>
+            <span className={classNames(iconChip, 'text-(--er-text-subtle)')}>
               <FontAwesomeIcon icon={row.icon} className="text-[0.7rem]" />
             </span>
-            <span className={classNames(quizLabel, 'w-20 flex-shrink-0')}>{row.label}</span>
-            <span className="text-[var(--er-text-primary)] text-sm font-medium tabular-nums">
+            <span className={classNames(quizLabel, 'w-20 shrink-0')}>{row.label}</span>
+            <span className="text-(--er-text-primary) text-sm font-medium tabular-nums">
               {row.value}
             </span>
           </div>
@@ -98,10 +98,7 @@ const QuizPreview: React.FC<QuizPreviewProps> = ({ config, onBegin }) => {
           {typeLabels.map((label) => (
             <span
               key={label}
-              className={classNames(
-                quizChip,
-                'text-xs px-2.5 py-1 !text-[var(--er-text-tertiary)]',
-              )}
+              className={classNames(quizChip, 'text-xs px-2.5 py-1 text-(--er-text-tertiary)!')}
             >
               {label}
             </span>

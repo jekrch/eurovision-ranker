@@ -58,11 +58,11 @@ export const IconButton: React.FC<IconButtonProps> = ({
       className={classNames(
         'relative overflow-hidden text-white font-normal py-1 pl-2 pr-3 rounded-md text-xs',
         disabled
-          ? 'bg-[var(--er-surface-medium)]'
-          : 'bg-[var(--er-button-primary)] hover:bg-[var(--er-button-primary-hover)]',
+          ? 'bg-(--er-surface-medium)'
+          : 'bg-(--er-button-primary) hover:bg-(--er-button-primary-hover)',
         className,
         {
-          'text-white bg-[var(--er-button-neutral-hover)] hover:bg-[var(--er-surface-dark)] dark:bg-[var(--er-button-neutral)] dark:hover:bg-[var(--er-button-neutral-hover)] dark:focus:ring-[var(--er-interactive-dark)]':
+          'text-white bg-(--er-button-neutral-hover) hover:bg-(--er-surface-dark) dark:bg-(--er-button-neutral) dark:hover:bg-(--er-button-neutral-hover) dark:focus:ring-(--er-interactive-dark)':
             isGrayTheme,
         },
       )}

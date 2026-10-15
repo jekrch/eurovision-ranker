@@ -31,8 +31,8 @@ const FEATURES: { icon: IconType; text: string }[] = [
  * reason modalActionBtn is: IconButton's own padding and radius win otherwise.
  */
 const welcomeBtn = classNames(
-  '!rounded-md !px-3.5 !py-2 !font-medium leading-none transition-colors duration-150',
-  'focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40',
+  'rounded-md! px-3.5! py-2! font-medium! leading-none transition-colors duration-150',
+  'focus:outline-hidden focus-visible:ring-2 focus-visible:ring-white/40',
 );
 
 /**
@@ -111,7 +111,7 @@ const WelcomeOverlay: React.FC<WelcomeOverlayProps> = ({
 
   return (
     <div
-      className="z-[1000] w-full h-full fixed top-0 left-0 flex items-center justify-center"
+      className="z-1000 w-full h-full fixed top-0 left-0 flex items-center justify-center"
       onClick={handleClickOutside}
     >
       <div
@@ -138,7 +138,7 @@ const WelcomeOverlay: React.FC<WelcomeOverlayProps> = ({
         aria-describedby={descriptionId}
         className={classNames(
           'overlay welcome-card relative z-10 mx-5 w-full max-w-[21em] max-h-[calc(100%-3em)]',
-          'flex flex-col px-6 py-6 gradient-background-modal text-[var(--er-text-tertiary)]',
+          'flex flex-col px-6 py-6 gradient-background-modal text-(--er-text-tertiary)',
           modalPanel,
         )}
       >
@@ -154,7 +154,7 @@ const WelcomeOverlay: React.FC<WelcomeOverlayProps> = ({
           </p>
         </div>
 
-        <div className="mt-5 flex-1 overflow-auto [scrollbar-gutter:stable]">
+        <div className="mt-5 flex-1 overflow-auto scrollbar-gutter-stable">
           <ul className="list-none space-y-2.5 text-sm">
             {FEATURES.map(({ icon: Icon, text }, index) => (
               <li
@@ -165,7 +165,7 @@ const WelcomeOverlay: React.FC<WelcomeOverlayProps> = ({
                 <span className="mr-3 flex w-4 flex-none justify-center">
                   <Icon
                     aria-hidden="true"
-                    className="h-3.5 w-3.5 text-[var(--er-interactive-primary)]"
+                    className="h-3.5 w-3.5 text-(--er-interactive-primary)"
                   />
                 </span>
                 <span className="leading-snug">{text}</span>
@@ -178,14 +178,14 @@ const WelcomeOverlay: React.FC<WelcomeOverlayProps> = ({
           <IconButton
             className={classNames(
               welcomeBtn,
-              '!bg-transparent hover:!bg-white/[0.06] ring-1 ring-inset ring-white/15',
-              '!text-[var(--er-text-secondary)] hover:!text-[var(--er-text-primary)]',
+              'bg-transparent! hover:bg-white/6! ring-1 ring-inset ring-white/15',
+              'text-(--er-text-secondary)! hover:text-(--er-text-primary)!',
             )}
             title="Take the tour"
             onClick={handleTakeTour}
           />
           <IconButton
-            className={classNames(welcomeBtn, 'flex-1 !font-semibold')}
+            className={classNames(welcomeBtn, 'flex-1 font-semibold!')}
             title="Get started"
             onClick={getStarted}
           />

@@ -10,9 +10,9 @@ import { updateUsername } from '../../../utilities/api/me';
 import { ApiError } from '../../../utilities/api/types';
 
 const sectionLabel =
-  'text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--er-text-subtle)]';
+  'text-[11px] font-semibold uppercase tracking-[0.08em] text-(--er-text-subtle)';
 const inputClass =
-  'border text-sm rounded-md block w-full p-2 bg-[color:var(--er-surface-primary)] border-white/5 placeholder-[var(--er-text-subtle)] text-[var(--er-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--er-button-primary)]/40 focus:border-[var(--er-button-primary)]/40';
+  'border text-sm rounded-md block w-full p-2 bg-(--er-surface-primary) border-white/5 placeholder-(--er-text-subtle) text-(--er-text-primary) focus:outline-hidden focus:ring-2 focus:ring-(--er-button-primary)/40 focus:border-(--er-button-primary)/40';
 
 /**
  * Account-panel control for viewing and setting the unique site username.
@@ -86,7 +86,7 @@ const UsernameField: React.FC = () => {
               onClick={save}
               disabled={saving || !value.trim()}
               title="Save username"
-              className="w-8 h-8 shrink-0 inline-flex items-center justify-center rounded-md text-white bg-[var(--er-button-primary)] hover:bg-[var(--er-button-primary-hover)] disabled:bg-[var(--er-button-neutral)]/40 disabled:text-[var(--er-text-subtle)] disabled:cursor-not-allowed transition-colors"
+              className="w-8 h-8 shrink-0 inline-flex items-center justify-center rounded-md text-white bg-(--er-button-primary) hover:bg-(--er-button-primary-hover) disabled:bg-(--er-button-neutral)/40 disabled:text-(--er-text-subtle) disabled:cursor-not-allowed transition-colors"
             >
               <FontAwesomeIcon icon={faCheck} />
             </button>
@@ -95,25 +95,25 @@ const UsernameField: React.FC = () => {
               onClick={cancel}
               disabled={saving}
               title="Cancel"
-              className="w-8 h-8 shrink-0 inline-flex items-center justify-center rounded-md text-[var(--er-text-tertiary)] hover:text-[var(--er-text-primary)] hover:bg-[var(--er-button-neutral)]/40 transition-colors"
+              className="w-8 h-8 shrink-0 inline-flex items-center justify-center rounded-md text-(--er-text-tertiary) hover:text-(--er-text-primary) hover:bg-(--er-button-neutral)/40 transition-colors"
             >
               <FontAwesomeIcon icon={faXmark} />
             </button>
           </div>
-          {error && <div className="text-xs text-[var(--er-error,#f87171)]">{error}</div>}
+          {error && <div className="text-xs text-(--er-error,#f87171)">{error}</div>}
         </div>
       ) : (
         <div className="flex items-center gap-2">
           {username ? (
-            <span className="text-sm text-[var(--er-text-primary)] truncate">@{username}</span>
+            <span className="text-sm text-(--er-text-primary) truncate">@{username}</span>
           ) : (
-            <span className="text-sm italic text-[var(--er-text-subtle)]">Not set</span>
+            <span className="text-sm italic text-(--er-text-subtle)">Not set</span>
           )}
           <button
             type="button"
             onClick={beginEdit}
             title={username ? 'Change username' : 'Set username'}
-            className="inline-flex items-center gap-1.5 px-2 py-1 text-xs font-medium rounded-md text-[var(--er-text-tertiary)] hover:text-[var(--er-text-primary)] hover:bg-[var(--er-button-neutral)]/40 transition-colors"
+            className="inline-flex items-center gap-1.5 px-2 py-1 text-xs font-medium rounded-md text-(--er-text-tertiary) hover:text-(--er-text-primary) hover:bg-(--er-button-neutral)/40 transition-colors"
           >
             <FontAwesomeIcon icon={faPen} className="text-[10px]" />
             {username ? 'Change' : 'Set username'}

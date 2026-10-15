@@ -225,7 +225,7 @@ const AnalyzeTab: React.FC = () => {
       <p className="text-sm mb-2">
         {title} {voteType} rankings:
       </p>
-      <div className="grid grid-cols-[auto,1fr] gap-x-4 gap-y-2">
+      <div className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2">
         {comparisons.flatMap((comparison) =>
           getCountryNamesFromComparisons([comparison], codeCountryNameMap).map((country, index) => (
             <React.Fragment key={`${comparison.list2Code}-${index}`}>
@@ -234,7 +234,7 @@ const AnalyzeTab: React.FC = () => {
                   href={getRankingUrl(comparison, country)}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className=" text-[var(--er-interactive-primary)] hover:underline"
+                  className=" text-(--er-interactive-primary) hover:underline"
                   title={getRankingTitle(voteType, country)}
                 >
                   <span className="mt-auto">
@@ -263,7 +263,7 @@ const AnalyzeTab: React.FC = () => {
     <div className="mb-0">
       <div className="relative mb-[1em] mt-2 flex items-center">
         <div className="flex justify-center items-center mr-3 ml-3">
-          <BetaBadge className="flex-shrink-0" />
+          <BetaBadge className="shrink-0" />
         </div>
         <p className="text-sm mr-1">
           Compare your current ranking with the Jury or Tele vote from each participating country

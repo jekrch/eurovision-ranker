@@ -104,7 +104,7 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
           key={props.rank ? 'ranked-' : `unranked-card-${contestant?.id ?? country.id}`}
           className={classNames(
             props.className,
-            'm-auto text-[var(--er-text-tertiary)] bg-[var(--er-surface-primary)]x bg-opacity-30 no-select',
+            'm-auto text-(--er-text-tertiary) bg-[var(--er-surface-primary)]x no-select',
             'relative min-h-[2.5em] py-[0.4em] flex flex-row', // Main card padding is py-[0.4em]
             'items-stretch !cursor-grabber whitespace-normal text-sm overflow-hidden',
             'border border-0.5 border-solid border-[color-mix(in_srgb,var(--er-border-primary)_55%,transparent)] rounded-l-lg rounded-r-md',
@@ -143,7 +143,7 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
           )}
 
           <div className="relative z-10 flex flex-row items-stretch w-full">
-            <div className="relative -my-2 flex-shrink-0 pb-[1px] mr-0 font-bold w-8 pr-[0.01em] border-r-[0.05em] border-[var(--er-border-secondary)] bg-[var(--er-surface-accent-70)] bg-gradient-to-b from-white/[0.07] to-black/[0.08] text-[var(--er-text-primary)] tabular-nums tracking-tighter items-center justify-center flex text-lg rounded-sm">
+            <div className="relative -my-2 shrink-0 pb-px mr-0 font-bold w-8 pr-[0.01em] border-r-[0.05em] border-(--er-border-secondary) bg-(--er-surface-accent-70) bg-linear-to-b from-white/[0.07] to-black/8 text-(--er-text-primary) tabular-nums tracking-tighter items-center justify-center flex text-lg rounded-xs">
               {props.rank}
               {isNowPlaying && (
                 <span
@@ -158,7 +158,7 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
               )}
             </div>
 
-            <div className="relative w-[5em] min-w-[4rem] -my-[0.2em]x my-1 ml-[0.2em]x ml-2 -mr-3 self-stretch overflow-hidden">
+            <div className="relative w-[5em] min-w-16 -my-[0.2em]x my-1 ml-[0.2em]x ml-2 -mr-3 self-stretch overflow-hidden">
               {country.key !== 'yu' ? (
                 <LazyLoadedFlag
                   code={country.key}
@@ -181,7 +181,7 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
                 />
               )}
               {isGlobalMode && contestant && (
-                <div className="absolute bottom-0 left-0 right-0 bg-[var(--er-button-neutral-40)] text-[var(--er-text-secondary)] text-sm font-bold tabular-nums tracking-wide text-center py-1 z-10">
+                <div className="absolute bottom-0 left-0 right-0 bg-(--er-button-neutral-40) text-(--er-text-secondary) text-sm font-bold tabular-nums tracking-wide text-center py-1 z-10">
                   {contestant.year}
                 </div>
               )}
@@ -189,34 +189,34 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
             {/* END OF UPDATED FLAG SECTION */}
 
             {/* Text content section. Starts immediately after the flag container */}
-            <div className={classNames('flex-grow text-[var(--er-text-secondary)] font-bold pl-3')}>
+            <div className={classNames('grow text-(--er-text-secondary) font-bold pl-3')}>
               {' '}
               {/* Added pl-3 for spacing if flag edge is too abrupt */}
-              <div className={`overflow-hidden overflow-ellipsis`}>
+              <div className={`overflow-hidden text-ellipsis`}>
                 <span className="float-right flex flex-row items-center">
                   {contestant?.youtube && (
                     <div
                       onClick={() => {
                         props.openSongModal();
                       }}
-                      className="cursor-pointer rounded text-[var(--er-text-muted)] hover:text-[var(--er-text-secondary)] transition-colors duration-150 mr-[0.4em]"
+                      className="cursor-pointer rounded-sm text-(--er-text-muted) hover:text-(--er-text-secondary) transition-colors duration-150 mr-[0.4em]"
                     >
                       <FaInfoCircle className="text-base" title="song info" />
                     </div>
                   )}
                 </span>
-                <span className="overflow-hidden overflow-ellipsis">{country?.name}</span>
+                <span className="overflow-hidden text-ellipsis">{country?.name}</span>
               </div>
-              <div className="pr-[1.5em] flex flex-grow items-center justify-between font-normal">
+              <div className="pr-[1.5em] flex grow items-center justify-between font-normal">
                 <div className="">
                   {contestant ? (
                     <>
-                      <span className="font-xs text-sm text-[var(--er-text-tertiary)]">
+                      <span className="font-xs text-sm text-(--er-text-tertiary)">
                         {contestant?.artist}
                       </span>
                       <span
                         className={classNames(
-                          'ml-1 px-1 font-xs text-xs text-[var(--er-text-tertiary)] rounded bg-[var(--er-surface-tertiary-70)] ring-1 ring-inset ring-white/[0.04]',
+                          'ml-1 px-1 font-xs text-xs text-(--er-text-tertiary) rounded-sm bg-(--er-surface-tertiary-70) ring-1 ring-inset ring-white/4',
                         )}
                       >
                         {contestant.song?.length && !contestant.song?.includes('TBD')
@@ -224,38 +224,38 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
                           : `${contestant.song}`}
                       </span>
 
-                      <div className="mt-1 font-xs text-xs text-[var(--er-text-subtle)] mb-1 flex flex-wrap">
+                      <div className="mt-1 font-xs text-xs text-(--er-text-subtle) mb-1 flex flex-wrap">
                         {contestant?.votes?.totalPoints !== undefined &&
                           voteCodeHasType(vote, 't') && (
                             <div className="flex items-center mr-2">
-                              <span className="text-[var(--er-text-muted)]">total:&nbsp;</span>
+                              <span className="text-(--er-text-muted)">total:&nbsp;</span>
                               <span className="tabular-nums font-medium">{`${contestant?.votes?.totalPoints}`}</span>
                             </div>
                           )}
                         {contestant?.votes?.telePoints !== undefined &&
                           voteCodeHasType(vote, 'tv') && (
                             <div className="flex items-center mr-2">
-                              <span className="text-[var(--er-text-muted)]">tele:&nbsp;</span>
+                              <span className="text-(--er-text-muted)">tele:&nbsp;</span>
                               <span className="tabular-nums font-medium">{`${contestant?.votes?.telePoints}`}</span>
                             </div>
                           )}
                         {contestant?.votes?.juryPoints !== undefined &&
                           voteCodeHasType(vote, 'j') && (
                             <div className="flex items-center mr-2">
-                              <span className="text-[var(--er-text-muted)]">jury:&nbsp;</span>
+                              <span className="text-(--er-text-muted)">jury:&nbsp;</span>
                               <span className="tabular-nums font-medium">{`${contestant?.votes?.juryPoints}`}</span>
                             </div>
                           )}
                       </div>
                       {(contestant?.finalsRank ?? contestant?.contestRank) && showPlace && (
-                        <div className="mt-1 font-xs text-xs text-[var(--er-text-subtle)] mb-0 flex flex-wrap items-center mr-2">
-                          <span className="text-[var(--er-text-muted)]">place:&nbsp;</span>
+                        <div className="mt-1 font-xs text-xs text-(--er-text-subtle) mb-0 flex flex-wrap items-center mr-2">
+                          <span className="text-(--er-text-muted)">place:&nbsp;</span>
                           <span className="tabular-nums font-medium">{`${contestant?.finalsRank ?? contestant?.contestRank}`}</span>
                         </div>
                       )}
                     </>
                   ) : (
-                    <span className="font-xs text-xs text-[var(--er-text-muted)] font-bold">
+                    <span className="font-xs text-xs text-(--er-text-muted) font-bold">
                       Did not participate
                     </span>
                   )}
@@ -271,7 +271,7 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
             {!showTotalRank && (
               <div
                 id="right-edge"
-                className="mb-[0em] absolute bottom-0 right-0 flex-shrink-0 flex flex-row justify-between text-xl font-bold text-[var(--er-text-muted)] z-10"
+                className="mb-0 absolute bottom-0 right-0 shrink-0 flex flex-row justify-between text-xl font-bold text-(--er-text-muted) z-10"
               >
                 <div id="gripper" className="text-right pl-[0.3em] mr-[0.3em] opacity-70">
                   &#8942;&#8942;
@@ -285,7 +285,7 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
       {categories?.length > 0 && (showTotalRank || showComparison) && (
         <div
           ref={categoryRankingsRef}
-          className="mt-0 mx-[0.6em] shadow-[0_4px_10px_-4px_rgba(0,0,0,0.45)] rounded-b-md bg-[var(--er-surface-tertiary)] bg-gradient-to-b from-black/[0.12] to-transparent border-[color-mix(in_srgb,var(--er-border-medium,var(--er-border-subtle))_60%,transparent)] border-x-[0.01em] border-b-[0.01em] overflow-x-auto relative ml-[2em]"
+          className="mt-0 mx-[0.6em] shadow-[0_4px_10px_-4px_rgba(0,0,0,0.45)] rounded-b-md bg-(--er-surface-tertiary) bg-linear-to-b from-black/12 to-transparent border-[color-mix(in_srgb,var(--er-border-medium,var(--er-border-subtle))_60%,transparent)] border-x-[0.01em] border-b-[0.01em] overflow-x-auto relative ml-[2em]"
           onScroll={props.onCategoryScroll}
         >
           <div className="flex">
@@ -301,11 +301,11 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
               return (
                 <div
                   key={index}
-                  className="px-2 py-1 text-xs flex-shrink-0 text-[var(--er-text-tertiary)] h-[2em] flex items-center"
+                  className="px-2 py-1 text-xs shrink-0 text-(--er-text-tertiary) h-[2em] flex items-center"
                   title={`weight: ${category.weight}`}
                 >
-                  <span className="text-[var(--er-text-muted)]">{category.name}:</span>{' '}
-                  <span className="ml-1 font-medium tabular-nums text-[var(--er-text-secondary)]">
+                  <span className="text-(--er-text-muted)">{category.name}:</span>{' '}
+                  <span className="ml-1 font-medium tabular-nums text-(--er-text-secondary)">
                     {categoryRankIndex || '--'}
                   </span>
                   {arrowIcon && (
@@ -314,8 +314,8 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
                       className={classNames(
                         'ml-1 inline-block text-sm opacity-75',
                         rankDifference < 0
-                          ? 'text-[var(--er-accent-success)]'
-                          : 'text-[var(--er-accent-error)]',
+                          ? 'text-(--er-accent-success)'
+                          : 'text-(--er-accent-error)',
                       )}
                     />
                   )}

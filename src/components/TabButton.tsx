@@ -28,7 +28,7 @@ const TabButton: React.FC<TabButtonProps> = ({ isActive, onClick, icon, label, s
         aria-label={label}
         title={label}
         data-tab-active={isActive}
-        className={`inline-flex items-center justify-center px-[14px] sm:px-4 py-3 border-b-2 border-transparent transition-colors duration-200 ${isActive ? 'text-[var(--er-interactive-primary)]' : 'hover:text-[var(--er-text-muted)]'}`}
+        className={`inline-flex items-center justify-center px-[14px] sm:px-4 py-3 border-b-2 border-transparent transition-colors duration-200 ${isActive ? 'text-(--er-interactive-primary)' : 'hover:text-(--er-text-muted)'}`}
       >
         <span data-tab-indicator-target className="inline-flex items-center gap-2">
           <FontAwesomeIcon className="text-md" icon={icon} fixedWidth />

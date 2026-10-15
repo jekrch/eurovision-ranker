@@ -32,14 +32,13 @@ import TooltipHelp from '../../TooltipHelp';
 
 // Shared styling tokens — kept in sync with the modern GroupsTab look.
 const sectionLabel =
-  'text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--er-text-subtle)]';
-const fieldLabel = 'text-xs text-[var(--er-text-subtle)]';
+  'text-[11px] font-semibold uppercase tracking-[0.08em] text-(--er-text-subtle)';
+const fieldLabel = 'text-xs text-(--er-text-subtle)';
 const primaryBtn =
-  'inline-flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-medium rounded-md text-white bg-[var(--er-button-primary)] hover:bg-[var(--er-button-primary-hover)] disabled:bg-[var(--er-button-neutral)]/40 disabled:text-[var(--er-text-subtle)] disabled:cursor-not-allowed transition-colors';
-const sectionCard =
-  'rounded-lg bg-[var(--er-button-neutral)]/15 ring-1 ring-white/5 overflow-hidden';
+  'inline-flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-medium rounded-md text-white bg-(--er-button-primary) hover:bg-(--er-button-primary-hover) disabled:bg-(--er-button-neutral)/40 disabled:text-(--er-text-subtle) disabled:cursor-not-allowed transition-colors';
+const sectionCard = 'rounded-lg bg-(--er-button-neutral)/15 ring-1 ring-white/5 overflow-hidden';
 const headerBar =
-  'flex items-center gap-2 px-4 py-2.5 border-b border-white/5 bg-[var(--er-button-neutral)]/15';
+  'flex items-center gap-2 px-4 py-2.5 border-b border-white/5 bg-(--er-button-neutral)/15';
 
 /** Rounds a ranking can be generated for, keyed by the vote data's round name */
 const ROUND_OPTIONS: { [round: string]: { label: string; code: string; name: string } } = {
@@ -254,7 +253,7 @@ const RankingsTab: React.FC = () => {
 
   return (
     <div className="text-sm space-y-4">
-      <p className="text-xs leading-relaxed text-[var(--er-text-tertiary)]">
+      <p className="text-xs leading-relaxed text-(--er-text-tertiary)">
         Generate official rankings for a contest year, or browse every contestant a country has
         sent.
       </p>
@@ -266,7 +265,7 @@ const RankingsTab: React.FC = () => {
         <div className={headerBar}>
           <FontAwesomeIcon
             icon={faTrophy}
-            className="text-[var(--er-button-primary)] text-xs shrink-0"
+            className="text-(--er-button-primary) text-xs shrink-0"
           />
           <h3 className={sectionLabel}>ESC contest rankings</h3>
           <TooltipHelp
@@ -289,7 +288,7 @@ const RankingsTab: React.FC = () => {
             {roundSummaries.length > 1 && (
               <Dropdown
                 key="round-selector"
-                className="min-w-[7rem]"
+                className="min-w-28"
                 menuClassName="w-auto"
                 value={roundOption.label}
                 onChange={(label) =>
@@ -307,7 +306,7 @@ const RankingsTab: React.FC = () => {
             <span className={fieldLabel}>from</span>
             <Dropdown
               key="country-selector"
-              className="min-w-[7rem]"
+              className="min-w-28"
               menuClassName="w-auto"
               value={voteSource}
               onChange={(s) => setVoteSource(s)}
@@ -344,10 +343,7 @@ const RankingsTab: React.FC = () => {
       {/* Contestants by country */}
       <section className={sectionCard}>
         <div className={headerBar}>
-          <FontAwesomeIcon
-            icon={faFlag}
-            className="text-[var(--er-button-primary)] text-xs shrink-0"
-          />
+          <FontAwesomeIcon icon={faFlag} className="text-(--er-button-primary) text-xs shrink-0" />
           <h3 className={sectionLabel}>Contestants by country</h3>
           <TooltipHelp
             content="Display all past and current contestants for a specific country"
@@ -359,7 +355,7 @@ const RankingsTab: React.FC = () => {
           <div className="flex flex-wrap items-center gap-x-2.5 gap-y-2 mb-3.5">
             <Dropdown
               key="country-selector"
-              className="min-w-[7rem]"
+              className="min-w-28"
               menuClassName="w-auto"
               value={contestantCountry}
               onChange={(s) => setContestantCountry(s)}
@@ -369,7 +365,7 @@ const RankingsTab: React.FC = () => {
             <span className={fieldLabel}>order by</span>
             <Dropdown
               key="country-order-selector"
-              className="min-w-[5rem]"
+              className="min-w-20"
               menuClassName="w-auto"
               value={contestantCountryOrder}
               onChange={(s) => setContestantCountryOrder(s)}

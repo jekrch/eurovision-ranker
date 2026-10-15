@@ -25,13 +25,13 @@ const TooltipHelp: React.FC<TooltipHelpProps> = ({
         <FontAwesomeIcon
           icon={icon}
           className={classNames(
-            'ml-2 text-[var(--er-text-tertiary)] cursor-pointer !text-base',
+            'ml-2 text-(--er-text-tertiary) cursor-pointer text-base!',
             className,
           )}
         />
       </a>
       <Tooltip
-        className="z-50 max-w-[15em] !bg-[var(--er-tooltip-bg)] !text-[var(--er-text-secondary)] !font-normal shadow-xl shadow-black"
+        className="z-50 max-w-[15em] bg-(--er-tooltip-bg)! text-(--er-text-secondary)! font-normal! shadow-xl shadow-black"
         id={tooltipId}
         place={place}
         variant="info"

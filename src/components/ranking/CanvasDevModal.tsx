@@ -96,14 +96,14 @@ const CanvasDevModal: React.FC<{
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 overflow-auto bg-black bg-opacity-75 flex items-center justify-center p-4">
-      <div className="bg-[var(--er-surface-dark)] border border-[var(--er-border-subtle)] rounded-lg w-full max-w-6xl max-h-screen overflow-hidden flex flex-col">
+    <div className="fixed inset-0 z-50 overflow-auto bg-black/75 flex items-center justify-center p-4">
+      <div className="bg-(--er-surface-dark) border border-(--er-border-subtle) rounded-lg w-full max-w-6xl max-h-screen overflow-hidden flex flex-col">
         {/* Modal Header */}
-        <div className="p-4 border-b border-[var(--er-border-subtle)] flex justify-between items-center">
+        <div className="p-4 border-b border-(--er-border-subtle) flex justify-between items-center">
           <h2 className="text-xl font-bold text-white">Canvas Development Tools</h2>
           <button
             onClick={onClose}
-            className="text-[var(--er-text-tertiary)] hover:text-white"
+            className="text-(--er-text-tertiary) hover:text-white"
             aria-label="Close"
           >
             ✕
@@ -113,14 +113,12 @@ const CanvasDevModal: React.FC<{
         {/* Modal Body */}
         <div className="flex-1 overflow-auto p-4">
           {/* Controls */}
-          <div className="mb-4 border border-[var(--er-border-tertiary)] rounded bg-[var(--er-surface-dark)] bg-opacity-30 p-4">
+          <div className="mb-4 border border-(--er-border-tertiary) rounded-sm bg-(--er-surface-dark) p-4">
             <div className="flex justify-between items-center">
-              <h3 className="text-[var(--er-text-secondary)] font-medium">
-                Canvas Preview Controls
-              </h3>
+              <h3 className="text-(--er-text-secondary) font-medium">Canvas Preview Controls</h3>
               <button
                 onClick={handleRefresh}
-                className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700"
+                className="px-3 py-1 bg-green-600 text-white rounded-sm hover:bg-green-700"
               >
                 Refresh Canvas
               </button>
@@ -128,18 +126,18 @@ const CanvasDevModal: React.FC<{
           </div>
 
           {/* Canvas Preview */}
-          <div className="border border-[var(--er-border-subtle)] rounded-lg p-4 mb-4">
+          <div className="border border-(--er-border-subtle) rounded-lg p-4 mb-4">
             <h3 className="text-lg text-white font-semibold mb-4">Canvas Preview</h3>
 
             {error && (
-              <div className="mb-4 p-3 bg-red-900 bg-opacity-30 border border-red-700 rounded text-red-300">
+              <div className="mb-4 p-3 bg-red-900/30 border border-red-700 rounded-sm text-red-300">
                 <p className="font-bold">Rendering Error:</p>
                 <pre className="text-sm overflow-auto">{error}</pre>
               </div>
             )}
 
             {rankedItems.length === 0 ? (
-              <div className="text-[var(--er-text-tertiary)] text-center py-8">
+              <div className="text-(--er-text-tertiary) text-center py-8">
                 Please rank some countries to see the preview
               </div>
             ) : (

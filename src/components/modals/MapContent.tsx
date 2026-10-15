@@ -135,7 +135,7 @@ const MapContent: React.FC<MapContentProps> = ({
       </ComposableMap>
 
       {/* Australia inset */}
-      <div className="absolute bottom-2 left-2 w-[100px] h-[80px] rounded-md border overflow-hidden backdrop-blur-sm bg-[var(--er-overlay-heavy)] border-[var(--er-border-subtle)]">
+      <div className="absolute bottom-2 left-2 w-[100px] h-[80px] rounded-md border overflow-hidden backdrop-blur-xs bg-(--er-overlay-heavy) border-(--er-border-subtle)">
         <ComposableMap
           projectionConfig={{ scale: 400, center: [134, -26] }}
           width={300}
@@ -147,7 +147,7 @@ const MapContent: React.FC<MapContentProps> = ({
             filterFn={(geo) => geo.properties.iso_a2_eh === 'AU'}
           />
         </ComposableMap>
-        <span className="absolute bottom-0 left-0 right-0 text-[8px] text-center leading-tight text-[var(--er-text-muted)]">
+        <span className="absolute bottom-0 left-0 right-0 text-[8px] text-center leading-tight text-(--er-text-muted)">
           Australia
         </span>
       </div>

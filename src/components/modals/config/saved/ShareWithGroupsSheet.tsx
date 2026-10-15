@@ -16,12 +16,10 @@ const ShareWithGroupsSheet: React.FC<{
   onToggleShare: (current: UserRanking, groupId: string, shared: boolean) => void;
 }> = ({ target, groups, rankings, shareLoading, pendingShareToggle, onClose, onToggleShare }) => (
   <NestedSheet onClose={onClose} title="Share with groups" subtitle={target.name || 'Untitled'}>
-    {shareLoading && (
-      <div className="text-xs text-[var(--er-text-subtle)] py-3">Loading groups…</div>
-    )}
+    {shareLoading && <div className="text-xs text-(--er-text-subtle) py-3">Loading groups…</div>}
 
     {!shareLoading && groups && groups.length === 0 && (
-      <div className="rounded-lg border border-dashed border-[var(--er-border-lightest)] dark:border-[var(--er-border-darker)] py-6 text-center text-xs text-[var(--er-text-subtle)]">
+      <div className="rounded-lg border border-dashed border-(--er-border-lightest) dark:border-(--er-border-darker) py-6 text-center text-xs text-(--er-text-subtle)">
         You're not in any groups yet. Create one from the Groups tab.
       </div>
     )}
@@ -39,16 +37,16 @@ const ShareWithGroupsSheet: React.FC<{
                 type="button"
                 disabled={pending}
                 onClick={() => onToggleShare(current, g.id, shared)}
-                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-md transition-colors ${shared ? 'bg-[var(--er-button-primary)]/10 ring-1 ring-inset ring-[var(--er-button-primary)]/30' : 'bg-[var(--er-button-neutral)]/15 hover:bg-[var(--er-button-neutral)]/30'} disabled:opacity-60 disabled:cursor-not-allowed`}
+                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-md transition-colors ${shared ? 'bg-(--er-button-primary)/10 ring-1 ring-inset ring-(--er-button-primary)/30' : 'bg-(--er-button-neutral)/15 hover:bg-(--er-button-neutral)/30'} disabled:opacity-60 disabled:cursor-not-allowed`}
               >
                 <div
-                  className={`w-5 h-5 rounded border ${shared ? 'bg-[var(--er-button-primary)] border-[var(--er-button-primary)]' : 'border-white/20'} flex items-center justify-center shrink-0`}
+                  className={`w-5 h-5 rounded-sm border ${shared ? 'bg-(--er-button-primary) border-(--er-button-primary)' : 'border-white/20'} flex items-center justify-center shrink-0`}
                 >
                   {shared && <FontAwesomeIcon icon={faCheck} className="text-white text-[10px]" />}
                 </div>
                 <div className="flex-1 min-w-0 text-left">
-                  <div className="truncate text-sm text-[var(--er-text-primary)]">{g.name}</div>
-                  <div className="text-[11px] text-[var(--er-text-subtle)]">
+                  <div className="truncate text-sm text-(--er-text-primary)">{g.name}</div>
+                  <div className="text-[11px] text-(--er-text-subtle)">
                     {g.member_count} {g.member_count === 1 ? 'member' : 'members'}
                   </div>
                 </div>
@@ -59,7 +57,7 @@ const ShareWithGroupsSheet: React.FC<{
       </ul>
     )}
 
-    <div className="mt-3 text-[11px] text-[var(--er-text-subtle)] leading-relaxed">
+    <div className="mt-3 text-[11px] text-(--er-text-subtle) leading-relaxed">
       Group members can view this ranking. They can't edit it.
     </div>
   </NestedSheet>

@@ -49,7 +49,7 @@ const TourUrlLink: React.FC = () => {
       </button>
       <span
         aria-live="polite"
-        className="text-xs font-medium text-[var(--er-accent-success)] transition-opacity duration-200"
+        className="text-xs font-medium text-(--er-accent-success) transition-opacity duration-200"
         style={{ opacity: copied ? 1 : 0 }}
       >
         {copied ? 'Copied!' : ''}

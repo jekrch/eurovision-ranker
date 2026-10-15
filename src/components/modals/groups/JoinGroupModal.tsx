@@ -24,9 +24,9 @@ interface JoinGroupModalProps {
 }
 
 const primaryBtn =
-  'w-full text-white font-medium py-2.5 px-4 rounded-lg text-sm bg-[var(--er-button-primary)] hover:bg-[var(--er-button-primary-hover)] shadow-sm shadow-black/20 disabled:opacity-50 disabled:cursor-not-allowed transition-colors';
+  'w-full text-white font-medium py-2.5 px-4 rounded-lg text-sm bg-(--er-button-primary) hover:bg-(--er-button-primary-hover) shadow-xs shadow-black/20 disabled:opacity-50 disabled:cursor-not-allowed transition-colors';
 const secondaryBtn =
-  'w-full font-medium py-2.5 px-4 rounded-lg text-sm text-[var(--er-text-tertiary)] hover:text-[var(--er-text-primary)] hover:bg-white/[0.04] transition-colors';
+  'w-full font-medium py-2.5 px-4 rounded-lg text-sm text-(--er-text-tertiary) hover:text-(--er-text-primary) hover:bg-white/4 transition-colors';
 
 const JoinGroupModal: React.FC<JoinGroupModalProps> = ({
   isOpen,
@@ -100,14 +100,14 @@ const JoinGroupModal: React.FC<JoinGroupModalProps> = ({
   // is still in URL state when they come back.
   if (isOpen && !user) {
     return (
-      <Modal isOpen={isOpen} onClose={onClose} className="max-w-md !p-0 overflow-hidden">
+      <Modal isOpen={isOpen} onClose={onClose} className="max-w-md p-0! overflow-hidden">
         <ModalHeader
           icon={faShieldHalved}
           title="Join a group"
           subtitle="Sign in to accept this invite."
         />
         <div className="px-6 py-5 space-y-3">
-          <p className="text-sm text-[var(--er-text-tertiary)]">
+          <p className="text-sm text-(--er-text-tertiary)">
             You need an account to join. Sign in or create one, then reopen the link.
           </p>
           <button type="button" onClick={onSignInRequired} className={primaryBtn}>
@@ -122,7 +122,7 @@ const JoinGroupModal: React.FC<JoinGroupModalProps> = ({
   }
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} className="max-w-md !p-0 overflow-hidden">
+    <Modal isOpen={isOpen} onClose={onClose} className="max-w-md p-0! overflow-hidden">
       <ModalHeader
         icon={faUserGroup}
         title="Join a group"
@@ -130,7 +130,7 @@ const JoinGroupModal: React.FC<JoinGroupModalProps> = ({
       />
 
       <div className="px-6 py-5 space-y-4">
-        {loading && <div className="text-xs text-[var(--er-text-subtle)]">Loading invite…</div>}
+        {loading && <div className="text-xs text-(--er-text-subtle)">Loading invite…</div>}
 
         {error && (
           <div className="flex gap-2.5 p-3 rounded-lg bg-red-500/10 border border-red-500/20">
@@ -138,13 +138,13 @@ const JoinGroupModal: React.FC<JoinGroupModalProps> = ({
               icon={faTriangleExclamation}
               className="text-red-400 mt-0.5 shrink-0"
             />
-            <div className="text-xs leading-relaxed text-[var(--er-text-tertiary)]">{error}</div>
+            <div className="text-xs leading-relaxed text-(--er-text-tertiary)">{error}</div>
           </div>
         )}
 
         {!loading && !error && preview && (
           <>
-            <div className="flex items-start gap-3 p-3 rounded-lg bg-[var(--er-button-neutral)]/15">
+            <div className="flex items-start gap-3 p-3 rounded-lg bg-(--er-button-neutral)/15">
               {preview.image_url ? (
                 <img
                   src={preview.image_url}
@@ -152,20 +152,20 @@ const JoinGroupModal: React.FC<JoinGroupModalProps> = ({
                   className="w-12 h-12 rounded-md object-cover ring-1 ring-white/10 shrink-0"
                 />
               ) : (
-                <div className="w-12 h-12 rounded-md bg-gradient-to-br from-[var(--er-button-primary)] to-[var(--er-button-primary-hover)] flex items-center justify-center text-white font-semibold shrink-0">
+                <div className="w-12 h-12 rounded-md bg-linear-to-br from-(--er-button-primary) to-(--er-button-primary-hover) flex items-center justify-center text-white font-semibold shrink-0">
                   {(preview.group_name || '?').trim().charAt(0).toUpperCase()}
                 </div>
               )}
               <div className="min-w-0 flex-1">
-                <div className="font-semibold text-[var(--er-text-primary)] truncate">
+                <div className="font-semibold text-(--er-text-primary) truncate">
                   {preview.group_name}
                 </div>
                 {preview.description && (
-                  <p className="text-xs text-[var(--er-text-subtle)] mt-0.5 line-clamp-3 whitespace-pre-line break-words">
+                  <p className="text-xs text-(--er-text-subtle) mt-0.5 line-clamp-3 whitespace-pre-line wrap-break-word">
                     {preview.description}
                   </p>
                 )}
-                <div className="text-[11px] text-[var(--er-text-subtle)] mt-1">
+                <div className="text-[11px] text-(--er-text-subtle) mt-1">
                   {preview.member_count} {preview.member_count === 1 ? 'member' : 'members'}
                 </div>
               </div>
@@ -173,7 +173,7 @@ const JoinGroupModal: React.FC<JoinGroupModalProps> = ({
 
             {preview.already_member ? (
               <>
-                <p className="text-sm text-[var(--er-text-tertiary)]">
+                <p className="text-sm text-(--er-text-tertiary)">
                   You're already a member of this group.
                 </p>
                 <button

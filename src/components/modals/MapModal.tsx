@@ -52,17 +52,17 @@ const MapModal: React.FC<MapModalProps> = ({ isOpen, onClose }) => {
   return (
     <Modal
       className="fixed inset-0 z-10 overflow-y-auto pb-2 pt-5 px-2 min-w-[80vw] max-h-[80vh]"
-      closeBtnClassName="!top-1 !right-2"
+      closeBtnClassName="top-1! right-2!"
       isOpen={isOpen}
       onClose={onClose}
     >
       <div className="-mt-3 mb-3">
-        <div className="w-full text-sm font-semibold text-center text-[var(--er-text-primary)]">
+        <div className="w-full text-sm font-semibold text-center text-(--er-text-primary)">
           Ranking heat map
         </div>
         <div className={`${hairline} mt-3`}></div>
       </div>
-      <div className="mb-3 flex items-center justify-center gap-2 text-[10px] uppercase tracking-wider text-[var(--er-text-muted)]">
+      <div className="mb-3 flex items-center justify-center gap-2 text-[10px] uppercase tracking-wider text-(--er-text-muted)">
         <span>Lower</span>
         <span
           className="h-2 w-28 rounded-full"
@@ -86,7 +86,7 @@ const MapModal: React.FC<MapModalProps> = ({ isOpen, onClose }) => {
         <ReactTooltip
           id="country-tooltip"
           place="bottom-end"
-          className="!z-50 !rounded-md !px-2.5 !py-1.5 !text-xs !font-medium !shadow-lg !opacity-100"
+          className="z-50! rounded-md! px-2.5! py-1.5! text-xs! font-medium! shadow-lg! opacity-100!"
           style={{
             backgroundColor: 'var(--er-tooltip-bg)',
             color: 'var(--er-text-primary)',

@@ -7,14 +7,14 @@
 export const modalPanel = 'rounded-2xl ring-1 ring-white/10 shadow-2xl shadow-black/50';
 
 /** The dimmed, blurred ground a modal sits on. */
-export const modalBackdrop = 'bg-black/60 backdrop-blur-sm';
+export const modalBackdrop = 'bg-black/60 backdrop-blur-xs';
 
 /** Divider that fades out at both ends — sits under modal headers and tab strips. */
-export const hairline = 'h-px bg-gradient-to-r from-transparent via-white/15 to-transparent';
+export const hairline = 'h-px bg-linear-to-r from-transparent via-white/15 to-transparent';
 
 /** Small tracked label above a title. */
 export const eyebrow =
-  'text-[0.6rem] font-medium uppercase tracking-[0.2em] text-[var(--er-text-subtle)]';
+  'text-[0.6rem] font-medium uppercase tracking-[0.2em] text-(--er-text-subtle)';
 
 /** Square tile an icon sits in, so icons of differing widths line up down a list. */
 export const iconChip =
@@ -26,14 +26,14 @@ export const iconChip =
  * emitted after these in Tailwind's output, so unflagged they quietly win.
  */
 export const modalActionBtn =
-  '!rounded-lg !px-4 !py-2.5 !text-[0.8rem] !font-medium transition-colors duration-150';
+  'rounded-lg! px-4! py-2.5! text-[0.8rem]! font-medium! transition-colors duration-150';
 
 /**
  * The same button, sized down for prompts whose actions shouldn't outweigh the
  * text above them. Same reason every utility is marked important.
  */
 export const modalActionBtnSm =
-  '!rounded-lg !px-3 !py-1.5 !text-[0.75rem] !font-medium transition-colors duration-150';
+  'rounded-lg! px-3! py-1.5! text-[0.75rem]! font-medium! transition-colors duration-150';
 
 /** Right-aligned footer row. */
 export const modalFooter = 'flex justify-end gap-2.5';

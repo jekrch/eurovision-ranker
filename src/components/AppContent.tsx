@@ -115,7 +115,7 @@ const AppContent: React.FC<AppContentProps> = ({
         <LazyNavbar openModal={openMainModalWithTab} openConfigModal={openConfigModalWithTab} />
       </Suspense>
 
-      <div className="flex-grow overflow-auto overflow-x-hidden bg-[#040241] flex justify-center bg-opacity-0">
+      <div className="grow overflow-auto overflow-x-hidden bg-[#040241]/0 flex justify-center">
         <DragDropContext
           onDragEnd={handleOnDragEnd as OnDragEndResponder}
           key={`drag-drop-context`}
@@ -134,16 +134,16 @@ const AppContent: React.FC<AppContentProps> = ({
             {/* Unranked Countries List */}
             {showUnranked && !globalSearch && (
               <div className="relative flex flex-col view-enter-left-animation">
-                <div className="tour-step-15 sticky top-0 rounded-t-md round-b-sm text-center font-bold bg-[var(--er-surface-bar)] gradient-background-reverse text-[var(--er-text-secondary)] tracking-tighter shadow-md z-50">
+                <div className="tour-step-15 sticky top-0 rounded-t-md round-b-sm text-center font-bold bg-(--er-surface-bar) gradient-background-reverse text-(--er-text-secondary) tracking-tighter shadow-md z-50">
                   <div className="flex items-center justify-center gap-1 py-1 px-0">
                     <TooltipHelp
                       content="Select countries across all contest years"
-                      className="text-[var(--er-text-secondary)] align-middle mb-1 mr-1 -ml-1"
+                      className="text-(--er-text-secondary) align-middle mb-1 mr-1 -ml-1"
                     />
                     <Switch
                       label="adv"
                       className="items-center align-middle font-normal"
-                      labelClassName="text-sm text-[var(--er-text-tertiary)]"
+                      labelClassName="text-sm text-(--er-text-tertiary)"
                       checked={globalSearch}
                       setChecked={updateGlobalSearch}
                     />
@@ -201,17 +201,16 @@ const AppContent: React.FC<AppContentProps> = ({
       </div>
 
       <div className="hidden fixed bottom-[3em] left-[1em] z-50">
-        <div className="p-2 bg-slate-300 bg-opacity-40 rounded-lg">
+        <div className="p-2 bg-slate-300/40 rounded-lg">
           <button
             onClick={toggleDetailsView}
             className={
-              'w-[4em] py-3 bg-[var(--er-surface-bar)] hover:bg-[var(--er-interactive-dark)] z-50 relative' +
-              'overflow-hidden text-[var(--er-text-primary)] font-normal py-1 px-3 ' +
-              'rounded-full border-[var(--er-border-tertiary)] border-[0.1em] text-base shadow-lg ' +
-              'bg-opacity-80'
+              'w-[4em] py-3 bg-(--er-surface-bar) hover:bg-(--er-interactive-dark) z-50 relative' +
+              'overflow-hidden text-(--er-text-primary) font-normal py-1 px-3 ' +
+              'rounded-full border-(--er-border-tertiary) border-[0.1em] text-base shadow-lg'
             }
           >
-            <div className="text-[var(--er-text-primary)]">{showUnranked ? 'VIEW' : 'EDIT'}</div>
+            <div className="text-(--er-text-primary)">{showUnranked ? 'VIEW' : 'EDIT'}</div>
           </button>
         </div>
       </div>

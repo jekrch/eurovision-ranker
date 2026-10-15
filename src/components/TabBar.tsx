@@ -109,7 +109,7 @@ const TabBar: React.FC<TabBarProps> = ({ activeKey, className, children }) => {
   return (
     <ul
       ref={listRef}
-      className={`relative flex flex-wrap -mb-px text-sm font-medium text-center text-[var(--er-text-muted)] dark:text-[var(--er-text-subtle)] ${className ?? ''}`}
+      className={`relative flex flex-wrap -mb-px text-sm font-medium text-center text-(--er-text-muted) dark:text-(--er-text-subtle) ${className ?? ''}`}
     >
       {children}
 
@@ -117,7 +117,7 @@ const TabBar: React.FC<TabBarProps> = ({ activeKey, className, children }) => {
         <li
           aria-hidden="true"
           data-tab-indicator
-          className={`absolute left-0 top-0 bg-[var(--er-interactive-primary)] ${indicator.animate ? 'tab-indicator-animation' : ''}`}
+          className={`absolute left-0 top-0 bg-(--er-interactive-primary) ${indicator.animate ? 'tab-indicator-animation' : ''}`}
           style={{
             width: `${indicator.width}px`,
             height: `${INDICATOR_THICKNESS}px`,

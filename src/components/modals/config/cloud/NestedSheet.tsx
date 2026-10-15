@@ -13,11 +13,11 @@ const NestedSheet: React.FC<{
   children: React.ReactNode;
 }> = ({ onClose, title, subtitle, children }) => (
   <div
-    className={`fixed inset-0 z-[60] flex items-end sm:items-center justify-center ${modalBackdrop}`}
+    className={`fixed inset-0 z-60 flex items-end sm:items-center justify-center ${modalBackdrop}`}
     onClick={onClose}
   >
     <div
-      className={`w-full sm:max-w-md bg-[var(--er-surface-secondary)] m-0 sm:m-4 rounded-b-none sm:rounded-b-2xl max-h-[85vh] overflow-y-auto [scrollbar-gutter:stable] ${modalPanel}`}
+      className={`w-full sm:max-w-md bg-(--er-surface-secondary) m-0 sm:m-4 rounded-b-none sm:rounded-b-2xl max-h-[85vh] overflow-y-auto scrollbar-gutter-stable ${modalPanel}`}
       onClick={(e) => e.stopPropagation()}
     >
       <ModalHeader title={title} subtitle={subtitle} onClose={onClose} size="sm" />

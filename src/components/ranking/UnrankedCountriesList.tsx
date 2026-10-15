@@ -102,7 +102,7 @@ const UnrankedCountriesList: React.FC<UnrankedCountriesListProps> = ({
   return (
     <div
       ref={columnRef}
-      className="min-w-[10em] max-w-[40vw] overflow-y-auto overflow-x-hidden flex-grow mr-0 relative flex flex-col"
+      className="min-w-[10em] max-w-[40vw] overflow-y-auto overflow-x-hidden grow mr-0 relative flex flex-col"
     >
       <StrictModeDroppable droppableId="unrankedItems" key={`strict-md`}>
         {(provided, droppableSnapshot) => (
@@ -112,7 +112,7 @@ const UnrankedCountriesList: React.FC<UnrankedCountriesListProps> = ({
             ref={provided.innerRef}
             // grows to the column's full height so a card can be dropped
             // anywhere in the column, not just over the rows it already has
-            className={classNames('relative pt-[0.3em] min-w-[10em] flex-grow tour-step-2', '')}
+            className={classNames('relative pt-[0.3em] min-w-[10em] grow tour-step-2', '')}
             style={isHandingOff ? HANDOFF_STYLE : undefined}
           >
             {/* On its way out the all-ranked state is lifted out of the flow at
@@ -191,7 +191,7 @@ const UnrankedCountriesList: React.FC<UnrankedCountriesListProps> = ({
                       >
                         <Card
                           key={item.id.toString()}
-                          className="m-auto text-[var(--er-text-tertiary)] bg-'blue' no-select"
+                          className="m-auto text-(--er-text-tertiary) bg-'blue' no-select"
                           countryContestant={item}
                           isDragging={snapshot.isDragging}
                           isDropAnimating={snapshot.isDropAnimating}

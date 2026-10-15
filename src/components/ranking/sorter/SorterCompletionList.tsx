@@ -20,7 +20,7 @@ const SorterCompletionList: React.FC<SorterCompletionListProps> = ({
   return (
     <>
       {/* Fixed header content */}
-      <div className="flex-shrink-0 w-full flex flex-col items-center px-4 pt-3">
+      <div className="shrink-0 w-full flex flex-col items-center px-4 pt-3">
         <h4 className={classNames(eyebrow, 'mb-3')}>Your Complete Ranking</h4>
       </div>
 
@@ -31,23 +31,23 @@ const SorterCompletionList: React.FC<SorterCompletionListProps> = ({
             {finalRanking.map((item, index) => {
               const rank = index + 1;
               // Medal colors for top 3
-              let rankBoxColor = 'bg-[var(--er-surface-accent)]'; // default
+              let rankBoxColor = 'bg-(--er-surface-accent)'; // default
               if (rank === 1)
-                rankBoxColor = 'bg-[var(--er-interactive-primary)]'; // gold
+                rankBoxColor = 'bg-(--er-interactive-primary)'; // gold
               else if (rank === 2)
-                rankBoxColor = 'bg-[var(--er-gradient-text-2)]'; // silver
-              else if (rank === 3) rankBoxColor = 'bg-[var(--er-gradient-text-3)]'; // bronze
+                rankBoxColor = 'bg-(--er-gradient-text-2)'; // silver
+              else if (rank === 3) rankBoxColor = 'bg-(--er-gradient-text-3)'; // bronze
 
               return (
                 <li
                   key={item.uid || index}
                   style={staggerStyle(index)}
-                  className="view-item-enter-animation flex items-stretch bg-[var(--er-surface-accent-70)] rounded-xl ring-1 ring-inset ring-white/[0.06] shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_1px_2px_rgba(0,0,0,0.3),0_2px_6px_-2px_rgba(0,0,0,0.25)] overflow-hidden"
+                  className="view-item-enter-animation flex items-stretch bg-(--er-surface-accent-70) rounded-xl ring-1 ring-inset ring-white/6 shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_1px_2px_rgba(0,0,0,0.3),0_2px_6px_-2px_rgba(0,0,0,0.25)] overflow-hidden"
                 >
                   {/* Rank box */}
                   <div
                     className={classNames(
-                      'flex items-center justify-center min-w-[3.5rem] px-2 bg-gradient-to-b from-white/[0.12] to-black/[0.1] border-r border-black/20',
+                      'flex items-center justify-center min-w-14 px-2 bg-linear-to-b from-white/12 to-black/10 border-r border-black/20',
                       rankBoxColor,
                     )}
                   >
@@ -61,18 +61,18 @@ const SorterCompletionList: React.FC<SorterCompletionListProps> = ({
                     {item.country?.key && (
                       <LazyLoadedFlag
                         code={item.country.key}
-                        className="w-12 h-auto rounded-[3px] ring-1 ring-black/20 shadow-sm shadow-black/30"
+                        className="w-12 h-auto rounded-[3px] ring-1 ring-black/20 shadow-xs shadow-black/30"
                       />
                     )}
                   </div>
 
                   {/* Text content */}
                   <div className="flex flex-col justify-center flex-1 px-4 py-2 min-w-0">
-                    <span className="text-[var(--er-text-primary)] font-semibold truncate">
+                    <span className="text-(--er-text-primary) font-semibold truncate">
                       {item.contestant?.artist || 'Unknown Artist'}
                     </span>
                     {item.contestant?.song && (
-                      <span className="text-sm text-[var(--er-text-tertiary)] truncate">
+                      <span className="text-sm text-(--er-text-tertiary) truncate">
                         "{item.contestant.song}"
                       </span>
                     )}
@@ -85,7 +85,7 @@ const SorterCompletionList: React.FC<SorterCompletionListProps> = ({
       )}
 
       {/* Fixed footer text */}
-      <p className="text-xs text-[var(--er-text-subtle)] flex-shrink-0 px-4 pb-4 text-center">
+      <p className="text-xs text-(--er-text-subtle) shrink-0 px-4 pb-4 text-center">
         You can go back to review choices, cancel, or apply this ranking.
       </p>
     </>

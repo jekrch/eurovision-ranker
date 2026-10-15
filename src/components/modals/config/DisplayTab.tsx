@@ -191,13 +191,13 @@ const DisplayTab: React.FC = () => {
   }
 
   // shared classes so every row lines up on the same grid
-  const rowClass = 'flex items-center min-h-[2.25rem]';
+  const rowClass = 'flex items-center min-h-9';
   const labelClass = 'ml-1 w-16 shrink-0 text-sm font-semibold';
 
   return (
     <div className="-mt-2">
       {/* Display toggles */}
-      <section className="py-3 border-b border-[var(--er-border-subtle)] space-y-1">
+      <section className="py-3 border-b border-(--er-border-subtle) space-y-1">
         <div className={rowClass}>
           <TooltipHelp content="Display the contestant's place in the final contest if applicable" />
           <Checkbox
@@ -228,7 +228,7 @@ const DisplayTab: React.FC = () => {
       </section>
 
       {/* Votes */}
-      <section className="py-3 border-b border-[var(--er-border-subtle)] space-y-2">
+      <section className="py-3 border-b border-(--er-border-subtle) space-y-2">
         <div>
           <div className="flex items-center">
             <TooltipHelp content="Select which types of votes to display with each ranked country" />
@@ -290,8 +290,8 @@ const DisplayTab: React.FC = () => {
       </section>
 
       {/* Export */}
-      <section className="mt-1 pt-4 border-t border-[var(--er-border-subtle)]">
-        <div className="ml-1 mb-3 text-sm font-semibold uppercase tracking-wide text-[var(--er-text-muted)]">
+      <section className="mt-1 pt-4 border-t border-(--er-border-subtle)">
+        <div className="ml-1 mb-3 text-sm font-semibold uppercase tracking-wide text-(--er-text-muted)">
           Export
         </div>
 

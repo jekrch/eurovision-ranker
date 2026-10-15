@@ -11,9 +11,9 @@ interface UnrankedEmptyStateProps {
 }
 
 const buttonClassName =
-  'w-full rounded-md border-[0.1em] border-[var(--er-border-tertiary)] px-2 py-2 text-xs ' +
-  'font-bold text-[var(--er-text-secondary)] hover:bg-[var(--er-interactive-dark)] ' +
-  'hover:text-[var(--er-text-primary)] transition-colors';
+  'w-full rounded-md border-[0.1em] border-(--er-border-tertiary) px-2 py-2 text-xs ' +
+  'font-bold text-(--er-text-secondary) hover:bg-(--er-interactive-dark) ' +
+  'hover:text-(--er-text-primary) transition-colors';
 
 /**
  * What the selection column shows once every country has been ranked. It sits
@@ -31,15 +31,15 @@ const UnrankedEmptyState: React.FC<UnrankedEmptyStateProps> = ({
         'flex flex-col items-center gap-2 rounded-md border-2 border-dashed px-2 py-4 text-center',
         'max-w-[10em] mx-auto transition-colors',
         isDraggingOver
-          ? 'border-[var(--er-border-primary)] bg-[var(--er-surface-bar)] bg-opacity-40'
-          : 'border-[var(--er-border-tertiary)]',
+          ? 'border-(--er-border-primary) bg-(--er-surface-bar)'
+          : 'border-(--er-border-tertiary)',
       )}
     >
-      <FontAwesomeIcon className="text-2xl text-[var(--er-text-tertiary)]" icon={faCircleCheck} />
-      <div className="text-sm font-bold text-[var(--er-text-secondary)]">
+      <FontAwesomeIcon className="text-2xl text-(--er-text-tertiary)" icon={faCircleCheck} />
+      <div className="text-sm font-bold text-(--er-text-secondary)">
         All countries ranked
       </div>
-      <div className="text-xs text-[var(--er-text-subtle)] whitespace-normal">
+      <div className="text-xs text-(--er-text-subtle) whitespace-normal">
         Drag a country here to unrank it
       </div>
       {(onShowRanking || onOpenGlobalSearch) && (

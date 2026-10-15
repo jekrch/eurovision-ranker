@@ -29,7 +29,7 @@ const PhantomArrow: React.FC<PhantomArrowProps> = ({ show }) => {
       <FontAwesomeIcon
         icon={faArrowRight}
         size="4x"
-        className="text-[var(--er-text-tertiary)] font-extrabold"
+        className="text-(--er-text-tertiary) font-extrabold"
       />
     </div>
   );

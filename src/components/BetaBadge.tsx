@@ -9,7 +9,7 @@ const BetaBadge: React.FC<BetaBadgeProps> = (props: BetaBadgeProps) => {
   return (
     <span
       className={classNames(
-        'px-2 py-0.5 bg-[var(--er-interactive-primary)] text-white text-xs font-semibold rounded-full',
+        'px-2 py-0.5 bg-(--er-interactive-primary) text-white text-xs font-semibold rounded-full',
         props.className,
       )}
     >

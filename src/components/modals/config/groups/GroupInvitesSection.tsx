@@ -30,9 +30,9 @@ const GroupInvitesSection: React.FC<{
         New link
       </button>
     </div>
-    {loadingInvites && <div className="text-xs text-[var(--er-text-subtle)] py-1">Loading…</div>}
+    {loadingInvites && <div className="text-xs text-(--er-text-subtle) py-1">Loading…</div>}
     {!loadingInvites && invites && invites.length === 0 && (
-      <div className="text-xs text-[var(--er-text-subtle)] py-1">
+      <div className="text-xs text-(--er-text-subtle) py-1">
         No active links. Each link is single-use and expires in 7 days.
       </div>
     )}
@@ -41,18 +41,18 @@ const GroupInvitesSection: React.FC<{
         {invites.map((inv) => (
           <li
             key={inv.token}
-            className="flex flex-col gap-2 px-2.5 py-2 rounded-md bg-[var(--er-button-neutral)]/15"
+            className="flex flex-col gap-2 px-2.5 py-2 rounded-md bg-(--er-button-neutral)/15"
           >
             <div className="flex items-center gap-2 min-w-0">
               <FontAwesomeIcon
                 icon={faLink}
-                className="text-[10px] text-[var(--er-text-subtle)] shrink-0"
+                className="text-[10px] text-(--er-text-subtle) shrink-0"
               />
               <div className="min-w-0">
-                <div className="truncate text-xs text-[var(--er-text-tertiary)]">
+                <div className="truncate text-xs text-(--er-text-tertiary)">
                   …{inv.token.slice(-12)}
                 </div>
-                <div className="text-[10px] text-[var(--er-text-subtle)]">
+                <div className="text-[10px] text-(--er-text-subtle)">
                   expires in {timeUntil(inv.expires_at)}
                 </div>
               </div>

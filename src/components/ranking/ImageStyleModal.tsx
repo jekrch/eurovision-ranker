@@ -102,8 +102,8 @@ const ImageStyleModal: React.FC<ImageStyleModalProps> = ({ isOpen, onClose }) =>
       className={classNames(
         'flex-1 text-center rounded-xl border px-4 py-3 font-semibold transition-all duration-150',
         style === value
-          ? 'border-[var(--er-interactive-primary)] bg-[var(--er-surface-tertiary)] text-white ring-2 ring-[var(--er-interactive-primary)]/40'
-          : 'border-[var(--er-border-subtle)] bg-[var(--er-surface-dark)] text-[var(--er-text-secondary)] hover:border-[var(--er-border-tertiary)]',
+          ? 'border-(--er-interactive-primary) bg-(--er-surface-tertiary) text-white ring-2 ring-(--er-interactive-primary)/40'
+          : 'border-(--er-border-subtle) bg-(--er-surface-dark) text-(--er-text-secondary) hover:border-(--er-border-tertiary)',
       )}
     >
       {label}
@@ -112,19 +112,19 @@ const ImageStyleModal: React.FC<ImageStyleModalProps> = ({ isOpen, onClose }) =>
 
   return createPortal(
     <div
-      className="fixed inset-0 z-50 overflow-auto bg-black bg-opacity-75 flex items-center justify-center p-4"
+      className="fixed inset-0 z-50 overflow-auto bg-black/75 flex items-center justify-center p-4"
       onClick={onClose}
     >
       <div
-        className="bg-[var(--er-surface-dark)] border border-[var(--er-border-subtle)] rounded-lg w-full max-w-lg max-h-screen overflow-hidden flex flex-col"
+        className="bg-(--er-surface-dark) border border-(--er-border-subtle) rounded-lg w-full max-w-lg max-h-screen overflow-hidden flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="p-4 border-b border-[var(--er-border-subtle)] flex justify-between items-center">
+        <div className="p-4 border-b border-(--er-border-subtle) flex justify-between items-center">
           <h2 className="text-lg font-bold text-white">Download image</h2>
           <button
             onClick={onClose}
-            className="text-[var(--er-text-tertiary)] hover:text-white"
+            className="text-(--er-text-tertiary) hover:text-white"
             aria-label="Close"
           >
             ✕
@@ -133,16 +133,16 @@ const ImageStyleModal: React.FC<ImageStyleModalProps> = ({ isOpen, onClose }) =>
 
         {/* Body */}
         <div className="flex-1 overflow-auto p-4">
-          <p className="text-sm text-[var(--er-text-secondary)] mb-3">Choose a style</p>
+          <p className="text-sm text-(--er-text-secondary) mb-3">Choose a style</p>
           <div className="flex gap-3 mb-4">
             {styleOption('modern', 'Modern')}
             {styleOption('classic', 'Classic')}
           </div>
 
           {/* Preview */}
-          <div className="border border-[var(--er-border-subtle)] rounded-lg p-3 bg-black/20 relative h-[55vh] overflow-auto">
+          <div className="border border-(--er-border-subtle) rounded-lg p-3 bg-black/20 relative h-[55vh] overflow-auto">
             {rankedItems.length === 0 ? (
-              <div className="text-[var(--er-text-tertiary)] text-center py-8">
+              <div className="text-(--er-text-tertiary) text-center py-8">
                 Please rank some countries to see a preview
               </div>
             ) : (
@@ -159,17 +159,17 @@ const ImageStyleModal: React.FC<ImageStyleModalProps> = ({ isOpen, onClose }) =>
         </div>
 
         {/* Footer */}
-        <div className="p-4 border-t border-[var(--er-border-subtle)] flex justify-end gap-2">
+        <div className="p-4 border-t border-(--er-border-subtle) flex justify-end gap-2">
           <button
             onClick={onClose}
-            className="px-4 py-2 rounded-lg text-sm text-[var(--er-text-secondary)] hover:text-white hover:bg-[var(--er-surface-tertiary)] transition-colors"
+            className="px-4 py-2 rounded-lg text-sm text-(--er-text-secondary) hover:text-white hover:bg-(--er-surface-tertiary) transition-colors"
           >
             Cancel
           </button>
           <button
             onClick={handleDownload}
             disabled={isDownloading || rankedItems.length === 0}
-            className="px-4 py-2 rounded-lg text-sm font-semibold text-white bg-[var(--er-interactive-primary)] hover:opacity-90 transition-opacity flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-4 py-2 rounded-lg text-sm font-semibold text-white bg-(--er-interactive-primary) hover:opacity-90 transition-opacity flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <FontAwesomeIcon icon={isDownloading ? faSpinner : faDownload} spin={isDownloading} />
             Download

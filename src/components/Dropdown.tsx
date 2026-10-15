@@ -38,13 +38,13 @@ const SearchField: React.FC<SearchFieldProps> = ({ filter, setFilter }) => {
     <div
       className={classNames(
         'sticky top-0 z-10 px-1 pt-1 pb-1',
-        'bg-[var(--er-surface-dark)] border-b border-[var(--er-border-subtle)]',
+        'bg-(--er-surface-dark) border-b border-(--er-border-subtle)',
       )}
     >
       <div className="relative">
         <FontAwesomeIcon
           icon={faMagnifyingGlass}
-          className="pointer-events-none absolute left-2.5 top-1/2 h-3 w-3 -translate-y-1/2 text-[var(--er-text-muted)]"
+          className="pointer-events-none absolute left-2.5 top-1/2 h-3 w-3 -translate-y-1/2 text-(--er-text-muted)"
         />
         <input
           type="text"
@@ -52,9 +52,9 @@ const SearchField: React.FC<SearchFieldProps> = ({ filter, setFilter }) => {
           className={classNames(
             'w-full rounded-md py-1.5 pl-7 pr-2 text-sm font-normal',
             'bg-[color-mix(in_srgb,var(--er-surface-light)_12%,transparent)]',
-            'text-[var(--er-text-secondary)] placeholder:text-[var(--er-text-muted)]',
-            'outline-none ring-1 ring-inset ring-transparent',
-            'focus:ring-[var(--er-focus-ring)] transition-[box-shadow] duration-150',
+            'text-(--er-text-secondary) placeholder:text-(--er-text-muted)',
+            'outline-hidden ring-1 ring-inset ring-transparent',
+            'focus:ring-(--er-focus-ring) transition-shadow duration-150',
           )}
           placeholder="Search..."
           value={filter}
@@ -161,18 +161,18 @@ const MenuPanel: React.FC<MenuPanelProps> = ({ open, openUpwards, children }) =>
       anchor={{ to: openUpwards ? 'top start' : 'bottom start', gap: 6, padding: 8 }}
       style={{ transitionDuration: `${shown ? ENTER_MS : LEAVE_MS}ms` }}
       className={classNames(
-        'dropdown-menu z-[1000] flex w-max flex-col',
+        'dropdown-menu z-1000 flex w-max flex-col',
         // `--button-width` is published by headless ui on the anchored panel
         'min-w-[min(var(--button-width),85vw)] max-w-[min(20rem,85vw)]',
-        '[--anchor-max-height:19rem] rounded-xl focus:outline-none',
+        '[--anchor-max-height:19rem] rounded-xl focus:outline-hidden',
         // headless ui anchors the panel by writing `overflow: auto` straight
         // onto this element, which would make the rounded panel its own scroll
         // container -- and browsers paint scrollbars square, so the bar spills
         // past the corner curve. hold the scrolling in the child below and let
         // this rounded box clip it instead (hence the `!` over that inline
         // style).
-        '!overflow-hidden',
-        'border border-[var(--er-border-tertiary)] bg-[var(--er-surface-dark)]',
+        'overflow-hidden!',
+        'border border-(--er-border-tertiary) bg-(--er-surface-dark)',
         'shadow-[0_14px_36px_-10px_rgba(0,0,0,0.65)] ring-1 ring-black/5',
         // the menu grows out of the corner it's anchored to, so the scale never
         // drags its edges sideways. `data-anchor` carries the placement headless
@@ -215,20 +215,20 @@ const Dropdown: React.FC<DropdownProps> = ({
             className={classNames(
               'group inline-flex h-[2em] w-full items-center justify-between gap-x-1.5',
               'rounded-lg px-3 py-[0.2em] text-sm font-bold',
-              'border border-[var(--er-border-tertiary)] text-[var(--er-text-subtle)]',
-              'shadow-sm ease-out duration-150',
+              'border border-(--er-border-tertiary) text-(--er-text-subtle)',
+              'shadow-xs ease-out duration-150',
               // only the properties that actually change are transitioned. with
               // `transition-all` the focus ring is a box-shadow too, so it fades
               // in and out on every open/close instead of simply being there.
               'transition-[color,background-color,border-color]',
-              'hover:border-[var(--er-border-secondary)] hover:text-[var(--er-text-secondary)]',
+              'hover:border-(--er-border-secondary) hover:text-(--er-text-secondary)',
               // headless ui reports keyboard focus as `data-focus`; the native
               // `:focus-visible` also matches when the menu hands focus back to
               // the trigger on close, which flashes the ring after a mouse click
-              'focus:outline-none data-[focus]:ring-2 data-[focus]:ring-[var(--er-focus-ring)]',
+              'focus:outline-hidden data-focus:ring-2 data-focus:ring-(--er-focus-ring)',
               'motion-reduce:transition-none',
               open
-                ? 'bg-[color-mix(in_srgb,var(--er-button-neutral-hover)_60%,transparent)] border-[var(--er-border-secondary)] text-[var(--er-text-secondary)]'
+                ? 'bg-[color-mix(in_srgb,var(--er-button-neutral-hover)_60%,transparent)] border-(--er-border-secondary) text-(--er-text-secondary)'
                 : 'bg-[color-mix(in_srgb,var(--er-button-neutral-hover)_25%,transparent)] hover:bg-[color-mix(in_srgb,var(--er-button-neutral-hover)_45%,transparent)]',
               buttonClassName,
             )}
@@ -239,7 +239,7 @@ const Dropdown: React.FC<DropdownProps> = ({
             {!mini && (
               <FontAwesomeIcon
                 className={classNames(
-                  'h-[0.8em] w-4 flex-shrink-0 transition-transform duration-200 ease-out',
+                  'h-[0.8em] w-4 shrink-0 transition-transform duration-200 ease-out',
                   'motion-reduce:transition-none',
                   open && 'rotate-180',
                 )}
@@ -264,15 +264,15 @@ const Dropdown: React.FC<DropdownProps> = ({
                         'flex w-full items-center gap-2 rounded-md px-3 py-1.5 text-left text-sm',
                         'transition-colors duration-100 motion-reduce:transition-none',
                         focus
-                          ? 'bg-[color-mix(in_srgb,var(--er-surface-light)_30%,transparent)] text-[var(--er-interactive-text-light)]'
-                          : 'text-[var(--er-text-secondary)]',
+                          ? 'bg-[color-mix(in_srgb,var(--er-surface-light)_30%,transparent)] text-(--er-interactive-text-light)'
+                          : 'text-(--er-text-secondary)',
                       )}
                     >
                       {!mini && (
                         <FontAwesomeIcon
                           icon={faCheck}
                           className={classNames(
-                            'h-3 w-3 flex-shrink-0 text-[var(--er-accent-blue)] transition-opacity duration-150',
+                            'h-3 w-3 shrink-0 text-(--er-accent-blue) transition-opacity duration-150',
                             'motion-reduce:transition-none',
                             option === value ? 'opacity-100' : 'opacity-0',
                           )}
@@ -285,9 +285,7 @@ const Dropdown: React.FC<DropdownProps> = ({
               ))}
 
               {!filteredOptions.length && (
-                <div className="px-3 py-2 text-sm italic text-[var(--er-text-muted)]">
-                  No matches
-                </div>
+                <div className="px-3 py-2 text-sm italic text-(--er-text-muted)">No matches</div>
               )}
             </div>
           </MenuPanel>

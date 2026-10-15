@@ -98,8 +98,8 @@ const QuizResults: React.FC<QuizResultsProps> = ({ result, onPlayAgain, onNewQui
   return (
     <div className="flex flex-col min-h-0 flex-1 pt-2 pb-3 view-enter-animation">
       {/* static header: the result itself */}
-      <div className="flex flex-col items-center gap-4 flex-shrink-0">
-        <h2 className="text-[var(--er-text-primary)] text-xl font-semibold tracking-tight text-center">
+      <div className="flex flex-col items-center gap-4 shrink-0">
+        <h2 className="text-(--er-text-primary) text-xl font-semibold tracking-tight text-center">
           {scoreMessage(pct)}
         </h2>
 
@@ -121,27 +121,24 @@ const QuizResults: React.FC<QuizResultsProps> = ({ result, onPlayAgain, onNewQui
             />
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <span className="text-[var(--er-text-primary)] text-2xl font-bold tabular-nums tracking-tight">
+            <span className="text-(--er-text-primary) text-2xl font-bold tabular-nums tracking-tight">
               {result.score}/{result.total}
             </span>
-            <span className="text-[var(--er-text-subtle)] text-xs font-semibold tabular-nums">
+            <span className="text-(--er-text-subtle) text-xs font-semibold tabular-nums">
               {pct}%
             </span>
           </div>
         </div>
 
         {/* time and years as one quiet line; the score is already in the ring */}
-        <div className="flex items-center justify-center gap-2.5 text-xs text-[var(--er-text-tertiary)] tabular-nums max-w-full">
-          <span className="flex items-center gap-1.5 flex-shrink-0">
-            <FontAwesomeIcon icon={faStopwatch} className="text-[var(--er-text-subtle)]" />
+        <div className="flex items-center justify-center gap-2.5 text-xs text-(--er-text-tertiary) tabular-nums max-w-full">
+          <span className="flex items-center gap-1.5 shrink-0">
+            <FontAwesomeIcon icon={faStopwatch} className="text-(--er-text-subtle)" />
             {formatDuration(result.elapsedMs)}
           </span>
-          <span className="h-3 w-px bg-white/15 flex-shrink-0" aria-hidden="true" />
+          <span className="h-3 w-px bg-white/15 shrink-0" aria-hidden="true" />
           <span className="flex items-center gap-1.5 min-w-0">
-            <FontAwesomeIcon
-              icon={faCalendar}
-              className="text-[var(--er-text-subtle)] flex-shrink-0"
-            />
+            <FontAwesomeIcon icon={faCalendar} className="text-(--er-text-subtle) shrink-0" />
             <span className="truncate" title={yearsLabel}>
               {yearsLabel}
             </span>
@@ -163,16 +160,16 @@ const QuizResults: React.FC<QuizResultsProps> = ({ result, onPlayAgain, onNewQui
                   const rowPct = row.total ? (row.correct / row.total) * 100 : 0;
                   return (
                     <div key={row.label} className="flex items-center gap-3 text-xs">
-                      <span className="text-[var(--er-text-tertiary)] w-32 flex-shrink-0 truncate">
+                      <span className="text-(--er-text-tertiary) w-32 shrink-0 truncate">
                         {row.label}
                       </span>
-                      <div className="flex-grow h-1.5 rounded-full bg-black/25 ring-1 ring-inset ring-white/5 overflow-hidden">
+                      <div className="grow h-1.5 rounded-full bg-black/25 ring-1 ring-inset ring-white/5 overflow-hidden">
                         <div
-                          className="h-full bg-gradient-to-r from-[var(--er-button-primary)] to-[var(--er-interactive-primary)] rounded-full transition-[width] duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] delay-300 motion-reduce:transition-none"
+                          className="h-full bg-linear-to-r from-(--er-button-primary) to-(--er-interactive-primary) rounded-full transition-[width] duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] delay-300 motion-reduce:transition-none"
                           style={{ width: `${filled ? rowPct : 0}%` }}
                         />
                       </div>
-                      <span className="text-[var(--er-text-subtle)] w-9 text-right flex-shrink-0 tabular-nums">
+                      <span className="text-(--er-text-subtle) w-9 text-right shrink-0 tabular-nums">
                         {row.correct}/{row.total}
                       </span>
                     </div>
@@ -185,23 +182,23 @@ const QuizResults: React.FC<QuizResultsProps> = ({ result, onPlayAgain, onNewQui
       </div>
 
       {/* static footer: share, then actions */}
-      <div className="flex flex-col gap-5 flex-shrink-0">
+      <div className="flex flex-col gap-5 shrink-0">
         {/* challenge a friend: share the exact same quiz via a code/link */}
         <div className={classNames(quizWell, 'w-full p-3')}>
           <div className="flex items-baseline justify-between gap-2 mb-2">
             <span className={quizLabel}>Challenge a Friend</span>
-            <span className="text-[var(--er-text-subtle)] text-[0.7rem] truncate">
+            <span className="text-(--er-text-subtle) text-[0.7rem] truncate">
               Same questions, same order
             </span>
           </div>
           <div className="flex items-center gap-2">
-            <code className="flex-grow min-w-0 truncate bg-black/25 ring-1 ring-inset ring-white/[0.08] rounded-lg px-3 py-2 text-[var(--er-text-secondary)] text-sm font-mono">
+            <code className="grow min-w-0 truncate bg-black/25 ring-1 ring-inset ring-white/8 rounded-lg px-3 py-2 text-(--er-text-secondary) text-sm font-mono">
               {code}
             </code>
             <button
               type="button"
               onClick={copyChallengeLink}
-              className={classNames(quizSecondaryBtn, 'flex-shrink-0 !py-2 px-3 text-sm')}
+              className={classNames(quizSecondaryBtn, 'shrink-0 py-2! px-3 text-sm')}
             >
               <FontAwesomeIcon icon={faLink} />
               Copy link

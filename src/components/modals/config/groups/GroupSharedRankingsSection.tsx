@@ -32,9 +32,9 @@ const GroupSharedRankingsSection: React.FC<{
         />
       </button>
     </div>
-    {loadingShares && <div className="text-xs text-[var(--er-text-subtle)] py-1">Loading…</div>}
+    {loadingShares && <div className="text-xs text-(--er-text-subtle) py-1">Loading…</div>}
     {!loadingShares && sharedRankings && sharedRankings.length === 0 && (
-      <div className="text-xs text-[var(--er-text-subtle)] py-1">
+      <div className="text-xs text-(--er-text-subtle) py-1">
         Nothing shared yet. From the Account tab, tap Share on a ranking.
       </div>
     )}
@@ -45,20 +45,18 @@ const GroupSharedRankingsSection: React.FC<{
           return (
             <li
               key={`${r.ranking_id}-${r.user_id}`}
-              className="flex flex-col gap-2 px-2.5 py-2 rounded-md bg-[var(--er-button-neutral)]/15"
+              className="flex flex-col gap-2 px-2.5 py-2 rounded-md bg-(--er-button-neutral)/15"
             >
               <div className="flex items-start gap-2 min-w-0">
                 <FontAwesomeIcon
                   icon={faShareNodes}
-                  className="text-[10px] text-[var(--er-text-subtle)] shrink-0 mt-1"
+                  className="text-[10px] text-(--er-text-subtle) shrink-0 mt-1"
                 />
                 <div className="min-w-0">
-                  <div className="truncate text-[var(--er-text-primary)]">
-                    {r.name || (
-                      <span className="italic text-[var(--er-text-subtle)]">Untitled</span>
-                    )}
+                  <div className="truncate text-(--er-text-primary)">
+                    {r.name || <span className="italic text-(--er-text-subtle)">Untitled</span>}
                   </div>
-                  <div className="text-[10px] text-[var(--er-text-subtle)]">
+                  <div className="text-[10px] text-(--er-text-subtle)">
                     {r.owner_email}
                     {r.year ? ` · ${r.year}` : ''}
                     {r.shared_at ? ` · ${shortDate(r.shared_at)}` : ''}

@@ -15,7 +15,7 @@ const Checkbox: React.FC<CheckboxProps> = ({ checked, onChange, label, className
       <label className="relative flex items-center p-3 rounded-full cursor-pointer" htmlFor="blue">
         <input
           type="checkbox"
-          className="before:content[''] peer relative h-5 w-5 cursor-pointer appearance-none rounded-md border border-blue-gray-200 transition-all before:absolute before:top-2/4 before:left-2/4 before:block before:h-12 before:w-12 before:-translate-y-2/4 before:-translate-x-2/4 before:rounded-full before:bg-blue-gray-500 before:opacity-0 before:transition-opacity checked:border-[var(--er-interactive-primary)] checked:bg-[var(--er-interactive-primary)] checked:before:bg-[var(--er-interactive-primary)] hover:before:opacity-10"
+          className="before:content[''] peer relative h-5 w-5 cursor-pointer appearance-none rounded-md border border-blue-gray-200 transition-all before:absolute before:top-2/4 before:left-2/4 before:block before:h-12 before:w-12 before:-translate-y-2/4 before:-translate-x-2/4 before:rounded-full before:bg-blue-gray-500 before:opacity-0 before:transition-opacity checked:border-(--er-interactive-primary) checked:bg-(--er-interactive-primary) checked:before:bg-(--er-interactive-primary) hover:before:opacity-10"
           id={id}
           key={`key-${id}`}
           checked={checked ?? false}
@@ -38,7 +38,7 @@ const Checkbox: React.FC<CheckboxProps> = ({ checked, onChange, label, className
           </svg>
         </span>
       </label>
-      <span className="text-[var(--er-text-tertiary)] text-sm">{label}</span>
+      <span className="text-(--er-text-tertiary) text-sm">{label}</span>
     </div>
   );
 };

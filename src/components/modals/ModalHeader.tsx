@@ -41,35 +41,33 @@ const ModalHeader: React.FC<ModalHeaderProps> = ({
 }) => (
   <div
     className={classNames(
-      'relative bg-gradient-to-b from-black/30 via-black/10 to-transparent',
+      'relative bg-linear-to-b from-black/30 via-black/10 to-transparent',
       size === 'sm' ? 'px-5 pt-5 pb-3' : 'px-6 pt-6 pb-4',
     )}
   >
     <div className={classNames('flex items-center', iconVariant === 'chip' ? 'gap-2.5' : 'gap-3')}>
       {icon &&
         (iconVariant === 'chip' ? (
-          <div className={classNames(iconChip, 'text-[var(--er-text-subtle)]')}>
+          <div className={classNames(iconChip, 'text-(--er-text-subtle)')}>
             <FontAwesomeIcon icon={icon} className="text-[0.7rem]" />
           </div>
         ) : (
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[var(--er-button-primary)] to-[var(--er-button-primary-hover)] flex items-center justify-center text-white shadow-sm shadow-black/20 shrink-0">
+          <div className="w-10 h-10 rounded-xl bg-linear-to-br from-(--er-button-primary) to-(--er-button-primary-hover) flex items-center justify-center text-white shadow-xs shadow-black/20 shrink-0">
             <FontAwesomeIcon icon={icon} className="text-sm" />
           </div>
         ))}
       <div className="min-w-0 flex-1">
-        <h2 className="text-base font-semibold text-[var(--er-text-primary)] leading-tight truncate">
+        <h2 className="text-base font-semibold text-(--er-text-primary) leading-tight truncate">
           {title}
         </h2>
-        {subtitle && (
-          <p className="text-xs text-[var(--er-text-subtle)] mt-0.5 truncate">{subtitle}</p>
-        )}
+        {subtitle && <p className="text-xs text-(--er-text-subtle) mt-0.5 truncate">{subtitle}</p>}
       </div>
       {onClose && (
         <button
           type="button"
           onClick={onClose}
           aria-label="Close"
-          className="w-8 h-8 shrink-0 inline-flex items-center justify-center rounded-full text-[var(--er-text-subtle)] hover:text-[var(--er-text-primary)] hover:bg-white/10 transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/30"
+          className="w-8 h-8 shrink-0 inline-flex items-center justify-center rounded-full text-(--er-text-subtle) hover:text-(--er-text-primary) hover:bg-white/10 transition-colors duration-150 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-white/30"
         >
           <FontAwesomeIcon icon={faXmark} />
         </button>

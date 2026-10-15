@@ -141,8 +141,8 @@ const QuizModal: React.FC<QuizModalProps> = ({ isOpen, onClose, initialCode }) =
 
             {phase === 'loading' && (
               <div className="flex flex-col items-center justify-center py-20 gap-4">
-                <div className="w-10 h-10 border-4 border-white/20 border-t-[var(--er-interactive-primary)] rounded-full animate-spin" />
-                <p className="text-[var(--er-text-subtle)] text-sm">Building your quiz...</p>
+                <div className="w-10 h-10 border-4 border-white/20 border-t-(--er-interactive-primary) rounded-full animate-spin" />
+                <p className="text-(--er-text-subtle) text-sm">Building your quiz...</p>
               </div>
             )}
 

@@ -31,12 +31,12 @@ const CurrentRankingCard: React.FC<{
 }) => (
   <div>
     <div className={`${sectionLabel} mb-2`}>Current ranking</div>
-    <div className="rounded-lg border border-[var(--er-border-lightest)] dark:border-[var(--er-border-darker)] bg-[var(--er-button-neutral)]/15 p-3 flex items-center gap-3">
+    <div className="rounded-lg border border-(--er-border-lightest) dark:border-(--er-border-darker) bg-(--er-button-neutral)/15 p-3 flex items-center gap-3">
       <div className="flex-1 min-w-0">
-        <div className="truncate font-medium text-[var(--er-text-primary)]">
-          {name || <span className="italic text-[var(--er-text-subtle)]">Untitled</span>}
+        <div className="truncate font-medium text-(--er-text-primary)">
+          {name || <span className="italic text-(--er-text-subtle)">Untitled</span>}
         </div>
-        <div className="text-xs text-[var(--er-text-subtle)] mt-0.5 flex items-center gap-1.5">
+        <div className="text-xs text-(--er-text-subtle) mt-0.5 flex items-center gap-1.5">
           {year && <span>{year}</span>}
           {year && <span className="opacity-40">·</span>}
           <span>
@@ -45,7 +45,7 @@ const CurrentRankingCard: React.FC<{
           {currentRankingId && !isDirty && (
             <>
               <span className="opacity-40">·</span>
-              <span className="inline-flex items-center gap-1 text-[var(--er-text-tertiary)]">
+              <span className="inline-flex items-center gap-1 text-(--er-text-tertiary)">
                 <FontAwesomeIcon icon={faCheck} className="text-[10px]" />
                 Saved
               </span>
@@ -61,7 +61,7 @@ const CurrentRankingCard: React.FC<{
               onClick={onSaveUpdate}
               disabled={saving || !isDirty || isEmpty}
               title={isDirty ? 'Save changes' : 'No unsaved changes'}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md text-white bg-[var(--er-button-primary)] hover:bg-[var(--er-button-primary-hover)] disabled:bg-[var(--er-button-neutral)]/40 disabled:text-[var(--er-text-subtle)] disabled:cursor-not-allowed transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md text-white bg-(--er-button-primary) hover:bg-(--er-button-primary-hover) disabled:bg-(--er-button-neutral)/40 disabled:text-(--er-text-subtle) disabled:cursor-not-allowed transition-colors"
             >
               <FontAwesomeIcon icon={faSave} />
               Save
@@ -71,7 +71,7 @@ const CurrentRankingCard: React.FC<{
               onClick={onSaveNew}
               disabled={saving || isEmpty}
               title="Save as a new copy"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md text-[var(--er-text-tertiary)] hover:text-[var(--er-text-primary)] hover:bg-[var(--er-button-neutral)]/40 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md text-(--er-text-tertiary) hover:text-(--er-text-primary) hover:bg-(--er-button-neutral)/40 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
             >
               <FontAwesomeIcon icon={faPlus} />
               New copy
@@ -83,7 +83,7 @@ const CurrentRankingCard: React.FC<{
             onClick={onSaveNew}
             disabled={saving || isEmpty}
             title="Save"
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md text-white bg-[var(--er-button-primary)] hover:bg-[var(--er-button-primary-hover)] disabled:bg-[var(--er-button-neutral)]/40 disabled:text-[var(--er-text-subtle)] disabled:cursor-not-allowed transition-colors"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md text-white bg-(--er-button-primary) hover:bg-(--er-button-primary-hover) disabled:bg-(--er-button-neutral)/40 disabled:text-(--er-text-subtle) disabled:cursor-not-allowed transition-colors"
           >
             <FontAwesomeIcon icon={faPlus} />
             Save

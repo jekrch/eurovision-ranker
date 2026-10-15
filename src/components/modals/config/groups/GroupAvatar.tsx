@@ -19,7 +19,7 @@ const GroupAvatar: React.FC<{ group: Group; size?: 'sm' | 'lg' }> = ({ group, si
   }
   return (
     <div
-      className={`${sizeClass} bg-gradient-to-br from-[var(--er-button-primary)] to-[var(--er-button-primary-hover)] flex items-center justify-center text-white ${size === 'lg' ? 'text-2xl sm:text-3xl' : 'text-sm'} font-semibold shrink-0 shadow-sm`}
+      className={`${sizeClass} bg-linear-to-br from-(--er-button-primary) to-(--er-button-primary-hover) flex items-center justify-center text-white ${size === 'lg' ? 'text-2xl sm:text-3xl' : 'text-sm'} font-semibold shrink-0 shadow-xs`}
     >
       {initial}
     </div>

@@ -41,7 +41,7 @@ const SongVideoTab: React.FC<SongVideoTabProps> = ({
         href={youtubeUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className="inline-flex items-center gap-2 rounded-md bg-[var(--er-surface-tertiary-70)] hover:bg-[var(--er-interactive-secondary)] border-[0.1em] border-[var(--er-border-tertiary)] px-3 py-[0.35em] text-sm font-medium text-[var(--er-text-secondary)] transition-colors"
+        className="inline-flex items-center gap-2 rounded-md bg-(--er-surface-tertiary-70) hover:bg-(--er-interactive-secondary) border-[0.1em] border-(--er-border-tertiary) px-3 py-[0.35em] text-sm font-medium text-(--er-text-secondary) transition-colors"
       >
         <FaYoutube className="text-lg text-[#FF0000]" />
         Watch on YouTube
@@ -50,7 +50,7 @@ const SongVideoTab: React.FC<SongVideoTabProps> = ({
         type="button"
         onClick={popOut}
         title="Keep playing in a floating window"
-        className="inline-flex items-center gap-2 rounded-md bg-[var(--er-surface-tertiary-70)] hover:bg-[var(--er-interactive-secondary)] border-[0.1em] border-[var(--er-border-tertiary)] px-3 py-[0.35em] text-sm font-medium text-[var(--er-text-secondary)] transition-colors"
+        className="inline-flex items-center gap-2 rounded-md bg-(--er-surface-tertiary-70) hover:bg-(--er-interactive-secondary) border-[0.1em] border-(--er-border-tertiary) px-3 py-[0.35em] text-sm font-medium text-(--er-text-secondary) transition-colors"
       >
         <FaClone className="text-base" />
         Pop out

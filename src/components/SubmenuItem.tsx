@@ -76,8 +76,8 @@ const SubmenuItem: React.FC<SubmenuContainerProps> = ({ buttonIcon, text, childr
     <li
       ref={buttonRef}
       className={classNames(
-        'relative text-[var(--er-text-secondary)] hover:bg-[var(--er-surface-tertiary)] hover:text-[var(--er-text-primary)] flex w-full cursor-pointer select-none items-center justify-between gap-2 px-3 py-2.5 text-start transition-colors duration-100',
-        { 'bg-[var(--er-surface-tertiary)] text-[var(--er-text-primary)]': isSubmenuOpen },
+        'relative text-(--er-text-secondary) hover:bg-(--er-surface-tertiary) hover:text-(--er-text-primary) flex w-full cursor-pointer select-none items-center justify-between gap-2 px-3 py-2.5 text-start transition-colors duration-100',
+        { 'bg-(--er-surface-tertiary) text-(--er-text-primary)': isSubmenuOpen },
       )}
       onClick={toggleSubmenu}
     >
@@ -95,7 +95,7 @@ const SubmenuItem: React.FC<SubmenuContainerProps> = ({ buttonIcon, text, childr
         <ul
           ref={submenuRef}
           style={submenuStyle}
-          className="rounded-xl border border-[var(--er-border-subtle)] bg-[var(--er-surface-secondary)] shadow-2xl shadow-black/50 overflow-hidden flex flex-col min-w-[190px] z-50 py-1"
+          className="rounded-xl border border-(--er-border-subtle) bg-(--er-surface-secondary) shadow-2xl shadow-black/50 overflow-hidden flex flex-col min-w-[190px] z-50 py-1"
           onMouseDown={(e) => e.stopPropagation()}
         >
           {children}

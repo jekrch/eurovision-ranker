@@ -52,7 +52,7 @@ const AuthModal: React.FC<AuthModalProps> = ({
   })();
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} className="max-w-md !p-0 overflow-hidden">
+    <Modal isOpen={isOpen} onClose={onClose} className="max-w-md p-0! overflow-hidden">
       <ModalHeader icon={faShieldHalved} title={headerCopy.title} subtitle={headerCopy.subtitle} />
 
       <div className="px-6 py-5 space-y-4">
@@ -60,7 +60,7 @@ const AuthModal: React.FC<AuthModalProps> = ({
         {(view.tab === 'login' ||
           (view.tab === 'reset' && view.step !== 2) ||
           (view.tab === 'register' && view.step !== 2)) && (
-          <div className="flex items-center gap-1 p-1 rounded-lg bg-[color:var(--er-surface-primary)] ring-1 ring-inset ring-white/5">
+          <div className="flex items-center gap-1 p-1 rounded-lg bg-(--er-surface-primary) ring-1 ring-inset ring-white/5">
             <button
               type="button"
               className={tabBtn(view.tab === 'login')}
@@ -96,7 +96,7 @@ const AuthModal: React.FC<AuthModalProps> = ({
           <button
             type="button"
             onClick={() => form.switchTab('login')}
-            className="inline-flex items-center gap-1.5 text-xs text-[var(--er-text-subtle)] hover:text-[var(--er-text-primary)] transition-colors"
+            className="inline-flex items-center gap-1.5 text-xs text-(--er-text-subtle) hover:text-(--er-text-primary) transition-colors"
           >
             <FontAwesomeIcon icon={faArrowLeft} className="text-[10px]" />
             Back to sign in

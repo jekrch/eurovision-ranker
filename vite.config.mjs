@@ -1,15 +1,14 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import viteTsconfigPaths from 'vite-tsconfig-paths'
-import postcss from 'postcss';
-import tailwindcss from 'tailwindcss';
+import tailwindcss from '@tailwindcss/vite';
 import compression from 'vite-plugin-compression2';
-import autoprefixer from 'autoprefixer';
 import { visualizer } from 'rollup-plugin-visualizer';
 
 export default defineConfig({
     plugins: [
       react(), 
+      tailwindcss(),
       viteTsconfigPaths(),
       compression({
         algorithm: 'gzip',
@@ -55,14 +54,4 @@ export default defineConfig({
         environment: 'jsdom',
         setupFiles: './src/setupTests.ts',
     },
-    css: {
-        postcss: {
-          plugins: [
-            postcss([
-              tailwindcss(),
-              autoprefixer(),
-            ]),
-          ],
-        },
-      },
 })

@@ -112,7 +112,7 @@ const GroupsTab: React.FC<GroupsTabProps> = ({ openAuthModal }) => {
         <div className="flex items-center gap-2">
           <span>My groups</span>
           {groups && groups.length > 0 && (
-            <span className="normal-case tracking-normal text-[var(--er-text-subtle)] font-normal">
+            <span className="normal-case tracking-normal text-(--er-text-subtle) font-normal">
               {groups.length}
             </span>
           )}
@@ -142,11 +142,11 @@ const GroupsTab: React.FC<GroupsTabProps> = ({ openAuthModal }) => {
         </div>
       </div>
 
-      {loading && <div className="text-xs text-[var(--er-text-subtle)] py-2">Loading…</div>}
+      {loading && <div className="text-xs text-(--er-text-subtle) py-2">Loading…</div>}
       {error && <div className="text-xs text-red-400 py-2">{error}</div>}
 
       {!loading && !error && groups && groups.length === 0 && (
-        <div className="rounded-lg border border-dashed border-[var(--er-border-lightest)] dark:border-[var(--er-border-darker)] py-6 text-center text-xs text-[var(--er-text-subtle)]">
+        <div className="rounded-lg border border-dashed border-(--er-border-lightest) dark:border-(--er-border-darker) py-6 text-center text-xs text-(--er-text-subtle)">
           You're not in any groups yet.
         </div>
       )}
@@ -158,14 +158,12 @@ const GroupsTab: React.FC<GroupsTabProps> = ({ openAuthModal }) => {
               <button
                 type="button"
                 onClick={() => setView({ kind: 'detail', id: g.id })}
-                className="w-full text-left rounded-md px-3 py-2.5 flex items-center gap-3 bg-[var(--er-button-neutral)]/15 hover:bg-[var(--er-button-neutral)]/30 transition-colors"
+                className="w-full text-left rounded-md px-3 py-2.5 flex items-center gap-3 bg-(--er-button-neutral)/15 hover:bg-(--er-button-neutral)/30 transition-colors"
               >
                 <GroupAvatar group={g} />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-1.5">
-                    <span className="truncate font-medium text-[var(--er-text-primary)]">
-                      {g.name}
-                    </span>
+                    <span className="truncate font-medium text-(--er-text-primary)">{g.name}</span>
                     {g.role === 'owner' && (
                       <FontAwesomeIcon
                         icon={faCrown}
@@ -174,7 +172,7 @@ const GroupsTab: React.FC<GroupsTabProps> = ({ openAuthModal }) => {
                       />
                     )}
                   </div>
-                  <div className="text-xs text-[var(--er-text-subtle)] mt-0.5">
+                  <div className="text-xs text-(--er-text-subtle) mt-0.5">
                     {g.member_count} {g.member_count === 1 ? 'member' : 'members'}
                   </div>
                 </div>
@@ -184,12 +182,12 @@ const GroupsTab: React.FC<GroupsTabProps> = ({ openAuthModal }) => {
         </ul>
       )}
 
-      <div className="rounded-lg border-[0.7px] border-[var(--er-button-primary)]/30 bg-[var(--er-button-primary)]/10 p-3 flex gap-2.5">
+      <div className="rounded-lg border-[0.7px] border-(--er-button-primary)/30 bg-(--er-button-primary)/10 p-3 flex gap-2.5">
         <FontAwesomeIcon
           icon={faCircleInfo}
-          className="text-[var(--er-button-primary)] mt-0.5 shrink-0"
+          className="text-(--er-button-primary) mt-0.5 shrink-0"
         />
-        <div className="text-xs leading-relaxed text-[var(--er-text-tertiary)]">
+        <div className="text-xs leading-relaxed text-(--er-text-tertiary)">
           Have an invite link? Open it on this device while signed in to join the group.
         </div>
       </div>

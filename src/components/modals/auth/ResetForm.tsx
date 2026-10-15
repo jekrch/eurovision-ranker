@@ -25,8 +25,8 @@ export const ResetInitiateForm: React.FC<ResetInitiateFormProps> = ({
     {emailSent ? (
       <EmailSentNotice>
         If an account exists for{' '}
-        <span className="font-semibold text-[var(--er-text-primary)]">{email}</span>, we've sent a
-        reset link. Open it to set a new password.
+        <span className="font-semibold text-(--er-text-primary)">{email}</span>, we've sent a reset
+        link. Open it to set a new password.
       </EmailSentNotice>
     ) : (
       <>

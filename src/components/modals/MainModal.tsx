@@ -28,7 +28,7 @@ const MainModal: React.FC<MainModalProps> = (props: MainModalProps) => {
   //if (!props.isOpen) return null;
 
   return (
-    <Modal isOpen={props.isOpen} onClose={props.onClose} className="h-[85vh] !max-h-[550px]">
+    <Modal isOpen={props.isOpen} onClose={props.onClose} className="h-[85vh] max-h-[550px]!">
       <div className="-mt-4">
         <TabBar activeKey={activeTab}>
           <TabButton
@@ -52,7 +52,7 @@ const MainModal: React.FC<MainModalProps> = (props: MainModalProps) => {
           outgoing tab's scroll offset, so every tab opens at the top. */}
       <div
         key={activeTab}
-        className="tab-panel-enter-animation overflow-y-auto pt-4 pr-4 -mr-4 select-text pb-3 flex-grow min-h-0 [scrollbar-gutter:stable]"
+        className="tab-panel-enter-animation overflow-y-auto pt-4 pr-4 -mr-4 select-text pb-3 grow min-h-0 scrollbar-gutter-stable"
       >
         {activeTab === 'about' && (
           <div className="">
@@ -115,10 +115,10 @@ const MainModal: React.FC<MainModalProps> = (props: MainModalProps) => {
           <div className="mb-0">
             <div className="float-left w-1/2 mr-5 mt-2">
               <div className="aspect-ratio-box mb-4">
-                <img src={`/mnay.png`} alt="Heart" className="w-full shadow-lg rounded mb-5" />
+                <img src={`/mnay.png`} alt="Heart" className="w-full shadow-lg rounded-sm mb-5" />
               </div>
               <button
-                className="w-full bg-[var(--er-button-primary)] hover:bg-[var(--er-button-primary-hover)] text-white font-normal py-1 px-3 rounded-md text-md mb-1"
+                className="w-full bg-(--er-button-primary) hover:bg-(--er-button-primary-hover) text-white font-normal py-1 px-3 rounded-md text-md mb-1"
                 onClick={() => window.open('https://www.givemn.org/story/Jddsdf', '_blank')}
               >
                 {'Donate'}
@@ -142,8 +142,8 @@ const MainModal: React.FC<MainModalProps> = (props: MainModalProps) => {
           </div>
         )}
       </div>
-      <div className="flex text-xs w-full -mb-2 mt-2 text-[var(--er-text-muted)]">
-        <span className="flex-grow mr-2">
+      <div className="flex text-xs w-full -mb-2 mt-2 text-(--er-text-muted)">
+        <span className="grow mr-2">
           <a
             className="text-link"
             target="_blank"

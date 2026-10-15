@@ -143,12 +143,12 @@ const RankedHeaderMenu: React.FC<RankedHeaderMenuProps> = (props: RankedHeaderMe
     <div className="relative inline-block" ref={menuRef}>
       <button
         className={classNames(
-          'tour-step-6 w-6 h-6 bg-[var(--er-surface-muted-accent)] hover:bg-[var(--er-surface-light)] rounded-full flex justify-center items-center cursor-pointer transition-all duration-150 active:scale-90',
-          { '!bg-[var(--er-surface-light)]': isMenuOpen },
+          'tour-step-6 w-6 h-6 bg-(--er-surface-muted-accent) hover:bg-(--er-surface-light) rounded-full flex justify-center items-center cursor-pointer transition-all duration-150 active:scale-90',
+          { 'bg-(--er-surface-light)!': isMenuOpen },
         )}
         onClick={toggleMenu}
       >
-        <FontAwesomeIcon className="text-[var(--er-text-secondary)]" icon={faEllipsisH} />
+        <FontAwesomeIcon className="text-(--er-text-secondary)" icon={faEllipsisH} />
       </button>
       <CSSTransition
         in={isMenuOpen}
@@ -160,7 +160,7 @@ const RankedHeaderMenu: React.FC<RankedHeaderMenuProps> = (props: RankedHeaderMe
         <ul
           ref={menuNodeRef}
           role="menu"
-          className="absolute z-20 min-w-[190px] right-0 mt-2 origin-top-right rounded-xl border border-[var(--er-border-subtle)] bg-[var(--er-surface-secondary)] shadow-2xl shadow-black/50 overflow-hidden flex flex-col py-1"
+          className="absolute z-20 min-w-[190px] right-0 mt-2 origin-top-right rounded-xl border border-(--er-border-subtle) bg-(--er-surface-secondary) shadow-2xl shadow-black/50 overflow-hidden flex flex-col py-1"
         >
           {hasPlayableVideos && (
             <MenuItem icon={faPlay} text="Play Ranking" onClick={playList} afterClick={close} />
@@ -230,7 +230,7 @@ const RankedHeaderMenu: React.FC<RankedHeaderMenuProps> = (props: RankedHeaderMe
 
           {rankedItems.length > 0 && (
             <ImageCaptureMenuItem
-              className="text-[var(--r-accent-blue)] hover:text-white mr-2"
+              className="text-(--r-accent-blue) hover:text-white mr-2"
               iconClassName="text-lg"
               onClick={() => setIsImageStyleModalOpen(true)}
               afterClick={close}

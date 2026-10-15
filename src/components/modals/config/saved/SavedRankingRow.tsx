@@ -48,8 +48,8 @@ const SavedRankingRow: React.FC<{
   <li
     className={`group relative rounded-md px-3 py-2.5 flex flex-col gap-2 transition-colors ${
       isCurrent
-        ? 'bg-[var(--er-button-primary)]/10 ring-1 ring-inset ring-[var(--er-button-primary)]/30'
-        : 'hover:bg-[var(--er-button-neutral)]/20'
+        ? 'bg-(--er-button-primary)/10 ring-1 ring-inset ring-(--er-button-primary)/30'
+        : 'hover:bg-(--er-button-neutral)/20'
     }`}
   >
     {isRenaming ? (
@@ -69,18 +69,18 @@ const SavedRankingRow: React.FC<{
         {/* Title gets the full row width so it isn't squeezed
                     by the action buttons (which now live below). */}
         <div className="min-w-0">
-          <div className="font-medium text-[var(--er-text-primary)] flex items-center gap-2">
+          <div className="font-medium text-(--er-text-primary) flex items-center gap-2">
             <span className="truncate">
-              {r.name || <i className="text-[var(--er-text-subtle)]">Untitled</i>}
+              {r.name || <i className="text-(--er-text-subtle)">Untitled</i>}
             </span>
             {r.public && (
-              <span className="inline-flex items-center gap-1 text-[10px] uppercase tracking-wide font-semibold text-[var(--er-text-tertiary)] bg-[var(--er-button-neutral)]/40 px-1.5 py-0.5 rounded shrink-0">
+              <span className="inline-flex items-center gap-1 text-[10px] uppercase tracking-wide font-semibold text-(--er-text-tertiary) bg-(--er-button-neutral)/40 px-1.5 py-0.5 rounded-sm shrink-0">
                 <FontAwesomeIcon icon={faGlobe} className="text-[9px]" />
                 Public
               </span>
             )}
           </div>
-          <div className="text-xs text-[var(--er-text-subtle)] mt-0.5">
+          <div className="text-xs text-(--er-text-subtle) mt-0.5">
             {r.year ? `${r.year} · ` : ''}
             {r.created_at ? new Date(r.created_at).toLocaleDateString() : ''}
           </div>
@@ -93,7 +93,7 @@ const SavedRankingRow: React.FC<{
           </button>
           <button
             type="button"
-            className={`${actionBtn} ${r.public ? '!text-[var(--er-text-primary)]' : ''}`}
+            className={`${actionBtn} ${r.public ? 'text-(--er-text-primary)!' : ''}`}
             onClick={onTogglePublic}
           >
             <FontAwesomeIcon icon={r.public ? faLock : faGlobe} className="text-xs" />
@@ -107,7 +107,7 @@ const SavedRankingRow: React.FC<{
           )}
           <button
             type="button"
-            className={`${actionBtn} ${r.group_ids && r.group_ids.length > 0 ? '!text-[var(--er-text-primary)]' : ''}`}
+            className={`${actionBtn} ${r.group_ids && r.group_ids.length > 0 ? 'text-(--er-text-primary)!' : ''}`}
             onClick={onShare}
           >
             <FontAwesomeIcon icon={faShareNodes} className="text-xs" />

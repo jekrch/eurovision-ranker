@@ -33,7 +33,7 @@ const MenuItem: React.FC<MenuItemProps> = ({
     <li
       role="menuitem"
       className={classNames(
-        'text-[var(--er-text-secondary)] hover:bg-[var(--er-surface-tertiary)] hover:text-[var(--er-text-primary)] flex w-full cursor-pointer select-none items-center gap-2 px-3 py-2.5 text-start transition-colors duration-100',
+        'text-(--er-text-secondary) hover:bg-(--er-surface-tertiary) hover:text-(--er-text-primary) flex w-full cursor-pointer select-none items-center gap-2 px-3 py-2.5 text-start transition-colors duration-100',
         className,
       )}
       onClick={
@@ -57,12 +57,7 @@ const MenuItem: React.FC<MenuItemProps> = ({
           />
         )}
       </div>
-      <p
-        className={classNames(
-          'text-sm font-medium',
-          disabled ? 'text-[var(--er-text-subtle)]' : '',
-        )}
-      >
+      <p className={classNames('text-sm font-medium', disabled ? 'text-(--er-text-subtle)' : '')}>
         {text}
       </p>
     </li>

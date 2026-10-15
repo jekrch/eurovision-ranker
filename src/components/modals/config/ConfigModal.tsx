@@ -93,7 +93,7 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
     <Modal
       isOpen={props.isOpen}
       onClose={props.onClose}
-      className="isolate h-[85vh] !max-h-[550px]"
+      className="isolate h-[85vh] max-h-[550px]!"
     >
       <div className="-mt-4">
         <TabBar activeKey={activeTab}>
@@ -149,7 +149,7 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
           outgoing tab's scroll offset, so every tab opens at the top. */}
       <div
         key={activeTab}
-        className="tab-panel-enter-animation overflow-y-auto pt-4 pr-4 -mr-4 select-text pb-3 flex-grow min-h-0 [scrollbar-gutter:stable]"
+        className="tab-panel-enter-animation overflow-y-auto pt-4 pr-4 -mr-4 select-text pb-3 grow min-h-0 scrollbar-gutter-stable"
       >
         {activeTab === 'display' && <DisplayTab />}
 

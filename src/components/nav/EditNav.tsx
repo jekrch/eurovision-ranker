@@ -108,7 +108,7 @@ const EditNav: React.FC<EditNavProps> = ({
 
   return (
     <nav className="edit-nav-bg bg-gray-800x text-white px-3 pt-1 sticky bottom-0 z-50 pb-2">
-      <div className="container lg:max-w-[40rem] mx-auto flex justify-between items-center">
+      <div className="container lg:max-w-160 mx-auto flex justify-between items-center">
         <ul className="flex space-x-2">
           <li>
             <div className="tour-step-3 flex items-center">

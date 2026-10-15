@@ -41,14 +41,14 @@ const SongLyricsTab: React.FC<SongLyricsTabProps> = ({
   showEngLyrics,
   updateShowEngLyrics,
 }) => (
-  <div className="flex-1 min-h-0 overflow-auto pr-4 -mr-4 mt-[1em] [scrollbar-gutter:stable]">
+  <div className="flex-1 min-h-0 overflow-auto pr-4 -mr-4 mt-[1em] scrollbar-gutter-stable">
     <LabeledValue label="Composer(s)" value={composers?.replaceAll(';', ', ')} />
     <LabeledValue label="Lyricist(s)" value={lyricists?.replaceAll(';', ', ')} />
 
     {hasLyrics ? (
       <>
         <div className="flex items-center justify-between mt-[1em]">
-          <span className="text-sm font-semibold text-[var(--er-text-muted)] uppercase tracking-wide">
+          <span className="text-sm font-semibold text-(--er-text-muted) uppercase tracking-wide">
             Lyrics
           </span>
           {engLyrics && (
@@ -62,14 +62,14 @@ const SongLyricsTab: React.FC<SongLyricsTabProps> = ({
                 }}
                 className="sr-only peer"
               />
-              <div className="relative w-7 h-4 bg-[var(--er-surface-tertiary-70)] peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-[var(--er-interactive-secondary)] dark:peer-focus:ring-[var(--er-interactive-dark)] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-[var(--er-border-default)] after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-[var(--er-border-lighter)] after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-[var(--er-interactive-secondary)]"></div>
+              <div className="relative w-7 h-4 bg-(--er-surface-tertiary-70) peer-focus:outline-hidden peer-focus:ring-2 peer-focus:ring-(--er-interactive-secondary) dark:peer-focus:ring-(--er-interactive-dark) rounded-full peer peer-checked:after:translate-x-full peer-checked:rtl:after:-translate-x-full peer-checked:after:border-(--er-border-default) after:content-[''] after:absolute after:top-[2px] after:inset-s-[2px] after:bg-white after:border-(--er-border-lighter) after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-(--er-interactive-secondary)"></div>
               <span className="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">
                 <LazyLoadedFlag code={'gb'} className="w-6 opacity-60 text-md flag-icon" />{' '}
               </span>
             </label>
           )}
         </div>
-        <hr className="mt-[0.6em] border-[var(--er-border-secondary)]" />
+        <hr className="mt-[0.6em] border-(--er-border-secondary)" />
         <div className="mt-[1em] relative overflow-hidden">
           <div className="lyrics-wrapper">
             <div
@@ -90,7 +90,7 @@ const SongLyricsTab: React.FC<SongLyricsTabProps> = ({
         </div>
       </>
     ) : (
-      <div className="mt-[1.5em] text-center text-sm text-[var(--er-text-muted)] italic">
+      <div className="mt-[1.5em] text-center text-sm text-(--er-text-muted) italic">
         Lyrics not available
       </div>
     )}

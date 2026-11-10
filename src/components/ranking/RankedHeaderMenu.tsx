@@ -21,6 +21,7 @@ import { CSSTransition } from 'react-transition-group';
 
 import ImageCaptureMenuItem from './ImageCaptureMenuItem';
 import ImageStyleModal from './ImageStyleModal';
+import { contests } from '../../data/Contests';
 import { useAppDispatch, useAppSelector } from '../../hooks/stateHooks';
 import { selectActiveRankedItems } from '../../redux/rankingSelectors';
 import { setHeaderMenuOpen } from '../../redux/rootSlice';
@@ -57,6 +58,7 @@ const RankedHeaderMenu: React.FC<RankedHeaderMenuProps> = (props: RankedHeaderMe
   const CLOSING_DURATION = 300;
   const menuNodeRef = useRef<HTMLUListElement>(null);
   const showTotalRank = useAppSelector((state: AppState) => state.root.showTotalRank);
+  const features = useAppSelector((state: AppState) => contests[state.root.contest].features);
   const toggleMenu = () => {
     const shouldClose = isMenuOpen;
     setIsMenuOpen(!isMenuOpen);
@@ -176,20 +178,24 @@ const RankedHeaderMenu: React.FC<RankedHeaderMenuProps> = (props: RankedHeaderMe
             />
           )}
 
-          <MenuItem
-            icon={faCircleQuestion}
-            text="Quiz"
-            onClick={props.openQuizModal}
-            afterClick={close}
-          />
+          {features.quiz && (
+            <MenuItem
+              icon={faCircleQuestion}
+              text="Quiz"
+              onClick={props.openQuizModal}
+              afterClick={close}
+            />
+          )}
 
-          <MenuItem
-            icon={faGlobe}
-            text="View Heat Map"
-            className="tour-step-8"
-            onClick={props.onMapClick}
-            afterClick={close}
-          />
+          {features.map && (
+            <MenuItem
+              icon={faGlobe}
+              text="View Heat Map"
+              className="tour-step-8"
+              onClick={props.onMapClick}
+              afterClick={close}
+            />
+          )}
 
           <MenuItem
             icon={faPen}

@@ -52,26 +52,31 @@ export const deleteRankedCountry = createAsyncThunk(
 );
 
 /**
- * Re-resolve every category's ranking against a newly selected year. The ranked
- * countries are stable across years (the same country ids), so each slot keeps
- * its order; only the underlying contestant data (song / artist / vote) is
- * refreshed for the new year. The store is the source of truth — the rankings
- * are read from the store, never the URL — and the single URL writer projects
- * the refreshed result back out.
+ * Re-resolve every category's ranking against a newly selected year of the
+ * current contest. The ranked countries are stable across years (the same
+ * country ids), so each slot keeps its order; only the underlying contestant
+ * data (song / artist / vote) is refreshed for the new year. The store is the
+ * source of truth — the rankings are read from the store, never the URL — and
+ * the single URL writer projects the refreshed result back out.
+ *
+ * The rankings are read once the contestants have loaded, not before, so a
+ * ranking that lands in the store while they load (a back/forward navigation)
+ * is the one re-resolved rather than overwritten.
  */
 export const reloadRankingsForYear = createAsyncThunk(
   'rankings/reloadRankingsForYear',
   async (year: string, { getState, dispatch }) => {
-    const state = getState() as AppState;
-    const { categoryRankings, activeCategory, globalSearch, vote } = state.root;
+    const { contest, globalSearch, vote } = (getState() as AppState).root;
 
     const voteCode = vote && vote !== 'loading' ? vote : '';
 
     let yearContestants: CountryContestant[] | undefined;
     if (!globalSearch) {
-      yearContestants = await fetchCountryContestantsByYear(year, voteCode);
+      yearContestants = await fetchCountryContestantsByYear(year, voteCode, contest);
       dispatch(setContestants(yearContestants));
     }
+
+    const { categoryRankings, activeCategory } = (getState() as AppState).root;
 
     const activeSlot = activeCategory ?? 0;
     const refreshed: CountryContestant[][] = [];

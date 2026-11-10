@@ -14,7 +14,6 @@ import { DetailsCard } from './DetailsCard';
 import { IntroColumnWrapper, preloadIntroColumn } from './IntroColumnWrapper';
 import RankedItemsHeader from './RankedItemsHeader';
 import { StrictModeDroppable } from './StrictModeDroppable';
-import { supportedYears } from '../../data/Contestants';
 import { CountryContestant } from '../../data/CountryContestant';
 import { useAppDispatch, useAppSelector } from '../../hooks/stateHooks';
 import { useArrivals } from '../../hooks/useArrivals';
@@ -185,7 +184,6 @@ const RankedCountriesList: React.FC<RankedCountriesListProps> = ({
             <RankedItemsHeader
               setMapModalShow={() => openMapModal()}
               generateYoutubePlaylistUrl={() => generateYoutubePlaylistUrl(rankedItems)}
-              supportedYears={supportedYears}
               openNameModal={openNameModal}
               openConfig={openConfigModal}
               openSorterModal={openSorterModal}

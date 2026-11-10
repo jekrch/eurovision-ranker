@@ -182,7 +182,7 @@ describe('reloadRankingsForYear', () => {
 
     await store.dispatch(reloadRankingsForYear('2018'));
 
-    expect(repository.fetchCountryContestantsByYear).toHaveBeenCalledWith('2018', 'f-tv-gb');
+    expect(repository.fetchCountryContestantsByYear).toHaveBeenCalledWith('2018', 'f-tv-gb', 'esc');
   });
 
   it('asks for the year without a vote type before one has loaded', async () => {
@@ -190,7 +190,7 @@ describe('reloadRankingsForYear', () => {
 
     await store.dispatch(reloadRankingsForYear('2018'));
 
-    expect(repository.fetchCountryContestantsByYear).toHaveBeenCalledWith('2018', '');
+    expect(repository.fetchCountryContestantsByYear).toHaveBeenCalledWith('2018', '', 'esc');
   });
 
   it('leaves nothing unranked while every contest is being searched', async () => {

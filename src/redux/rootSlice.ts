@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
+import { ContestId, contests, DEFAULT_CONTEST } from '../data/Contests';
 import { CountryContestant } from '../data/CountryContestant';
 import { Vote } from '../data/Vote';
 import { Category } from '../utilities/CategoryUtil';
@@ -11,6 +12,9 @@ import { assignVotes } from '../utilities/VoteUtil';
 // re-exported below so they can be imported from './rootSlice'.
 interface AppState {
   name: string;
+  // Which contest the ranking belongs to; together with `year` it picks the
+  // contestant set.
+  contest: ContestId;
   year: string;
   theme: string;
   vote: string;
@@ -48,6 +52,7 @@ interface AppState {
 
 const initialState: AppState = {
   name: '',
+  contest: DEFAULT_CONTEST,
   year: '',
   theme: '',
   vote: 'loading',
@@ -96,6 +101,26 @@ const rootSlice = createSlice({
     },
     setYear: (state, action: PayloadAction<string>) => {
       state.year = action.payload;
+      leavePublicView(state);
+    },
+    // Switch contest. The two contests share no entries, so this starts over:
+    // the year moves to the new contest's default, every ranking is cleared,
+    // and modes the contest doesn't support are turned off. Re-selecting the
+    // current contest changes nothing.
+    setContest: (state, action: PayloadAction<ContestId>) => {
+      const contest = action.payload;
+      if (state.contest === contest) return;
+
+      const def = contests[contest];
+      state.contest = contest;
+      state.year = def.defaultYear;
+      state.contestants = [];
+      state.categoryRankings = state.categoryRankings.length
+        ? state.categoryRankings.map(() => [])
+        : [[]];
+      state.unrankedItems = [];
+      if (!def.features.globalMode) state.globalSearch = false;
+      if (!def.features.votes) state.vote = '';
       leavePublicView(state);
     },
     setTheme: (state, action: PayloadAction<string>) => {
@@ -310,6 +335,7 @@ const rootSlice = createSlice({
 export const {
   setName,
   setYear,
+  setContest,
   setTheme,
   setVote,
   setShowUnranked,

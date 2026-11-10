@@ -14,7 +14,8 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import React, { useEffect, useState } from 'react';
 
-import { countries } from '../../../data/Countries';
+import { contests } from '../../../data/Contests';
+import { countries, escCountries } from '../../../data/Countries';
 import { CountryContestant } from '../../../data/CountryContestant';
 import { Vote } from '../../../data/Vote';
 import { useAppDispatch, useAppSelector } from '../../../hooks/stateHooks';
@@ -68,6 +69,7 @@ const DisplayTab: React.FC = () => {
   const showThumbnail = useAppSelector((state: AppState) => state.root.showThumbnail);
   const showPlace = useAppSelector((state: AppState) => state.root.showPlace);
   const rankedItems = useAppSelector(selectActiveRankedItems);
+  const contest = useAppSelector((state: AppState) => state.root.contest);
   const year = useAppSelector((state: AppState) => state.root.year);
   const globalSearch = useAppSelector((state: AppState) => state.root.globalSearch);
 
@@ -90,7 +92,7 @@ const DisplayTab: React.FC = () => {
   const [displayVoteSource, setDisplayVoteSource] = useState(() => getVoteSourceOption(vote));
   const [voteDisplaySourceOptions, _setVoteDisplaySourceOptions] = useState<string[]>([
     'All',
-    ...countries.sort((a, b) => a.name.localeCompare(b.name)).map((c) => c.name),
+    ...escCountries.sort((a, b) => a.name.localeCompare(b.name)).map((c) => c.name),
   ]);
 
   const [exportTypeSelection, setExportTypeSelection] = useState('Text');
@@ -185,7 +187,7 @@ const DisplayTab: React.FC = () => {
       const newRankedItems = await assignVotesByContestants(rankedItems, newVoteCode);
       dispatch(setRankedItems(newRankedItems));
     } else {
-      const votes: Vote[] = await fetchVotesByCode(newVoteCode, year);
+      const votes: Vote[] = await fetchVotesByCode(newVoteCode, year, undefined, contest);
       dispatch(assignVotesToContestants(votes));
     }
   }
@@ -228,49 +230,51 @@ const DisplayTab: React.FC = () => {
       </section>
 
       {/* Votes */}
-      <section className="py-3 border-b border-(--er-border-subtle) space-y-2">
-        <div>
-          <div className="flex items-center">
-            <TooltipHelp content="Select which types of votes to display with each ranked country" />
-            <span className="ml-1 text-sm font-semibold">Show Votes:</span>
+      {contests[contest].features.votes && (
+        <section className="py-3 border-b border-(--er-border-subtle) space-y-2">
+          <div>
+            <div className="flex items-center">
+              <TooltipHelp content="Select which types of votes to display with each ranked country" />
+              <span className="ml-1 text-sm font-semibold">Show Votes:</span>
+            </div>
+            <div className="ml-4 mt-1 flex flex-wrap gap-y-1">
+              <Checkbox
+                id="total-checkbox"
+                checked={voteCodeHasType(vote, 't')}
+                onChange={(c) => onVoteTypeInputChanged('t', c)}
+                label="Total"
+              />
+              <Checkbox
+                id="tele-checkbox"
+                checked={voteCodeHasType(vote, 'tv')}
+                onChange={(c) => onVoteTypeInputChanged('tv', c)}
+                label="Tele"
+                className="ml-[0.5em]"
+              />
+              <Checkbox
+                id="jury-checkbox"
+                checked={voteCodeHasType(vote, 'j')}
+                onChange={(c) => onVoteTypeInputChanged('j', c)}
+                label="Jury"
+                className="ml-[0.5em]"
+              />
+            </div>
           </div>
-          <div className="ml-4 mt-1 flex flex-wrap gap-y-1">
-            <Checkbox
-              id="total-checkbox"
-              checked={voteCodeHasType(vote, 't')}
-              onChange={(c) => onVoteTypeInputChanged('t', c)}
-              label="Total"
-            />
-            <Checkbox
-              id="tele-checkbox"
-              checked={voteCodeHasType(vote, 'tv')}
-              onChange={(c) => onVoteTypeInputChanged('tv', c)}
-              label="Tele"
-              className="ml-[0.5em]"
-            />
-            <Checkbox
-              id="jury-checkbox"
-              checked={voteCodeHasType(vote, 'j')}
-              onChange={(c) => onVoteTypeInputChanged('j', c)}
-              label="Jury"
-              className="ml-[0.5em]"
+          <div className={rowClass}>
+            <TooltipHelp content="Choose which country to display voting counts from. 'All' will show the total vote count" />
+            <span className={labelClass}>From:</span>
+            <Dropdown
+              key="country-selector-2"
+              className="min-w-[8em] max-w-full"
+              menuClassName="w-auto max-w-[70vw]"
+              value={displayVoteSource}
+              onChange={(s) => setDisplayVoteSource(s)}
+              options={voteDisplaySourceOptions}
+              showSearch={true}
             />
           </div>
-        </div>
-        <div className={rowClass}>
-          <TooltipHelp content="Choose which country to display voting counts from. 'All' will show the total vote count" />
-          <span className={labelClass}>From:</span>
-          <Dropdown
-            key="country-selector-2"
-            className="min-w-[8em] max-w-full"
-            menuClassName="w-auto max-w-[70vw]"
-            value={displayVoteSource}
-            onChange={(s) => setDisplayVoteSource(s)}
-            options={voteDisplaySourceOptions}
-            showSearch={true}
-          />
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Theme */}
       <section className="py-3">

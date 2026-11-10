@@ -1,6 +1,6 @@
 import { clone } from './ContestantUtil';
 import { logger } from './logger';
-import { sanitizeYear } from '../data/Contestants';
+import { ContestId, DEFAULT_CONTEST, sanitizeYear } from '../data/Contests';
 import { countries } from '../data/Countries';
 import { CountryContestant } from '../data/CountryContestant';
 import { ContestantVotes, Vote } from '../data/Vote';
@@ -29,8 +29,11 @@ export function hasAnyTeleVotes(yearContestants: CountryContestant[]) {
   );
 }
 
-export function getVoteTypeOptionsByYear(year: string): string[] {
-  year = sanitizeYear(year);
+export function getVoteTypeOptionsByYear(
+  year: string,
+  contest: ContestId = DEFAULT_CONTEST,
+): string[] {
+  year = sanitizeYear(year, contest);
   if (parseInt(year) > 2016) return ['Total', 'Televote', 'Jury'];
   else return ['Total'];
 }

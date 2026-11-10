@@ -2,6 +2,7 @@ import {
   buildRankingParamsFromUrl,
   normalizeStoredRanking,
   parseStoredRanking,
+  storedRankingContest,
 } from './rankingParams';
 
 describe('buildRankingParamsFromUrl', () => {
@@ -64,5 +65,19 @@ describe('normalizeStoredRanking', () => {
 
   it('lines a bare stored ranking up with the same ranking read from the url', () => {
     expect(normalizeStoredRanking('cy.lg')).toBe(buildRankingParamsFromUrl('?r=cy.lg'));
+  });
+});
+
+describe('the contest of a saved ranking', () => {
+  it('keeps the contest with the saved ranking', () => {
+    const result = buildRankingParamsFromUrl('?ct=asia&y=26&r=abc');
+
+    expect(storedRankingContest(result)).toBe('asia');
+  });
+
+  it('reads a ranking saved without a contest as the traditional contest', () => {
+    expect(storedRankingContest('r=abc&v=f-t')).toBe('esc');
+    expect(storedRankingContest('cy.lg.ggbno')).toBe('esc');
+    expect(storedRankingContest('')).toBe('esc');
   });
 });

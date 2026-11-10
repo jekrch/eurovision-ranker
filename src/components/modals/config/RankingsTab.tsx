@@ -11,8 +11,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useEffect, useState } from 'react';
 
 import { Contestant } from '../../../data/Contestant';
-import { sanitizeYear, supportedYears } from '../../../data/Contestants';
-import { countries } from '../../../data/Countries';
+import { contests, sanitizeYear } from '../../../data/Contests';
+import { escCountries as countries } from '../../../data/Countries';
 import { useAppSelector } from '../../../hooks/stateHooks';
 import { AppState } from '../../../redux/store';
 import {
@@ -282,7 +282,7 @@ const RankingsTab: React.FC = () => {
               menuClassName=""
               value={rankingYear ?? year}
               onChange={(y) => setRankingYear(y)}
-              options={supportedYears.filter((i) => i !== '2020')}
+              options={contests.esc.years.filter((i) => i !== '2020')}
               showSearch={true}
             />
             {roundSummaries.length > 1 && (

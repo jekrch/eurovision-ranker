@@ -11,7 +11,7 @@ import { selectUrlParams } from '../redux/urlSelectors';
  * `id` is managed too: in public-view mode the projection is just `{ id }`, so
  * the writer sets it; on exit the projection drops it, so the writer deletes it.
  */
-const MANAGED_KEYS = ['n', 'y', 'g', 'id', 't', 'v', 'cm', 'p', 'pl', 'c'] as const;
+const MANAGED_KEYS = ['n', 'ct', 'y', 'g', 'id', 't', 'v', 'cm', 'p', 'pl', 'c'] as const;
 
 // Matches the per-category ranking params: the bare `r` and the indexed
 // `r1`, `r2`, … The writer owns all of them, projecting them from the store's

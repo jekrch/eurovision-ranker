@@ -140,3 +140,51 @@ describe('fetchLyricsCsv', () => {
     expect(second).toBe(first);
   });
 });
+
+describe('separate contests', () => {
+  it('reads the Asia contest from its own file', async () => {
+    const { fetchContestantCsv } = await loadCsvCache();
+
+    await fetchContestantCsv('2026', 'asia');
+
+    expect(requestedFiles()).toEqual(['asia.csv']);
+  });
+
+  it('never reads the Asia file for the traditional contest', async () => {
+    const { fetchContestantCsv } = await loadCsvCache();
+
+    await fetchContestantCsv(defaultYear);
+    await fetchContestantCsv('2018');
+    await fetchContestantCsv();
+
+    expect(requestedFiles()).not.toContain('asia.csv');
+  });
+
+  it('keeps the same year of two contests apart', async () => {
+    const { fetchContestantCsv } = await loadCsvCache();
+    fetchMock.mockImplementation(async (url: string) =>
+      csvResponse(String(url).endsWith('asia.csv') ? 'asia\n' : 'esc\n'),
+    );
+
+    const esc = await fetchContestantCsv('2026', 'esc');
+    const asia = await fetchContestantCsv('2026', 'asia');
+
+    expect(esc).toBe('esc\n');
+    expect(asia).toBe('asia\n');
+  });
+
+  it('reports no votes for a contest without results, without downloading anything', async () => {
+    const { fetchVoteCsv } = await loadCsvCache();
+
+    expect(await fetchVoteCsv('2026', 'asia')).toBe('');
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it('reads Asia lyrics from their own file', async () => {
+    const { fetchLyricsCsv } = await loadCsvCache();
+
+    await fetchLyricsCsv('asia');
+
+    expect(requestedFiles()).toEqual(['lyricsAsia.csv']);
+  });
+});

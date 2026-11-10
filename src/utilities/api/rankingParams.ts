@@ -2,6 +2,8 @@
 // of a saved ranking (r, r1, r2, c, v, t, …) minus name/year (stored as
 // dedicated columns) and routing-only params (id, signup).
 
+import { ContestId, sanitizeContest } from '../../data/Contests';
+
 export const MAX_RANKING_LENGTH = 500;
 
 // Params that are stored as dedicated UserRanking columns and so are excluded
@@ -36,6 +38,13 @@ export function parseStoredRanking(ranking: string): URLSearchParams {
   const sp = new URLSearchParams();
   sp.set('r', ranking);
   return sp;
+}
+
+// The contest a stored `ranking` value belongs to, read from its `ct` param.
+// Values saved before the contest dimension existed carry no `ct` and so
+// resolve to the traditional contest.
+export function storedRankingContest(ranking: string): ContestId {
+  return sanitizeContest(parseStoredRanking(ranking).get('ct'));
 }
 
 // Normalize a stored `ranking` value into the new query-string form so it

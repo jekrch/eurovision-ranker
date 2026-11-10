@@ -1,26 +1,8 @@
-
+// Years and default year of the traditional contest (ESC). Other contests
+// declare their own in Contests.ts, which is also where year sanitizing lives.
 export const supportedYears = Array.from(
   { length: 2026 - 1956 + 1 }, 
   (v, i) => ((1956 + i).toString())
 ).reverse();
-
-/**
- * Converts the provided year from 2 digits to 4 if necessary
- * 
- * @param contestYear 
- * @returns 
- */
-export function sanitizeYear(contestYear: string | null): string {
-  if (contestYear?.length === 2) {
-      if ((parseInt(contestYear) < 40)) {
-          return '20' + contestYear;
-      } else {
-          return '19' + contestYear;
-      }
-  } else if (contestYear?.length === 4) {
-    return contestYear;
-  }
-  return defaultYear;
-}
 
 export const defaultYear = '2026';

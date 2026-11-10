@@ -99,7 +99,7 @@ describe('turning it off with a ranking from one contest', () => {
     await act(async () => toggle('adv'));
 
     await waitFor(() =>
-      expect(repository.fetchCountryContestantsByYear).toHaveBeenCalledWith('2018', ''),
+      expect(repository.fetchCountryContestantsByYear).toHaveBeenCalledWith('2018', '', 'esc'),
     );
   });
 });
@@ -160,7 +160,7 @@ describe('turning it off with nothing ranked', () => {
     await act(async () => toggle('adv'));
 
     await waitFor(() =>
-      expect(repository.fetchCountryContestantsByYear).toHaveBeenCalledWith('2023', ''),
+      expect(repository.fetchCountryContestantsByYear).toHaveBeenCalledWith('2023', '', 'esc'),
     );
   });
 });

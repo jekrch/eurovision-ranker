@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-import { countries } from '../../../data/Countries';
+import { escCountries } from '../../../data/Countries';
 import { Country } from '../../../data/Country';
 import { CountryContestant } from '../../../data/CountryContestant';
 import { useAppDispatch, useAppSelector } from '../../../hooks/stateHooks';
@@ -59,7 +59,7 @@ const AnalyzeTab: React.FC = () => {
 
     const countryContestants = await fetchCountryContestantsByYear(voteYear, '');
 
-    for (const country of countries) {
+    for (const country of escCountries) {
       const concatenatedIds = await getRankingIds(
         globalMode,
         voteType,

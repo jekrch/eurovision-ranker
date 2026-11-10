@@ -78,12 +78,12 @@ const SongLyricsTab: React.FC<SongLyricsTabProps> = ({
               }`}
             >
               {lyrics?.split('\\n').map((line, index) => (
-                <div key={index}>{line?.length ? line : ' '}</div>
+                <div key={index}>{line?.length ? line : ' '}</div>
               ))}
             </div>
             <div className={`lyrics-container ${showEng ? 'slide-in-right' : 'slide-out-left'}`}>
               {engLyrics?.split('\\n').map((line, index) => (
-                <div key={index}>{line?.length ? line : ' '}</div>
+                <div key={index}>{line?.length ? line : ' '}</div>
               ))}
             </div>
           </div>

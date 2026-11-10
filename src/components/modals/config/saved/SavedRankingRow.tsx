@@ -10,6 +10,8 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
 
+import { formatContestYear } from '../../../../data/Contests';
+import { storedRankingContest } from '../../../../utilities/api/rankingParams';
 import { UserRanking } from '../../../../utilities/api/types';
 import { actionBtn, dangerActionBtn, inputClass } from '../cloud/styles';
 
@@ -81,7 +83,7 @@ const SavedRankingRow: React.FC<{
             )}
           </div>
           <div className="text-xs text-(--er-text-subtle) mt-0.5">
-            {r.year ? `${r.year} · ` : ''}
+            {r.year ? `${formatContestYear(storedRankingContest(r.ranking ?? ''), r.year)} · ` : ''}
             {r.created_at ? new Date(r.created_at).toLocaleDateString() : ''}
           </div>
         </div>

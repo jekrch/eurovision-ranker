@@ -14,10 +14,15 @@ import { fetchCountryContestantsByYear } from '../utilities/ContestantRepository
 
 export const useResetRanking = () => {
   const dispatch = useAppDispatch();
+  const contest = useAppSelector((state: AppState) => state.root.contest);
   const year = useAppSelector((state: AppState) => state.root.year);
 
   const resetRanking = useCallback(async () => {
-    const yearContestants: CountryContestant[] = await fetchCountryContestantsByYear(year, '');
+    const yearContestants: CountryContestant[] = await fetchCountryContestantsByYear(
+      year,
+      '',
+      contest,
+    );
 
     dispatch(setContestants(yearContestants));
     dispatch(setUnrankedItems(yearContestants));
@@ -25,7 +30,7 @@ export const useResetRanking = () => {
     dispatch(clearAllCategoryRankings());
     dispatch(setSelectedContestants([]));
     // The cleared rankings are projected to the URL by the single URL writer.
-  }, [dispatch, year]);
+  }, [dispatch, contest, year]);
 
   return resetRanking;
 };
@@ -38,10 +43,15 @@ export const useResetRanking = () => {
  */
 export const useRefillUnranked = () => {
   const dispatch = useAppDispatch();
+  const contest = useAppSelector((state: AppState) => state.root.contest);
   const year = useAppSelector((state: AppState) => state.root.year);
 
   return useCallback(async () => {
-    const yearContestants: CountryContestant[] = await fetchCountryContestantsByYear(year, '');
+    const yearContestants: CountryContestant[] = await fetchCountryContestantsByYear(
+      year,
+      '',
+      contest,
+    );
     dispatch(setUnrankedItems(yearContestants));
-  }, [dispatch, year]);
+  }, [dispatch, contest, year]);
 };

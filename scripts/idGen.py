@@ -4,10 +4,18 @@ import itertools
 
 ## generate unique 3 character alphanumeric codes for all contest songs in contestants.csv
 
-def generate_codes():
+def generate_codes(start_after=None):
+    """Yield codes in order. Pass the highest uid already in use (across every
+    contestant file, e.g. main.csv, mainCurrent.csv and asia.csv) as
+    start_after so new rows continue the sequence instead of restarting at aaa."""
     characters = string.ascii_lowercase + string.digits
+    started = start_after is None
     for code in itertools.product(characters, repeat=3):
-        yield ''.join(code)
+        code = ''.join(code)
+        if started:
+            yield code
+        elif code == start_after:
+            started = True
 
 def add_id_to_csv(input_file, output_file):
     code_generator = generate_codes()

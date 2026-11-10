@@ -9,6 +9,7 @@ import { useAppDispatch, useAppSelector } from '../hooks/stateHooks';
 import { useResetRanking } from '../hooks/useResetRanking';
 import { selectActiveRankedItems } from '../redux/rankingSelectors';
 import {
+  setContest,
   setYear,
   setName,
   setShowUnranked,
@@ -105,6 +106,7 @@ const joyRideTourSteps = [
 
 const JoyrideTourSort: React.FC<JoyrideTourSortProps> = (props: JoyrideTourSortProps) => {
   const dispatch: AppDispatch = useAppDispatch();
+  const contest = useAppSelector((state: AppState) => state.root.contest);
   const year = useAppSelector((state: AppState) => state.root.year);
   const rankedItems = useAppSelector(selectActiveRankedItems);
   const unrankedItems = useAppSelector((state: AppState) => state.root.unrankedItems);
@@ -305,7 +307,11 @@ const JoyrideTourSort: React.FC<JoyrideTourSortProps> = (props: JoyrideTourSortP
     try {
       switch (index) {
         case 0: {
-          // first step - initialize ranking state and add ranked items
+          // first step - initialize ranking state and add ranked items. The
+          // tour walks through a traditional contest year.
+          if (contest !== 'esc') {
+            dispatch(setContest('esc'));
+          }
           if (year !== TOUR_YEAR) {
             dispatch(setYear(TOUR_YEAR));
             props.setRefreshUrl(Math.random());

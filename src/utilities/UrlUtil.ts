@@ -1,10 +1,11 @@
 import { fetchCountryContestantsByYear, getCountryContestantsByUids } from './ContestantRepository';
-import { defaultYear, sanitizeYear } from '../data/Contestants';
+import { ContestId, contests, sanitizeContest, sanitizeYear } from '../data/Contests';
 import { countries } from '../data/Countries';
 import { CountryContestant, createCountryContestant } from '../data/CountryContestant';
 import { parseCategoriesUrlParam } from './category/categoryUrl';
 import {
   setName,
+  setContest,
   setYear,
   setRankedItems,
   setCategoryRankings,
@@ -21,6 +22,7 @@ import { AppDispatch } from '../redux/store';
 
 export type UrlParams = {
   rankingName: string | null; // n
+  contest: string | null; // ct: esc (default, never written) / asia
   contestYear: string | null; // y
   rankings: string | null; // r
   theme: string | null; // t: ab
@@ -37,13 +39,18 @@ export type UrlParams = {
 export const updateStates = (params: UrlParams, dispatch: AppDispatch) => {
   const { rankingName, theme, voteCode, comparisonMode, globalMode, showThumbnail, showPlace } =
     params;
-  let { contestYear } = params; // reassigned below via sanitizeYear
+  const contest = sanitizeContest(params.contest);
+  const features = contests[contest].features;
+
+  // The contest goes first: switching it resets the year and the modes it
+  // doesn't support, which the dispatches below then settle.
+  dispatch(setContest(contest));
 
   if (rankingName) {
     dispatch(setName(rankingName));
   }
 
-  dispatch(setGlobalSearch(globalMode === 't'));
+  dispatch(setGlobalSearch(isGlobalModeFor(contest, globalMode)));
 
   dispatch(setShowComparison(comparisonMode === 't'));
 
@@ -53,16 +60,24 @@ export const updateStates = (params: UrlParams, dispatch: AppDispatch) => {
 
   dispatch(setTheme(theme ?? ''));
 
-  dispatch(setVote(voteCode ?? ''));
+  dispatch(setVote(features.votes ? (voteCode ?? '') : ''));
 
-  if (contestYear?.length) {
-    contestYear = sanitizeYear(contestYear);
-    dispatch(setYear(contestYear));
-  } else {
-    // set default
-    dispatch(setYear(defaultYear));
-  }
+  dispatch(setYear(sanitizeYear(params.contestYear, contest)));
 };
+
+/**
+ * Whether the URL asks for global mode and the contest supports it. A contest
+ * without global mode ignores `g=t` rather than failing.
+ */
+function isGlobalModeFor(contest: ContestId, globalMode: string | null): boolean {
+  return globalMode === 't' && contests[contest].features.globalMode;
+}
+
+/** The contest and year a set of URL params resolves to. */
+export function resolveContestYear(params: UrlParams): { contest: ContestId; year: string } {
+  const contest = sanitizeContest(params.contest);
+  return { contest, year: sanitizeYear(params.contestYear, contest) };
+}
 
 /**
  * Fetches and processes rankings, then updates contestant states using Redux.
@@ -73,12 +88,13 @@ export async function processAndUpdateRankings(
   voteCode: string | null,
   globalMode: string | null,
   dispatch: AppDispatch,
+  contest: ContestId = 'esc',
 ): Promise<string[] | undefined> {
-  const isGlobalMode = globalMode === 't';
+  const isGlobalMode = isGlobalModeFor(contest, globalMode);
 
   let yearContestants;
   if (!isGlobalMode) {
-    yearContestants = await fetchCountryContestantsByYear(contestYear, voteCode ?? '');
+    yearContestants = await fetchCountryContestantsByYear(contestYear, voteCode ?? '', contest);
 
     dispatch(setContestants(yearContestants));
   }
@@ -123,7 +139,7 @@ export function getOrderedContestantsByCategory(
   return orderContestantsByRankingStr(
     extractedParams.rankings ?? '',
     countryContestants,
-    extractedParams.globalMode === 't',
+    isGlobalModeFor(sanitizeContest(extractedParams.contest), extractedParams.globalMode),
     extractedParams.voteCode ?? '',
   );
 }
@@ -180,12 +196,15 @@ export async function loadRankingsFromURL(
 
   updateStates(extractedParams, dispatch);
 
+  const { contest, year } = resolveContestYear(extractedParams);
+
   return await processAndUpdateRankings(
-    extractedParams.contestYear || defaultYear,
+    year,
     extractedParams.rankings,
     extractedParams.voteCode,
     extractedParams.globalMode,
     dispatch,
+    contest,
   );
 }
 
@@ -210,14 +229,12 @@ export async function loadAllCategoryRankingsFromURL(
   const baseParams = extractParams(params, activeCategory);
   updateStates(baseParams, dispatch);
 
-  const isGlobalMode = baseParams.globalMode === 't';
+  const { contest, year } = resolveContestYear(baseParams);
+  const isGlobalMode = isGlobalModeFor(contest, baseParams.globalMode);
 
   let yearContestants: CountryContestant[] | undefined;
   if (!isGlobalMode) {
-    yearContestants = await fetchCountryContestantsByYear(
-      baseParams.contestYear || defaultYear,
-      baseParams.voteCode ?? '',
-    );
+    yearContestants = await fetchCountryContestantsByYear(year, baseParams.voteCode ?? '', contest);
     dispatch(setContestants(yearContestants));
   }
 
@@ -277,9 +294,7 @@ export const encodeRankingsToURL = (
 ): string => {
   // Drop items missing the id this mode encodes (e.g. a country resolved without
   // a `uid` re-encoded into global mode) rather than emitting an undefined gap.
-  const ids = rankedCountries
-    .map((item) => (isGlobalMode ? item.uid : item.id))
-    .filter(Boolean);
+  const ids = rankedCountries.map((item) => (isGlobalMode ? item.uid : item.id)).filter(Boolean);
   return isGlobalMode ? `>${ids.join('')}` : ids.join('');
 };
 
@@ -332,6 +347,7 @@ export const extractParams = (
 ): UrlParams => {
   return {
     rankingName: params.get('n'),
+    contest: params.get('ct'),
     contestYear: params.get('y'),
     rankings: params.get(`r${activeCategory !== undefined ? activeCategory + 1 : ''}`),
     theme: params.get('t'), // e.g. ab

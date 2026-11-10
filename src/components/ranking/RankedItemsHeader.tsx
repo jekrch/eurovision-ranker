@@ -5,20 +5,23 @@ import React, { useEffect, useState } from 'react';
 import Ripples from 'react-ripples';
 
 import RankedHeaderMenu from './RankedHeaderMenu';
+import { contestYearOptions, contests, formatContestYear } from '../../data/Contests';
 import { CountryContestant } from '../../data/CountryContestant';
 import { useAppDispatch, useAppSelector } from '../../hooks/stateHooks';
 import { useRankingDirty } from '../../hooks/useRankingDirty';
 import { selectActiveRankedItems } from '../../redux/rankingSelectors';
-import { setActiveCategory, setShowTotalRank, setYear } from '../../redux/rootSlice';
+import { setActiveCategory, setContest, setShowTotalRank, setYear } from '../../redux/rootSlice';
 import { AppDispatch, AppState } from '../../redux/store';
 import Dropdown from '../Dropdown';
+
+const yearOptions = contestYearOptions();
+const yearOptionLabels = yearOptions.map((o) => o.label);
 
 interface IRankedItemsHeaderProps {
   setMapModalShow: () => void;
   openNameModal: () => void;
   openConfig: (tab: string) => void;
   generateYoutubePlaylistUrl: (rankedItems: CountryContestant[]) => string;
-  supportedYears: string[];
   className: string;
   openSorterModal: () => void;
   openQuizModal: () => void;
@@ -29,12 +32,12 @@ const RankedItemsHeader: React.FC<IRankedItemsHeaderProps> = ({
   generateYoutubePlaylistUrl,
   openNameModal,
   openConfig,
-  supportedYears,
   className,
   openSorterModal,
   openQuizModal,
 }) => {
   const dispatch: AppDispatch = useAppDispatch();
+  const contest = useAppSelector((state: AppState) => state.root.contest);
   const year = useAppSelector((state: AppState) => state.root.year);
   const name = useAppSelector((state: AppState) => state.root.name);
   const globalSearch = useAppSelector((state: AppState) => state.root.globalSearch);
@@ -76,6 +79,21 @@ const RankedItemsHeader: React.FC<IRankedItemsHeaderProps> = ({
   // condition for disabling the sorter button
   const isSorterDisabled = rankedItems.length < 2 || showTotalRank;
 
+  const titleYear = formatContestYear(contest, year);
+
+  // picking another contest's year switches contest first (which resets the
+  // year to that contest's default), then lands on the year that was picked
+  const selectContestYear = (label: string) => {
+    const option = yearOptions.find((o) => o.label === label);
+    if (!option) return;
+    if (option.contest !== contest) {
+      dispatch(setContest(option.contest));
+      if (option.year !== contests[option.contest].defaultYear) dispatch(setYear(option.year));
+    } else if (option.year !== year) {
+      dispatch(setYear(option.year));
+    }
+  };
+
   return (
     <div
       className={classNames(
@@ -88,11 +106,9 @@ const RankedItemsHeader: React.FC<IRankedItemsHeaderProps> = ({
           <Dropdown
             className="tour-step-1 min-w-[5em] w-auto"
             buttonClassName="h-[1.8em]!"
-            value={year}
-            onChange={(y) => {
-              dispatch(setYear(y));
-            }}
-            options={supportedYears}
+            value={titleYear}
+            onChange={selectContestYear}
+            options={yearOptionLabels}
             showSearch={true}
           />
         </div>
@@ -131,7 +147,7 @@ const RankedItemsHeader: React.FC<IRankedItemsHeaderProps> = ({
             {' '}
             {/* Use grow to take available space, mx-2 for spacing */}
             <div>
-              {!globalSearch ? year : null}
+              {!globalSearch ? titleYear : null}
               {name && (
                 <span className="font-bold text-(--er-text-tertiary) text-md">
                   {!globalSearch ? ` - ` : ``}

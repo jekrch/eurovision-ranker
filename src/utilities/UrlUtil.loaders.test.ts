@@ -122,7 +122,7 @@ describe('processAndUpdateRankings', () => {
 
     await processAndUpdateRankings('2023', null, 'f-tv-gb', null, store.dispatch);
 
-    expect(repository.fetchCountryContestantsByYear).toHaveBeenCalledWith('2023', 'f-tv-gb');
+    expect(repository.fetchCountryContestantsByYear).toHaveBeenCalledWith('2023', 'f-tv-gb', 'esc');
   });
 });
 
@@ -249,6 +249,58 @@ describe('getUrlParam', () => {
     setUrl('?y=23');
 
     expect(getUrlParam('r')).toBeNull();
+  });
+});
+
+describe('the contest in the address', () => {
+  it('loads the traditional contest when the address names none', async () => {
+    const store = makeStore();
+    setUrl('/?y=26');
+
+    await loadAllCategoryRankingsFromURL(undefined, store.dispatch);
+
+    expect(repository.fetchCountryContestantsByYear).toHaveBeenCalledWith('2026', '', 'esc');
+    expect(store.getState().root).toMatchObject({ contest: 'esc', year: '2026' });
+  });
+
+  it('loads the Asia contest when the address names it', async () => {
+    const store = makeStore();
+    setUrl('/?ct=asia&y=26');
+
+    await loadAllCategoryRankingsFromURL(undefined, store.dispatch);
+
+    expect(repository.fetchCountryContestantsByYear).toHaveBeenCalledWith('2026', '', 'asia');
+    expect(store.getState().root).toMatchObject({ contest: 'asia', year: '2026' });
+  });
+
+  it('loads the traditional contest when the address names an unknown contest', async () => {
+    const store = makeStore();
+    setUrl('/?ct=nope&y=18');
+
+    await loadAllCategoryRankingsFromURL(undefined, store.dispatch);
+
+    expect(repository.fetchCountryContestantsByYear).toHaveBeenCalledWith('2018', '', 'esc');
+    expect(store.getState().root.contest).toBe('esc');
+  });
+
+  it('ranks songs from one contest when the Asia address also asks for every contest', async () => {
+    const store = makeStore();
+    setUrl('/?ct=asia&g=t');
+
+    await loadAllCategoryRankingsFromURL(undefined, store.dispatch);
+
+    expect(repository.getCountryContestantsByUids).not.toHaveBeenCalled();
+    expect(repository.fetchCountryContestantsByYear).toHaveBeenCalledWith('2026', '', 'asia');
+    expect(store.getState().root.globalSearch).toBe(false);
+  });
+
+  it('ignores vote display for a contest without results', async () => {
+    const store = makeStore();
+    setUrl('/?ct=asia&v=f-t');
+
+    await loadRankingsFromURL(undefined, store.dispatch);
+
+    expect(store.getState().root.vote).toBe('');
   });
 });
 

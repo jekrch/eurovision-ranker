@@ -1,3 +1,4 @@
+import { ContestId } from "./Contests";
 import { ContestantVotes } from "./Vote";
 
 export interface ContestantData {
@@ -13,6 +14,8 @@ export interface ContestantData {
   semiFinalsRank?: number;
   votes?: ContestantVotes;
   year?: string;
+  /** Contest the entry competed in. Missing means the traditional contest. */
+  contest?: ContestId;
 }
 
 export class Contestant implements ContestantData {
@@ -26,6 +29,7 @@ export class Contestant implements ContestantData {
   semiFinalsRank?: number;
   votes?: ContestantVotes;
   year?: string;
+  contest?: ContestId;
 
   constructor(data: ContestantData) {
       this.id = data.id;
@@ -38,6 +42,7 @@ export class Contestant implements ContestantData {
       this.semiFinalsRank = data.semiFinalsRank;
       this.votes = data.votes;
       this.year = data.year;
+      this.contest = data.contest;
   }
 
   get youtube(): string | undefined {
@@ -67,7 +72,8 @@ export class Contestant implements ContestantData {
       contestRank: this.contestRank,
       semiFinalsRank: this.semiFinalsRank,
       votes: this.votes,
-      year: this.year
+      year: this.year,
+      ...(this.contest ? { contest: this.contest } : {})
     };
   }
 }

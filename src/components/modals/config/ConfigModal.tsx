@@ -16,6 +16,7 @@ import DisplayTab from './DisplayTab';
 import GroupsTab from './GroupsTab';
 import RankingsTab from './RankingsTab';
 import SavedRankingsTab from './SavedRankingsTab';
+import { contests } from '../../../data/Contests';
 import { useAppSelector } from '../../../hooks/stateHooks';
 import { AppState } from '../../../redux/store';
 import TabBar from '../../TabBar';
@@ -58,6 +59,10 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
     }
   });
   const globalSearch = useAppSelector((state: AppState) => state.root.globalSearch);
+  // Analyze compares the ranking with how each country voted, so it needs votes
+  const contestHasVotes = useAppSelector(
+    (state: AppState) => contests[state.root.contest].features.votes,
+  );
   // Reset to props.tab only when the requested tab actually changes (explicit deep-link),
   // not on mount and not every time the modal reopens — that keeps the selection sticky.
   const didMountRef = useRef(false);
@@ -118,7 +123,7 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
             label="Categories"
           />
 
-          {!globalSearch && (
+          {!globalSearch && contestHasVotes && (
             <TabButton
               isActive={activeTab === 'analyze'}
               onClick={() => setActiveTab('analyze')}
@@ -157,7 +162,7 @@ const ConfigModal: React.FC<ConfigModalProps> = (props: ConfigModalProps) => {
 
         {activeTab === 'categories' && <CategoriesTab />}
 
-        {activeTab === 'analyze' && <AnalyzeTab />}
+        {activeTab === 'analyze' && contestHasVotes && <AnalyzeTab />}
 
         {activeTab === 'account' && <SavedRankingsTab openAuthModal={props.openAuthModal} />}
 

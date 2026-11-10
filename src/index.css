@@ -768,10 +768,38 @@ code {
   }
 }
 
+/* A highlighted word in the welcome list: pink-to-blue like the Eurovision Asia
+   heart, with a light band that sweeps across twice after the row fades in and
+   then stays off to the side. The band is its own layer so the word keeps its
+   colours once the sweep ends. */
+.welcome-shimmer {
+  background-image:
+    linear-gradient(110deg, transparent 40%, rgba(255, 255, 255, 0.9) 50%, transparent 60%),
+    linear-gradient(90deg, #ff7dbb, #bb85ff, #6cb6ff);
+  background-size: 250% 100%, 100% 100%;
+  background-position: -50% 0, 0 0;
+  background-repeat: no-repeat;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: welcome-shimmer 2.2s ease-in-out 0.7s 2;
+}
+
+@keyframes welcome-shimmer {
+  0% {
+    background-position: -50% 0, 0 0;
+  }
+  60%,
+  100% {
+    background-position: 150% 0, 0 0;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .overlay-bg,
   .welcome-card,
-  .welcome-feature {
+  .welcome-feature,
+  .welcome-shimmer {
     animation: none;
   }
 }

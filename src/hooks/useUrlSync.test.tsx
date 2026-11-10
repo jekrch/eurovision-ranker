@@ -10,8 +10,14 @@ import { useUrlSync } from './useUrlSync';
 import { useUrlWriter } from './useUrlWriter';
 import { CountryContestant } from '../data/CountryContestant';
 import { selectActiveRankedItems } from '../redux/rankingSelectors';
-import { setActiveCategory, setShowTotalRank, setRankedItems } from '../redux/rootSlice';
+import {
+  setActiveCategory,
+  setContest,
+  setShowTotalRank,
+  setRankedItems,
+} from '../redux/rootSlice';
 import { makeTestStore, TestStore } from '../test/storeHarness';
+import { fetchCountryContestantsByYear } from '../utilities/ContestantRepository';
 import { handlePopState } from '../utilities/EventListenerUtil';
 
 /**
@@ -72,6 +78,7 @@ interface HarnessApi {
  */
 function SyncHarness({ apiRef }: { apiRef?: React.MutableRefObject<HarnessApi | null> }) {
   const dispatch = useAppDispatch();
+  const contest = useAppSelector((s) => s.root.contest);
   const year = useAppSelector((s) => s.root.year);
   const categories = useAppSelector((s) => s.root.categories);
   const activeCategory = useAppSelector((s) => s.root.activeCategory);
@@ -96,12 +103,12 @@ function SyncHarness({ apiRef }: { apiRef?: React.MutableRefObject<HarnessApi | 
   useEffect(() => {
     if (refreshUrl === 0) return;
     writerReadyRef.current = true;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [refreshUrl]);
 
   useUrlSync({
     activeCategory,
     categories,
+    contest,
     year,
     dispatch,
     writerReadyRef,
@@ -230,5 +237,37 @@ describe('URL <-> state sync', () => {
       expect(sp.has('id')).toBe(false);
       expect(sp.get('r')).toBe('ba');
     });
+  });
+
+  it('switching contest loads the new contest and names it in the URL', async () => {
+    setUrl('/?y=23&r=ab');
+    const store = makeTestStore();
+    mount(store);
+    await waitFor(() => expect(ids(selectActiveRankedItems(store.getState()))).toEqual(['a', 'b']));
+
+    act(() => {
+      store.dispatch(setContest('asia'));
+    });
+
+    await waitFor(() =>
+      expect(fetchCountryContestantsByYear).toHaveBeenLastCalledWith('2026', '', 'asia'),
+    );
+    await waitFor(() => expect(ids(store.getState().root.unrankedItems)).toHaveLength(4));
+    expect(ids(selectActiveRankedItems(store.getState()))).toEqual([]);
+    const params = new URLSearchParams(window.location.search);
+    expect(params.get('ct')).toBe('asia');
+    expect(params.get('y')).toBe('26');
+    expect(params.has('r')).toBe(false);
+  });
+
+  it('booting from an Asia URL keeps the contest in the URL', async () => {
+    setUrl('/?ct=asia&y=26&r=ab');
+    const store = makeTestStore();
+
+    mount(store);
+
+    await waitFor(() => expect(ids(selectActiveRankedItems(store.getState()))).toEqual(['a', 'b']));
+    expect(store.getState().root.contest).toBe('asia');
+    expect(fetchCountryContestantsByYear).toHaveBeenCalledWith('2026', '', 'asia');
   });
 });

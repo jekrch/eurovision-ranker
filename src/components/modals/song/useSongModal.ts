@@ -36,6 +36,7 @@ type UseSongModalArgs = {
  * the modal shell and its tab components.
  */
 export function useSongModal(props: UseSongModalArgs) {
+  const contest = useAppSelector((state: AppState) => state.root.contest);
   const year = useAppSelector((state: AppState) => state.root.year);
   const [lyrics, setLyrics] = useState<string | undefined>('');
   const [engLyrics, setEngLyrics] = useState<string | undefined>('');
@@ -136,7 +137,7 @@ export function useSongModal(props: UseSongModalArgs) {
       setEngLyrics(undefined);
       setHasLyrics(false);
 
-      getSongDetails(contestant.id, contestant?.year)
+      getSongDetails(contestant.id, contestant?.year, contestant.contest ?? contest)
         .then((fetchedSongDetails) => {
           assignLyrics(fetchedSongDetails?.lyrics, fetchedSongDetails?.engLyrics, contestant.song);
           setComposers(fetchedSongDetails?.composers ?? '');
@@ -167,7 +168,13 @@ export function useSongModal(props: UseSongModalArgs) {
 
     let cancelled = false;
 
-    fetchVotesForYear(contestant?.year || year, undefined, undefined, toCountryKey)
+    fetchVotesForYear(
+      contestant?.year || year,
+      undefined,
+      undefined,
+      toCountryKey,
+      contestant?.contest ?? contest,
+    )
       .then((votes) => {
         if (cancelled) {
           return;

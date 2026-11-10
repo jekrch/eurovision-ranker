@@ -303,3 +303,43 @@ describe('contests where a country entered twice', () => {
     expect(contestants[0]).toMatchObject({ contestRank: 1, semiFinalsRank: 2 });
   });
 });
+
+describe('separate contests', () => {
+  it('reads a contest year from that contest', async () => {
+    const { getContestantsForYear } = await loadRepository();
+    csvCache.fetchContestantCsv.mockResolvedValue(
+      csv(row({ id: 'bqn', year: '2026', countryKey: 'th', performer: 'MANG x DAOU' })),
+    );
+
+    const contestants = await getContestantsForYear('2026', 'asia');
+
+    expect(csvCache.fetchContestantCsv).toHaveBeenCalledWith('2026', 'asia');
+    expect(contestants.map((c) => [c.artist, c.contest])).toEqual([['MANG x DAOU', 'asia']]);
+  });
+
+  it('keeps the same year of two contests apart', async () => {
+    const { getContestantsForYear } = await loadRepository();
+    csvCache.fetchContestantCsv.mockImplementation(async (_year: string, contest: string) =>
+      contest === 'asia'
+        ? csv(row({ id: 'bqn', year: '2026', countryKey: 'th', performer: 'MANG x DAOU' }))
+        : csv(row({ id: 'bqb', year: '2026', countryKey: 'ch', performer: 'Veronica Fusaro' })),
+    );
+
+    const esc = await getContestantsForYear('2026', 'esc');
+    const asia = await getContestantsForYear('2026', 'asia');
+
+    expect(esc.map((c) => c.artist)).toEqual(['Veronica Fusaro']);
+    expect(asia.map((c) => c.artist)).toEqual(['MANG x DAOU']);
+  });
+
+  it('looks songs up by uid in the traditional contest only', async () => {
+    const { getContestantsByUids } = await loadRepository();
+    csvCache.fetchContestantCsv.mockResolvedValue(csv());
+
+    await getContestantsByUids(['bqn']);
+
+    expect(
+      csvCache.fetchContestantCsv.mock.calls.every(([, contest]) => !contest || contest === 'esc'),
+    ).toBe(true);
+  });
+});

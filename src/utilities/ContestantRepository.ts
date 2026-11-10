@@ -5,7 +5,7 @@ import { logger } from './logger';
 import { getUrlParam } from './UrlUtil';
 import { assignVotesByContestants } from './VoteProcessor';
 import { Contestant, ContestantData } from '../data/Contestant';
-import { sanitizeYear } from '../data/Contestants';
+import { ContestId, DEFAULT_CONTEST, sanitizeYear } from '../data/Contests';
 import { countries } from '../data/Countries';
 import { CountryContestant } from '../data/CountryContestant';
 import { SongDetails } from '../data/SongDetails';
@@ -43,6 +43,7 @@ function parseOptionalInt(value: string | undefined): number | undefined {
 export async function fetchCountryContestantsByYear(
   year: string,
   voteCode: string = '',
+  contest: ContestId = DEFAULT_CONTEST,
 ): Promise<CountryContestant[]> {
   // // if we're requesting the cached year and there's no source country in
   // // the vote code, return an already parsed json array (for performance)
@@ -53,11 +54,15 @@ export async function fetchCountryContestantsByYear(
   //   return clone(initialCountryContestantCache);
   // }
 
-  return await fetchAndProcessCountryContestants(year, voteCode);
+  return await fetchAndProcessCountryContestants(year, voteCode, contest);
 }
 
-export async function fetchAndProcessCountryContestants(year: string, voteCode: string) {
-  const contestants: Contestant[] = await getContestantsByYear(year);
+export async function fetchAndProcessCountryContestants(
+  year: string,
+  voteCode: string,
+  contest: ContestId = DEFAULT_CONTEST,
+) {
+  const contestants: Contestant[] = await getContestantsByYear(year, contest);
 
   return await mapContestantsWithVotes(contestants, voteCode);
 }
@@ -138,13 +143,13 @@ function fetchCountryByKey(contestantCountryKey: string, contestant: Contestant)
   return country;
 }
 
-async function getContestantsByYear(year: string): Promise<Contestant[]> {
-  year = sanitizeYear(year);
-  return await getContestantsForYear(year);
+async function getContestantsByYear(year: string, contest: ContestId): Promise<Contestant[]> {
+  year = sanitizeYear(year, contest);
+  return await getContestantsForYear(year, contest);
 }
 
-// shared cache for contestants
-const contestantCache: { [year: string]: Contestant[] } = {};
+// shared cache for contestants, keyed by `${contest}:${year}`
+const contestantCache: { [contestYear: string]: Contestant[] } = {};
 const individualContestantCache: { [id: string]: Contestant } = {};
 
 /**
@@ -157,6 +162,7 @@ const individualContestantCache: { [id: string]: Contestant } = {};
 function processContestants(
   results: CsvParseResult<ContestantCsvRow>,
   filterFn: (row: ContestantCsvRow) => boolean,
+  contest: ContestId = DEFAULT_CONTEST,
 ): Contestant[] {
   const tempStorage = new Map<string, Contestant>();
   // scan every row, not just the filtered ones: whether a year carries finals
@@ -171,9 +177,9 @@ function processContestants(
     row.yearCountry = id;
     if (!tempStorage.has(id)) {
       // create a new entry
-      tempStorage.set(id, createContestant(row, yearsWithFinalsPlacements));
+      tempStorage.set(id, createContestant(row, yearsWithFinalsPlacements, contest));
     } else {
-      handleDuplicateEntry(tempStorage, id, row, yearsWithFinalsPlacements);
+      handleDuplicateEntry(tempStorage, id, row, yearsWithFinalsPlacements, contest);
     }
   });
 
@@ -221,6 +227,7 @@ function resolveFinalsRank(
 function createContestant(
   row: ContestantCsvRow,
   yearsWithFinalsPlacements: Set<string>,
+  contest: ContestId = DEFAULT_CONTEST,
 ): Contestant {
   const contestantData: ContestantData = {
     id: row.id,
@@ -232,6 +239,7 @@ function createContestant(
     contestRank: parseOptionalInt(row.place_contest),
     semiFinalsRank: parseOptionalInt(row.place_sf),
     year: row.year,
+    contest,
     votes: {
       round: 'Final',
       year: row.year,
@@ -256,6 +264,7 @@ function handleDuplicateEntry(
   id: string,
   row: ContestantCsvRow,
   yearsWithFinalsPlacements: Set<string>,
+  contest: ContestId,
 ): void {
   const [year, countryKey] = id.split('-');
   if (year !== '1956') {
@@ -278,7 +287,7 @@ function handleDuplicateEntry(
     //   ...createContestant(row),
     //   countryKey: `${countryKey}-2`,
     // });
-    const contestant = createContestant(row, yearsWithFinalsPlacements);
+    const contestant = createContestant(row, yearsWithFinalsPlacements, contest);
     contestant.countryKey = `${countryKey}-2`;
     tempStorage.set(`${id}-2`, contestant);
   }
@@ -289,9 +298,12 @@ function handleDuplicateEntry(
  *
  * @returns promise resolving to parsed CSV data
  */
-function fetchAndParseCsv(year: string = ''): Promise<CsvParseResult<ContestantCsvRow>> {
+function fetchAndParseCsv(
+  year: string = '',
+  contest: ContestId = DEFAULT_CONTEST,
+): Promise<CsvParseResult<ContestantCsvRow>> {
   return new Promise((resolve, reject) => {
-    fetchContestantCsv(year)
+    fetchContestantCsv(year, contest)
       .then((response) => response)
       .then((csvString) => {
         Papa.parse(csvString, {
@@ -305,26 +317,32 @@ function fetchAndParseCsv(year: string = ''): Promise<CsvParseResult<ContestantC
 }
 
 /**
- * returns all contestants for the provided year
- * caches each result set by year
+ * returns all contestants for the provided year of a contest
+ * caches each result set by contest and year
  *
  * @param year
+ * @param contest
  * @returns promise resolving to an array of contestants
  */
-export function getContestantsForYear(year: string): Promise<Contestant[]> {
-  if (contestantCache[year]) {
-    return Promise.resolve(contestantCache[year]);
+export function getContestantsForYear(
+  year: string,
+  contest: ContestId = DEFAULT_CONTEST,
+): Promise<Contestant[]> {
+  const cacheKey = `${contest}:${year}`;
+  if (contestantCache[cacheKey]) {
+    return Promise.resolve(contestantCache[cacheKey]);
   }
 
-  return fetchAndParseCsv(year).then((results) => {
-    const contestants = processContestants(results, (row) => row.year === year);
-    contestantCache[year] = contestants;
+  return fetchAndParseCsv(year, contest).then((results) => {
+    const contestants = processContestants(results, (row) => row.year === year, contest);
+    contestantCache[cacheKey] = contestants;
     return contestants;
   });
 }
 
 /**
- * return country contestants by their global ids and in the order of ids
+ * return country contestants by their global ids and in the order of ids.
+ * Global ids cover the traditional contest only.
  *
  * @param uids
  * @param voteType
@@ -412,10 +430,14 @@ export function getContestantsByCountry(country: string): Promise<Contestant[]> 
   });
 }
 
-export function getSongDetails(uid: string, year: string = ''): Promise<SongDetails | undefined> {
+export function getSongDetails(
+  uid: string,
+  year: string = '',
+  contest: ContestId = DEFAULT_CONTEST,
+): Promise<SongDetails | undefined> {
   return new Promise((resolve, reject) => {
     const fetchMain = (csvYear: string): Promise<CsvParseResult<ContestantCsvRow>> =>
-      fetchContestantCsv(csvYear).then(
+      fetchContestantCsv(csvYear, contest).then(
         (csvString) =>
           new Promise((res, rej) =>
             Papa.parse(csvString, {
@@ -430,7 +452,7 @@ export function getSongDetails(uid: string, year: string = ''): Promise<SongDeta
       results.data.find((row: ContestantCsvRow) => row.id === uid);
 
     const fetchLyricsAndResolve = (mainRow: ContestantCsvRow) => {
-      fetchLyricsCsv()
+      fetchLyricsCsv(contest)
         .then((lyricsCsvString) => {
           Papa.parse(lyricsCsvString, {
             header: true,

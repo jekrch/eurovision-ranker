@@ -5,7 +5,7 @@ import { describe, it, expect, beforeEach } from 'vitest';
 
 import { useUrlWriter } from './useUrlWriter';
 import { CountryContestant } from '../data/CountryContestant';
-import { setName, setYear, setGlobalSearch, setRankedItems } from '../redux/rootSlice';
+import { setContest, setName, setYear, setGlobalSearch, setRankedItems } from '../redux/rootSlice';
 import { makeTestStore, TestStore, storeWrapper } from '../test/storeHarness';
 import { Category } from '../utilities/CategoryUtil';
 
@@ -214,5 +214,39 @@ describe('store -> URL writer', () => {
     expect(search().get('r1')).toBe('ab');
     expect(search().get('r2')).toBe('ba');
     expect(search().has('r3')).toBe(false);
+  });
+});
+
+describe('the contest in the URL', () => {
+  beforeEach(() => setUrl('/'));
+
+  it('leaves the traditional contest out of the URL', () => {
+    const store = makeTestStore({ root: { year: '2023' } });
+
+    mountWriter(store);
+
+    expect(search().has('ct')).toBe(false);
+    expect(search().get('y')).toBe('23');
+  });
+
+  it('names the Asia contest in the URL', () => {
+    const store = makeTestStore({ root: { contest: 'asia', year: '2026' } });
+
+    mountWriter(store);
+
+    expect(search().get('ct')).toBe('asia');
+    expect(search().get('y')).toBe('26');
+  });
+
+  it('drops the contest from the URL on switching back to the traditional contest', () => {
+    setUrl('/?ct=asia&y=26');
+    const store = makeTestStore({ root: { contest: 'asia', year: '2026' } });
+    mountWriter(store);
+
+    act(() => {
+      store.dispatch(setContest('esc'));
+    });
+
+    expect(search().has('ct')).toBe(false);
   });
 });

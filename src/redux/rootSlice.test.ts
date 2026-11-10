@@ -10,14 +10,17 @@ import rootReducer, {
   setCategories,
   setCategoryRankingAtSlot,
   setCategoryRankings,
+  setContest,
   setContestants,
   setGlobalSearch,
   setName,
   setRankedItems,
   setUnrankedItems,
+  setVote,
   setYear,
 } from './rootSlice';
 import { Contestant } from '../data/Contestant';
+import { contests } from '../data/Contests';
 import { CountryContestant } from '../data/CountryContestant';
 import { Vote } from '../data/Vote';
 
@@ -157,6 +160,7 @@ describe('a ranking opened from a share link', () => {
     ['a country is removed', removeCountryFromCategories('a')],
     ['it is renamed', setName('My copy')],
     ['the year changes', setYear('2018')],
+    ['the contest changes', setContest('asia')],
   ])('becomes the viewer own ranking when %s', (_case, action) => {
     const store = makeStore();
     store.dispatch(enterPublicView('abc123'));
@@ -242,5 +246,63 @@ describe('searching across every contest', () => {
     store.dispatch(setGlobalSearch(true));
 
     expect(store.getState().root.globalSearch).toBe(true);
+  });
+});
+
+describe('switching contest', () => {
+  it('starts on the traditional contest', () => {
+    expect(makeStore().getState().root.contest).toBe('esc');
+  });
+
+  it("moves to the new contest's default year", () => {
+    const store = makeStore();
+    store.dispatch(setYear('2018'));
+
+    store.dispatch(setContest('asia'));
+
+    expect(store.getState().root).toMatchObject({
+      contest: 'asia',
+      year: contests.asia.defaultYear,
+    });
+  });
+
+  it('starts every ranking over, since the contests share no songs', () => {
+    const store = makeStore();
+    store.dispatch(
+      setCategories([
+        { name: 'Vocals', weight: 1 },
+        { name: 'Staging', weight: 1 },
+      ]),
+    );
+    store.dispatch(setCategoryRankings([ranking('a', 'b'), ranking('b', 'a')]));
+    store.dispatch(setUnrankedItems(ranking('c')));
+    store.dispatch(setContestants(ranking('a', 'b', 'c')));
+
+    store.dispatch(setContest('asia'));
+
+    expect(slots(store)).toEqual([[], []]);
+    expect(store.getState().root.unrankedItems).toEqual([]);
+    expect(store.getState().root.contestants).toEqual([]);
+  });
+
+  it('turns off what the new contest does not offer', () => {
+    const store = makeStore();
+    store.dispatch(setGlobalSearch(true));
+    store.dispatch(setVote('f-t'));
+
+    store.dispatch(setContest('asia'));
+
+    expect(store.getState().root).toMatchObject({ globalSearch: false, vote: '' });
+  });
+
+  it('leaves everything alone when the contest is already selected', () => {
+    const store = makeStore();
+    store.dispatch(setYear('2018'));
+    store.dispatch(setRankedItems(ranking('a', 'b')));
+
+    store.dispatch(setContest('esc'));
+
+    expect(store.getState().root.year).toBe('2018');
+    expect(slots(store)).toEqual([['a', 'b']]);
   });
 });

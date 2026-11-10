@@ -162,7 +162,14 @@ export const DetailsCard: FC<DetailsCardProps> = (props) => {
               {country.key !== 'yu' ? (
                 <LazyLoadedFlag
                   code={country.key}
-                  className="block w-full h-full object-cover opacity-80"
+                  className={classNames(
+                    'block h-full object-cover opacity-80',
+                    // Nepal's flag is taller than it is wide, so at full width
+                    // its natural height stretches the card. Narrow just the
+                    // image so its height lines up with a typical 3:2 flag while
+                    // the box keeps the text in line with the other cards.
+                    country.key === 'np' ? 'w-[2.75em]' : 'w-full',
+                  )}
                   style={{
                     WebkitMaskImage:
                       'linear-gradient(to right, rgba(0,0,0,0.9) 50%, transparent 100%)',

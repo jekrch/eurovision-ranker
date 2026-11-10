@@ -2,6 +2,8 @@ import { faLink, faRotate, faShareNodes, faXmark } from '@fortawesome/free-solid
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
 
+import { formatContestYear } from '../../../../data/Contests';
+import { storedRankingContest } from '../../../../utilities/api/rankingParams';
 import { AuthUser, SharedRanking } from '../../../../utilities/api/types';
 import { shortDate } from '../cloud/helpers';
 import { sectionLabel, iconBtn, actionBtn, dangerActionBtn } from '../cloud/styles';
@@ -58,7 +60,9 @@ const GroupSharedRankingsSection: React.FC<{
                   </div>
                   <div className="text-[10px] text-(--er-text-subtle)">
                     {r.owner_email}
-                    {r.year ? ` · ${r.year}` : ''}
+                    {r.year
+                      ? ` · ${formatContestYear(storedRankingContest(r.ranking ?? ''), r.year)}`
+                      : ''}
                     {r.shared_at ? ` · ${shortDate(r.shared_at)}` : ''}
                   </div>
                 </div>

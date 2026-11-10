@@ -7,8 +7,10 @@ import EditNav from './nav/EditNav';
 import ContentPlaceholder from './ranking/ContentPlaceholder';
 import { Switch } from './Switch';
 import TooltipHelp from './TooltipHelp';
-import { useDetailsViewToggle } from '../hooks/useDetailsViewToggle';
+import { contests } from '../data/Contests';
+import { useAppSelector } from '../hooks/stateHooks';
 import { useBulkMove } from '../hooks/useBulkMove';
+import { useDetailsViewToggle } from '../hooks/useDetailsViewToggle';
 import { useRankedExit } from '../hooks/useRankedExit';
 import { useRankingDragDrop } from '../hooks/useRankingDragDrop';
 import { RankingAddition } from '../hooks/useRecentlyAdded';
@@ -48,6 +50,10 @@ const AppContent: React.FC<AppContentProps> = ({
   updateGlobalSearch,
 }) => {
   const toggleDetailsView = useDetailsViewToggle();
+  // Global (adv) mode picks songs across every year of the traditional contest
+  const globalModeAvailable = useAppSelector(
+    (state) => contests[state.root.contest].features.globalMode,
+  );
   const viewSwitch = useViewSwitch(showUnranked);
   const {
     openSongModalWithData,
@@ -136,17 +142,23 @@ const AppContent: React.FC<AppContentProps> = ({
               <div className="relative flex flex-col view-enter-left-animation">
                 <div className="tour-step-15 sticky top-0 rounded-t-md round-b-sm text-center font-bold bg-(--er-surface-bar) gradient-background-reverse text-(--er-text-secondary) tracking-tighter shadow-md z-50">
                   <div className="flex items-center justify-center gap-1 py-1 px-0">
-                    <TooltipHelp
-                      content="Select countries across all contest years"
-                      className="text-(--er-text-secondary) align-middle mb-1 mr-1 -ml-1"
-                    />
-                    <Switch
-                      label="adv"
-                      className="items-center align-middle font-normal"
-                      labelClassName="text-sm text-(--er-text-tertiary)"
-                      checked={globalSearch}
-                      setChecked={updateGlobalSearch}
-                    />
+                    {globalModeAvailable ? (
+                      <>
+                        <TooltipHelp
+                          content="Select countries across all contest years"
+                          className="text-(--er-text-secondary) align-middle mb-1 mr-1 -ml-1"
+                        />
+                        <Switch
+                          label="adv"
+                          className="items-center align-middle font-normal"
+                          labelClassName="text-sm text-(--er-text-tertiary)"
+                          checked={globalSearch}
+                          setChecked={updateGlobalSearch}
+                        />
+                      </>
+                    ) : (
+                      <span className="text-sm font-normal text-(--er-text-tertiary)">Select</span>
+                    )}
                   </div>
                 </div>
                 <Suspense fallback={<ContentPlaceholder />}>
@@ -156,7 +168,9 @@ const AppContent: React.FC<AppContentProps> = ({
                     isAddingAll={bulkMove.isAddingAll}
                     isBulkMoving={bulkMove.isMoving}
                     onShowRanking={toggleDetailsView}
-                    onOpenGlobalSearch={() => updateGlobalSearch(true)}
+                    onOpenGlobalSearch={
+                      globalModeAvailable ? () => updateGlobalSearch(true) : undefined
+                    }
                   />
                 </Suspense>
               </div>

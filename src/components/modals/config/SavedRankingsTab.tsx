@@ -11,6 +11,9 @@ import SavedRankingRow from './saved/SavedRankingRow';
 import ShareWithGroupsSheet from './saved/ShareWithGroupsSheet';
 import { useSavedRankings } from './saved/useSavedRankings';
 import UsernameField from './UsernameField';
+import { formatContestYear } from '../../../data/Contests';
+import { useAppSelector } from '../../../hooks/stateHooks';
+import { AppState } from '../../../redux/store';
 
 interface SavedRankingsTabProps {
   openAuthModal: () => void;
@@ -18,6 +21,7 @@ interface SavedRankingsTabProps {
 
 const SavedRankingsTab: React.FC<SavedRankingsTabProps> = ({ openAuthModal }) => {
   const c = useSavedRankings();
+  const contest = useAppSelector((state: AppState) => state.root.contest);
 
   if (!c.user) {
     return (
@@ -53,7 +57,7 @@ const SavedRankingsTab: React.FC<SavedRankingsTabProps> = ({ openAuthModal }) =>
       {/* Current ranking card */}
       <CurrentRankingCard
         name={c.name}
-        year={c.year}
+        year={c.year ? formatContestYear(contest, c.year) : ''}
         rankedItems={c.rankedItems}
         currentRankingId={c.currentRankingId}
         isDirty={c.isDirty}

@@ -1,6 +1,7 @@
 import { createSelector } from '@reduxjs/toolkit';
 
 import { AppState } from './store';
+import { DEFAULT_CONTEST } from '../data/Contests';
 import { encodeRankingsToURL } from '../utilities/UrlUtil';
 
 /**
@@ -12,7 +13,8 @@ import { encodeRankingsToURL } from '../utilities/UrlUtil';
  * should be absent. Values are kept byte-for-byte compatible with the existing
  * URL format (falsy / default values project to `undefined` so share links stay
  * clean and the encode/decode round-trip is unchanged): an absent `cm`/`pl`/`g`
- * decodes the same as the explicit `f`/false it replaces.
+ * decodes the same as the explicit `f`/false it replaces, and an absent `ct`
+ * decodes as the traditional contest.
  *
  * Per-category rankings live in `r1`/`r2`/… when categories are defined, or a
  * single `r` otherwise — mirroring how `extractParams` reads them back.
@@ -26,6 +28,7 @@ export const selectUrlParams = createSelector(
     (state: AppState) => state.root.viewMode,
     (state: AppState) => state.root.publicViewId,
     (state: AppState) => state.root.name,
+    (state: AppState) => state.root.contest,
     (state: AppState) => state.root.year,
     (state: AppState) => state.root.theme,
     (state: AppState) => state.root.vote,
@@ -40,6 +43,7 @@ export const selectUrlParams = createSelector(
     viewMode,
     publicViewId,
     name,
+    contest,
     year,
     theme,
     vote,
@@ -65,6 +69,7 @@ export const selectUrlParams = createSelector(
 
     const params: Record<string, string | undefined> = {
       n: name || undefined,
+      ct: contest !== DEFAULT_CONTEST ? contest : undefined,
       y: year ? year.slice(-2) : undefined,
       t: theme || undefined,
       // `vote` starts as the 'loading' sentinel before the contestant set

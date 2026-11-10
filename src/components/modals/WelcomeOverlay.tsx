@@ -4,8 +4,10 @@ import { IconType } from 'react-icons';
 import { FaChartBar, FaQuestionCircle, FaSort, FaTv } from 'react-icons/fa';
 
 import { modalPanel } from './modalStyles';
+import escAsiaHeart from '../../assets/promos/esc-asia-heart.webp';
+import { ContestId } from '../../data/Contests';
 import { useAppDispatch } from '../../hooks/stateHooks';
-import { setWelcomeOverlayIsOpen } from '../../redux/rootSlice';
+import { setContest, setWelcomeOverlayIsOpen } from '../../redux/rootSlice';
 import { AppDispatch } from '../../redux/store';
 import '../../themes.css';
 import { HeartIcon } from '../HeartIcon';
@@ -17,8 +19,18 @@ interface WelcomeOverlayProps {
   handleTakeTour: () => void;
 }
 
-/** What the app can do beyond ranking. Each row fades in behind the one above it. */
-const FEATURES: { icon: IconType; text: string }[] = [
+/**
+ * What the app can do beyond ranking. Each row fades in behind the one above it.
+ * `icon` is either a react-icon or an image URL. `highlight` picks out a word in `text`
+ * to colour and shimmer. `contest` adds a button that closes the modal on that contest.
+ */
+const FEATURES: {
+  icon: IconType | string;
+  text: string;
+  highlight?: string;
+  contest?: ContestId;
+}[] = [
+  { icon: escAsiaHeart, text: 'Rank ESC Asia 2026', highlight: 'Asia', contest: 'asia' },
   { icon: FaSort, text: 'Use a sorter to build your ranking' },
   { icon: FaTv, text: 'Create YouTube playlists' },
   { icon: FaChartBar, text: 'Explore past voting records' },
@@ -58,6 +70,14 @@ const WelcomeOverlay: React.FC<WelcomeOverlayProps> = ({
     handleGetStarted();
   }
 
+  // switching contest is all the header's contest picker does too; the URL sync
+  // loads the new contest's entries while the card plays its exit
+  function startWithContest(contest: ContestId) {
+    if (closingRef.current) return;
+    dispatch(setContest(contest));
+    getStarted();
+  }
+
   // read through a ref so the key listener below always calls the latest handler
   const getStartedRef = useRef(getStarted);
   getStartedRef.current = getStarted;
@@ -68,7 +88,7 @@ const WelcomeOverlay: React.FC<WelcomeOverlayProps> = ({
   }, [dispatch]);
 
   // focus lands on "Get started", Escape dismisses like a click outside does,
-  // and Tab cycles between the two buttons instead of reaching the page behind
+  // and Tab cycles through the card's buttons instead of reaching the page behind
   useEffect(() => {
     const buttons = () => Array.from(overlayContentRef.current?.querySelectorAll('button') ?? []);
 
@@ -137,7 +157,7 @@ const WelcomeOverlay: React.FC<WelcomeOverlayProps> = ({
         aria-labelledby={titleId}
         aria-describedby={descriptionId}
         className={classNames(
-          'overlay welcome-card relative z-10 mx-5 w-full max-w-[21em] max-h-[calc(100%-3em)]',
+          'overlay welcome-card relative z-10 mx-5 w-full max-w-[19.5em] max-h-[calc(100%-3em)]',
           'flex flex-col px-6 py-6 gradient-background-modal text-(--er-text-tertiary)',
           modalPanel,
         )}
@@ -156,19 +176,48 @@ const WelcomeOverlay: React.FC<WelcomeOverlayProps> = ({
 
         <div className="mt-5 flex-1 overflow-auto scrollbar-gutter-stable">
           <ul className="list-none space-y-2.5 text-sm">
-            {FEATURES.map(({ icon: Icon, text }, index) => (
+            {FEATURES.map(({ icon: Icon, text, highlight, contest }, index) => (
               <li
                 key={text}
                 className="welcome-feature flex items-center"
                 style={{ animationDelay: `${120 + index * 55}ms` }}
               >
-                <span className="mr-3 flex w-4 flex-none justify-center">
-                  <Icon
-                    aria-hidden="true"
-                    className="h-3.5 w-3.5 text-(--er-interactive-primary)"
-                  />
+                <span className="mr-3 flex w-7 flex-none justify-center">
+                  {typeof Icon === 'string' ? (
+                    <img src={Icon} alt="" width={28} height={28} className="-my-1.5 h-7 w-7" />
+                  ) : (
+                    <Icon
+                      aria-hidden="true"
+                      className="h-3.5 w-3.5 text-(--er-interactive-primary)"
+                    />
+                  )}
                 </span>
-                <span className="leading-snug">{text}</span>
+                <span className={classNames('leading-snug', contest && 'whitespace-nowrap')}>
+                  {highlight && text.includes(highlight) ? (
+                    <>
+                      {text.slice(0, text.indexOf(highlight))}
+                      <span className="welcome-shimmer font-semibold">{highlight}</span>
+                      {text.slice(text.indexOf(highlight) + highlight.length)}
+                    </>
+                  ) : (
+                    text
+                  )}
+                </span>
+                {contest && (
+                  <button
+                    type="button"
+                    aria-label={text}
+                    onClick={() => startWithContest(contest)}
+                    className={classNames(
+                      'ml-auto flex-none rounded-md px-2 py-1 text-xs font-medium leading-none',
+                      'ring-1 ring-inset ring-white/15 hover:bg-white/6',
+                      'text-(--er-text-secondary) hover:text-(--er-text-primary)',
+                      'transition-colors duration-150 focus:outline-hidden focus-visible:ring-white/40',
+                    )}
+                  >
+                    Start
+                  </button>
+                )}
               </li>
             ))}
           </ul>

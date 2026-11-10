@@ -9,6 +9,7 @@ import { loadAllCategoryRankingsFromURL } from '../utilities/UrlUtil';
 interface UseUrlSyncArgs {
   activeCategory: number | undefined;
   categories: AppState['root']['categories'];
+  contest: AppState['root']['contest'];
   year: string;
   dispatch: AppDispatch;
   // Armed once the store has been hydrated from the URL on boot, so the single
@@ -32,6 +33,7 @@ interface UseUrlSyncArgs {
 export function useUrlSync({
   activeCategory,
   categories,
+  contest,
   year,
   dispatch,
   writerReadyRef,
@@ -89,14 +91,15 @@ export function useUrlSync({
         return;
       }
 
-      // User picked a new year: re-resolve every category's ranking against it
-      // from the store (no URL read). The single URL writer projects `y` and the
-      // refreshed rankings back out.
+      // User picked a new year or contest: re-resolve every category's ranking
+      // against it from the store (no URL read). The single URL writer projects
+      // `ct`, `y` and the refreshed rankings back out. A contest switch keeps
+      // the year when both contests share it, so the contest is watched too.
       await dispatch(reloadRankingsForYear(year));
     };
     handleYearUpdate();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [year]);
+  }, [contest, year]);
 
   // First-load category bootstrap. The category structure's store slots are
   // reshaped by the category actions (a reducer), not here, and the per-category

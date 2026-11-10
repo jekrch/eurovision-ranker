@@ -60,6 +60,7 @@ describe('extractParams', () => {
 
     expect(result).toEqual({
       rankingName: 'test',
+      contest: null,
       contestYear: '2023',
       rankings: 'abc',
       theme: 'ab',
@@ -81,6 +82,7 @@ describe('extractParams', () => {
 
     expect(result).toEqual({
       rankingName: null,
+      contest: null,
       contestYear: '2023',
       rankings: 'abc',
       theme: null,
@@ -94,6 +96,7 @@ describe('extractParams', () => {
 });
 
 vi.mock('../redux/rootSlice', () => ({
+  setContest: vi.fn(),
   setName: vi.fn(),
   setYear: vi.fn(),
   setTheme: vi.fn(),
@@ -242,10 +245,7 @@ describe('updateStates — display toggles', () => {
     }) as UrlParams;
 
   it('enables the toggles whose params are set to "t"', () => {
-    updateStates(
-      base({ globalMode: 't', comparisonMode: 't', showPlace: 't' }),
-      mockDispatch,
-    );
+    updateStates(base({ globalMode: 't', comparisonMode: 't', showPlace: 't' }), mockDispatch);
     expect(setGlobalSearch).toHaveBeenCalledWith(true);
     expect(setShowComparison).toHaveBeenCalledWith(true);
     expect(setShowPlace).toHaveBeenCalledWith(true);
@@ -294,7 +294,7 @@ describe('extractParams — per-category ranking slot', () => {
 
 describe('encodeRankingsToURL', () => {
   const item = (id?: string, uid?: string): CountryContestant =>
-    ({ id, uid } as unknown as CountryContestant);
+    ({ id, uid }) as unknown as CountryContestant;
 
   it('joins ids without a marker in local mode', () => {
     expect(encodeRankingsToURL([item('a'), item('b')], false)).toBe('ab');
@@ -351,11 +351,14 @@ describe('urlParamHasValue / updateQueryParams', () => {
 
 describe('orderContestantsByRankingStr — local mode', () => {
   const cc = (id: string): CountryContestant =>
-    ({ id, country: { id }, contestant: null } as unknown as CountryContestant);
+    ({ id, country: { id }, contestant: null }) as unknown as CountryContestant;
 
   it('resolves ranked ids against the loaded year contestants', async () => {
     const yearContestants = [cc('a'), cc('b')];
-    const { rankedIds, rankedCountries } = await orderContestantsByRankingStr('ba', yearContestants);
+    const { rankedIds, rankedCountries } = await orderContestantsByRankingStr(
+      'ba',
+      yearContestants,
+    );
     expect(rankedIds).toEqual(['b', 'a']);
     expect(rankedCountries.map((c) => c.id)).toEqual(['b', 'a']);
   });

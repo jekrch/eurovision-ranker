@@ -1,71 +1,57 @@
-import { defaultYear } from '../data/Contestants';
+import { ContestId, contests, DEFAULT_CONTEST } from '../data/Contests';
 
-let cachedVoteCsvPromise: Promise<string> | null = null;
-let cachedVoteCurrentCsvPromise: Promise<string> | null = null;
+// One download per file, shared by every caller that needs it.
+const fileCache = new Map<string, Promise<string>>();
+// Concatenations of several files, keyed by the joined file list, so a
+// multi-file request resolves to the same string every time it's asked for.
+const joinedCache = new Map<string, Promise<string>>();
 
-export function fetchVoteCsv(year: string): Promise<string> {
-  const isCurrentYear = year === defaultYear;
-
-  const file: string = isCurrentYear ? 'votesCurrent.csv' : `votes.csv`;
-
-  if (!isCurrentYear && cachedVoteCsvPromise) {
-    return cachedVoteCsvPromise;
-  } else if (isCurrentYear && cachedVoteCurrentCsvPromise) {
-    return cachedVoteCurrentCsvPromise;
+function getFileContents(file: string): Promise<string> {
+  let promise = fileCache.get(file);
+  if (!promise) {
+    promise = fetch(`${import.meta.env.BASE_URL}${file}`).then((response) => response.text());
+    fileCache.set(file, promise);
   }
-
-  const promise = fetch(`${import.meta.env.BASE_URL}${file}`).then((response) => response.text());
-
-  if (isCurrentYear) {
-    cachedVoteCurrentCsvPromise = promise;
-  } else {
-    cachedVoteCsvPromise = promise;
-  }
-
   return promise;
 }
 
-let cachedContestantCsvPromise: Promise<string> | null = null;
-let cachedContestantCurrentCsvPromise: Promise<string> | null = null;
+function getJoinedContents(files: string[]): Promise<string> {
+  if (files.length === 1) return getFileContents(files[0]!);
 
-export function fetchContestantCsv(year: string = ''): Promise<string> {
-  const isCurrentYear = year === defaultYear;
-
-  if (!isCurrentYear && cachedContestantCsvPromise) {
-    return cachedContestantCsvPromise;
-  } else if (isCurrentYear && cachedContestantCurrentCsvPromise) {
-    return cachedContestantCurrentCsvPromise;
+  const key = files.join('+');
+  let promise = joinedCache.get(key);
+  if (!promise) {
+    promise = Promise.all(files.map(getFileContents)).then((contents) => contents.join(''));
+    joinedCache.set(key, promise);
   }
-
-  if (isCurrentYear) {
-    cachedContestantCurrentCsvPromise = getFileContents('mainCurrent.csv');
-    return cachedContestantCurrentCsvPromise;
-  } else {
-    const promiseMain = getFileContents('main.csv');
-    const promiseMainCurrent = getFileContents('mainCurrent.csv');
-    cachedContestantCsvPromise = cachedContestantCurrentCsvPromise = Promise.all([
-      promiseMain,
-      promiseMainCurrent,
-    ]).then(([mainContent, mainCurrentContent]) => mainContent + mainCurrentContent);
-    return cachedContestantCsvPromise;
-  }
-}
-
-let cachedLyricsCsvPromise: Promise<string> | null = null;
-
-function getFileContents(file: string) {
-  return fetch(`${import.meta.env.BASE_URL}${file}`).then((response) => response.text());
-}
-
-export function fetchLyricsCsv(): Promise<string> {
-  if (cachedLyricsCsvPromise) {
-    return cachedLyricsCsvPromise;
-  }
-
-  const promise = fetch(`${import.meta.env.BASE_URL}lyrics.csv`).then((response) =>
-    response.text(),
-  );
-
-  cachedLyricsCsvPromise = promise;
   return promise;
+}
+
+/**
+ * Vote CSV covering the given year of a contest. Resolves to an empty string
+ * when the contest has no vote data, so callers parse it as "no votes".
+ */
+export function fetchVoteCsv(year: string, contest: ContestId = DEFAULT_CONTEST): Promise<string> {
+  const file = contests[contest].voteFile(year);
+  return file ? getFileContents(file) : Promise.resolve('');
+}
+
+/**
+ * Contestant CSV covering the given year of a contest. An empty year covers
+ * every year of the contest.
+ */
+export function fetchContestantCsv(
+  year: string = '',
+  contest: ContestId = DEFAULT_CONTEST,
+): Promise<string> {
+  return getJoinedContents(contests[contest].contestantFiles(year));
+}
+
+/**
+ * Lyrics CSV for a contest. Resolves to an empty string when the contest has
+ * no lyrics.
+ */
+export function fetchLyricsCsv(contest: ContestId = DEFAULT_CONTEST): Promise<string> {
+  const file = contests[contest].lyricsFile;
+  return file ? getFileContents(file) : Promise.resolve('');
 }

@@ -4,11 +4,13 @@ import { EventData, EVENTS, ACTIONS, STATUS } from 'react-joyride';
 import TourExitPrompt from './TourExitPrompt';
 import { tourDelay } from './tourTarget';
 import { useTourSteps } from './useTourSteps';
+import { ContestId } from '../data/Contests';
 import { CountryContestant } from '../data/CountryContestant';
 import { useAppDispatch, useAppSelector } from '../hooks/stateHooks';
 import { useResetRanking } from '../hooks/useResetRanking';
 import { selectActiveRankedItems } from '../redux/rankingSelectors';
 import {
+  setContest,
   setYear,
   setName,
   setShowUnranked,
@@ -69,6 +71,7 @@ interface JoyrideTourProps {
 
 const JoyrideTour: React.FC<JoyrideTourProps> = (props: JoyrideTourProps) => {
   const dispatch: AppDispatch = useAppDispatch();
+  const contest = useAppSelector((state: AppState) => state.root.contest);
   const year = useAppSelector((state: AppState) => state.root.year);
   const rankedItems = useAppSelector(selectActiveRankedItems);
   const unrankedItems = useAppSelector((state: AppState) => state.root.unrankedItems);
@@ -192,8 +195,8 @@ const JoyrideTour: React.FC<JoyrideTourProps> = (props: JoyrideTourProps) => {
     }
   };
 
-  async function clearRanking(year: string) {
-    const yearContestants = await fetchCountryContestantsByYear(year, '');
+  async function clearRanking(year: string, contestId: ContestId = 'esc') {
+    const yearContestants = await fetchCountryContestantsByYear(year, '', contestId);
 
     dispatch(setContestants(yearContestants));
     dispatch(setUnrankedItems(yearContestants));
@@ -212,11 +215,15 @@ const JoyrideTour: React.FC<JoyrideTourProps> = (props: JoyrideTourProps) => {
   async function executeTourStepActions(index: number) {
     switch (index) {
       case 0:
-        await clearRanking(year);
+        await clearRanking(year, contest);
 
         break;
 
       case 1:
+        // the tour walks through a traditional contest year
+        if (contest !== 'esc') {
+          dispatch(setContest('esc'));
+        }
         if (year !== TOUR_YEAR) {
           dispatch(setYear(TOUR_YEAR));
           props.setRefreshUrl(Math.random());

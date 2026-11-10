@@ -5,6 +5,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { toast } from 'react-hot-toast';
 
+import { contests, DEFAULT_CONTEST } from '../../data/Contests';
 import { useAppSelector } from '../../hooks/stateHooks';
 import { selectActiveRankedItems } from '../../redux/rankingSelectors';
 import { AppState } from '../../redux/store';
@@ -33,7 +34,15 @@ const ImageStyleModal: React.FC<ImageStyleModalProps> = ({ isOpen, onClose }) =>
   const [isDownloading, setIsDownloading] = useState(false);
 
   const rankedItems = useAppSelector(selectActiveRankedItems);
-  const rankingName = useAppSelector((state: AppState) => state.root.name);
+  // The image title is the ranking's name. A ranking from a contest other than
+  // the traditional one also names that contest and year, so the picture says
+  // which songs these are.
+  const rankingName = useAppSelector((state: AppState) => {
+    const { name, contest, year } = state.root;
+    if (contest === DEFAULT_CONTEST) return name;
+    const contestYear = `${contests[contest].label} ${year}`.trim();
+    return name ? `${name} · ${contestYear}` : contestYear;
+  });
 
   // render a live preview of the currently selected style
   useEffect(() => {

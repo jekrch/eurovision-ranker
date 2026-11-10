@@ -181,6 +181,7 @@ describe('sortByVotes', () => {
         { year: '2018', countryKey: 'se' },
       ],
       'final',
+      'esc',
     );
     expect(result.map((cc) => cc.country.key)).toEqual(['se', 'gb']);
   });
@@ -211,7 +212,13 @@ describe('sortByVotes', () => {
 
     await sortByVotes(contestants, 't', 'Semi-Final-2');
 
-    expect(repo.fetchVotesForYear).toHaveBeenCalledWith('2023', undefined, 'semi-final-2');
+    expect(repo.fetchVotesForYear).toHaveBeenCalledWith(
+      '2023',
+      undefined,
+      'semi-final-2',
+      undefined,
+      'esc',
+    );
   });
 });
 
@@ -222,7 +229,13 @@ describe('assignVotesByCode', () => {
 
     const result = await assignVotesByCode([countryContestant('gb', '2023')], 'f-t');
 
-    expect(repo.fetchVotesForYear).toHaveBeenCalledWith('2023', undefined, 'final', undefined);
+    expect(repo.fetchVotesForYear).toHaveBeenCalledWith(
+      '2023',
+      undefined,
+      'final',
+      undefined,
+      'esc',
+    );
     expect(result[0]!.contestant!.votes).toMatchObject({
       totalPoints: 15,
       telePoints: 10,
@@ -235,7 +248,13 @@ describe('assignVotesByCode', () => {
 
     await assignVotesByCode([countryContestant('gb', '2023')], 'sf-tv-dk');
 
-    expect(repo.fetchVotesForYear).toHaveBeenCalledWith('2023', 'dk', 'semi-final', undefined);
+    expect(repo.fetchVotesForYear).toHaveBeenCalledWith(
+      '2023',
+      'dk',
+      'semi-final',
+      undefined,
+      'esc',
+    );
   });
 
   it('falls back to the final when the code names an unknown round', async () => {
@@ -243,7 +262,13 @@ describe('assignVotesByCode', () => {
 
     await assignVotesByCode([countryContestant('gb', '2023')], 'x-t');
 
-    expect(repo.fetchVotesForYear).toHaveBeenCalledWith('2023', undefined, 'final', undefined);
+    expect(repo.fetchVotesForYear).toHaveBeenCalledWith(
+      '2023',
+      undefined,
+      'final',
+      undefined,
+      'esc',
+    );
   });
 
   it('looks up every year in a multi year ranking and honours the source country', async () => {
@@ -264,6 +289,7 @@ describe('assignVotesByCode', () => {
         { year: '2018', countryKey: 'se' },
       ],
       'final',
+      'esc',
     );
     expect(result[0]!.contestant!.votes).toMatchObject({ totalPoints: 4 });
     expect(result[1]!.contestant!.votes).toBeUndefined();
@@ -280,7 +306,13 @@ describe('assignVotesByContestants', () => {
 
     const result = await assignVotesByContestants([countryContestant('gb', '2023')], 'sf-t-dk');
 
-    expect(repo.fetchVotesForYear).toHaveBeenCalledWith('2023', undefined, 'semi-final');
+    expect(repo.fetchVotesForYear).toHaveBeenCalledWith(
+      '2023',
+      undefined,
+      'semi-final',
+      undefined,
+      'esc',
+    );
     expect(result[0]!.contestant!.votes).toMatchObject({ totalPoints: 6 });
   });
 
@@ -292,7 +324,7 @@ describe('assignVotesByContestants', () => {
 
     await assignVotesByContestants([countryContestant('gb', '2019')], code);
 
-    expect(repo.fetchVotesForYear).toHaveBeenCalledWith('2019', undefined, round);
+    expect(repo.fetchVotesForYear).toHaveBeenCalledWith('2019', undefined, round, undefined, 'esc');
   });
 });
 
@@ -304,7 +336,7 @@ describe('fetchVotesByCode', () => {
 
     const result = await fetchVotesByCode('f-t-dk', '2023', 'gb');
 
-    expect(repo.fetchVotesForYear).toHaveBeenCalledWith('2023', 'dk', 'final', 'gb');
+    expect(repo.fetchVotesForYear).toHaveBeenCalledWith('2023', 'dk', 'final', 'gb', 'esc');
     expect(result).toBe(votes);
   });
 });
@@ -350,5 +382,38 @@ describe('updateVoteTypeCode', () => {
   it('drops the type section once the last type is removed', async () => {
     const { updateVoteTypeCode } = await loadVoteProcessor();
     expect(updateVoteTypeCode('f-tv', 'tv', false)).toBe('f');
+  });
+});
+
+describe('votes for another contest', () => {
+  const asiaContestant = (countryKey: string): CountryContestant => {
+    const cc = countryContestant(countryKey, '2026');
+    cc.contestant!.contest = 'asia';
+    return cc;
+  };
+
+  it('looks votes up in the contest the contestants competed in', async () => {
+    const { assignVotesByContestants } = await loadVoteProcessor();
+    repo.fetchVotesForYear.mockResolvedValue([]);
+
+    await assignVotesByContestants([asiaContestant('th'), asiaContestant('kr')], 'f-t');
+
+    expect(repo.fetchVotesForYear).toHaveBeenCalledWith(
+      '2026',
+      undefined,
+      'final',
+      undefined,
+      'asia',
+    );
+  });
+
+  it('keeps the same year of the traditional contest separate', async () => {
+    const { assignVotesByContestants } = await loadVoteProcessor();
+    repo.fetchVotesForYear.mockResolvedValue([]);
+
+    await assignVotesByContestants([countryContestant('se', '2026')], 'f-t');
+    await assignVotesByContestants([asiaContestant('th')], 'f-t');
+
+    expect(repo.fetchVotesForYear.mock.calls.map((call) => call[4])).toEqual(['esc', 'asia']);
   });
 });

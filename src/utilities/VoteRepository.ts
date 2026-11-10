@@ -17,7 +17,7 @@ interface VoteCsvRow {
   [key: string]: string;
 }
 import { fetchVoteCsv } from './CsvCache';
-import { sanitizeYear } from '../data/Contestants';
+import { ContestId, DEFAULT_CONTEST, sanitizeYear } from '../data/Contests';
 import { Vote } from '../data/Vote';
 
 const voteCache: { [key: string]: Vote[] } = {};
@@ -26,9 +26,9 @@ const voteCache: { [key: string]: Vote[] } = {};
 const ROUND_ORDER = ['f', 'sf', 'sf1', 'sf2'];
 
 /**
- * Return vote data for the provided year. If a countryKey is provided,
- * only return the votes from that country on that year, otherwise return
- * votes from all countries. Likewise for 'round' (final or semi-final)
+ * Return vote data for the provided year of a contest. If a countryKey is
+ * provided, only return the votes from that country on that year, otherwise
+ * return votes from all countries. Likewise for 'round' (final or semi-final)
  *
  * @param year
  * @param countryKey
@@ -39,22 +39,23 @@ export function fetchVotesForYear(
   countryKey?: string,
   round?: string,
   toCountryKey?: string,
+  contest: ContestId = DEFAULT_CONTEST,
 ): Promise<Vote[]> {
-  year = sanitizeYear(year);
+  year = sanitizeYear(year, contest);
   countryKey = countryKey?.toLowerCase();
 
   if (round) round = convertRoundToShortName(round);
 
-  let cacheKey = `${year}-${countryKey}-${round}`;
+  let cacheKey = `${contest}:${year}-${countryKey}-${round}`;
 
-  if (toCountryKey) cacheKey = `${year}-${countryKey}-${round}-${toCountryKey}`;
+  if (toCountryKey) cacheKey = `${contest}:${year}-${countryKey}-${round}-${toCountryKey}`;
 
   if (voteCache[cacheKey]) {
     return Promise.resolve(voteCache[cacheKey]);
   }
 
   return new Promise((resolve, reject) => {
-    fetchVoteCsv(year)
+    fetchVoteCsv(year, contest)
       .then((response) => response)
       .then((csvString) => {
         Papa.parse(csvString, {
@@ -98,22 +99,23 @@ export function fetchVotesForYear(
 export async function fetchVotesForYearsAndCountries(
   yearCountryPairs: Array<{ year: string; countryKey: string }>,
   round?: string,
+  contest: ContestId = DEFAULT_CONTEST,
 ): Promise<Vote[]> {
-  const uniqueYears = new Set(yearCountryPairs.map((pair) => sanitizeYear(pair.year)));
+  const uniqueYears = new Set(yearCountryPairs.map((pair) => sanitizeYear(pair.year, contest)));
   const uniqueCountries = new Set(yearCountryPairs.map((pair) => pair.countryKey.toLowerCase()));
 
   if (round) {
     round = convertRoundToShortName(round);
   }
 
-  const cacheKey = `${Array.from(uniqueYears).join(',')}-${Array.from(uniqueCountries).join(',')}-${round}`;
+  const cacheKey = `${contest}:${Array.from(uniqueYears).join(',')}-${Array.from(uniqueCountries).join(',')}-${round}`;
 
   if (voteCache[cacheKey]) {
     return Promise.resolve(voteCache[cacheKey]);
   }
 
   return new Promise((resolve, reject) => {
-    fetchVoteCsv('')
+    fetchVoteCsv('', contest)
       .then((response) => response)
       .then((csvString) => {
         Papa.parse(csvString, {
@@ -156,7 +158,8 @@ export interface VoteRoundSummary {
   hasJuryVotes: boolean;
 }
 
-const roundSummaryCache: { [year: string]: Promise<VoteRoundSummary[]> } = {};
+// keyed by `${contest}:${year}`
+const roundSummaryCache: { [contestYear: string]: Promise<VoteRoundSummary[]> } = {};
 
 /**
  * Summarize which rounds (final, semi-finals) have vote data for the provided
@@ -166,12 +169,16 @@ const roundSummaryCache: { [year: string]: Promise<VoteRoundSummary[]> } = {};
  * @param year
  * @returns
  */
-export function fetchVoteRoundSummariesForYear(year: string): Promise<VoteRoundSummary[]> {
-  year = sanitizeYear(year);
+export function fetchVoteRoundSummariesForYear(
+  year: string,
+  contest: ContestId = DEFAULT_CONTEST,
+): Promise<VoteRoundSummary[]> {
+  year = sanitizeYear(year, contest);
+  const cacheKey = `${contest}:${year}`;
 
-  if (!roundSummaryCache[year]) {
-    roundSummaryCache[year] = new Promise<VoteRoundSummary[]>((resolve, reject) => {
-      fetchVoteCsv(year)
+  if (!roundSummaryCache[cacheKey]) {
+    roundSummaryCache[cacheKey] = new Promise<VoteRoundSummary[]>((resolve, reject) => {
+      fetchVoteCsv(year, contest)
         .then((csvString) => {
           Papa.parse(csvString, {
             header: true,
@@ -209,10 +216,10 @@ export function fetchVoteRoundSummariesForYear(year: string): Promise<VoteRoundS
     });
 
     // don't cache failures, so a later attempt can retry
-    roundSummaryCache[year].catch(() => delete roundSummaryCache[year]);
+    roundSummaryCache[cacheKey].catch(() => delete roundSummaryCache[cacheKey]);
   }
 
-  return roundSummaryCache[year];
+  return roundSummaryCache[cacheKey];
 }
 
 const convertRoundToLongName = (round: string) => {

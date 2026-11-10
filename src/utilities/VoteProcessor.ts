@@ -1,9 +1,10 @@
 import { fetchVotesForYear, fetchVotesForYearsAndCountries } from './VoteRepository';
 import { assignVotes } from './VoteUtil';
-import { sanitizeYear } from '../data/Contestants';
+import { ContestId, DEFAULT_CONTEST, sanitizeYear } from '../data/Contests';
 import { CountryContestant } from '../data/CountryContestant';
 import { ContestantVotes, Vote } from '../data/Vote';
 
+let cachedVoteContest: ContestId;
 let cachedVoteYear: string;
 let cachedVoteRound: string;
 let cachedVotes: Vote[];
@@ -25,11 +26,13 @@ export async function getVotes(
   year: string,
   fromCountryKey: string | undefined,
   round: string,
+  contest: ContestId = DEFAULT_CONTEST,
 ): Promise<Vote[]> {
-  if (cachedVoteRound !== round || cachedVoteYear !== year) {
-    cachedVotes = await fetchVotesForYear(year, undefined, round);
+  if (cachedVoteRound !== round || cachedVoteYear !== year || cachedVoteContest !== contest) {
+    cachedVotes = await fetchVotesForYear(year, undefined, round, undefined, contest);
     cachedVoteRound = round;
     cachedVoteYear = year;
+    cachedVoteContest = contest;
   }
 
   return cachedVotes.filter((v) => !fromCountryKey || v.fromCountryKey == fromCountryKey);
@@ -63,12 +66,23 @@ export async function sortByVotes(
   }
 }
 
+/**
+ * The contest a set of contestants belongs to. A set never mixes contests, so
+ * the first contestant that says decides it.
+ */
+function contestOf(countryContestants: CountryContestant[]): ContestId {
+  return (
+    countryContestants.find((cc) => cc.contestant?.contest)?.contestant?.contest ?? DEFAULT_CONTEST
+  );
+}
+
 async function assignVotesByContestant(
   countryContestants: CountryContestant[],
   round: string,
   fromCountryKey: string | undefined,
 ) {
   const validRound = convertToValidRound(round);
+  const contest = contestOf(countryContestants);
 
   // get unique years from countryContestants, excluding those without a contestant or year
   const years = new Set(
@@ -86,15 +100,15 @@ async function assignVotesByContestant(
         countryKey: cc.country.key,
       }));
 
-    votes = await fetchVotesForYearsAndCountries(yearCountryPairs, validRound);
+    votes = await fetchVotesForYearsAndCountries(yearCountryPairs, validRound, contest);
 
     if (fromCountryKey) {
       votes = votes.filter((v) => v.fromCountryKey === fromCountryKey);
     }
   } else {
     // use the existing method for a single year
-    const year = years.size === 1 ? sanitizeYear(Array.from(years)[0]!) : '';
-    votes = await getVotes(year, fromCountryKey, validRound);
+    const year = years.size === 1 ? sanitizeYear(Array.from(years)[0]!, contest) : '';
+    votes = await getVotes(year, fromCountryKey, validRound, contest);
   }
 
   return assignVotes(countryContestants, votes);
@@ -235,6 +249,7 @@ export async function assignVotesByCode(
   countryContestants: CountryContestant[],
   voteCode: string,
 ): Promise<CountryContestant[]> {
+  const contest = contestOf(countryContestants);
   const years = new Set(
     countryContestants.filter((cc) => cc.contestant?.year).map((cc) => cc.contestant!.year),
   );
@@ -252,14 +267,14 @@ export async function assignVotesByCode(
     const [roundCode, , fromCountryKey] = voteCode.split('-');
     const round = processVotingRound(roundCode);
 
-    votes = await fetchVotesForYearsAndCountries(yearCountryPairs, round);
+    votes = await fetchVotesForYearsAndCountries(yearCountryPairs, round, contest);
 
     if (fromCountryKey) {
       votes = votes.filter((v) => v.fromCountryKey === fromCountryKey);
     }
   } else {
-    const year = years.size === 1 ? sanitizeYear(Array.from(years)[0]!) : '';
-    votes = await fetchVotesByCode(voteCode, year);
+    const year = years.size === 1 ? sanitizeYear(Array.from(years)[0]!, contest) : '';
+    votes = await fetchVotesByCode(voteCode, year, undefined, contest);
   }
 
   return assignVotes(countryContestants, votes);
@@ -288,10 +303,15 @@ function getVoteCodeSettings(voteCode: string) {
   return { fromCountryKey, round };
 }
 
-export async function fetchVotesByCode(voteCode: string, year: string, toCountryKey?: string) {
+export async function fetchVotesByCode(
+  voteCode: string,
+  year: string,
+  toCountryKey?: string,
+  contest: ContestId = DEFAULT_CONTEST,
+) {
   const { fromCountryKey, round } = getVoteCodeSettings(voteCode);
 
-  const votes: Vote[] = await fetchVotesForYear(year, fromCountryKey, round, toCountryKey);
+  const votes: Vote[] = await fetchVotesForYear(year, fromCountryKey, round, toCountryKey, contest);
   return votes;
 }
 

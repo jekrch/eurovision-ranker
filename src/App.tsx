@@ -52,6 +52,7 @@ const App: React.FC = () => {
   const showTotalRank = useAppSelector((state: AppState) => state.root.showTotalRank);
   const rankedItems = useAppSelector(selectActiveRankedItems);
   const unrankedItems = useAppSelector((state: AppState) => state.root.unrankedItems);
+  const contest = useAppSelector((state: AppState) => state.root.contest);
   const year = useAppSelector((state: AppState) => state.root.year);
   const globalSearch = useAppSelector((state: AppState) => state.root.globalSearch);
   const categories = useAppSelector((state: AppState) => state.root.categories);
@@ -186,6 +187,7 @@ const App: React.FC = () => {
   useUrlSync({
     activeCategory,
     categories,
+    contest,
     year,
     dispatch,
     writerReadyRef,
